@@ -33,8 +33,8 @@ public class TestCI {
     assertEquals(3, 1 + 2);
   }
 
-  @Test
+  /* @Test
   public void testFail1() {
     assertEquals(2, 3);
-  }
+  } */
 }

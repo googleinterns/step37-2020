@@ -16,5 +16,5 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - run: mvn install
+    - run: mvn install -DskipTests
     - run: mvn test

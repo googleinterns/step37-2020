@@ -35,6 +35,6 @@ public class TestCI {
 
   @Test
   public void testFail1() {
-    assertEquals(1, 2);
+    assertEquals(2, 3);
   }
 }

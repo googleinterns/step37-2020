@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "test": "mocha --recursive ./src/test"
+  },
+  "dependencies": {
+    "mocha": "^8.0.1"
+  }
+}

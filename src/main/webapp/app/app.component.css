@@ -1,0 +1,24 @@
+* {
+  font-family: Roboto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+.navbar {
+  position: fixed;
+  overflow: hidden;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: #1a73e8;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+}

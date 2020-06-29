@@ -9,7 +9,9 @@ public class IAMRecommenderMetadata extends RecommenderMetadata {
 
   /** 
    *  Creates a {@code IAMRecommenderMetadata} object for a recommendation that
-   *  had an impact of {@code impactInIAMBindings} IAM Bindings when applied.  
+   *  had an impact of {@code impactInIAMBindings} IAM Bindings when applied.
+   *  Impact retrieved via the Recommender API: 
+   *  https://cloud.google.com/recommender/docs/reference/rpc/google.cloud.recommender.v1#google.cloud.recommender.v1.Recommendation  
    */
   public IAMRecommenderMetadata(int impactInIAMBindings) {
     this.impactInIAMBindings = impactInIAMBindings;

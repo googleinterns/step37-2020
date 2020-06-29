@@ -1,6 +1,6 @@
-package com.google.sps.data;
+package com.google.impactdashboard.data;
 
-import com.google.sps.data.Recommendation.RecommenderType;
+import com.google.impactdashboard.data.recommendation.Recommendation.RecommenderType;
 
 /** Abstract class for handling different types of metadata for different recommenders. */
 public abstract class RecommenderMetadata {

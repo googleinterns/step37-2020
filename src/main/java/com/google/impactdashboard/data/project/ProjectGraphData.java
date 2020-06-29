@@ -1,7 +1,7 @@
-package com.google.sps.data;
+package com.google.impactdashboard.data.project;
 
 import java.util.Map;
-import com.google.sps.data.Recommendation;
+import com.google.impactdashboard.data.recommendation.Recommendation;
 
 /** The data necessary to graph a single project. */
 public class ProjectGraphData {

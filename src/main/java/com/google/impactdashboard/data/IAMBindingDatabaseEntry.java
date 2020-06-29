@@ -1,4 +1,4 @@
-package com.google.sps.data;
+package com.google.impactdashboard.data;
 
 /** Represents a single row of the IAM Bindings table. */
 public class IAMBindingDatabaseEntry {

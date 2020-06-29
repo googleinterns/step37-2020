@@ -1,6 +1,6 @@
-package com.google.sps.data;
+package com.google.impactdashboard.data;
 
-import com.google.sps.data.Recommendation.RecommenderType;
+import com.google.impactdashboard.data.recommendation.Recommendation.RecommenderType;
 
 /** Class that provides additional information about IAM Binding recommendations. */
 public class IAMRecommenderMetadata extends RecommenderMetadata {

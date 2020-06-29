@@ -1,4 +1,4 @@
-package com.google.sps.data;
+package com.google.impactdashboard.data.project;
 
 /** Represents a project. */
 public class Project {

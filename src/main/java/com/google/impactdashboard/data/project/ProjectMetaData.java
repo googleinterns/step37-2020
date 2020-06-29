@@ -1,4 +1,4 @@
-package com.google.sps.data;
+package com.google.impactdashboard.data.project;
 
 /** Metadata for an individual project. */
 public class ProjectMetaData {

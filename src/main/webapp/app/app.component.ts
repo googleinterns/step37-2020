@@ -13,10 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { request, setResponse, iamBindingsToGraphData } from '../utils';
-import { ProjectData } from '../model/project-data';
-import { Recommendation } from '../model/recommendation';
-import { RecommenderType } from '../model/recommender-type';
+
 
 @Component({
   selector: 'app-root',
@@ -25,38 +22,7 @@ import { RecommenderType } from '../model/recommender-type';
 })
 export class AppComponent implements OnInit {
   async ngOnInit() {
-    let iamBindings: { [key: number]: number } = {
-      [Date.parse('1 Jun 2020 UTC')]: 131,
-      [Date.parse('2 Jun 2020 UTC')]: 56,
-      [Date.parse('3 Jun 2020 UTC')]: 84,
-      [Date.parse('4 Jun 2020 UTC')]: 101,
-      [Date.parse('5 Jun 2020 UTC')]: 100,
-      [Date.parse('6 Jun 2020 UTC')]: 90,
-      [Date.parse('7 Jun 2020 UTC')]: 66,
-      [Date.parse('8 Jun 2020 UTC')]: 136,
-      [Date.parse('9 Jun 2020 UTC')]: 108,
-      [Date.parse('10 Jun 2020 UTC')]: 50,
-      [Date.parse('11 Jun 2020 UTC')]: 92,
-      [Date.parse('12 Jun 2020 UTC')]: 136,
-      [Date.parse('13 Jun 2020 UTC')]: 55,
-      [Date.parse('14 Jun 2020 UTC')]: 148,
-      [Date.parse('15 Jun 2020 UTC')]: 141,
-      [Date.parse('16 Jun 2020 UTC')]: 64,
-      [Date.parse('17 Jun 2020 UTC')]: 102,
-      [Date.parse('18 Jun 2020 UTC')]: 139,
-      [Date.parse('19 Jun 2020 UTC')]: 87,
-      [Date.parse('20 Jun 2020 UTC')]: 57,
-    };
-    let recommendations: { [key: number]: Recommendation } = {
-      5: new Recommendation('project-1', 'Rec 1', RecommenderType.IAM_BINDING),
-      11: new Recommendation('project-1', 'Rec 2', RecommenderType.IAM_BINDING),
-      17: new Recommendation('project-1', 'Rec 2', RecommenderType.IAM_BINDING),
-    }
 
-    setResponse('/get-project-data?id="project-1"', new ProjectData('project-1', iamBindings, recommendations));
-    this.data = await request('/get-project-data?id="project-1"', 'GET').then(r => r.json());
-    this.graphData = iamBindingsToGraphData(this.data.dateToNumberIAMBindings);
-    console.log(this.graphData);
   }
 
   title = 'Recommendations Impact Dashboard';

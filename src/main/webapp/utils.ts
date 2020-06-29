@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ProjectGraphData } from './model/project-graph-data';
+import { Recommendation } from './model/recommendation';
+
 /** Whether this is a test or not. Can be set programatically for CI/CD */
 export var defaultIsTest: boolean = true;
 
 /** Used internally to dish out fake responses when requested. Effectively a map from URL to response */
-var fakeResponses: {[key: string]: any} = {};
+var fakeResponses: { [key: string]: any } = {};
 
 /** Sends the given request to HTTP if isTest is false, otherwise fakes out the request */
 export async function request(url: string, method: string, body = undefined, isTest: boolean = defaultIsTest): Promise<Response> {
@@ -33,18 +36,45 @@ export async function request(url: string, method: string, body = undefined, isT
   }
 }
 
-/** Convert the given map of IAM Bindings to graphdata that's parsable by GCharts */
-export function iamBindingsToGraphData(obj: {[key: number]: number}): [[Date, number]] {
-  let out = [];
+/** Checks if the two timestamps (millis since epoch) fall on the same day. Returns true if they do */
+export function fallOnSameDay(time1: number, time2: number): boolean {
+  return time1 === time2;
+}
 
-  Object.keys(obj).forEach(key => {
+/** Returns the tooltip associated with the given IAM Bindings time */
+export function getTooltip(time: number, numberBindings: number, dateToRecommendation: { [key: number]: Recommendation }): string {
+  // The list of recommendations on the same day
+  let matchingRecommendationKeys = Object.keys(dateToRecommendation).filter(val => fallOnSameDay(time, +val));
+
+  if (matchingRecommendationKeys.length === 0) {
+    return `IAM Bindings: ${numberBindings}`;
+  }
+
+  let tooltip = '';
+  matchingRecommendationKeys.forEach(key => {
+    tooltip += dateToRecommendation[key].description + '\n';
+  });
+  return tooltip;
+}
+
+/** Create a DataTable object for the given ProjectGraphData */
+export function createIamTable(data: ProjectGraphData): google.visualization.DataTable {
+  let table = new google.visualization.DataTable();
+
+  table.addColumn('datetime', 'Time');
+  table.addColumn('number', 'IAM Bindings');
+  // Custom tooltip content
+  table.addColumn({ type: 'string', role: 'tooltip' });
+
+  for (const [key, value] of Object.entries(data.dateToNumberIAMBindings)) {
     let date = new Date(0);
     // Convert key from string to number
     date.setTime(+key);
-    out.push([date, obj[key]]);
-  })
-  
-  return out as [[Date, number]];
+    let tooltip = getTooltip(+key, value, data.dateToRecommendationTaken);
+    table.addRow([date, value, tooltip])
+  }
+
+  return table;
 }
 
 /** Gets the fake response for the given request */

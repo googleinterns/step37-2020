@@ -5,7 +5,7 @@ public class IAMBindingDatabaseEntry {
 
   public String projectId;
   public long timestamp;
-  public int numberBindings;
+  public int bindingsNumber;
 
   /** 
    *  Creates a {@code IAMBindingDatabaseEntry} object for project {@code projectId}, 
@@ -13,9 +13,9 @@ public class IAMBindingDatabaseEntry {
    *  at time {@code timestamp}.  
    */
   public IAMBindingDatabaseEntry(String projectId, long timestamp, 
-    int numberBindings) {
+    int bindingsNumber) {
     this.projectId = projectId;
     this.timestamp = timestamp;
-    this.numberBindings = numberBindings;
+    this.bindingsNumber = bindingsNumber;
   }
 }

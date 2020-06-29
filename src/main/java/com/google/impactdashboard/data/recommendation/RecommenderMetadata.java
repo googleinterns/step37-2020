@@ -1,4 +1,4 @@
-package com.google.impactdashboard.data;
+package com.google.impactdashboard.data.recommendation;
 
 import com.google.impactdashboard.data.recommendation.Recommendation.RecommenderType;
 

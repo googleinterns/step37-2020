@@ -1,22 +1,20 @@
 package com.google.impactdashboard.data.project;
 
+import com.google.impactdashboard.data.project.ProjectIdentification;
+
 /** Represents a project. */
 public class Project {
 
-  public String name;
-  public String id;
-  public String projectNumber;
+  public ProjectIdentification identification;
   public ProjectMetaData metaData;
 
   /** 
-   * Creates a {@code ProjectSummary} that hase name {@code name}, project id 
-   * {@code id}, project number {@code projectNumber}, and contains metadata 
-   * {@code metaData}.
+   *  Creates a {@code ProjectSummary} that has identifying information (i.e. 
+   *  name, id, and number) wrapped in {@code identification}, and contains metadata 
+   *  {@code metaData}.
    */
-  public Project(String name, String id, String projectNumber, ProjectMetaData metaData) {
-    this.name = name;
-    this.id = id;
-    this.projectNumber = projectNumber;
+  public Project(ProjectIdentification identification, ProjectMetaData metaData) {
+    this.identification = identification;
     this.metaData = metaData;
   }
 }

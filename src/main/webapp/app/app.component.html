@@ -21,8 +21,8 @@ limitations under the License.
 
 <div class="content">
   <div id="chart">
-    <google-chart [title]="title">
-
+    <google-chart #chart [title]="title" [type]="type" [data]="graphData" [columns]="columns" [options]="options"
+      [height]="height" [width]="width">
     </google-chart>
   </div>
 

@@ -1,4 +1,4 @@
-package com.google.impactdashboard.data;
+package com.google.impactdashboard.data.recommendation;
 
 /** Represents a GCP Recommendation. */
 public class Recommendation {

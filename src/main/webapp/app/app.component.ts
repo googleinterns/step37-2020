@@ -20,21 +20,9 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
+/** The base angular component for the impact dashboard */
 export class AppComponent implements OnInit {
   async ngOnInit() {
 
   }
-
-  title = 'Recommendations Impact Dashboard';
-  type = 'LineChart';
-  columns = ['Date', 'Bindings'];
-  options = {
-
-  };
-  data;
-  graphData;
-  height = 400;
-  width = 800;
 }
-
-

@@ -23,13 +23,17 @@ import { RecommenderType } from '../../model/recommender-type';
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.css']
 })
+/** The angular component that contains the graph and associated logic */
 export class GraphComponent implements OnInit {
 
   constructor() { }
 
+  /** Called when GCharts service is ready. It retrieves and graphs the relevent data */
   async drawChart() {
+    //hardcoded project ID for now
     let data = await request('/get-project-data?id="project-1"', 'GET').then(r => r.json());
     let dataTable = createIamTable(data);
+
     let options = {
       title: 'IAM Bindings'
     }
@@ -38,6 +42,7 @@ export class GraphComponent implements OnInit {
   }
 
   async ngOnInit() {
+    // Fake data for showing the graph
     let iamBindings: { [key: number]: number } = {
       [Date.parse('1 Jun 2020 UTC')]: 131,
       [Date.parse('2 Jun 2020 UTC')]: 56,
@@ -64,10 +69,13 @@ export class GraphComponent implements OnInit {
       [Date.parse('5 Jun 2020 UTC')]: new Recommendation('project-1', 'Rec 1', RecommenderType.IAM_BINDING),
       [Date.parse('9 Jun 2020 UTC')]: new Recommendation('project-1', 'Rec 2', RecommenderType.IAM_BINDING),
       [Date.parse('17 Jun 2020 UTC')]: new Recommendation('project-1', 'Rec 3', RecommenderType.IAM_BINDING),
+      // Simulate two recommendations on one day
       [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation('project-1', 'Rec 4', RecommenderType.IAM_BINDING),
     }
-
+    // Fake out the given url to the generated fake project
     setResponse('/get-project-data?id="project-1"', new ProjectGraphData('project-1', iamBindings, recommendations));
+
+    // Initialize google charts
     google.charts.load('current', { 'packages': ['corechart'] });
     google.charts.setOnLoadCallback(this.drawChart);
   }

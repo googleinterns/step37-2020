@@ -14,6 +14,7 @@
 
 import { RecommenderType } from './recommender-type';
 
+/** Represents a single accepted recommendation */
 export class Recommendation {
   projectId: string;
   description: string;

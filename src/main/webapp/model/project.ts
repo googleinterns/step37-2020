@@ -14,6 +14,7 @@
 
 import { ProjectMetaData } from './project-metadata';
 
+/** Represents relevent fields for a single project */
 export class Project {
   name: string;
   projectId: string;

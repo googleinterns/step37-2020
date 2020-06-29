@@ -33,16 +33,18 @@ export async function request(url: string, method: string, body = undefined, isT
   }
 }
 
-/** Convert the given map to an array */
-export function mapToArray(obj: {[key: number]: number}): [[number, number]] {
+/** Convert the given map of IAM Bindings to graphdata that's parsable by GCharts */
+export function iamBindingsToGraphData(obj: {[key: number]: number}): [[Date, number]] {
   let out = [];
 
   Object.keys(obj).forEach(key => {
+    let date = new Date(0);
     // Convert key from string to number
-    out.push([+key, obj[key]]);
+    date.setTime(+key);
+    out.push([date, obj[key]]);
   })
   
-  return out as [[number, number]];
+  return out as [[Date, number]];
 }
 
 /** Gets the fake response for the given request */

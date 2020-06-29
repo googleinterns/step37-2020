@@ -14,7 +14,7 @@
 
 import { Recommendation } from './recommendation';
 
-export class ProjectData {
+export class ProjectGraphData {
   projectId: string;
   dateToNumberIAMBindings: { [key: number]: number };
   dateToRecommendationTaken: { [key: number]: Recommendation };

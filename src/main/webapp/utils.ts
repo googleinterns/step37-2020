@@ -38,7 +38,14 @@ export async function request(url: string, method: string, body = undefined, isT
 
 /** Checks if the two timestamps (millis since epoch) fall on the same day. Returns true if they do */
 export function fallOnSameDay(time1: number, time2: number): boolean {
-  return time1 === time2;
+  let date1 = new Date(0);
+  date1.setTime(time1);
+  let date2 = new Date(0);
+  date2.setTime(time2);
+
+  return date1.getFullYear() === date2.getFullYear() &&
+  date1.getMonth() === date2.getMonth() &&
+  date1.getDate() === date2.getDate();
 }
 
 /** Returns the tooltip associated with the given IAM Bindings time */

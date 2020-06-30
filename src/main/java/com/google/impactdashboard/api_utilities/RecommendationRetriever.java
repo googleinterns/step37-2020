@@ -1,12 +1,8 @@
 package com.google.impactdashboard.api_utilities;
 
-import com.google.cloud.recommender.v1beta1.ListRecommendationsRequest;
-import com.google.cloud.recommender.v1beta1.Recommendation;
-import com.google.cloud.recommender.v1beta1.RecommenderClient;
-import com.google.cloud.recommender.v1beta1.RecommenderSettings;
-
+import com.google.cloud.recommender.v1.Recommendation;
+import com.google.cloud.recommender.v1.RecommenderClient;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**

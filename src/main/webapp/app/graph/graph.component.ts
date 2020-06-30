@@ -25,26 +25,22 @@ import { RecommenderType } from '../../model/recommender-type';
 })
 /** The angular component that contains the graph and associated logic */
 export class GraphComponent implements OnInit {
+  public title = 'IAM Bindings';
+  public options: google.visualization.LineChartOptions = {
+    animation: {
+      duration: 250,
+      easing: 'ease-in-out',
+      startup: true
+    },
+    legend: { position: 'none' },
+    height: 700,
+    width: 1000
+  }
+  public graphData;
+  public columns = ['Time', 'number', { type: 'string', role: 'tooltip' }];
+  public type = "Line"
 
-  constructor() { }
-
-  /** Called when GCharts service is ready. It retrieves and graphs the relevent data */
-  async drawChart() {
-    //hardcoded project ID for now
-    let data = await request('/get-project-data?id="project-1"', 'GET').then(r => r.json());
-
-    let table = new google.visualization.DataTable();
-    table.addColumn('datetime', 'Time');
-    table.addColumn('number', 'IAM Bindings');
-    // Custom tooltip content
-    table.addColumn({ type: 'string', role: 'tooltip' });
-    table.addRows(createIamRows(data));
-
-    let options = {
-      title: 'IAM Bindings'
-    }
-    var chart = new google.visualization.LineChart(document.getElementById('chart'));
-    chart.draw(table, options);
+  constructor() {
   }
 
   async ngOnInit() {
@@ -81,8 +77,8 @@ export class GraphComponent implements OnInit {
     // Fake out the given url to the generated fake project
     setResponse('/get-project-data?id="project-1"', new ProjectGraphData('project-1', iamBindings, recommendations));
 
-    // Initialize google charts
-    google.charts.load('current', { 'packages': ['corechart'] });
-    google.charts.setOnLoadCallback(this.drawChart);
+    //hardcoded project ID for now
+    let data = await request('/get-project-data?id="project-1"', 'GET').then(r => r.json());
+    this.graphData = createIamRows(data);
   }
 }

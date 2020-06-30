@@ -1,7 +1,6 @@
 package com.google.impactdashboard.api_utilities;
 
 import com.google.cloud.logging.v2.LoggingClient;
-
 import java.io.IOException;
 
 public class LogRetriever {
@@ -12,4 +11,6 @@ public class LogRetriever {
   public LogRetriever() throws IOException {
     logger = LoggingClient.create();
   }
+
+
 }

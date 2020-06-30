@@ -34,11 +34,11 @@ export class GraphComponent implements OnInit {
     },
     legend: { position: 'none' },
     height: 700,
-    width: 1000
+    width: 1000,
   }
   public graphData;
   public columns = ['Time', 'number', { type: 'string', role: 'tooltip' }];
-  public type = "Line"
+  public type = "LineChart";
 
   constructor() {
   }

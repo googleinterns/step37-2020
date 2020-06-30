@@ -6,15 +6,18 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class Project {
 
-  public abstract ProjectIdentification getIdentification();
+  public abstract String getName();
+  public abstract String getProjectId();
+  public abstract long getProjectNumber();
   public abstract ProjectMetaData getMetaData();
 
-  /** 
-   *  Creates a {@code ProjectSummary} that has identifying information (i.e. 
-   *  name, id, and number) wrapped in {@code identification}, and contains metadata 
+  /**
+   *  Creates a {@code ProjectSummary} that has identifying information (i.e.
+   *  name, id, and number) wrapped in {@code identification}, and contains metadata
    *  {@code metaData}.
    */
-  public static Project create(ProjectIdentification identification, ProjectMetaData metaData) {
-    return new AutoValue_Project(identification, metaData);
+  public static Project create(String name, String projectId, long projectNumber,
+                               ProjectMetaData metaData) {
+    return new AutoValue_Project(name, projectId, projectNumber, metaData);
   }
 }

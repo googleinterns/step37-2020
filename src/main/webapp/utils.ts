@@ -50,7 +50,7 @@ export function fallOnSameDay(time1: number, time2: number): boolean {
 }
 
 /** Returns the tooltip associated with the given IAM Bindings time */
-export function getTooltip(time: number, numberBindings: number, dateToRecommendation: { [key: number]: Recommendation }): string {
+function getTooltip(time: number, numberBindings: number, dateToRecommendation: { [key: number]: Recommendation }): string {
   // The list of recommendations on the same day
   let matchingRecommendationKeys = Object.keys(dateToRecommendation).filter(val => fallOnSameDay(time, +val));
 
@@ -65,24 +65,19 @@ export function getTooltip(time: number, numberBindings: number, dateToRecommend
   return tooltip;
 }
 
-/** Create a DataTable object for the given ProjectGraphData */
-export function createIamTable(data: ProjectGraphData): google.visualization.DataTable {
-  let table = new google.visualization.DataTable();
-
-  table.addColumn('datetime', 'Time');
-  table.addColumn('number', 'IAM Bindings');
-  // Custom tooltip content
-  table.addColumn({ type: 'string', role: 'tooltip' });
+/** Creates the table rows for the given ProjectGraphData */
+export function createIamRows(data: ProjectGraphData): [[Date, number, string]] {
+  let rows = [];
 
   for (const [key, value] of Object.entries(data.dateToNumberIAMBindings)) {
     let date = new Date(0);
     // Convert key from string to number
     date.setTime(+key);
     let tooltip = getTooltip(+key, value, data.dateToRecommendationTaken);
-    table.addRow([date, value, tooltip])
+    rows.push([date, value, tooltip])
   }
 
-  return table;
+  return rows as [[Date, number, string]];
 }
 
 /** Gets the fake response for the given request */

@@ -42,27 +42,27 @@ public class FakeDatabase {
     new HashMap<String, HashMap<Long, Integer>>() {
       {
         HashMap<Long, Integer> bindingsProject1 = new HashMap<Long, Integer>();
-        AtomicReference<Long> date = new AtomicReference<Long>(Long.parseLong("1590883200000"));
+        AtomicReference<Long> date1 = new AtomicReference<Long>(Long.parseLong("1590883200000"));
 
         Arrays.asList(1000, 1000, 1000, 2000, 2050, 2150, 2150, 2150, 2150, 
         1150, 1150, 1150, 1150, 2000, 2000, 2500, 2500, 2300, 2300, 1000, 
         1000, 1000, 1100, 1100, 1000, 1000, 1300, 1300, 1350, 1350)
         .forEach(numberBindings -> {
-          bindingsProject1.put(date.get(), numberBindings);
-          date.set(date.get() + 86400000);
+          bindingsProject1.put(date1.get(), numberBindings);
+          date1.set(date1.get() + 86400000);
         });
 
         put("project-id-1", bindingsProject1);
 
         HashMap<Long, Integer> bindingsProject2 = new HashMap<Long, Integer>();
-        date = new AtomicReference<Long>(Long.parseLong("1590883200000"));
+        AtomicReference<Long> date2 = new AtomicReference<Long>(Long.parseLong("1590883200000"));
 
         Arrays.asList(500, 500, 750, 750, 750, 750, 750, 1000, 1000, 
         1000, 500, 500, 500, 600, 600, 600, 600, 300, 300, 1000, 
         1000, 1000, 1100, 1100, 1000, 1000, 500, 500, 500, 500)
         .forEach(numberBindings -> {
-          bindingsProject2.put(date.get(), numberBindings);
-          date.set(date.get() + 86400000);
+          bindingsProject2.put(date2.get(), numberBindings);
+          date2.set(date2.get() + 86400000);
         });
 
         put("project-id-1", bindingsProject2);

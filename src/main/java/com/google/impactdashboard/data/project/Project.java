@@ -1,20 +1,20 @@
 package com.google.impactdashboard.data.project;
 
-import com.google.impactdashboard.data.project.ProjectIdentification;
+import com.google.auto.value.AutoValue;
 
 /** Represents a project. */
-public class Project {
+@AutoValue
+public abstract class Project {
 
-  public ProjectIdentification identification;
-  public ProjectMetaData metaData;
+  public abstract ProjectIdentification getIdentification();
+  public abstract ProjectMetaData getMetaData();
 
   /** 
    *  Creates a {@code ProjectSummary} that has identifying information (i.e. 
    *  name, id, and number) wrapped in {@code identification}, and contains metadata 
    *  {@code metaData}.
    */
-  public Project(ProjectIdentification identification, ProjectMetaData metaData) {
-    this.identification = identification;
-    this.metaData = metaData;
+  public static Project create(ProjectIdentification identification, ProjectMetaData metaData) {
+    return new AutoValue_Project(identification, metaData);
   }
 }

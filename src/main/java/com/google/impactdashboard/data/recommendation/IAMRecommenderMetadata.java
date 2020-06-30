@@ -1,11 +1,13 @@
 package com.google.impactdashboard.data.recommendation;
 
 import com.google.impactdashboard.data.recommendation.Recommendation.RecommenderType;
+import com.google.auto.value.AutoValue;
 
 /** Class that provides additional information about IAM Binding recommendations. */
-public class IAMRecommenderMetadata extends RecommenderMetadata {
+@AutoValue
+public abstract class IAMRecommenderMetadata extends RecommenderMetadata {
 
-  public int impactInIAMBindings;
+  public abstract int getImpactInIAMBindings();
 
   /** 
    *  Creates a {@code IAMRecommenderMetadata} object for a recommendation that
@@ -13,8 +15,8 @@ public class IAMRecommenderMetadata extends RecommenderMetadata {
    *  Impact retrieved via the Recommender API: 
    *  https://cloud.google.com/recommender/docs/reference/rpc/google.cloud.recommender.v1#google.cloud.recommender.v1.Recommendation  
    */
-  public IAMRecommenderMetadata(int impactInIAMBindings) {
-    this.impactInIAMBindings = impactInIAMBindings;
+  public static IAMRecommenderMetadata create(int impactInIAMBindings) {
+    return new AutoValue_IAMRecommenderMetadata(impactInIAMBindings);
   }
 
   /** Returns which type of recommendation this metadata is for. */

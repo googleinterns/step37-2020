@@ -1,4 +1,4 @@
-package com.google.impactdashboard.constants;
+package com.google.impactdashboard.configuration;
 
 public class Configuration {
 

@@ -1,6 +1,6 @@
 package com.google.impactdashboard.database_manager.data_read;
 
-import com.google.impactdashboard.constants.Configuration;
+import com.google.impactdashboard.configuration.Configuration;
 
 /** 
  * Class for returning either a real DataReadManager or a fake one depending on 

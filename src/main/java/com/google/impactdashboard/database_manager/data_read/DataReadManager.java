@@ -1,4 +1,4 @@
-package com.google.impactdashboard.database_manager;
+package com.google.impactdashboard.database_manager.data_read;
 
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.Recommendation;

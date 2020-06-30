@@ -22,11 +22,12 @@ export var defaultIsTest: boolean = true;
 var fakeResponses: { [key: string]: any } = {};
 
 /** Sends the given request to HTTP if isTest is false, otherwise fakes out the request */
-export async function request(url: string, method: string, body = undefined, isTest: boolean = defaultIsTest): Promise<Response> {
+export async function request(url: string, method: string, body = undefined, isTest: boolean = defaultIsTest): Promise<{ json: any }> {
   if (isTest) {
     return new Promise(resolve => {
-      let response = new Response(getFake(url, method));
-      resolve(response);
+      let response = getFake(url, method);
+      // When the user calls json() on the promise, 
+      resolve({ json: () => response });
     });
   } else {
     return fetch(url, {
@@ -44,8 +45,8 @@ export function fallOnSameDay(time1: number, time2: number): boolean {
   date2.setTime(time2);
 
   return date1.getFullYear() === date2.getFullYear() &&
-  date1.getMonth() === date2.getMonth() &&
-  date1.getDate() === date2.getDate();
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate();
 }
 
 /** Returns the tooltip associated with the given IAM Bindings time */
@@ -86,8 +87,7 @@ export function createIamTable(data: ProjectGraphData): google.visualization.Dat
 
 /** Gets the fake response for the given request */
 function getFake(url: string, method: string): Blob {
-  // Convert the fake response from the given url to a Blob
-  return new Blob([JSON.stringify(fakeResponses[url])], { type: 'application/json' });
+  return fakeResponses[url];
 }
 
 /** Sets the faked-out test response for the given url. Response should be a JS object that can be stringified */

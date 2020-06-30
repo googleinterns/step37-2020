@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
 import com.google.impactdashboard.data.recommendation.*;
+import com.google.impactdashboard.data.project.ProjectIdentification;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class FakeDatabase {
@@ -38,8 +39,8 @@ public class FakeDatabase {
       }
     };
 
-  private static HashMap<String, HashMap<Long, Integer>> iamBindings = 
-    new HashMap<String, HashMap<Long, Integer>>() {
+  private static HashMap<ProjectIdentification, HashMap<Long, Integer>> iamBindings = 
+    new HashMap<ProjectIdentification, HashMap<Long, Integer>>() {
       {
         HashMap<Long, Integer> bindingsProject1 = new HashMap<Long, Integer>();
         AtomicReference<Long> date1 = new AtomicReference<Long>(Long.parseLong("1590883200000"));
@@ -52,7 +53,8 @@ public class FakeDatabase {
           date1.set(date1.get() + 86400000);
         });
 
-        put("project-id-1", bindingsProject1);
+        put(ProjectIdentification.create("project-1", "project-id-1", 
+          Long.parseLong("123456789123")), bindingsProject1);
 
         HashMap<Long, Integer> bindingsProject2 = new HashMap<Long, Integer>();
         AtomicReference<Long> date2 = new AtomicReference<Long>(Long.parseLong("1590883200000"));
@@ -65,9 +67,9 @@ public class FakeDatabase {
           date2.set(date2.get() + 86400000);
         });
 
-        put("project-id-1", bindingsProject2);
+        put(ProjectIdentification.create("project-2", "project-id-2", 
+          Long.parseLong("234567890123")), bindingsProject2);
       }
   };
-
   
 }

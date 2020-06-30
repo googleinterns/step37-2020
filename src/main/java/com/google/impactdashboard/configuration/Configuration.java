@@ -1,5 +1,6 @@
 package com.google.impactdashboard.configuration;
 
+/** A class containing configurations that detail how code should be run. */
 public class Configuration {
 
   /** 

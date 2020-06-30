@@ -1,11 +1,31 @@
 package com.google.impactdashboard.api_utilities;
 
-import com.google.api.services.recommender.v1.Recommender;
-import com.google.api.services.recommender.v1.Recommender.Projects.Locations.Recommenders.Recommendations;
+import com.google.cloud.recommender.v1beta1.ListRecommendationsRequest;
+import com.google.cloud.recommender.v1beta1.Recommendation;
+import com.google.cloud.recommender.v1beta1.RecommenderClient;
+import com.google.cloud.recommender.v1beta1.RecommenderSettings;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Class that will call the Recommender API to get the full information for recommendations
  */
 public class RecommendationRetriever {
-  // TODO: find out how to initialize recommender to send ListRecommendationsrequest
+
+  private RecommenderClient recommender;
+
+  public RecommendationRetriever() throws IOException {
+    recommender = RecommenderClient.create();
+  }
+
+  /**
+   * Helper method to be called to retrieve all recommendations in the last 90 days
+   * from recommender for a certain project.
+   * @return collection of recommendations for the project specified
+   */
+  public Collection<Recommendation> listRecommendations(String projectId) {
+   return new ArrayList<>();
+  }
 }

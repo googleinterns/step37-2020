@@ -25,7 +25,6 @@ import { RecommenderType } from '../../model/recommender-type';
 })
 /** The angular component that contains the graph and associated logic */
 export class GraphComponent implements OnInit {
-  public title = 'IAM Bindings';
   public options: google.visualization.LineChartOptions = {
     animation: {
       duration: 250,
@@ -35,9 +34,19 @@ export class GraphComponent implements OnInit {
     legend: { position: 'none' },
     height: 700,
     width: 1000,
+    hAxis: {
+      gridlines: {
+        color: 'white'
+      }
+    },
+    vAxis: {
+      minorGridlines: {
+        color: 'white'
+      }
+    }
   }
   public graphData;
-  public columns = ['Time', 'number', { type: 'string', role: 'tooltip' }];
+  public columns = ['Time', 'number', { type: 'string', role: 'tooltip' }, {type: 'string', role: 'style'}];
   public type = "LineChart";
 
   constructor() {
@@ -80,5 +89,6 @@ export class GraphComponent implements OnInit {
     //hardcoded project ID for now
     let data = await request('/get-project-data?id="project-1"', 'GET').then(r => r.json());
     this.graphData = createIamRows(data);
+    console.log(this.graphData);
   }
 }

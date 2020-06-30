@@ -49,23 +49,40 @@ export function fallOnSameDay(time1: number, time2: number): boolean {
     date1.getDate() === date2.getDate();
 }
 
-/** Returns the tooltip associated with the given IAM Bindings time */
-function getTooltip(time: number, numberBindings: number, dateToRecommendation: { [key: number]: Recommendation }): string {
-  // The list of recommendations on the same day
-  let matchingRecommendationKeys = Object.keys(dateToRecommendation).filter(val => fallOnSameDay(time, +val));
+/** Returns the recommendations which occured on the same day as the given time, which is in milliseconds since epoch */
+function getRecommendations(time: number, dateToRecommendation: { [key: number]: Recommendation }): Recommendation[] {
+  let recommendations: Recommendation[] = [];
+  for (let [key, value] of Object.entries(dateToRecommendation)) {
+    if (fallOnSameDay(time, +key)) {
+      recommendations.push(value);
+    }
+  }
+  return recommendations;
+}
 
-  if (matchingRecommendationKeys.length === 0) {
+/** Returns the tooltip associated with the given IAM Bindings time */
+function getTooltip(numberBindings: number, matchingRecommendations: Recommendation[]): string {
+  // The list of recommendations on the same day
+  if (matchingRecommendations.length === 0) {
     return `IAM Bindings: ${numberBindings}`;
   }
 
   let tooltip = '';
-  matchingRecommendationKeys.forEach((key, index) => {
-    tooltip += dateToRecommendation[key].description;
-    if (index < matchingRecommendationKeys.length - 1) {
+  matchingRecommendations.forEach((recommendation, index) => {
+    tooltip += recommendation.description;
+    if (index < matchingRecommendations.length - 1) {
       tooltip += '\n';
     }
   });
   return tooltip;
+}
+
+/** Returns the point styling associated with the given recommendation */
+function getPoint(matchingRecommendations: Recommendation[]): string {
+  if(matchingRecommendations.length === 0) {
+    return null;
+  }
+  return 'point { size: 10; shape-type: circle; fill-color: #1a73e8; visible: true; }';
 }
 
 /** Creates the table rows for the given ProjectGraphData */
@@ -76,8 +93,10 @@ export function createIamRows(data: ProjectGraphData): [Date, number, string][] 
     let date = new Date(0);
     // Convert key from string to number
     date.setTime(+key);
-    let tooltip = getTooltip(+key, value, data.dateToRecommendationTaken);
-    rows.push([date, value, tooltip])
+    let recommendations = getRecommendations(+key, data.dateToRecommendationTaken);
+    let tooltip = getTooltip(value, recommendations);
+    let point = getPoint(recommendations);
+    rows.push([date, value, tooltip, point])
   }
 
   return rows as [[Date, number, string]];

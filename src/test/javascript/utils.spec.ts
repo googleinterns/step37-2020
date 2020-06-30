@@ -1,6 +1,8 @@
 import { strictEqual } from 'assert';
 import * as utils from '../../main/webapp/utils';
 import { ProjectGraphData } from '../../main/webapp/model/project-graph-data';
+import { Recommendation } from '../../main/webapp/model/recommendation';
+import { RecommenderType } from '../../main/webapp/model/recommender-type';
 
 describe('Utility functions', () => {
   describe('fallOnSameDay()', () => {
@@ -32,9 +34,9 @@ describe('Utility functions', () => {
     });
   });
 
-  describe('createIamTable()', () => {
-    it('Should create a table with no recommendations taken', () => {
-      let dates = [new Date(100), new Date(150), new Date(200)];
+  describe('createIamRows()', () => {
+    it('Should create rows with no recommendations taken', () => {
+      let dates = [new Date(2020, 6, 1), new Date(2020, 6, 2), new Date(2020, 6, 3)];
       let dateToIamBindings = {
         [dates[0].getTime()]: 100,
         [dates[1].getTime()]: 150,
@@ -45,11 +47,56 @@ describe('Utility functions', () => {
 
       // Look through each row
       for(let i = 0; i < 3; i++) {
+        let numberBindings = dateToIamBindings[dates[i].getTime()];
+
         // Make sure dates transferred correctly
         strictEqual(rows[i][0].getTime(), dates[i].getTime());
         // Make sure values transferred correctly
-        strictEqual(rows[i][1], dateToIamBindings[dates[i].getTime()]);
+        strictEqual(rows[i][1], numberBindings);
+        strictEqual(rows[i][2], `IAM Bindings: ${numberBindings}`);
       }
     });
+
+    it('Should create tooltips with recommendations', () => {
+      let rec1 = 'Rec-1';
+      let dates = [new Date(2020, 6, 1), new Date(2020, 6, 2), new Date(2020, 6, 3)];
+
+      let dateToIamBindings = {
+        [dates[0].getTime()]: 100,
+        [dates[1].getTime()]: 150,
+        [dates[2].getTime()]: 200
+      };
+      let dateToRecommendations = {
+        [dates[0].getTime()]: new Recommendation('', rec1, RecommenderType.IAM_BINDING)
+      }
+      let data = new ProjectGraphData('', dateToIamBindings, dateToRecommendations);
+      let rows = utils.createIamRows(data);
+
+      strictEqual(rows[0][2], rec1);
+    });
+
+    it('Should lump multiple recommendations together', () => {
+      let rec1 = 'Rec-1';
+      let rec2 = 'Rec-2';
+      let rec3 = 'Rec-3';
+      let dates = [new Date(2020, 6, 1), new Date(2020, 6, 2), new Date(2020, 6, 3)];
+
+      let dateToIamBindings = {
+        [dates[0].getTime()]: 100,
+        [dates[1].getTime()]: 150,
+        [dates[2].getTime()]: 200
+      };
+      let dateToRecommendations = {
+        [dates[0].getTime()]: new Recommendation('', rec1, RecommenderType.IAM_BINDING),
+        [dates[2].getTime()]: new Recommendation('', rec2, RecommenderType.IAM_BINDING),
+        [dates[2].getTime() + 1]: new Recommendation('', rec3, RecommenderType.IAM_BINDING),
+      }
+      let data = new ProjectGraphData('', dateToIamBindings, dateToRecommendations);
+      let rows = utils.createIamRows(data);
+
+      strictEqual(rows[0][2], rec1);
+      strictEqual(rows[1][2], 'IAM Bindings: 150');
+      strictEqual(rows[2][2], `${rec2}\n${rec3}`);
+    })
   });
 });

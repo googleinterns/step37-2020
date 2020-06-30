@@ -15,7 +15,7 @@
 import { ProjectGraphData } from './model/project-graph-data';
 import { Recommendation } from './model/recommendation';
 
-/** Whether this is a test or not. Can be set programatically for CI/CD */
+/** Whether this is a test or not. */
 export var defaultIsTest: boolean = true;
 
 /** Used internally to dish out fake responses when requested. Effectively a map from URL to response */
@@ -59,14 +59,17 @@ function getTooltip(time: number, numberBindings: number, dateToRecommendation: 
   }
 
   let tooltip = '';
-  matchingRecommendationKeys.forEach(key => {
-    tooltip += dateToRecommendation[key].description + '\n';
+  matchingRecommendationKeys.forEach((key, index) => {
+    tooltip += dateToRecommendation[key].description;
+    if (index < matchingRecommendationKeys.length - 1) {
+      tooltip += '\n';
+    }
   });
   return tooltip;
 }
 
 /** Creates the table rows for the given ProjectGraphData */
-export function createIamRows(data: ProjectGraphData): [[Date, number, string]] {
+export function createIamRows(data: ProjectGraphData): [Date, number, string][] {
   let rows = [];
 
   for (const [key, value] of Object.entries(data.dateToNumberIAMBindings)) {

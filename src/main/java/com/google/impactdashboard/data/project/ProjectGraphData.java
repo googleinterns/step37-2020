@@ -2,13 +2,15 @@ package com.google.impactdashboard.data.project;
 
 import java.util.Map;
 import com.google.impactdashboard.data.recommendation.Recommendation;
+import com.google.auto.value.AutoValue;
 
 /** The data necessary to graph a single project. */
-public class ProjectGraphData {
+@AutoValue
+public abstract class ProjectGraphData {
 
-  public String projectId;
-  public Map<Long, Integer> numberIAMBindingsOnDate;
-  public Map<Long, Recommendation> recommendationsAppliedOnDate;
+  public abstract String getProjectId();
+  public abstract Map<Long, Integer> getNumberIAMBindingsOnDate();
+  public abstract Map<Long, Recommendation> getRecommendationsAppliedOnDate();
 
   /** 
    * Create an {@code ProjectGraphData} object for project {@code projectId}, where 
@@ -18,11 +20,11 @@ public class ProjectGraphData {
    * since the epoch mapped to a {@code Recommendation} object representing 
    * the IAM Bindings recommendation that was applied on that date.
    */
-  public ProjectGraphData(String projectId, Map<Long, Integer> numberIAMBindingsOnDate, 
+  public static ProjectGraphData create(String projectId, 
+    Map<Long, Integer> numberIAMBindingsOnDate, 
     Map<Long, Recommendation> recommendationsAppliedOnDate) {
-    this.projectId = projectId;
-    this.numberIAMBindingsOnDate = numberIAMBindingsOnDate;
-    this.recommendationsAppliedOnDate = recommendationsAppliedOnDate;
+    return new AutoValue_ProjectGraphData(projectId, numberIAMBindingsOnDate, 
+      recommendationsAppliedOnDate);
   }
 
 }

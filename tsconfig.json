@@ -17,7 +17,8 @@
     ],
     "types": [
       "mocha",
-      "google.visualization"
+      "google.visualization",
+      "angular-google-charts"
     ]
   },
   "angularCompilerOptions": {

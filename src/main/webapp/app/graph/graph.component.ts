@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { request, setResponse, getTooltip, createIamTable } from '../../utils';
+import { request, setResponse, createIamRows } from '../../utils';
 import { ProjectGraphData } from '../../model/project-graph-data';
 import { Recommendation } from '../../model/recommendation';
 import { RecommenderType } from '../../model/recommender-type';
@@ -32,13 +32,19 @@ export class GraphComponent implements OnInit {
   async drawChart() {
     //hardcoded project ID for now
     let data = await request('/get-project-data?id="project-1"', 'GET').then(r => r.json());
-    let dataTable = createIamTable(data);
+
+    let table = new google.visualization.DataTable();
+    table.addColumn('datetime', 'Time');
+    table.addColumn('number', 'IAM Bindings');
+    // Custom tooltip content
+    table.addColumn({ type: 'string', role: 'tooltip' });
+    table.addRows(createIamRows(data));
 
     let options = {
       title: 'IAM Bindings'
     }
     var chart = new google.visualization.LineChart(document.getElementById('chart'));
-    chart.draw(dataTable, options);
+    chart.draw(table, options);
   }
 
   async ngOnInit() {

@@ -46,13 +46,14 @@ export class GraphComponent implements OnInit {
     }
   }
   public graphData;
-  public columns = ['Time', 'number', { type: 'string', role: 'tooltip' }, {type: 'string', role: 'style'}];
+  public columns: any[] = ['Time'];
   public type = "LineChart";
 
   constructor() {
   }
 
-  async ngOnInit() {
+  fakeProject1(): string {
+    let projectId = 'project-1';
     // Fake data for showing the graph
     let iamBindings: { [key: number]: number } = {
       [Date.parse('1 Jun 2020 UTC')]: 131,
@@ -77,18 +78,71 @@ export class GraphComponent implements OnInit {
       [Date.parse('20 Jun 2020 UTC')]: 57,
     };
     let recommendations: { [key: number]: Recommendation } = {
-      [Date.parse('5 Jun 2020 UTC')]: new Recommendation('project-1', 'Rec 1', RecommenderType.IAM_BINDING),
-      [Date.parse('9 Jun 2020 UTC')]: new Recommendation('project-1', 'Rec 2', RecommenderType.IAM_BINDING),
-      [Date.parse('17 Jun 2020 UTC')]: new Recommendation('project-1', 'Rec 3', RecommenderType.IAM_BINDING),
+      [Date.parse('5 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING),
+      [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING),
+      [Date.parse('17 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING),
       // Simulate two recommendations on one day
-      [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation('project-1', 'Rec 4', RecommenderType.IAM_BINDING),
+      [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING),
     }
-    // Fake out the given url to the generated fake project
-    setResponse('/get-project-data?id="project-1"', new ProjectGraphData('project-1', iamBindings, recommendations));
 
-    //hardcoded project ID for now
-    let data = await request('/get-project-data?id="project-1"', 'GET').then(r => r.json());
+    let url = `/get-project-data?id="${projectId}"`;
+    // Fake out the given url to the generated fake project
+    setResponse(url, new ProjectGraphData(projectId, iamBindings, recommendations));
+    return projectId;
+  }
+
+  fakeProject2(): string {
+    let projectId = 'project-2';
+    // Fake data for showing the graph
+    let iamBindings: { [key: number]: number } = {
+      [Date.parse('1 Jun 2020 UTC')]: 28,
+      [Date.parse('2 Jun 2020 UTC')]: 36,
+      [Date.parse('3 Jun 2020 UTC')]: 22,
+      [Date.parse('4 Jun 2020 UTC')]: 62,
+      [Date.parse('5 Jun 2020 UTC')]: 60,
+      [Date.parse('6 Jun 2020 UTC')]: 41,
+      [Date.parse('7 Jun 2020 UTC')]: 52,
+      [Date.parse('8 Jun 2020 UTC')]: 27,
+      [Date.parse('9 Jun 2020 UTC')]: 55,
+      [Date.parse('10 Jun 2020 UTC')]: 38,
+      [Date.parse('11 Jun 2020 UTC')]: 28,
+      [Date.parse('12 Jun 2020 UTC')]: 38,
+      [Date.parse('13 Jun 2020 UTC')]: 34,
+      [Date.parse('14 Jun 2020 UTC')]: 18,
+      [Date.parse('15 Jun 2020 UTC')]: 12,
+      [Date.parse('16 Jun 2020 UTC')]: 48,
+      [Date.parse('17 Jun 2020 UTC')]: 47,
+      [Date.parse('18 Jun 2020 UTC')]: 60,
+      [Date.parse('19 Jun 2020 UTC')]: 20,
+      [Date.parse('20 Jun 2020 UTC')]: 61,
+    };
+    let recommendations: { [key: number]: Recommendation } = {
+      [Date.parse('1 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING),
+      [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING),
+      [Date.parse('20 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING),
+      // Simulate two recommendations on one day
+      [Date.parse('20 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING),
+    }
+
+    let url = `/get-project-data?id="${projectId}"`;
+    // Fake out the given url to the generated fake project
+    setResponse(url, new ProjectGraphData(projectId, iamBindings, recommendations));
+    return projectId;
+  }
+
+  async ngOnInit() {
+    let projectIds = [];
+    projectIds.push(this.fakeProject1());
+    projectIds.push(this.fakeProject2());
+
+    let data = [];
+    for(let i = 0; i < projectIds.length; i++) {
+      this.columns.push(projectIds[i]);
+      this.columns.push({ type: 'string', role: 'tooltip' });
+      this.columns.push({ type: 'string', role: 'style' });
+      data.push(await request(`/get-project-data?id="${projectIds[i]}"`, 'GET').then(r => r.json()));
+    }
+
     this.graphData = createIamRows(data);
-    console.log(this.graphData);
   }
 }

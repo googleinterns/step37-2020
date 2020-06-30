@@ -43,10 +43,10 @@ describe('Utility functions', () => {
         [dates[2].getTime()]: 200
       };
       let data = new ProjectGraphData('', dateToIamBindings, {});
-      let rows = utils.createIamRows(data);
+      let rows = utils.createIamRows([data]);
 
       // Look through each row
-      for(let i = 0; i < 3; i++) {
+      for (let i = 0; i < 3; i++) {
         let numberBindings = dateToIamBindings[dates[i].getTime()];
 
         // Make sure dates transferred correctly
@@ -70,7 +70,7 @@ describe('Utility functions', () => {
         [dates[0].getTime()]: new Recommendation('', rec1, RecommenderType.IAM_BINDING)
       }
       let data = new ProjectGraphData('', dateToIamBindings, dateToRecommendations);
-      let rows = utils.createIamRows(data);
+      let rows = utils.createIamRows([data]);
 
       strictEqual(rows[0][2], rec1);
     });
@@ -92,7 +92,7 @@ describe('Utility functions', () => {
         [dates[2].getTime() + 1]: new Recommendation('', rec3, RecommenderType.IAM_BINDING),
       }
       let data = new ProjectGraphData('', dateToIamBindings, dateToRecommendations);
-      let rows = utils.createIamRows(data);
+      let rows = utils.createIamRows([data]);
 
       strictEqual(rows[0][2], rec1);
       strictEqual(rows[1][2], 'IAM Bindings: 150');

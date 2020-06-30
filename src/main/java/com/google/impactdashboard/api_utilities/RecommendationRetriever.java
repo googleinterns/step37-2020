@@ -26,6 +26,6 @@ public class RecommendationRetriever {
    * @return collection of recommendations for the project specified
    */
   public Collection<Recommendation> listRecommendations(String projectId) {
-   return new ArrayList<>();
+   throw new UnsupportedOperationException("Not implemented");
   }
 }

@@ -19,6 +19,6 @@ public class UpdateData extends HttpServlet {
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+    throw new UnsupportedOperationException("Not Implemented");
   }
 }

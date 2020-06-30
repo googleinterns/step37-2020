@@ -1,6 +1,6 @@
 package com.google.impactdashboard.database_manager.data_update;
 
-import com.google.impactdashboard.constants.Configuration;
+import com.google.impactdashboard.configuration.Configuration;
 
 /** 
  * Class that returns either real DataUpdateManager that accesses the database, 

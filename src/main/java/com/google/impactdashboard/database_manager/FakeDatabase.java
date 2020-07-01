@@ -1,5 +1,6 @@
 package com.google.impactdashboard.database_manager;
 
+import java.lang.Math;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
@@ -8,10 +9,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.google.impactdashboard.data.recommendation.*;
 import com.google.impactdashboard.data.project.ProjectIdentification;
+import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** A class that maintains a fake database for testing purposes. */
 public class FakeDatabase {
+  private static final long MILLISECONDS_365_DAYS = Long.parseLong("31536000000");
+  private static final long MILLISECONDS_ONE_DAY = 86400000;
+
   /** 
    * Represents a database table that holds information about accepted 
    * recommendations. 
@@ -50,8 +55,8 @@ public class FakeDatabase {
     };
 
   /** Represents a database table that holds information about IAM Bindings. */
-  private static HashMap<ProjectIdentification, HashMap<Long, Integer>> iamBindings = 
-    new HashMap<ProjectIdentification, HashMap<Long, Integer>>() {
+  private static Map<ProjectIdentification, Map<Long, Integer>> iamBindings = 
+    new HashMap<ProjectIdentification, Map<Long, Integer>>() {
         private static final long serialVersionUID = 1L;
 
         {
@@ -63,7 +68,7 @@ public class FakeDatabase {
         1000, 1000, 1100, 1100, 1000, 1000, 1300, 1300, 1350, 1350)
         .forEach(numberBindings -> {
           bindingsProject1.put(date1.get(), numberBindings);
-          date1.set(date1.get() + 86400000);
+          date1.set(date1.get() + MILLISECONDS_ONE_DAY);
         });
 
         put(ProjectIdentification.create("project-1", "project-id-1", 
@@ -77,7 +82,7 @@ public class FakeDatabase {
         1000, 1000, 1100, 1100, 1000, 1000, 500, 500, 500, 500)
         .forEach(numberBindings -> {
           bindingsProject2.put(date2.get(), numberBindings);
-          date2.set(date2.get() + 86400000);
+          date2.set(date2.get() + MILLISECONDS_ONE_DAY);
         });
 
         put(ProjectIdentification.create("project-2", "project-id-2", 
@@ -136,6 +141,63 @@ public class FakeDatabase {
       ((Recommendation) mapElement.getValue()).getProjectId().equals(projectId))
       .collect(Collectors.toMap(
         mapElement -> mapElement.getKey(), mapElement -> mapElement.getValue()));
+  }
+
+  /** Adds {@code newRecommendations} to existing table of recommendations. */
+  public static void addRecommendations(List<Recommendation> newRecommendations) {
+    newRecommendations.forEach(recommendation -> {
+      recommendations.put(recommendation.getAcceptedTimestamp(), recommendation);
+    });
+  }
+
+  /** Adds data in {@code newIAMBindingsData} to existing bindings table. */
+  public static void addIAMBindingsData(
+    List<IAMBindingDatabaseEntry> newIAMBindingsData) {
+    newIAMBindingsData.forEach(dayOfData -> {
+      ProjectIdentification project = ProjectIdentification.create(
+        dayOfData.getProjectId(), dayOfData.getProjectName(), 
+        Long.parseLong(dayOfData.getProjectNumber()));
+
+      if (iamBindings.containsKey(project)) {
+        iamBindings.get(project).put(
+          dayOfData.getTimestamp(), dayOfData.getBindingsNumber());
+      } else {
+        HashMap<Long, Integer> dayOfDataBindingsMap = new HashMap<Long, Integer>();
+        dayOfDataBindingsMap.put(dayOfData.getTimestamp(), dayOfData.getBindingsNumber());
+        iamBindings.put(project, dayOfDataBindingsMap);
+      }
+    });
+  }
+
+  /** 
+   * Deletes data in both the bindings and recommendations tables that is over 
+   * 365 days older than the newest entries, if such data exists.
+   */
+  public static void deleteYearOldData() {
+    long newestTimestamp = getNewestTimestamp();
+    for (ProjectIdentification project : iamBindings.keySet()) {
+      iamBindings.put(project, iamBindings.get(project).entrySet().stream()
+        .filter(mapElement -> 
+          mapElement.getKey() > (newestTimestamp - MILLISECONDS_365_DAYS))
+        .collect(Collectors.toMap(
+          mapElement -> mapElement.getKey(), 
+          mapElement -> mapElement.getValue())));
+    }
+  }
+
+  /** 
+   * Gets the timestamp of the newest bindings table entries, or 0 if there are 
+   * no table entries.
+   */
+  private static long getNewestTimestamp() {
+    long newestTimestamp = 0;
+    for (ProjectIdentification project : iamBindings.keySet()) {
+      long newestTimestampForProject = iamBindings.get(project).entrySet().stream()
+        .reduce((long) 0, (acc, mapEntry) -> 
+          Math.max(acc, (long) mapEntry.getKey()), Math::max);
+      newestTimestamp = Math.max(newestTimestamp, newestTimestampForProject);
+    }
+    return newestTimestamp;
   }
   
 }

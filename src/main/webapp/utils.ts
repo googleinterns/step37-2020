@@ -113,17 +113,17 @@ function uniqueDays(graphData: ProjectGraphData[]): Date[] {
 }
 
 /** Creates the table rows from the given ProjectGraphData The first row contains the column headers */
-export function createIamRows(graphData: ProjectGraphData[], colors?: string[]): any[] {
-  // First, get all the days we need to add
-  let days = uniqueDays(graphData);
-  // Each row is [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...]
-  let rows: any[] = [];
-  let rowSize = 1 + graphData.length * 3;
-
+export function createIamRows(graphData: ProjectGraphData[], colors?: string[], days?: Date[]): any[] {
+  if (!days) {
+    // First, get all the days we need to add if it hasn't already been provided
+    days = uniqueDays(graphData);
+  }
   if (!colors) {
     colors = defaultColors;
   }
 
+  // Each row is [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...]
+  let rows: any[] = [];
   // Add a row for each unique day
   days.forEach(day => rows.push([day]));
 
@@ -189,15 +189,17 @@ export function createIamOptions(graphData: ProjectGraphData[], colors?: string[
 }
 
 /** Creates the required properties for an IAM graph */
-export function createIamGraphProperties(graphData: ProjectGraphData[], colors?: string[]): { rows: any[], columns: any[], options: google.visualization.LineChartOptions } {
-  let rows = createIamRows(graphData, colors);
+export function createIamGraphProperties(graphData: ProjectGraphData[], colors?: string[]): { startDate: Date, endDate: Date, rows: any[], columns: any[], options: google.visualization.LineChartOptions } {
+  let days = uniqueDays(graphData);
+
+  let rows = createIamRows(graphData, colors, days);
   let columns = createIamColumns(graphData);
   let options = createIamOptions(graphData, colors);
-  return { rows: rows, columns: columns, options: options };
+  return { startDate: days[0], endDate: days[days.length - 1], rows: rows, columns: columns, options: options };
 }
 
 /** Gets the fake response for the given request */
-function getFake(url: string, method: string): Blob {
+function getFake(url: string, method: string): any {
   return fakeResponses[url];
 }
 
@@ -269,7 +271,7 @@ function fakeProject2(): void {
     [Date.parse('17 Jun 2020 UTC')]: 47,
     [Date.parse('18 Jun 2020 UTC')]: 60,
     [Date.parse('19 Jun 2020 UTC')]: 20,
-    [Date.parse('20 Jun 2020 UTC')]: 61,
+    [Date.parse('20 Jun 2020 UTC')]: 47,
   };
   let recommendations: { [key: number]: Recommendation } = {
     [Date.parse('1 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING),

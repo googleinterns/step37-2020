@@ -23,9 +23,10 @@ import { request, fakeProjects, createIamGraphProperties } from '../../utils';
 /** The angular component that contains the graph and associated logic */
 export class GraphComponent implements OnInit {
   public options: google.visualization.LineChartOptions;
-  public graphData;
+  public graphData: any[];
   public columns: any[];
   public type = "LineChart";
+  public title: string;
 
   constructor() {
   }
@@ -34,7 +35,6 @@ export class GraphComponent implements OnInit {
     fakeProjects();
     let projects = await request('/list-project-summaries', 'GET').then(r => r.json());
 
-
     // Perform GET for each project asynchronously
     let promises = [];
     projects.forEach(project => promises.push(request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r => r.json())));
@@ -42,10 +42,11 @@ export class GraphComponent implements OnInit {
     Promise.all(promises).then(graphData => {
       // Generate the information needed for the graph
       let properties = createIamGraphProperties(graphData);
-      console.log(properties);
       this.columns = properties.columns;
       this.graphData = properties.rows;
       this.options = properties.options;
+
+      this.title = `IAM Bindings - ${properties.startDate.toLocaleDateString()} to ${properties.endDate.toLocaleDateString()}`
     });
   }
 }

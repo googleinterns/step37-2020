@@ -46,8 +46,8 @@ describe('Utility functions', () => {
       let rows = utils.createIamRows([data]);
 
       // Look through each row, ignoring the header row
-      for (let i = 1; i < 4; i++) {
-        let time = dates[i - 1].getTime();
+      for (let i = 0; i < 3; i++) {
+        let time = dates[i].getTime();
         let numberBindings = dateToIamBindings[time];
 
         // Make sure dates transferred correctly
@@ -73,7 +73,7 @@ describe('Utility functions', () => {
       let data = new ProjectGraphData('', dateToIamBindings, dateToRecommendations);
       let rows = utils.createIamRows([data]);
 
-      strictEqual(rows[1][2], rec1);
+      strictEqual(rows[0][2], rec1);
     });
 
     it('Should lump multiple recommendations together', () => {
@@ -95,9 +95,9 @@ describe('Utility functions', () => {
       let data = new ProjectGraphData('', dateToIamBindings, dateToRecommendations);
       let rows = utils.createIamRows([data]);
 
-      strictEqual(rows[1][2], rec1);
-      strictEqual(rows[2][2], 'IAM Bindings: 150');
-      strictEqual(rows[3][2], `${rec2}\n${rec3}`);
+      strictEqual(rows[0][2], rec1);
+      strictEqual(rows[1][2], 'IAM Bindings: 150');
+      strictEqual(rows[2][2], `${rec2}\n${rec3}`);
     })
   });
 });

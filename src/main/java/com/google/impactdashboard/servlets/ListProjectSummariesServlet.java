@@ -17,7 +17,7 @@ import java.util.List;
 @WebServlet("/list-project-summaries")
 public class ListProjectSummariesServlet extends HttpServlet {
 
-  ProjectInformationRetriever projectInformationRetriever;
+  private ProjectInformationRetriever projectInformationRetriever;
 
   /**
    * Method called by frontend to retrieve the projects that can be accessed.
@@ -30,8 +30,7 @@ public class ListProjectSummariesServlet extends HttpServlet {
     }
 
     List<Project> projectList = projectInformationRetriever.listProjectInformation();
-    // Separate class to handle database call
-    // passes Project list json in response
+
     Gson gson = new Gson();
     String json = gson.toJson(projectList);
     response.setContentType("application/json;");

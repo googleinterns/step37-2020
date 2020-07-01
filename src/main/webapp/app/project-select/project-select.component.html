@@ -1,16 +1,16 @@
 <table id="projects-table" class="center">
   <tr id="header">
     <th>
-      <span [@rotateSort]="sortRotated.projectName"><fa-icon [icon]="faArrow" [ngClass]="getSortClass(projectName)" (click)="changeSort(projectName)" id="name-sort" class="clickable"></fa-icon></span> Project Name
+      <div [@rotateSort]="sortRotated.projectName"><fa-icon [icon]="faArrow" [ngClass]="getSortClass(projectName)" (click)="changeSort(projectName)" id="name-sort" class="clickable"></fa-icon></div> Project Name
     </th>
     <th>
-      <fa-icon [@rotateSort]="sortRotated.iamBindings" [icon]="faArrow" [ngClass]="getSortClass(iamBindings)" (click)="changeSort(iamBindings)" id="iam-sort" class="clickable"></fa-icon> Bindings
+      <div [@rotateSort]="sortRotated.iamBindings"><fa-icon [icon]="faArrow" [ngClass]="getSortClass(iamBindings)" (click)="changeSort(iamBindings)" id="iam-sort" class="clickable"></fa-icon></div> Bindings
     </th>
     <th>
-      <fa-icon [@rotateSort]="sortRotated.projectId" [icon]="faArrow" [ngClass]="getSortClass(projectId)" (click)="changeSort(projectId)" id="id-sort" class="clickable"></fa-icon> Project ID
+      <div [@rotateSort]="sortRotated.projectId"><fa-icon [icon]="faArrow" [ngClass]="getSortClass(projectId)" (click)="changeSort(projectId)" id="id-sort" class="clickable"></fa-icon></div> Project ID
     </th>
     <th>
-      <fa-icon [@rotateSort]="sortRotated.projectNumber" [icon]="faArrow" [ngClass]="getSortClass(projectNumber)" (click)="changeSort(projectNumber)" id="number-sort" class="clickable"></fa-icon> Project
+      <div [@rotateSort]="sortRotated.projectNumber"><fa-icon [icon]="faArrow" [ngClass]="getSortClass(projectNumber)" (click)="changeSort(projectNumber)" id="number-sort" class="clickable"></fa-icon></div> Project
       Number
     </th>
   </tr>

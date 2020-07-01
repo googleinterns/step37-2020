@@ -10,10 +10,10 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
   styleUrls: ['./project-select.component.css'],
   animations: [
     trigger('rotateSort', [
-      state('default', style({ transform: 'rotate(0)' })),
-      state('rotated', style({ transform: 'rotate(180deg)' })),
-      transition('rotated => default', animate('500ms ease-in-out')),
-      transition('default => rotated', animate('500ms ease-in-out')),
+      state('down', style({ transform: 'rotate(0)' })),
+      state('up', style({ transform: 'rotate(180deg)' })),
+      transition('up => down', animate('500ms ease-in-out')),
+      transition('down => up', animate('500ms ease-in-out')),
     ]),
   ]
 })
@@ -32,11 +32,11 @@ export class ProjectSelectComponent implements OnInit {
 
   // #region DOM interraction variables
   /** Whether a particular arrow is rotated or not */
-  sortRotated = {
-    iamBindings: 'default',
-    projectName: 'default',
-    projectId: 'default',
-    projectNumber: 'default'
+  sortRotated: {[key: string]: 'down' | 'up'} = {
+    iamBindings: 'down',
+    projectName: 'down',
+    projectId: 'down',
+    projectNumber: 'down'
   }
 
   faArrow = faArrowDown;
@@ -87,36 +87,39 @@ export class ProjectSelectComponent implements OnInit {
     return 'sort-inactive';
   }
 
+  /** Returns the status (up or down) of the animation associated with the given sort field */
+  getAnimationStatus(field: SortBy): 'down' | 'up' {
+    switch(field) {
+      case SortBy.IAM_BINDINGS: return this.sortRotated.iamBindings;
+      case SortBy.NAME: return this.sortRotated.projectName;
+      case SortBy.PROJECT_ID: return this.sortRotated.projectId;
+      case SortBy.PROJECT_NUMBER: return this.sortRotated.projectNumber;
+    }
+  }
+
+  /** Swap the given animation from up to down or vice versa */
   swapAnimationProperty(field: SortBy) {
     switch (field) {
-      case SortBy.IAM_BINDINGS: this.sortRotated.iamBindings = (this.sortRotated.iamBindings === 'default') ? 'rotated' : 'default'; break;
-      case SortBy.NAME: this.sortRotated.projectName = (this.sortRotated.projectName === 'default') ? 'rotated' : 'default'; break;
-      case SortBy.PROJECT_ID: this.sortRotated.projectId = (this.sortRotated.projectId === 'default') ? 'rotated' : 'default'; break;
-      case SortBy.PROJECT_NUMBER: this.sortRotated.projectNumber = (this.sortRotated.projectNumber === 'default') ? 'rotated' : 'default'; break;
+      case SortBy.IAM_BINDINGS: this.sortRotated.iamBindings = (this.sortRotated.iamBindings === 'down') ? 'up' : 'down'; break;
+      case SortBy.NAME: this.sortRotated.projectName = (this.sortRotated.projectName === 'down') ? 'up' : 'down'; break;
+      case SortBy.PROJECT_ID: this.sortRotated.projectId = (this.sortRotated.projectId === 'down') ? 'up' : 'down'; break;
+      case SortBy.PROJECT_NUMBER: this.sortRotated.projectNumber = (this.sortRotated.projectNumber === 'down') ? 'up' : 'down'; break;
     }
   }
 
   /** Change the sort field/direction, adjusts styling and sorts projects */
   changeSort(field: SortBy) {
-    if (this.currentSortField === field) {
-      // Just toggle the sort direction if we're sorting by the same field
-      if (this.currentSortDirection === SortDirection.ASCENDING) {
-        this.currentSortDirection = SortDirection.DESCENDING;
-      } else {
-        this.currentSortDirection = SortDirection.ASCENDING;
-      }
-    } else {
-      // Set sort to ascending
-      this.currentSortField = field;
+    this.currentSortField = field;
+    if(this.getAnimationStatus(field) === 'down') {
       this.currentSortDirection = SortDirection.ASCENDING;
+    } else {
+      this.currentSortDirection = SortDirection.DESCENDING;
     }
     // Sort by the selected fields
     this.projects.sort(ProjectComparators.getComparator(this.currentSortDirection, this.currentSortField));
 
     // Animate the selected field
     this.swapAnimationProperty(field);
-
-    // this.setSortIcons();
   }
 
   ngOnInit() {

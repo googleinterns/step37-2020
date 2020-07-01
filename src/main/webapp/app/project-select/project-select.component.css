@@ -24,3 +24,8 @@
 .sort-inactive {
   color: #999999;
 }
+
+th div {
+  float: left;
+  margin: 0 5px;
+}

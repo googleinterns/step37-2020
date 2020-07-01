@@ -100,7 +100,10 @@ public class FakeDatabase {
     return projects;
   }
 
-  /** Retrieves the bindings data associated with {@code projectId} in the bindings table. */
+  /** 
+   * Retrieves the bindings data associated with {@code projectId} in the bindings 
+   * table. 
+   * @param projectId The id of the project taht the data is for.*/
   public static Map<Long, Integer> getDatesToBindingsForProject(String projectId) {
     AtomicReference<Map<Long, Integer>> dailyBindings = 
       new AtomicReference<Map<Long, Integer>>();
@@ -115,6 +118,7 @@ public class FakeDatabase {
   /** 
    * Returns the average bindings recorded in the bindings table for a given 
    * project, or 0 if this project does not appear in the bindings table. 
+   * @param projectId The id of the project the data is for.
    */
   public static double getAvgBindingsForProject(String projectId) {
     Map<Long, Integer> dailyBindings = getDatesToBindingsForProject(projectId);
@@ -133,6 +137,7 @@ public class FakeDatabase {
   /** 
    * Returns a map of entries in the recommendations table associated with 
    * {@code projectId}. 
+   * @param projectId The id of the project the data is for.
    */
   public static Map<Long, Recommendation> getDatesToRecommendationsForProject(
     String projectId) {
@@ -143,14 +148,22 @@ public class FakeDatabase {
         mapElement -> mapElement.getKey(), mapElement -> mapElement.getValue()));
   }
 
-  /** Adds {@code newRecommendations} to existing table of recommendations. */
+  /** 
+   * Adds {@code newRecommendations} to existing table of recommendations.
+   * @param newRecommendations A list of Recommendations to be added to 
+      the fake database. 
+   */
   public static void addRecommendations(List<Recommendation> newRecommendations) {
     newRecommendations.forEach(recommendation -> {
       recommendations.put(recommendation.getAcceptedTimestamp(), recommendation);
     });
   }
 
-  /** Adds data in {@code newIAMBindingsData} to existing bindings table. */
+  /** 
+   * Adds data in {@code newIAMBindingsData} to existing bindings table. 
+   * @param newIAMBindingsData A list of database entries to be added to the 
+      fake database.
+  */
   public static void addIAMBindingsData(
     List<IAMBindingDatabaseEntry> newIAMBindingsData) {
     newIAMBindingsData.forEach(dayOfData -> {

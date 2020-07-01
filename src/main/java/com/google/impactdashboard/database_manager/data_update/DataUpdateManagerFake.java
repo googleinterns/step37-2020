@@ -16,13 +16,19 @@ public class DataUpdateManagerFake implements DataUpdateManager {
     FakeDatabase.deleteYearOldData();
   }
 
-  /** Stores inputted recommendations in the Recommendations table */
+  /** 
+   * Stores inputted recommendations in the Recommendations table.
+   * @param recommendations A list of recommendations to be added to the database.
+   */
   @Override
   public void updateRecommendations(List<Recommendation> recommendations) {
     FakeDatabase.addRecommendations(recommendations);
   }
 
-  /** Stores inputted IAM bindings information in the IAM Bindings table. */
+  /** 
+   * Stores inputted IAM bindings information in the IAM Bindings table.
+   * @param iamBindingsData A list of bindings table entries to be stored in the database.
+  */
   @Override
   public void updateIAMBindings(List<IAMBindingDatabaseEntry> iamBindingsData) {
     FakeDatabase.addIAMBindingsData(iamBindingsData);

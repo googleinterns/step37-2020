@@ -14,12 +14,18 @@ public class DataUpdateManagerImpl implements DataUpdateManager {
   public void deleteYearOldData() {
   }
 
-  /** Stores inputted recommendations in the Recommendations table */
+  /** 
+   * Stores inputted recommendations in the Recommendations table 
+   * @param recommendations A list of recommendations to be added to the database.
+   */
   @Override
   public void updateRecommendations(List<Recommendation> recommendations) {
   }
 
-  /** Stores inputted IAM bindings information in the IAM Bindings table. */
+  /** 
+   * Stores inputted IAM bindings information in the IAM Bindings table.
+   * @param iamBindingsData A list of Bindings table entries to be added to the database. 
+   */
   @Override
   public void updateIAMBindings(List<IAMBindingDatabaseEntry> iamBindingsData) {
   }

@@ -243,11 +243,11 @@ function fakeProject1(): void {
     [Date.parse('20 Jun 2020 UTC')]: 57,
   };
   let recommendations: { [key: number]: Recommendation } = {
-    [Date.parse('5 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING),
-    [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING),
-    [Date.parse('17 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING),
+    [Date.parse('5 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING, Date.parse('5 Jun 2020 UTC')),
+    [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING, Date.parse('9 Jun 2020 UTC')),
+    [Date.parse('17 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING, Date.parse('17 Jun 2020 UTC')),
     // Simulate two recommendations on one day
-    [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING),
+    [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING, Date.parse('17 Jun 2020 UTC') + 1),
   }
 
   let url = `/get-project-data?id="${projectId}"`;
@@ -282,11 +282,11 @@ function fakeProject2(): void {
     [Date.parse('20 Jun 2020 UTC')]: 47,
   };
   let recommendations: { [key: number]: Recommendation } = {
-    [Date.parse('1 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING),
-    [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING),
-    [Date.parse('20 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING),
+    [Date.parse('1 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING, Date.parse('1 Jun 2020 UTC')),
+    [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING, Date.parse('9 Jun 2020 UTC')),
+    [Date.parse('20 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING, Date.parse('20 Jun 2020 UTC')),
     // Simulate two recommendations on one day
-    [Date.parse('20 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING),
+    [Date.parse('20 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING, Date.parse('20 Jun 2020 UTC') + 1),
   }
 
   let url = `/get-project-data?id="${projectId}"`;

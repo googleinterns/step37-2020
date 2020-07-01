@@ -68,7 +68,7 @@ describe('Utility functions', () => {
         [dates[2].getTime()]: 200
       };
       let dateToRecommendations = {
-        [dates[0].getTime()]: new Recommendation('', rec1, RecommenderType.IAM_BINDING)
+        [dates[0].getTime()]: new Recommendation('', rec1, RecommenderType.IAM_BINDING, dates[0].getTime())
       }
       let data = new ProjectGraphData('', dateToIamBindings, dateToRecommendations);
       let rows = utils.createIamRows([data]);
@@ -88,9 +88,9 @@ describe('Utility functions', () => {
         [dates[2].getTime()]: 200
       };
       let dateToRecommendations = {
-        [dates[0].getTime()]: new Recommendation('', rec1, RecommenderType.IAM_BINDING),
-        [dates[2].getTime()]: new Recommendation('', rec2, RecommenderType.IAM_BINDING),
-        [dates[2].getTime() + 1]: new Recommendation('', rec3, RecommenderType.IAM_BINDING),
+        [dates[0].getTime()]: new Recommendation('', rec1, RecommenderType.IAM_BINDING, dates[0].getTime()),
+        [dates[2].getTime()]: new Recommendation('', rec2, RecommenderType.IAM_BINDING, dates[2].getTime()),
+        [dates[2].getTime() + 1]: new Recommendation('', rec3, RecommenderType.IAM_BINDING, dates[2].getTime() + 1),
       }
       let data = new ProjectGraphData('', dateToIamBindings, dateToRecommendations);
       let rows = utils.createIamRows([data]);
@@ -118,9 +118,9 @@ describe('Utility functions', () => {
         [dates[2].getTime()]: 200
       };
       let dateToRecommendations = {
-        [dates[0].getTime()]: new Recommendation('', 'rec1', RecommenderType.IAM_BINDING),
-        [dates[2].getTime()]: new Recommendation('', 'rec2', RecommenderType.IAM_BINDING),
-        [dates[2].getTime() + 1]: new Recommendation('', 'rec3', RecommenderType.IAM_BINDING),
+        [dates[0].getTime()]: new Recommendation('prj-1', 'rec1', RecommenderType.IAM_BINDING, dates[0].getTime()),
+        [dates[2].getTime()]: new Recommendation('prj-1', 'rec2', RecommenderType.IAM_BINDING, dates[2].getTime()),
+        [dates[2].getTime() + 1]: new Recommendation('prj-1', 'rec3', RecommenderType.IAM_BINDING, dates[0].getTime() + 1),
       }
       graphData.push(new ProjectGraphData('prj-2', dateToIamBindings, dateToRecommendations));
     });

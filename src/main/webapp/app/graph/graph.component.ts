@@ -13,12 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { request, setResponse, createIamRows, fakeProjects, createIamGraphProperties } from '../../utils';
-import { ProjectGraphData } from '../../model/project-graph-data';
-import { Recommendation } from '../../model/recommendation';
-import { RecommenderType } from '../../model/recommender-type';
-import { Project } from '../../model/project';
-import { ProjectMetaData } from '../../model/project-metadata';
+import { request, fakeProjects, createIamGraphProperties } from '../../utils';
 
 @Component({
   selector: 'app-graph',
@@ -35,22 +30,22 @@ export class GraphComponent implements OnInit {
   constructor() {
   }
 
-  
-
   async ngOnInit() {
     fakeProjects();
     let projects = await request('/list-project-summaries', 'GET').then(r => r.json());
 
-    let data = [];
-    for(let i = 0; i < projects.length; i++) {
-      data.push(await request(`/get-project-data?id="${projects[i].projectId}"`, 'GET').then(r => r.json()));
-    }
 
-    // Generate the information
-    let properties = createIamGraphProperties(data);
-    console.log(properties);
-    this.columns = properties.columns;
-    this.graphData = properties.rows;
-    this.options = properties.options;
+    // Perform GET for each project asynchronously
+    let promises = [];
+    projects.forEach(project => promises.push(request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r => r.json())));
+
+    Promise.all(promises).then(graphData => {
+      // Generate the information needed for the graph
+      let properties = createIamGraphProperties(graphData);
+      console.log(properties);
+      this.columns = properties.columns;
+      this.graphData = properties.rows;
+      this.options = properties.options;
+    });
   }
 }

@@ -1,0 +1,20 @@
+#projects-table {
+  margin: 0 auto;
+  padding: 10px;
+  border-collapse: collapse;
+}
+
+#header {
+  background-color: rgb(201, 201, 201);
+}
+
+#header th {
+  font-weight: normal;
+  font-size: 20px;
+  padding: 3px;
+}
+
+.toggle-project {
+  cursor: pointer;
+  border-top: 1px solid #999999;
+}

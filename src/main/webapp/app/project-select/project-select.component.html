@@ -1,0 +1,10 @@
+<table id="projects-table">
+  <tr id="header">
+    <th>Project Name</th>
+    <th>Avg Bindings</th>
+  </tr>
+  <tr *ngFor="let project of projects" (click)="toggle(project)" class="toggle-project">
+    <td>{{ project.name }}</td>
+    <td>{{ project.metaData.avgIAMBindingsInPastYear }}</td>
+  </tr>
+</table>

@@ -27,4 +27,25 @@ export class Project {
     this.projectNumber = projectNumber;
     this.metaData = metaData;
   }
+
+  /** Comparator for sorting projects in descending order by IAM Bindings */
+  static iamDescendingOrder(a: Project, b: Project): number {
+    return b.metaData.avgIAMBindingsInPastYear - a.metaData.avgIAMBindingsInPastYear;
+  }
+
+  /** Comparator for sorting projects in ascending order by IAM Bindings */
+  static iamAscendingOrder(a: Project, b: Project): number {
+    return a.metaData.avgIAMBindingsInPastYear - b.metaData.avgIAMBindingsInPastYear;
+  }
+
+  /** Comparator for sorting projects in descending order alphabetically */
+  static nameDescendingOrder(a: Project, b: Project): boolean {
+    return a.name > b.name;
+  }
+
+  /** Comparator for sorting projects in ascending order alphabetically */
+  static nameAscendingOrder(a: Project, b: Project): boolean {
+    return a.name < b.name;
+  }
+
 }

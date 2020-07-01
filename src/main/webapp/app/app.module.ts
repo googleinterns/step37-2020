@@ -5,11 +5,13 @@ import { GoogleChartsModule } from 'angular-google-charts';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GraphComponent } from './graph/graph.component';
+import { ProjectSelectComponent } from './project-select/project-select.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    GraphComponent
+    GraphComponent,
+    ProjectSelectComponent
   ],
   imports: [
     BrowserModule,

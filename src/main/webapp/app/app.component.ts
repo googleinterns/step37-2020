@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
+import { Project } from '../model/project';
 
 
 @Component({
@@ -22,7 +23,13 @@ import { Component, OnInit } from '@angular/core';
 })
 /** The base angular component for the impact dashboard */
 export class AppComponent implements OnInit {
+  public displayProjects: Project[] = [];
   async ngOnInit() {
 
+  }
+
+  /** Called when the project-select component changes the projects to display */
+  changeProjects(projects: Project[]) {
+    this.displayProjects = projects;
   }
 }

@@ -25,6 +25,14 @@ public class ProjectDataRetriever {
   }
 
   /**
+   * Static factory for creating a ProjectDataRetriever with a pre-made instance of DataReadManager.
+   * @return New instance of ProjectDataRetriever
+   */
+  public static ProjectDataRetriever create(DataReadManager readManager) {
+    return new ProjectDataRetriever(readManager);
+  }
+
+  /**
    * Gets the information about the project specified by the projectId from the database.
    * @param projectId The id of the project the data is being retrieved from
    * @return The ProjectGraphData from the projectId that was specified

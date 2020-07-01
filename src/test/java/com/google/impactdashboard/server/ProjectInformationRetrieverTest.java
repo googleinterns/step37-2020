@@ -38,13 +38,13 @@ public class ProjectInformationRetrieverTest extends Mockito {
   @Before
   public void setup() {
     readManager = mock(DataReadManager.class);
+    informationRetriever = ProjectInformationRetriever.create(readManager);
   }
 
   @Test
   public void emptyProjectInformationTest() {
     // There is not information so there should be an empty list returned
     when(readManager.listProjects()).thenReturn(Collections.emptyList());
-    informationRetriever = ProjectInformationRetriever.create(readManager);
     List<Project> actual = informationRetriever.listProjectInformation();
     List<Project> expected = new ArrayList<>();
 
@@ -62,7 +62,6 @@ public class ProjectInformationRetrieverTest extends Mockito {
     when(readManager.getAverageIAMBindingsInPastYear(PROJECT_ID_1)).thenReturn(PROJECT_AVERAGEIAMBINDINGS_1);
     when(readManager.getAverageIAMBindingsInPastYear(PROJECT_ID_2)).thenReturn(PROJECT_AVERAGEIAMBINDINGS_2);
 
-    informationRetriever = ProjectInformationRetriever.create(readManager);
     List<Project> expected = Arrays.asList(
         Project.create(PROJECT_NAME_1, PROJECT_ID_1, PROJECT_NUMBER_1,
             ProjectMetaData.create(PROJECT_AVERAGEIAMBINDINGS_1)),

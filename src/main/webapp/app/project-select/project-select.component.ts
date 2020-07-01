@@ -78,7 +78,7 @@ export class ProjectSelectComponent implements OnInit {
   /** Returns the class placed on a sorting arrow, which decides whether it's grayed out or not */
   getSortClass(fieldName: string) {
     let field = this.getField(fieldName);
-    if(field === this.sortField) {
+    if (field === this.sortField) {
       return 'sort-active';
     }
     return 'sort-inactive';
@@ -140,6 +140,10 @@ export class ProjectSelectComponent implements OnInit {
       // Assign colors based on initial IAM Bindings order
       projects.forEach((project, index) => project.color = defaultColors[index % defaultColors.length])
       this.projects = projects;
+      // Add the highest IAM Bindings project by default
+      if (projects.length > 0) {
+        this.toggleProject(projects[0]);
+      }
     });
   }
 

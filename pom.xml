@@ -76,6 +76,7 @@
           <deploy.projectId>PROJECT_ID_HERE</deploy.projectId>
           <deploy.version>1</deploy.version>
           <port>8080</port>
+          <services>dist/frontend</services>
         </configuration>
       </plugin>
     </plugins>

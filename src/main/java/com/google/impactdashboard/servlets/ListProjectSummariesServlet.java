@@ -26,8 +26,7 @@ public class ListProjectSummariesServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     if(projectInformationRetriever == null){
-      projectInformationRetriever = new ProjectInformationRetriever(
-          DataReadManagerFactory.create());
+      projectInformationRetriever = ProjectInformationRetriever.create();
     }
 
     List<Project> projectList = projectInformationRetriever.listProjectInformation();

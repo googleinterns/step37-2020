@@ -4,6 +4,7 @@ import com.google.impactdashboard.data.project.Project;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.project.ProjectMetaData;
 import com.google.impactdashboard.database_manager.data_read.DataReadManager;
+import com.google.impactdashboard.database_manager.data_read.DataReadManagerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +13,22 @@ import java.util.List;
 public class ProjectInformationRetriever {
   private DataReadManager readManager;
 
-  public ProjectInformationRetriever(DataReadManager readManager) {
+  /**
+   * Static factory for creating a ProjectInformationRetriever with a new instance of DataReadManager.
+   * @return New instance of ProjectInformationRetriever
+   */
+  public static ProjectInformationRetriever create() {
+    return new ProjectInformationRetriever(DataReadManagerFactory.create());
+  }
+
+  private ProjectInformationRetriever(DataReadManager readManager) {
     this.readManager = readManager;
   }
 
   /**
    * Retrieves information about projects from database and compiles them into list of
-   * {@code Project}.
-   * @return List of {@code Projects} from database
+   * Project.
+   * @return List of Projects from database
    */
   public List<Project> listProjectInformation() {
     List<Project> projectList = new ArrayList<>();
@@ -38,7 +47,7 @@ public class ProjectInformationRetriever {
   /**
    * Checks to see if there are new projects that were created after the database last updated
    * @param projectIdentificationList List of project Identification that the database is storing
-   * @return whether {@param projectIdentificationList} is up to date or not.
+   * @return whether {@code projectIdentificationList} is up to date or not.
    */
   private boolean checkNewProjects(List<ProjectIdentification> projectIdentificationList) {
     throw new UnsupportedOperationException("Not Implemented");

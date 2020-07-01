@@ -5,9 +5,7 @@ import com.google.cloud.recommender.v1.RecommenderClient;
 import java.io.IOException;
 import java.util.Collection;
 
-/**
- * Class that will call the Recommender API to get the full information for recommendations
- */
+/** Class that calls the Recommender API to get the full information for recommendations. */
 public class RecommendationRetriever {
 
   private RecommenderClient recommender;

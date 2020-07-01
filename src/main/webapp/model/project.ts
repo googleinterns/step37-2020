@@ -29,25 +29,76 @@ export class Project {
     this.projectNumber = projectNumber;
     this.metaData = metaData;
   }
+}
+
+/** Contains comparators for sorting projects */
+export class ProjectComparators {
+  static getComparator(order: SortDirection, field: SortBy) {
+    if (order === SortDirection.ASCENDING) {
+      switch (field) {
+        case SortBy.IAM_BINDINGS: return this.iamAscending;
+        case SortBy.NAME: return this.nameAscending;
+        case SortBy.PROJECT_ID: return this.projectIdAscending;
+        case SortBy.PROJECT_NUMBER: return this.projectNumberAscending
+      }
+    } else {
+      switch (field) {
+        case SortBy.IAM_BINDINGS: return this.iamDescending;
+        case SortBy.NAME: return this.nameDescending;
+        case SortBy.PROJECT_ID: return this.projectIdDescending;
+        case SortBy.PROJECT_NUMBER: return this.projectNumberDescending
+      }
+    }
+  }
 
   /** Comparator for sorting projects in descending order by IAM Bindings */
-  static iamDescendingOrder(a: Project, b: Project): number {
+  static iamDescending(a: Project, b: Project): number {
     return b.metaData.avgIAMBindingsInPastYear - a.metaData.avgIAMBindingsInPastYear;
   }
 
   /** Comparator for sorting projects in ascending order by IAM Bindings */
-  static iamAscendingOrder(a: Project, b: Project): number {
+  static iamAscending(a: Project, b: Project): number {
     return a.metaData.avgIAMBindingsInPastYear - b.metaData.avgIAMBindingsInPastYear;
   }
 
-  /** Comparator for sorting projects in descending order alphabetically */
-  static nameDescendingOrder(a: Project, b: Project): boolean {
-    return a.name > b.name;
+  /** Comparator for sorting projects in descending order alphabetically by name */
+  static nameDescending(a: Project, b: Project): number {
+    return a.name.localeCompare(b.name);
   }
 
-  /** Comparator for sorting projects in ascending order alphabetically */
-  static nameAscendingOrder(a: Project, b: Project): boolean {
-    return a.name < b.name;
+  /** Comparator for sorting projects in ascending order alphabetically by name */
+  static nameAscending(a: Project, b: Project): number {
+    return b.name.localeCompare(a.name);
   }
 
+  /** Comparator for sorting projects in descending order alphabetically by project ID */
+  static projectIdDescending(a: Project, b: Project): number {
+    return a.projectId.localeCompare(b.projectId);
+  }
+
+  /** Comparator for sorting projects in ascending order alphabetically by project ID */
+  static projectIdAscending(a: Project, b: Project): number {
+    return b.projectId.localeCompare(a.projectId);
+    
+  }
+
+  /** Comparator for sorting projects in descending order by project number */
+  static projectNumberDescending(a: Project, b: Project): number {
+    return b.projectNumber - a.projectNumber;
+  }
+
+  /** Comparator for sorting projects in ascending order by project number */
+  static projectNumberAscending(a: Project, b: Project): number {
+    return a.projectNumber - b.projectNumber;
+  }
+}
+
+/** The order to sort projects by */
+export enum SortDirection {
+  ASCENDING, DESCENDING
+}
+
+/** The field to sort project by */
+export enum SortBy {
+  IAM_BINDINGS, NAME, PROJECT_ID, PROJECT_NUMBER
 }

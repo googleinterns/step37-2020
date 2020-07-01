@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { Project } from '../../model/project';
+import { Project, SortDirection, SortBy, ProjectComparators } from '../../model/project';
 import { request, fakeProjects, defaultColors } from '../../utils';
 import { faArrowDown, faArrowUp, faCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -14,13 +14,16 @@ export class ProjectSelectComponent implements OnInit {
   public projects: Project[];
   /** All projects that are currently selected */
   public activeProjects: Set<Project>;
-  /** Whether sorting ascending or descending */
-  public sortAscending = true;
-  /** Whether sorting by IAM or project name */
-  public sortIam = true;
+  /** The sort direction */
+  public sortDirection: SortDirection;
+  /** The field sorting by */
+  public sortField: SortBy;
 
   // #region Fontawesome icons
-  faBindingArrow;
+  faIamArrow;
+  faNameArrow;
+  faProjectIdArrow;
+  faProjectNumberArrow;
   faCircle;
 
   // #endregion
@@ -30,15 +33,19 @@ export class ProjectSelectComponent implements OnInit {
 
   constructor() {
     this.activeProjects = new Set();
-    this.faBindingArrow = faArrowDown;
     this.faCircle = faCircle;
+
+    this.sortDirection = SortDirection.DESCENDING;
+    this.sortField = SortBy.IAM_BINDINGS;
+    
+    this.setSortIcons();
   }
 
   /** Returns the color associated with the given project */
   getColor(project: Project): string {
     if (this.activeProjects.has(project)) {
       return project.color;
-    } 
+    }
     return '#b8b8b8';
   }
 
@@ -52,22 +59,68 @@ export class ProjectSelectComponent implements OnInit {
     this.changeProjects.emit(Array.from(this.activeProjects));
   }
 
-  /** Toggle sorting by IAM ascending or descending */
-  toggleIamSort() {
-    if (this.faBindingArrow === faArrowDown) {
-      this.faBindingArrow = faArrowUp;
-      this.projects.sort(Project.iamAscendingOrder);
-    } else {
-      this.faBindingArrow = faArrowDown;
-      this.projects.sort(Project.iamDescendingOrder);
+  /** Sets the sorting icons on the table as appropriate. If a field is not being sorted, the arrow will be facing down and grayed out */
+  setSortIcons() {
+    let primaryArrow = this.sortDirection === SortDirection.ASCENDING ? faArrowUp : faArrowDown;
+
+    if (this.sortField === SortBy.IAM_BINDINGS) {
+      this.faIamArrow = primaryArrow;
+      this.faNameArrow = faArrowDown;
+      this.faProjectIdArrow = faArrowDown;
+      this.faProjectNumberArrow = faArrowDown;
+    } else if (this.sortField === SortBy.NAME) {
+      this.faIamArrow = faArrowDown;
+      this.faNameArrow = primaryArrow;
+      this.faProjectIdArrow = faArrowDown;
+      this.faProjectNumberArrow = faArrowDown;
+    } else if(this.sortField === SortBy.PROJECT_ID) {
+      this.faIamArrow = faArrowDown;
+      this.faNameArrow = faArrowDown;
+      this.faProjectIdArrow = primaryArrow;
+      this.faProjectNumberArrow = faArrowDown;
+    } else if(this.sortField === SortBy.PROJECT_NUMBER) {
+      this.faIamArrow = faArrowDown;
+      this.faNameArrow = faArrowDown;
+      this.faProjectIdArrow = faArrowDown;
+      this.faProjectNumberArrow = primaryArrow;
     }
+  }
+
+  /** Change the sort field/direction, adjusts styling and sorts projects */
+  changeSort(fieldName: string) {
+    let field: SortBy;
+    if(fieldName === 'Project Name') {
+      field = SortBy.NAME;
+    } else if(fieldName === 'IAM Bindings') {
+      field = SortBy.IAM_BINDINGS;
+    } else if(fieldName === 'Project ID') {
+      field = SortBy.PROJECT_ID;
+    } else if(fieldName === 'Project Number') {
+      field = SortBy.PROJECT_NUMBER;
+    }
+
+    if (this.sortField === field) {
+      // Just toggle the sort direction if we're sorting by the same field
+      if (this.sortDirection === SortDirection.ASCENDING) {
+        this.sortDirection = SortDirection.DESCENDING;
+      } else {
+        this.sortDirection = SortDirection.ASCENDING;
+      }
+    } else {
+      // Set sort to ascending
+      this.sortField = field;
+      this.sortDirection = SortDirection.ASCENDING;
+    }
+    // Sort by the selected fields
+    this.projects.sort(ProjectComparators.getComparator(this.sortDirection, this.sortField));
+    this.setSortIcons();
   }
 
   ngOnInit() {
     fakeProjects();
     request('/list-project-summaries', 'GET').then(r => r.json()).then(projects => {
-      // To start, sort by IAM bindings in descending order
-      projects.sort(Project.iamDescendingOrder);
+      // Sort by the selected fields
+      projects.sort(ProjectComparators.getComparator(this.sortDirection, this.sortField));
       // Assign colors based on initial IAM Bindings order
       projects.forEach((project, index) => project.color = defaultColors[index % defaultColors.length])
       this.projects = projects;

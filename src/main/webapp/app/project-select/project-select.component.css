@@ -15,6 +15,9 @@
 }
 
 .toggle-project {
-  cursor: pointer;
   border-top: 1px solid #999999;
+}
+
+.clickable {
+  cursor: pointer;
 }

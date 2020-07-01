@@ -1,9 +1,9 @@
 <table id="projects-table">
   <tr id="header">
     <th>Project Name</th>
-    <th>Avg Bindings</th>
+    <th><fa-icon [icon]="faBindingArrow" (click)="toggleIamSort()" class="clickable"></fa-icon> Bindings</th>
   </tr>
-  <tr *ngFor="let project of projects" (click)="toggle(project)" class="toggle-project">
+  <tr *ngFor="let project of projects" (click)="toggleProject(project)" class="toggle-project clickable">
     <td>{{ project.name }}</td>
     <td>{{ project.metaData.avgIAMBindingsInPastYear }}</td>
   </tr>

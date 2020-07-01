@@ -1,6 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Project } from '../../model/project';
 import { request, fakeProjects } from '../../utils';
+import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'project-select',
@@ -12,15 +13,33 @@ export class ProjectSelectComponent implements OnInit {
   /** All projects we have access to */
   public projects: Project[];
   /** All projects that are currently selected */
-  public activeProjects: Set<Project> = new Set();
+  public activeProjects: Set<Project>;
 
   @Output()
   public changeProjects = new EventEmitter<Project[]>();
 
-  constructor() { }
+  constructor() {
+    this.activeProjects = new Set();
+  }
 
-  toggle(project: Project) {
+  // #region Fontawesome icons
+  faBindingArrow = faArrowDown;
 
+  // #endregion
+
+  toggleProject(project: Project) {
+
+  }
+
+  /** Toggle sorting by IAM ascending or descending */
+  toggleIamSort() {
+    if(this.faBindingArrow === faArrowDown) {
+      this.faBindingArrow = faArrowUp;
+      this.projects.sort(Project.iamAscendingOrder);
+    } else {
+      this.faBindingArrow = faArrowDown;
+      this.projects.sort(Project.iamDescendingOrder);
+    }
   }
 
   ngOnInit() {

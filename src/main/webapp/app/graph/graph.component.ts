@@ -48,7 +48,7 @@ export class GraphComponent implements OnInit {
     Promise.all(promises).then(graphData => {
       if (graphData.length > 0) {
         // Generate the information needed for the graph
-        let properties = createIamGraphProperties(graphData);
+        let properties = createIamGraphProperties(graphData, this.projects);
         this.columns = properties.columns;
         this.graphData = properties.rows;
         this.options = properties.options;

@@ -188,9 +188,17 @@ export function createIamOptions(graphData: ProjectGraphData[], colors?: string[
   return options;
 }
 
+/** Pull the colors from projects into the order of projects in graphData so colors can be assigned easily */
+function matchColors(graphData: ProjectGraphData[], projects: Project[]): string[] {
+  let colors = [];
+  graphData.forEach(data => colors.push(projects.find(project => project.projectId === data.projectId).color));
+  return colors;
+}
+
 /** Creates the required properties for an IAM graph */
-export function createIamGraphProperties(graphData: ProjectGraphData[], colors?: string[]): { startDate: Date, endDate: Date, rows: any[], columns: any[], options: google.visualization.LineChartOptions } {
+export function createIamGraphProperties(graphData: ProjectGraphData[], projects: Project[]): { startDate: Date, endDate: Date, rows: any[], columns: any[], options: google.visualization.LineChartOptions } {
   let days = uniqueDays(graphData);
+  let colors = matchColors(graphData, projects);
 
   let rows = createIamRows(graphData, colors, days);
   let columns = createIamColumns(graphData);

@@ -25,7 +25,6 @@ export class ProjectSelectComponent implements OnInit {
   faProjectIdArrow;
   faProjectNumberArrow;
   faCircle;
-
   // #endregion
 
   @Output()
@@ -37,7 +36,6 @@ export class ProjectSelectComponent implements OnInit {
 
     this.sortDirection = SortDirection.DESCENDING;
     this.sortField = SortBy.IAM_BINDINGS;
-
     this.setSortIcons();
   }
 

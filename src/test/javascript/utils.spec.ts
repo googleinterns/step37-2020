@@ -100,4 +100,53 @@ describe('Utility functions', () => {
       strictEqual(rows[2][2], `${rec2}\n${rec3}`);
     })
   });
+
+  describe('createIamColumns()', () => {
+    let graphData: ProjectGraphData[] = [];
+    before(() => {
+      let dates = [new Date(2020, 6, 1), new Date(2020, 6, 2), new Date(2020, 6, 3)];
+      let dateToIamBindings = {
+        [dates[0].getTime()]: 100,
+        [dates[1].getTime()]: 150,
+        [dates[2].getTime()]: 200
+      };
+      graphData.push(new ProjectGraphData('prj-1', dateToIamBindings, {}));
+
+      dateToIamBindings = {
+        [dates[0].getTime()]: 100,
+        [dates[1].getTime()]: 150,
+        [dates[2].getTime()]: 200
+      };
+      let dateToRecommendations = {
+        [dates[0].getTime()]: new Recommendation('', 'rec1', RecommenderType.IAM_BINDING),
+        [dates[2].getTime()]: new Recommendation('', 'rec2', RecommenderType.IAM_BINDING),
+        [dates[2].getTime() + 1]: new Recommendation('', 'rec3', RecommenderType.IAM_BINDING),
+      }
+      graphData.push(new ProjectGraphData('prj-2', dateToIamBindings, dateToRecommendations));
+    });
+
+    it('Should work for a single project graph', () => {
+      let result = utils.createIamColumns([graphData[0]]);
+
+      strictEqual(result.length, 4);
+      strictEqual(result[0], 'Time');
+      strictEqual(result[1], 'prj-1');
+      strictEqual(result[2].role, 'tooltip');
+      strictEqual(result[3].role, 'style');
+    });
+
+    it('Should work for multiple projects', () => {
+      let result = utils.createIamColumns(graphData);
+
+      strictEqual(result.length, 7);
+      strictEqual(result[0], 'Time');
+      strictEqual(result[1], 'prj-1');
+      strictEqual(result[2].role, 'tooltip');
+      strictEqual(result[3].role, 'style');
+      
+      strictEqual(result[4], 'prj-2');
+      strictEqual(result[5].role, 'tooltip');
+      strictEqual(result[6].role, 'style');
+    });
+  })
 });

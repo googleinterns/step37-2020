@@ -17,3 +17,10 @@
   border-top: 1px solid #999999;
 }
 
+.sort-active {
+  color: black;
+}
+
+.sort-inactive {
+  color: #999999;
+}

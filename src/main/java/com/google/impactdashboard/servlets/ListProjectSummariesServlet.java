@@ -20,15 +20,19 @@ public class ListProjectSummariesServlet extends HttpServlet {
   private ProjectInformationRetriever projectInformationRetriever;
 
   /**
+   * Handles the creation of the server classes the first time the servlet is run
+   */
+  @Override
+  public void init() {
+    projectInformationRetriever = ProjectInformationRetriever.create();
+  }
+
+  /**
    * Method called by frontend to retrieve the projects that can be accessed.
    * @param response contains json representation of the names of the projects.
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if(projectInformationRetriever == null){
-      projectInformationRetriever = ProjectInformationRetriever.create();
-    }
-
     List<Project> projectList = projectInformationRetriever.listProjectInformation();
 
     Gson gson = new Gson();

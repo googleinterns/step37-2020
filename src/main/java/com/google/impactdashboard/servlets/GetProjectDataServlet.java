@@ -18,6 +18,15 @@ import java.io.IOException;
 public class GetProjectDataServlet extends HttpServlet {
 
   private ProjectDataRetriever projectDataRetriever;
+
+  /**
+   * Handles the creation of the server classes the first time the servlet is run
+   */
+  @Override
+  public void init() {
+    projectDataRetriever = ProjectDataRetriever.create();
+  }
+
   /**
    * Method called by the frontend to get the data needed to graph a projects information.
    * @param request contains the project data is requested for.
@@ -25,10 +34,6 @@ public class GetProjectDataServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    if(projectDataRetriever == null) {
-      projectDataRetriever = ProjectDataRetriever.create();
-    }
-
     String projectId = request.getParameter("id");
 
     ProjectGraphData graphData = projectDataRetriever.getProjectData(projectId);

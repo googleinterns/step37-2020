@@ -143,7 +143,7 @@ describe('Utility functions', () => {
       strictEqual(result[1], 'prj-1');
       strictEqual(result[2].role, 'tooltip');
       strictEqual(result[3].role, 'style');
-      
+
       strictEqual(result[4], 'prj-2');
       strictEqual(result[5].role, 'tooltip');
       strictEqual(result[6].role, 'style');

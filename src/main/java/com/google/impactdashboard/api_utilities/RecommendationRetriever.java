@@ -5,17 +5,23 @@ import com.google.cloud.recommender.v1.RecommenderClient;
 import java.io.IOException;
 import java.util.Collection;
 
-/**
- * Class that will call the Recommender API to get the full information for recommendations
- */
+/** Class that calls the Recommender API to get the full information for recommendations. */
 public class RecommendationRetriever {
 
   private RecommenderClient recommender;
 
-  public RecommendationRetriever() throws IOException {
-    recommender = RecommenderClient.create();
+  private RecommendationRetriever(RecommenderClient recommender) {
+    this.recommender = recommender;
   }
 
+  /**
+   * Static factory method for creating a RecommendationRetriever with a new
+   * RecommenderClient.
+   * @return A new instance of a {@code RecommendationRetriever}
+   */
+  public static RecommendationRetriever create() throws IOException {
+    return new RecommendationRetriever(RecommenderClient.create());
+  }
   /**
    * Helper method to be called to retrieve all recommendations in the last 90 days
    * from recommender for a certain project.

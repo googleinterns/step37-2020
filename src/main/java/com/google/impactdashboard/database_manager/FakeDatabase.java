@@ -2,15 +2,25 @@ package com.google.impactdashboard.database_manager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import com.google.impactdashboard.data.recommendation.*;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import java.util.concurrent.atomic.AtomicReference;
 
+/** A class that maintains a fake database for testing purposes. */
 public class FakeDatabase {
+  /** 
+   * Represents a database table that holds information about accepted 
+   * recommendations. 
+   */
   private static Map<Long, Recommendation> recommendations = 
     new HashMap<Long, Recommendation>() {
-      {
+        private static final long serialVersionUID = 1L;
+
+        {
         put(Long.parseLong("1592486705000"), 
           Recommendation.create("project-id-1", 
             "remove unused permissions from user account test3@google.com", 
@@ -39,9 +49,12 @@ public class FakeDatabase {
       }
     };
 
+  /** Represents a database table that holds information about IAM Bindings. */
   private static HashMap<ProjectIdentification, HashMap<Long, Integer>> iamBindings = 
     new HashMap<ProjectIdentification, HashMap<Long, Integer>>() {
-      {
+        private static final long serialVersionUID = 1L;
+
+        {
         HashMap<Long, Integer> bindingsProject1 = new HashMap<Long, Integer>();
         AtomicReference<Long> date1 = new AtomicReference<Long>(Long.parseLong("1590883200000"));
 
@@ -71,5 +84,58 @@ public class FakeDatabase {
           Long.parseLong("234567890123")), bindingsProject2);
       }
   };
+
+  /** 
+   * Returns the identifying information of the projects that appear in the 
+   * IAM Bindings table representation. 
+   */
+  public static List<ProjectIdentification> listProjects() {
+    List<ProjectIdentification> projects = new ArrayList<ProjectIdentification>();
+    iamBindings.forEach((project, data) -> projects.add(project));
+    return projects;
+  }
+
+  /** Retrieves the bindings data associated with {@code projectId} in the bindings table. */
+  public static Map<Long, Integer> getDatesToBindingsForProject(String projectId) {
+    AtomicReference<Map<Long, Integer>> dailyBindings = 
+      new AtomicReference<Map<Long, Integer>>();
+    iamBindings.forEach((project, data) -> {
+      if (project.getProjectId().equals(projectId)) {
+        dailyBindings.set(data);
+      }
+    });
+    return dailyBindings.get();
+  }
+
+  /** 
+   * Returns the average bindings recorded in the bindings table for a given 
+   * project, or 0 if this project does not appear in the bindings table. 
+   */
+  public static double getAvgBindingsForProject(String projectId) {
+    Map<Long, Integer> dailyBindings = getDatesToBindingsForProject(projectId);
+
+    if (dailyBindings.size() == 0) {
+      return 0;
+    }
+
+    AtomicReference<Double> averageBindings = new AtomicReference<Double>();
+    dailyBindings.forEach((date, bindings) -> {
+      averageBindings.set(averageBindings.get() + bindings);
+    });
+    return averageBindings.get() / dailyBindings.size();
+  }
+
+  /** 
+   * Returns a map of entries in the recommendations table associated with 
+   * {@code projectId}. 
+   */
+  public static Map<Long, Recommendation> getDatesToRecommendationsForProject(
+    String projectId) {
+    return recommendations.entrySet().stream()
+      .filter(mapElement -> 
+      ((Recommendation) mapElement.getValue()).getProjectId().equals(projectId))
+      .collect(Collectors.toMap(
+        mapElement -> mapElement.getKey(), mapElement -> mapElement.getValue()));
+  }
   
 }

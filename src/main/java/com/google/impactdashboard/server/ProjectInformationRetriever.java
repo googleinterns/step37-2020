@@ -21,6 +21,14 @@ public class ProjectInformationRetriever {
     return new ProjectInformationRetriever(DataReadManagerFactory.create());
   }
 
+  /**
+   * Static factory for creating a ProjectInformationRetriever with a premade instance of DataReadManager.
+   * @return New instance of ProjectInformationRetriever
+   */
+  public static ProjectInformationRetriever create(DataReadManager readManger) {
+    return new ProjectInformationRetriever(readManger);
+  }
+
   private ProjectInformationRetriever(DataReadManager readManager) {
     this.readManager = readManager;
   }

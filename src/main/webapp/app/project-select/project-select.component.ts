@@ -19,6 +19,12 @@ export class ProjectSelectComponent implements OnInit {
   /** The field sorting by */
   public sortField: SortBy;
 
+  // Convenience selectors for the DOM
+  public iamBindings = SortBy.IAM_BINDINGS;
+  public projectName = SortBy.NAME;
+  public projectId = SortBy.PROJECT_ID;
+  public projectNumber = SortBy.PROJECT_NUMBER;
+
   // #region Fontawesome icons
   faIamArrow;
   faNameArrow;
@@ -57,25 +63,9 @@ export class ProjectSelectComponent implements OnInit {
     this.changeProjects.emit(Array.from(this.activeProjects));
   }
 
-  /** Converts the DOM-friendly field name to the TypeScript enum */
-  getField(fieldName: string): SortBy {
-    if (fieldName === 'Project Name') {
-      return SortBy.NAME;
-    } else if (fieldName === 'IAM Bindings') {
-      return SortBy.IAM_BINDINGS;
-    } else if (fieldName === 'Project ID') {
-      return SortBy.PROJECT_ID;
-    } else if (fieldName === 'Project Number') {
-      return SortBy.PROJECT_NUMBER;
-    }
-
-    // Default to IAM Bindings
-    return SortBy.IAM_BINDINGS;
-  }
-
   /** Returns the class placed on a sorting arrow, which decides whether it's grayed out or not */
-  getSortClass(fieldName: string) {
-    let field = this.getField(fieldName);
+  getSortClass(field: SortBy) {
+    // let field = this.getField(fieldName);
     if (field === this.sortField) {
       return 'sort-active';
     }
@@ -110,9 +100,7 @@ export class ProjectSelectComponent implements OnInit {
   }
 
   /** Change the sort field/direction, adjusts styling and sorts projects */
-  changeSort(fieldName: string) {
-    let field: SortBy = this.getField(fieldName);
-
+  changeSort(field: SortBy) {
     if (this.sortField === field) {
       // Just toggle the sort direction if we're sorting by the same field
       if (this.sortDirection === SortDirection.ASCENDING) {

@@ -11,8 +11,16 @@ public class LogRetriever {
   /** Cloud Logging client used to retrieve Audit logs and Recommendation logs */
   private LoggingClient logger;
 
-  public LogRetriever() throws IOException {
-    logger = LoggingClient.create();
+  /**
+   * Static factory method for creating a new LogRetriever with a new instance of Logging client.
+   * @return A new instance of {@code LogRetriever}
+   */
+  public static LogRetriever create() throws IOException{
+    return new LogRetriever(LoggingClient.create());
+  }
+
+  private LogRetriever(LoggingClient logger) {
+    this.logger = logger;
   }
 
   /**

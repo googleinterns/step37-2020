@@ -20,7 +20,7 @@ import { RecommenderType } from './model/recommender-type';
 
 /** Whether this is a test or not. */
 export var defaultIsTest: boolean = true;
-export var defaultColors: string[] = ['#3c78d8', '#cc0000', '#ff9900'];
+export var defaultColors: string[] = ['#3c78d8', '#cc0000', '#ff9900', '#b6d7a8', '#9c27b0'];
 
 /** Used internally to dish out fake responses when requested. Effectively a map from URL to response */
 var fakeResponses: { [key: string]: any } = {};
@@ -113,45 +113,87 @@ function uniqueDays(graphData: ProjectGraphData[]): Date[] {
 }
 
 /** Creates the table rows from the given ProjectGraphData The first row contains the column headers */
-export function createIamRows(graphData: ProjectGraphData[]): any[] {
+export function createIamRows(graphData: ProjectGraphData[], colors?: string[]): any[] {
   // First, get all the days we need to add
   let days = uniqueDays(graphData);
   // Each row is [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...]
-  // The first row specifies the function of each column
-  let rows: any[] = [['Time']];
+  let rows: any[] = [];
   let rowSize = 1 + graphData.length * 3;
 
-  days.forEach(day => {
-    // let row = [day];
-    // // Populate the row with empty data to start
-    // for (let i = 1; i < rowSize; i++) {
-    //   row.push(undefined);
-    // }
-    rows.push([day]);
-  });
+  if (!colors) {
+    colors = defaultColors;
+  }
 
-  graphData.forEach(data => {
-    // Populate the header row, which contains the column purposes
-    rows[0].push(data.projectId, { type: 'string', role: 'tooltip'}, {type: 'string', role: 'style'});
+  // Add a row for each unique day
+  days.forEach(day => rows.push([day]));
 
+  graphData.forEach((data, index) => {
     for (const [key, value] of Object.entries(data.dateToNumberIAMBindings)) {
       // Convert key from string to number
       let date = startOfDay(+key);
-      // The row we're adding to is the next index as unique days because of the header row
-      let row = rows[1 + days.findIndex(findDate => findDate.getTime() === date.getTime())];
+      // The row we're adding to is the same index as unique days
+      let row = rows[days.findIndex(findDate => findDate.getTime() === date.getTime())];
 
       let recommendations = getRecommendations(+key, data.dateToRecommendationTaken);
       let tooltip = getTooltip(value, recommendations);
-      let point = getPoint(recommendations, defaultColors[0]);
+      let point = getPoint(recommendations, colors[index]);
 
       // Populate the existing row with information
       row.push(value, tooltip, point);
     }
   });
 
-
-
   return rows;
+}
+
+/** Creates the column headers for an IAM graph */
+export function createIamColumns(graphData: ProjectGraphData[]): any[] {
+  let columns: any[] = ['Time'];
+  graphData.forEach(data => {
+    // Populate the header row, which contains the column purposes
+    columns.push(data.projectId, { type: 'string', role: 'tooltip' }, { type: 'string', role: 'style' });
+  });
+  return columns;
+}
+
+export function createIamOptions(graphData: ProjectGraphData[], colors?: string[]): google.visualization.LineChartOptions {
+  let options: google.visualization.LineChartOptions = {
+    animation: {
+      duration: 250,
+      easing: 'ease-in-out',
+      startup: true
+    },
+    legend: { position: 'none' },
+    height: 700,
+    width: 1000,
+    hAxis: {
+      gridlines: {
+        color: 'white'
+      }
+    },
+    vAxis: {
+      minorGridlines: {
+        color: 'white'
+      }
+    },
+    series: {}
+  }
+
+  if (!colors) {
+    colors = defaultColors;
+  }
+  graphData.forEach((data, index) => {
+    options.series[index] = { color: colors[index % colors.length] };
+  })
+  return options;
+}
+
+/** Creates the required properties for an IAM graph */
+export function createIamGraphProperties(graphData: ProjectGraphData[], colors?: string[]): { rows: any[], columns: any[], options: google.visualization.LineChartOptions } {
+  let rows = createIamRows(graphData, colors);
+  let columns = createIamColumns(graphData);
+  let options = createIamOptions(graphData, colors);
+  return { rows: rows, columns: columns, options: options };
 }
 
 /** Gets the fake response for the given request */

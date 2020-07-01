@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { request, setResponse, createIamRows, fakeProjects } from '../../utils';
+import { request, setResponse, createIamRows, fakeProjects, createIamGraphProperties } from '../../utils';
 import { ProjectGraphData } from '../../model/project-graph-data';
 import { Recommendation } from '../../model/recommendation';
 import { RecommenderType } from '../../model/recommender-type';
@@ -27,26 +27,7 @@ import { ProjectMetaData } from '../../model/project-metadata';
 })
 /** The angular component that contains the graph and associated logic */
 export class GraphComponent implements OnInit {
-  public options: google.visualization.LineChartOptions = {
-    animation: {
-      duration: 250,
-      easing: 'ease-in-out',
-      startup: true
-    },
-    legend: { position: 'none' },
-    height: 700,
-    width: 1000,
-    hAxis: {
-      gridlines: {
-        color: 'white'
-      }
-    },
-    vAxis: {
-      minorGridlines: {
-        color: 'white'
-      }
-    }
-  }
+  public options: google.visualization.LineChartOptions;
   public graphData;
   public columns: any[];
   public type = "LineChart";
@@ -65,10 +46,11 @@ export class GraphComponent implements OnInit {
       data.push(await request(`/get-project-data?id="${projects[i].projectId}"`, 'GET').then(r => r.json()));
     }
 
-    // Generate the rows and set the columns to be the first row returned
-    let rows = createIamRows(data);
-    this.columns = rows[0];
-    rows.splice(0, 1);
-    this.graphData = rows;
+    // Generate the information
+    let properties = createIamGraphProperties(data);
+    console.log(properties);
+    this.columns = properties.columns;
+    this.graphData = properties.rows;
+    this.options = properties.options;
   }
 }

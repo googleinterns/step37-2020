@@ -20,6 +20,8 @@ export class Project {
   projectId: string;
   projectNumber: number;
   metaData: ProjectMetaData;
+  /** The color to display the given project as */
+  color: string;
 
   constructor(name: string, projectId: string, projectNumber: number, metaData: ProjectMetaData) {
     this.name = name;

@@ -4,7 +4,7 @@
     <th><fa-icon [icon]="faBindingArrow" (click)="toggleIamSort()" class="clickable"></fa-icon> Bindings</th>
   </tr>
   <tr *ngFor="let project of projects" (click)="toggleProject(project)" class="toggle-project clickable">
-    <td>{{ project.name }}</td>
+    <td><fa-icon [icon]="faCircle" [ngStyle]="{'color': getColor(project)}"></fa-icon>{{ project.name }}</td>
     <td>{{ project.metaData.avgIAMBindingsInPastYear }}</td>
   </tr>
 </table>

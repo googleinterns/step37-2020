@@ -32,8 +32,11 @@ export class GraphComponent implements OnInit {
   public columns: any[];
   public type = "LineChart";
   public title: string;
+  /** Whether to show the chart. When it's not selected, prompt the user to select a project */
+  public showChart: boolean;
 
   constructor() {
+    this.showChart = false;
   }
 
   /** Called when an input field changes */
@@ -43,18 +46,23 @@ export class GraphComponent implements OnInit {
     this.projects.forEach(project => promises.push(request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r => r.json())));
 
     Promise.all(promises).then(graphData => {
-      // Generate the information needed for the graph
-      let properties = createIamGraphProperties(graphData);
-      this.columns = properties.columns;
-      this.graphData = properties.rows;
-      this.options = properties.options;
+      if (graphData.length > 0) {
+        // Generate the information needed for the graph
+        let properties = createIamGraphProperties(graphData);
+        this.columns = properties.columns;
+        this.graphData = properties.rows;
+        this.options = properties.options;
 
-      this.title = `IAM Bindings - ${properties.startDate.toLocaleDateString()} to ${properties.endDate.toLocaleDateString()}`
+        this.title = `IAM Bindings - ${properties.startDate.toLocaleDateString()} to ${properties.endDate.toLocaleDateString()}`;
+        this.showChart = true;
+      } else {
+        this.showChart = false;
+      }
     });
   }
-  
+
 
   async ngOnInit() {
-    
+
   }
 }

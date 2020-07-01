@@ -14,5 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 -->
 
-<google-chart #chart id="chart" [type]="type" [columns]="columns" [data]="graphData" [options]="options" [title]="title">
+<h1 *ngIf="!showChart">Please select a project below to generate a graph</h1>
+
+<google-chart #chart id="chart" *ngIf="showChart" [type]="type" [columns]="columns" [data]="graphData" [options]="options" [title]="title">
 </google-chart>

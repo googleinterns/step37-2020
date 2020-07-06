@@ -155,6 +155,13 @@ export function addIamRows(rows: any[], data: ProjectGraphData, project: Project
     row.push(value, tooltip, point);
   }
 
+  // Now add empty data for rows that weren't touched
+  rows.forEach(row => {
+    if(row.length < (seriesNum + 1) * 3 + 1) {
+      row.push(undefined, undefined, undefined);
+    }
+  });
+
   return rows;
 }
 
@@ -230,9 +237,9 @@ export function addToGraph(properties: { options: google.visualization.LineChart
 /** Removes the given project from the graph */
 export function removeFromGraph(properties: { options: google.visualization.LineChartOptions, graphData: any[], columns: any[] }, project: Project) {
   let seriesNum: number = (properties.columns.indexOf(project.projectId) - 1) / 3;
-  
+
   for (let [key, value] of Object.entries(properties.options.series)) {
-    if(+key >= seriesNum) {
+    if (+key >= seriesNum) {
       properties.options.series[key] = properties.options.series[+key + 1];
       delete properties.options.series[+key + 1];
     }
@@ -333,11 +340,93 @@ function fakeProject2(): void {
   setResponse(url, new ProjectGraphData(projectId, iamBindings, recommendations));
 }
 
+/** Generate fake data for project 3 */
+function fakeProject3(): void {
+  let projectId = 'test-long-project-id-project-3';
+  // Fake data for showing the graph
+  let iamBindings: { [key: number]: number } = {
+    [Date.parse('6 Jun 2020 UTC')]: 125,
+    [Date.parse('7 Jun 2020 UTC')]: 201,
+    [Date.parse('8 Jun 2020 UTC')]: 177,
+    [Date.parse('9 Jun 2020 UTC')]: 111,
+    [Date.parse('10 Jun 2020 UTC')]: 212,
+    [Date.parse('11 Jun 2020 UTC')]: 190,
+    [Date.parse('12 Jun 2020 UTC')]: 184,
+    [Date.parse('13 Jun 2020 UTC')]: 137,
+    [Date.parse('14 Jun 2020 UTC')]: 124,
+    [Date.parse('15 Jun 2020 UTC')]: 205,
+    [Date.parse('16 Jun 2020 UTC')]: 182,
+    [Date.parse('17 Jun 2020 UTC')]: 109,
+    [Date.parse('18 Jun 2020 UTC')]: 191,
+    [Date.parse('19 Jun 2020 UTC')]: 211,
+    [Date.parse('20 Jun 2020 UTC')]: 213,
+    [Date.parse('21 Jun 2020 UTC')]: 177,
+    [Date.parse('22 Jun 2020 UTC')]: 136,
+    [Date.parse('23 Jun 2020 UTC')]: 193,
+    [Date.parse('24 Jun 2020 UTC')]: 153,
+    [Date.parse('25 Jun 2020 UTC')]: 187,
+  };
+  let recommendations: { [key: number]: Recommendation } = {
+    [Date.parse('7 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING, Date.parse('7 Jun 2020 UTC')),
+    [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING, Date.parse('9 Jun 2020 UTC')),
+    [Date.parse('22 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING, Date.parse('22 Jun 2020 UTC')),
+    // Simulate two recommendations on one day
+    [Date.parse('122 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING, Date.parse('22 Jun 2020 UTC') + 1),
+  }
+
+  let url = `/get-project-data?id="${projectId}"`;
+  // Fake out the given url to the generated fake project
+  setResponse(url, new ProjectGraphData(projectId, iamBindings, recommendations));
+}
+
+/** Generate fake data for project 4 */
+function fakeProject4(): void {
+  let projectId = 'quite-the-long-project-4';
+  // Fake data for showing the graph
+  let iamBindings: { [key: number]: number } = {
+    [Date.parse('1 Jul 2020 UTC')]: 14,
+    [Date.parse('2 Jul 2020 UTC')]: 24,
+    [Date.parse('3 Jul 2020 UTC')]: 23,
+    [Date.parse('4 Jul 2020 UTC')]: 35,
+    [Date.parse('5 Jul 2020 UTC')]: 38,
+    [Date.parse('6 Jul 2020 UTC')]: 19,
+    [Date.parse('7 Jul 2020 UTC')]: 17,
+    [Date.parse('8 Jul 2020 UTC')]: 21,
+    [Date.parse('9 Jul 2020 UTC')]: 12,
+    [Date.parse('10 Jul 2020 UTC')]: 39,
+    [Date.parse('11 Jul 2020 UTC')]: 35,
+    [Date.parse('12 Jul 2020 UTC')]: 15,
+    [Date.parse('13 Jul 2020 UTC')]: 26,
+    [Date.parse('14 Jul 2020 UTC')]: 40,
+    [Date.parse('15 Jul 2020 UTC')]: 36,
+    [Date.parse('16 Jul 2020 UTC')]: 37,
+    [Date.parse('17 Jul 2020 UTC')]: 26,
+    [Date.parse('18 Jul 2020 UTC')]: 28,
+    [Date.parse('19 Jul 2020 UTC')]: 34,
+    [Date.parse('20 Jul 2020 UTC')]: 27,
+  };
+  let recommendations: { [key: number]: Recommendation } = {
+    [Date.parse('1 Jul 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING, Date.parse('1 Jul 2020 UTC')),
+    [Date.parse('9 Jul 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING, Date.parse('9 Jul 2020 UTC')),
+    [Date.parse('20 Jul 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING, Date.parse('20 Jul 2020 UTC')),
+    // Simulate two recommendations on one day
+    [Date.parse('20 Jul 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING, Date.parse('20 Jul 2020 UTC') + 1),
+  }
+
+  let url = `/get-project-data?id="${projectId}"`;
+  // Fake out the given url to the generated fake project
+  setResponse(url, new ProjectGraphData(projectId, iamBindings, recommendations));
+}
+
 /** Generate fake data for projects 1 and 2 and sets the appropriate response from request() */
 export function fakeProjects(): void {
   let prj1 = new Project('Project 1', 'project-1', 1, new ProjectMetaData(100));
   let prj2 = new Project('Project 2', 'project-2', 2, new ProjectMetaData(70));
-  setResponse('/list-project-summaries', [prj1, prj2]);
+  let prj3 = new Project('Test Long Project ID Project 3', 'test-long-project-id-project-3', 3, new ProjectMetaData(173));
+  let prj4 = new Project('Quite the Long Project 4', 'quite-the-long-project-4', 4, new ProjectMetaData(33));
+  setResponse('/list-project-summaries', [prj1, prj2, prj3, prj4]);
   fakeProject1();
   fakeProject2();
+  fakeProject3();
+  fakeProject4();
 }

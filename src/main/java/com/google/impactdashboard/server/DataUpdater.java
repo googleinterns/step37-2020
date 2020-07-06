@@ -2,6 +2,7 @@ package com.google.impactdashboard.server;
 
 import com.google.impactdashboard.api_utilities.LogRetriever;
 import com.google.impactdashboard.api_utilities.RecommendationRetriever;
+import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManager;
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManagerFactory;
@@ -47,13 +48,25 @@ public class DataUpdater {
   /**
    * Updates the database with any new information about recommendations and IAMBinding logging
    */
-  public void updateDatabase() {}
+  public void updateDatabase() {
+    updateManager.deleteYearOldData();
+    updateManager.updateRecommendations(listUpdatedRecommendations());
+    updateManager.updateIAMBindings(listUpdatedIAMBindingData());
+  }
 
   /**
-   * Gets the new Recommendation data from the Recommender API
+   * Lists the new Recommendation data from the Recommender API
    * @return a List of Recommendations
    */
-  private List<Recommendation> getUpdatedRecommendations() {
+  private List<Recommendation> listUpdatedRecommendations() {
+    throw new UnsupportedOperationException("Not Implemented");
+  }
+
+  /**
+   * Lists the new IAM Binding data from the cloud logging API
+   * @return A List of IAMBindingDatabaseEntry
+   */
+  private List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
     throw new UnsupportedOperationException("Not Implemented");
   }
 

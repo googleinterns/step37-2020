@@ -13,8 +13,9 @@
       <div [@rotateSort]="sortRotated.projectNumber"><fa-icon [icon]="faArrow" [ngClass]="getSortClass(projectNumber)" (click)="changeSort(projectNumber)" id="number-sort" class="clickable"></fa-icon></div> Project
       Number
     </th>
+    <input type="text" (input)="search($event.target.value)"/>
   </tr>
-  <tr *ngFor="let project of projects" (click)="toggleProject(project)" class="toggle-project clickable">
+  <tr *ngFor="let project of getProjects()" (click)="toggleProject(project)" class="toggle-project clickable">
     <td>
       <fa-icon [icon]="faCircle" [ngStyle]="{'color': getColor(project)}"></fa-icon>{{ project.name }}
     </td>

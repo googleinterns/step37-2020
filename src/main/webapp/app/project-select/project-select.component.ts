@@ -27,12 +27,12 @@ export class ProjectSelectComponent implements OnInit {
   public currentSortDirection: SortDirection;
   /** The field sorting by */
   public currentSortField: SortBy;
-
-
+  /** The value to filter by */
+  public query: string;
 
   // #region DOM interraction variables
   /** Whether a particular arrow is rotated or not */
-  sortRotated: {[key: string]: 'down' | 'up'} = {
+  sortRotated: { [key: string]: 'down' | 'up' } = {
     iamBindings: 'down',
     projectName: 'down',
     projectId: 'down',
@@ -53,6 +53,7 @@ export class ProjectSelectComponent implements OnInit {
   public changeProjects = new EventEmitter<Project[]>();
 
   constructor() {
+    this.query = '';
     this.activeProjects = new Set();
     this.faCircle = faCircle;
 
@@ -89,7 +90,7 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Returns the status (up or down) of the animation associated with the given sort field */
   getAnimationStatus(field: SortBy): 'down' | 'up' {
-    switch(field) {
+    switch (field) {
       case SortBy.IAM_BINDINGS: return this.sortRotated.iamBindings;
       case SortBy.NAME: return this.sortRotated.projectName;
       case SortBy.PROJECT_ID: return this.sortRotated.projectId;
@@ -110,7 +111,7 @@ export class ProjectSelectComponent implements OnInit {
   /** Change the sort field/direction, adjusts styling and sorts projects */
   changeSort(field: SortBy) {
     this.currentSortField = field;
-    if(this.getAnimationStatus(field) === 'down') {
+    if (this.getAnimationStatus(field) === 'down') {
       this.currentSortDirection = SortDirection.ASCENDING;
     } else {
       this.currentSortDirection = SortDirection.DESCENDING;
@@ -120,6 +121,18 @@ export class ProjectSelectComponent implements OnInit {
 
     // Animate the selected field
     this.swapAnimationProperty(field);
+  }
+
+  /** Returns a sorted and filtered view of the projects */
+  getProjects(): Project[] {
+    let display = [];
+    let regex = new RegExp(this.query, 'i');
+    this.projects.filter(project => project.name.match(regex) || project.projectId.match(regex)).forEach(project => display.push(project));
+    return display;
+  }
+
+  search(query: string) {
+    this.query = query;
   }
 
   ngOnInit() {

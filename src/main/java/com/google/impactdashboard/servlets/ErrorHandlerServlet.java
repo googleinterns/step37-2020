@@ -26,7 +26,7 @@ public class ErrorHandlerServlet extends HttpServlet {
     ErrorMessage error = new ErrorMessage(message, exception);
 
     Gson gson = new Gson();
-    String json  = gson.toJson(error);
+    String json = gson.toJson(error);
 
     response.setContentType("application/json;");
     response.getWriter().println(json);

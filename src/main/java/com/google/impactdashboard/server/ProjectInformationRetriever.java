@@ -28,8 +28,8 @@ public class ProjectInformationRetriever {
    * Static factory for creating a ProjectInformationRetriever with a pre-made instance of DataReadManager.
    * @return New instance of ProjectInformationRetriever
    */
-  public static ProjectInformationRetriever create(DataReadManager readManger) {
-    return new ProjectInformationRetriever(readManger);
+  public static ProjectInformationRetriever create(DataReadManager readManager) {
+    return new ProjectInformationRetriever(readManager);
   }
 
   private ProjectInformationRetriever(DataReadManager readManager) {

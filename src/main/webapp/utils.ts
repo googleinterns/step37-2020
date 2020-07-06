@@ -42,6 +42,21 @@ export async function request(url: string, method: string, body = undefined, isT
   }
 }
 
+/** From a given SimpleChange, extract the projects that were added or deleted */
+export function getAdditionsDeletions(change: SimpleChange): { added: Project[], removed: Project[] } {
+  let out = { added: [], removed: [] };
+  if (change.previousValue === undefined) {
+    out.added = change.currentValue;
+    return out;
+  }
+
+  // Look for additions
+  change.currentValue.filter(c => !change.previousValue.includes(c)).forEach(addition => out.added.push(addition));
+  // Look for removals
+  change.previousValue.filter(c => !change.currentValue.includes(c)).forEach(deletion => out.removed.push(deletion));
+  return out;
+}
+
 /** Checks if the two timestamps (millis since epoch) fall on the same day. Returns true if they do */
 export function fallOnSameDay(time1: number, time2: number): boolean {
   let date1 = new Date(0);
@@ -165,13 +180,13 @@ export function addIamRows(rows: any[], data: ProjectGraphData, project: Project
   return rows;
 }
 
-/** Adds the column headers for a single project on an IAM graph */
+/** Adds the column headers for a single project on an IAM graph. Takes the form of [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...] */
 export function addIamColumns(columns: any[], data: ProjectGraphData): void {
   // Populate the header row, which contains the column purposes
   columns.push(data.projectId, { type: 'string', role: 'tooltip' }, { type: 'string', role: 'style' });
 }
 
-/** Create options for a LineChart */
+/** Create basic options for a LineChart */
 export function createOptions(): google.visualization.LineChartOptions {
   let options: google.visualization.LineChartOptions = {
     animation: {
@@ -195,21 +210,6 @@ export function createOptions(): google.visualization.LineChartOptions {
     series: {}
   }
   return options;
-}
-
-/** From a given SimpleChange, extract the projects that were added or deleted */
-export function getAdditionsDeletions(change: SimpleChange): { added: Project[], removed: Project[] } {
-  let out = { added: [], removed: [] };
-  if (change.previousValue === undefined) {
-    out.added = change.currentValue;
-    return out;
-  }
-
-  // Look for additions
-  change.currentValue.filter(c => !change.previousValue.includes(c)).forEach(addition => out.added.push(addition));
-  // Look for removals
-  change.previousValue.filter(c => !change.currentValue.includes(c)).forEach(deletion => out.removed.push(deletion));
-  return out;
 }
 
 /** Initialize the chart properties with empty data */

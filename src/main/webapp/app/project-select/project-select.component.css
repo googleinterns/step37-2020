@@ -5,6 +5,7 @@
 #projects-table {
   padding: 10px;
   border-collapse: collapse;
+  text-align: left;
 }
 
 #header {
@@ -29,11 +30,19 @@
   color: #999999;
 }
 
+.sort-active:hover, .sort-inactive:hover {
+  color: lightgrey !important;
+}
+
 th div {
   float: left;
   margin: 0 5px;
 }
 
-tr:hover fa-icon {
+.toggle-project:hover fa-icon {
   color: lightgrey !important;
+}
+
+#projects-table td {
+  padding-left: 8px;
 }

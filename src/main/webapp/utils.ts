@@ -176,7 +176,7 @@ export function createOptions(): google.visualization.LineChartOptions {
   let options: google.visualization.LineChartOptions = {
     animation: {
       duration: 250,
-      easing: 'ease-in-out',
+      easing: 'out',
       startup: true
     },
     legend: { position: 'none' },

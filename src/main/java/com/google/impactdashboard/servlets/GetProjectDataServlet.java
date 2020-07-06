@@ -2,7 +2,7 @@ package com.google.impactdashboard.servlets;
 
 import com.google.gson.Gson;
 import com.google.impactdashboard.data.project.ProjectGraphData;
-import com.google.impactdashboard.server.ProjectDataRetriever;
+import com.google.impactdashboard.server.ProjectInformationRetriever;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,14 +17,14 @@ import java.io.IOException;
 @WebServlet("/get-project-data")
 public class GetProjectDataServlet extends HttpServlet {
 
-  private ProjectDataRetriever projectDataRetriever;
+  private ProjectInformationRetriever projectInformationRetriever;
 
   /**
    * Handles the creation of the server classes the first time the servlet is run
    */
   @Override
   public void init() {
-    projectDataRetriever = ProjectDataRetriever.create();
+    projectInformationRetriever = ProjectInformationRetriever.create();
   }
 
   /**
@@ -36,7 +36,7 @@ public class GetProjectDataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String projectId = request.getParameter("id");
 
-    ProjectGraphData graphData = projectDataRetriever.getProjectData(projectId);
+    ProjectGraphData graphData = projectInformationRetriever.getProjectData(projectId);
 
     Gson gson = new Gson();
     String json = gson.toJson(graphData);

@@ -190,7 +190,7 @@ export function addIamColumns(columns: any[], data: ProjectGraphData): void {
 export function createOptions(): google.visualization.LineChartOptions {
   let options: google.visualization.LineChartOptions = {
     animation: {
-      duration: 250,
+      duration: 500,
       easing: 'out',
       startup: true
     },

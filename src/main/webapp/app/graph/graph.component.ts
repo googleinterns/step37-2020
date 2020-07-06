@@ -46,7 +46,7 @@ export class GraphComponent implements OnInit {
 
     let additionsDeletions = getAdditionsDeletions(changes.projects);
 
-    additionsDeletions.added.forEach(addition => ProjectGraphData.getProject(addition.projectId).then(data => addToGraph(this.properties, data, addition)));
+    additionsDeletions.added.forEach(addition => addition.get().then(data => addToGraph(this.properties, data, addition)));
     additionsDeletions.removed.forEach(removal => removeFromGraph(this.properties, removal));
   }
 

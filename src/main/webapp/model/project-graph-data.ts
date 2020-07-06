@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Recommendation } from './recommendation';
-import { request } from '../utils';
 
 /** Represents the data being put on a graph for a particular project */
 export class ProjectGraphData {
@@ -25,13 +24,5 @@ export class ProjectGraphData {
     this.projectId = projectId;
     this.dateToNumberIAMBindings = dateToNumberIAMBindings;
     this.dateToRecommendationTaken = dateToRecommendationTaken;
-  }
-
-  /** Retrieves the given project graph data from the server */
-  static getProject(id: string): Promise<ProjectGraphData> {
-    return new Promise(resolve => request(`/get-project-data?id="${id}"`, 'GET').then(r => r.json()).then(response => {
-      let project = new ProjectGraphData(response.projectId, response.dateToNumberIAMBindings, response.dateToRecommendationTaken);
-      resolve(project);
-    }));
   }
 }

@@ -3,6 +3,7 @@ import * as utils from '../../main/webapp/utils';
 import { ProjectGraphData } from '../../main/webapp/model/project-graph-data';
 import { Recommendation } from '../../main/webapp/model/recommendation';
 import { RecommenderType } from '../../main/webapp/model/recommender-type';
+import { Project } from '../../main/webapp/model/project';
 
 describe('Utility functions', () => {
   describe('fallOnSameDay()', () => {
@@ -34,7 +35,7 @@ describe('Utility functions', () => {
     });
   });
 
-  /*describe('createIamRows()', () => {
+  describe('addIamRows()', () => {
     it('Should create rows with no recommendations taken', () => {
       let dates = [new Date(2020, 6, 1), new Date(2020, 6, 2), new Date(2020, 6, 3)];
       let dateToIamBindings = {
@@ -43,9 +44,10 @@ describe('Utility functions', () => {
         [dates[2].getTime()]: 200
       };
       let data = new ProjectGraphData('', dateToIamBindings, {});
-      let rows = utils.createIamRows([data]);
+      let rows = [];
+      utils.addIamRows(rows, data, new Project('', '', 1, undefined), 0);
 
-      // Look through each row, ignoring the header row
+      // Look through each row
       for (let i = 0; i < 3; i++) {
         let time = dates[i].getTime();
         let numberBindings = dateToIamBindings[time];
@@ -71,7 +73,8 @@ describe('Utility functions', () => {
         [dates[0].getTime()]: new Recommendation('', rec1, RecommenderType.IAM_BINDING, dates[0].getTime())
       }
       let data = new ProjectGraphData('', dateToIamBindings, dateToRecommendations);
-      let rows = utils.createIamRows([data]);
+      let rows = [];
+      utils.addIamRows(rows, data, new Project('', '', 1, undefined), 0);
 
       strictEqual(rows[0][2], rec1);
     });
@@ -93,13 +96,14 @@ describe('Utility functions', () => {
         [dates[2].getTime() + 1]: new Recommendation('', rec3, RecommenderType.IAM_BINDING, dates[2].getTime() + 1),
       }
       let data = new ProjectGraphData('', dateToIamBindings, dateToRecommendations);
-      let rows = utils.createIamRows([data]);
+      let rows = [];
+      utils.addIamRows(rows, data, new Project('', '', 1, undefined), 0);
 
       strictEqual(rows[0][2], rec1);
       strictEqual(rows[1][2], 'IAM Bindings: 150');
       strictEqual(rows[2][2], `${rec2}\n${rec3}`);
     })
-  });*/
+  });
 
   describe('addIamColumns()', () => {
     let graphData: ProjectGraphData[] = [];

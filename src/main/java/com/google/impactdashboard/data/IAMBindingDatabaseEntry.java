@@ -7,6 +7,8 @@ import com.google.auto.value.AutoValue;
 public abstract class IAMBindingDatabaseEntry {
 
   public abstract String getProjectId();
+  public abstract String getProjectName();
+  public abstract String getProjectNumber();
   public abstract long getTimestamp();
   public abstract int getBindingsNumber();
 
@@ -15,8 +17,9 @@ public abstract class IAMBindingDatabaseEntry {
    *  recording that there were {@code numberBindings} IAM Bindings for this project 
    *  at time {@code timestamp}.  
    */
-  public static IAMBindingDatabaseEntry create(String projectId, long timestamp, 
-    int bindingsNumber) {
-    return new AutoValue_IAMBindingDatabaseEntry(projectId, timestamp, bindingsNumber);
+  public static IAMBindingDatabaseEntry create(String projectId, String projectName, 
+    String projectNumber, long timestamp, int bindingsNumber) {
+    return new AutoValue_IAMBindingDatabaseEntry(projectId, projectName, 
+      projectNumber, timestamp, bindingsNumber);
   }
 }

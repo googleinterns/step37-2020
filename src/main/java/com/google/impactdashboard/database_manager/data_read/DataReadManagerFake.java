@@ -2,9 +2,10 @@ package com.google.impactdashboard.database_manager.data_read;
 
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.Recommendation;
+import com.google.impactdashboard.database_manager.FakeDatabase;
+
 import java.util.List;
 import java.util.Map;
-import java.lang.UnsupportedOperationException;
 
 /** Class for mimicking a DataReadManager and returning fake data. */
 public class DataReadManagerFake implements DataReadManager {
@@ -15,7 +16,7 @@ public class DataReadManagerFake implements DataReadManager {
    */
   @Override
   public List<ProjectIdentification> listProjects() {
-    throw new UnsupportedOperationException("Unimplemented");
+    return FakeDatabase.listProjects();
   }
 
   /** 
@@ -26,7 +27,7 @@ public class DataReadManagerFake implements DataReadManager {
    */
   @Override
   public double getAverageIAMBindingsInPastYear(String projectId) {
-    throw new UnsupportedOperationException("Unimplemented");
+    return FakeDatabase.getAvgBindingsForProject(projectId);
   }
 
   /**
@@ -35,7 +36,7 @@ public class DataReadManagerFake implements DataReadManager {
    */
   @Override
   public Map<Long, Recommendation> getMapOfDatesToRecommendationTaken(String projectId) {
-    throw new UnsupportedOperationException("Unimplemented");
+    return FakeDatabase.getDatesToRecommendationsForProject(projectId);
   }
 
   /** 
@@ -45,6 +46,6 @@ public class DataReadManagerFake implements DataReadManager {
    */
   @Override
   public Map<Long, Integer> getMapOfDatesToIAMBindings(String projectId) {
-    throw new UnsupportedOperationException("Unimplemented");
+    return FakeDatabase.getDatesToBindingsForProject(projectId);
   }
 }

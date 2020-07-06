@@ -49,4 +49,20 @@ th div {
 
 #project-filter {
   margin: 5px;
+  border: none;
+  border-bottom: 1px solid #666666;
+  background-color: #f3f3f3ff;
+  font-size: 15px;
+}
+
+#project-filter:focus {
+  outline: none;
+}
+
+#filter-icon {
+  color: #666666;
+}
+
+#filter-header {
+  float: right;
 }

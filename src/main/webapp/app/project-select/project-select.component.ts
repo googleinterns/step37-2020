@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Project, SortDirection, SortBy, ProjectComparators } from '../../model/project';
 import { request, fakeProjects, defaultColors } from '../../utils';
-import { faArrowDown, faArrowUp, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faArrowUp, faCircle, faFilter } from '@fortawesome/free-solid-svg-icons';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
@@ -41,6 +41,7 @@ export class ProjectSelectComponent implements OnInit {
 
   faArrow = faArrowDown;
   faCircle;
+  faFilter = faFilter;
 
   // Convenience selectors
   public iamBindings = SortBy.IAM_BINDINGS;

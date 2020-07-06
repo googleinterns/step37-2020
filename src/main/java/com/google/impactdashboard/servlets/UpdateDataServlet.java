@@ -11,7 +11,7 @@ import java.io.IOException;
  * with new IAM data and Recommendation data.
  */
 @WebServlet("/update-data")
-public class UpdateData extends HttpServlet {
+public class UpdateDataServlet extends HttpServlet {
 
   /**
    * Method called from the appengine cron job to update the database with newest information

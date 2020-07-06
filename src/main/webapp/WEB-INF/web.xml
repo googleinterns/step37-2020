@@ -1,0 +1,14 @@
+<web-app>
+    <servlet>
+        <servlet-name>ErrorHandler</servlet-name>
+        <servlet-class>com.google.impactDashboard.servlets.ErrorHandlerServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ErrorHandler</servlet-name>
+        <url-pattern>/error-handler</url-pattern>
+    </servlet-mapping>
+    <error-page>
+        <exception-type>java.lang.RuntimeException</exception-type>
+        <location>/error-handler</location>
+    </error-page>
+</web-app>

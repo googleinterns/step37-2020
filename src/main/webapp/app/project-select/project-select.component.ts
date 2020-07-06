@@ -3,6 +3,7 @@ import { Project, SortDirection, SortBy, ProjectComparators } from '../../model/
 import { request, fakeProjects, defaultColors } from '../../utils';
 import { faArrowDown, faArrowUp, faCircle, faFilter } from '@fortawesome/free-solid-svg-icons';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { HttpService } from '../http.service';
 
 @Component({
   selector: 'project-select',
@@ -53,7 +54,7 @@ export class ProjectSelectComponent implements OnInit {
   @Output()
   public changeProjects = new EventEmitter<Project[]>();
 
-  constructor() {
+  constructor(private httpService: HttpService) {
     this.query = '';
     this.activeProjects = new Set();
     this.faCircle = faCircle;
@@ -123,7 +124,7 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Returns a sorted and filtered view of the projects */
   getProjects(): Project[] {
-    if(this.projects === undefined) {
+    if (this.projects === undefined) {
       return [];
     }
     let display = [];
@@ -141,7 +142,7 @@ export class ProjectSelectComponent implements OnInit {
 
   ngOnInit() {
     fakeProjects();
-    request('/list-project-summaries', 'GET').then(r => r.json()).then(projects => {
+    this.httpService.request('/list-project-summaries').then(projects => {
       // Sort by the selected fields
       projects.sort(ProjectComparators.getComparator(this.currentSortDirection, this.currentSortField));
       // Assign colors based on initial IAM Bindings order
@@ -152,6 +153,17 @@ export class ProjectSelectComponent implements OnInit {
         this.toggleProject(projects[0]);
       }
     });
+    /* request('/list-project-summaries', 'GET').then(r => r.json()).then(projects => {
+      // Sort by the selected fields
+      projects.sort(ProjectComparators.getComparator(this.currentSortDirection, this.currentSortField));
+      // Assign colors based on initial IAM Bindings order
+      projects.forEach((project, index) => project.color = defaultColors[index % defaultColors.length])
+      this.projects = projects;
+      // Add the highest IAM Bindings project by default
+      if (projects.length > 0) {
+        this.toggleProject(projects[0]);
+      }
+    }); */
   }
 
 }

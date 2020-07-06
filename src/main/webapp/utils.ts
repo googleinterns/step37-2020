@@ -222,11 +222,26 @@ export function addToGraph(properties: { options: google.visualization.LineChart
   addIamColumns(properties.columns, data);
   // Add the new rows
   addIamRows(properties.graphData, data, project, seriesNum);
-  properties.graphData = [].concat(properties.graphData);
+
+  // Force a refresh of the chart
+  properties.columns = [].concat(properties.columns);
 }
 
+/** Removes the given project from the graph */
 export function removeFromGraph(properties: { options: google.visualization.LineChartOptions, graphData: any[], columns: any[] }, project: Project) {
+  let seriesNum: number = (properties.columns.indexOf(project.projectId) - 1) / 3;
   
+  for (let [key, value] of Object.entries(properties.options.series)) {
+    if(+key >= seriesNum) {
+      properties.options.series[key] = properties.options.series[+key + 1]
+    }
+  }
+
+  properties.columns.splice((seriesNum * 3) + 1, 3);
+  properties.graphData.forEach(row => row.splice((seriesNum * 3) + 1, 3));
+
+  // Force a refresh of the chart
+  properties.columns = [].concat(properties.columns);
 }
 
 /** Gets the fake response for the given request */

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
-import { getAdditionsDeletions, initProperties, addToGraph } from '../../utils';
+import { getAdditionsDeletions, initProperties, addToGraph, removeFromGraph } from '../../utils';
 import { Project } from '../../model/project';
 import { ProjectGraphData } from '../../model/project-graph-data';
 
@@ -48,7 +48,7 @@ export class GraphComponent implements OnInit {
     let additionsDeletions = getAdditionsDeletions(changes.projects);
 
     additionsDeletions.added.forEach(addition => ProjectGraphData.getProject(addition.projectId).then(data => { addToGraph(this.properties, data, addition); console.log(this.properties) }));
-
+    additionsDeletions.removed.forEach(removal => removeFromGraph(this.properties, removal));
     // this.projects.forEach(project => promises.push(request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r => r.json())));
   }
 

@@ -19,8 +19,8 @@ public class DataReadManagerImpl implements DataReadManager {
   @Override
   public List<ProjectIdentification> listProjects() {
     return Arrays.asList( 
-      ProjectIdentification.create("project-1", "project-id-1", Long.parseLong("123456789123")), 
-      ProjectIdentification.create("project-2", "project-id-2", Long.parseLong("234567890123")));
+      ProjectIdentification.create("project-1", "project-id-1", 123456789123L), 
+      ProjectIdentification.create("project-2", "project-id-2", 234567890123L));
   }
 
   /** 
@@ -48,31 +48,31 @@ public class DataReadManagerImpl implements DataReadManager {
     HashMap<Long, Recommendation> datesToRecommendations = new HashMap<Long, Recommendation>(); 
 
     if (projectId.equals("project-id-1")) {
-      datesToRecommendations.put(Long.parseLong("1591633823000"), 
+      datesToRecommendations.put(1591633823000L, 
         Recommendation.create("project-id-1", 
           "remove unused permissions from user account test@google.com", 
-          Recommendation.RecommenderType.IAM_BINDING, Long.parseLong("1591633823000"), 
+          Recommendation.RecommenderType.IAM_BINDING, 1591633823000L, 
           IAMRecommenderMetadata.create(1000)));    
-      datesToRecommendations.put(Long.parseLong("1592486585000"), 
+      datesToRecommendations.put(1592486585000L, 
         Recommendation.create("project-id-1", 
           "remove unused permissions from user account test2@google.com", 
-          Recommendation.RecommenderType.IAM_BINDING, Long.parseLong("1592486585000"), 
+          Recommendation.RecommenderType.IAM_BINDING, 1592486585000L, 
           IAMRecommenderMetadata.create(1000)));  
-      datesToRecommendations.put(Long.parseLong("1592486705000"), 
+      datesToRecommendations.put(1592486705000L, 
         Recommendation.create("project-id-1", 
           "remove unused permissions from user account test3@google.com", 
-          Recommendation.RecommenderType.IAM_BINDING, Long.parseLong("1592486705000"), 
+          Recommendation.RecommenderType.IAM_BINDING, 1592486705000L, 
           IAMRecommenderMetadata.create(300)));      
     } else if (projectId.equals("project-id-2")) {
-      datesToRecommendations.put(Long.parseLong("1591704613000"), 
+      datesToRecommendations.put(1591704613000L, 
         Recommendation.create("project-id-2", 
           "remove unused permissions from user account test4@google.com", 
-          Recommendation.RecommenderType.IAM_BINDING, Long.parseLong("1591704613000"), 
+          Recommendation.RecommenderType.IAM_BINDING, 1591704613000L, 
           IAMRecommenderMetadata.create(500)));    
-      datesToRecommendations.put(Long.parseLong("1593072312000"), 
+      datesToRecommendations.put(1593072312000L, 
         Recommendation.create("project-id-2", 
           "remove unused permissions from user account test5@google.com", 
-          Recommendation.RecommenderType.IAM_BINDING, Long.parseLong("1593072312000"), 
+          Recommendation.RecommenderType.IAM_BINDING, 1593072312000L, 
           IAMRecommenderMetadata.create(350)));    
     }
 
@@ -87,7 +87,7 @@ public class DataReadManagerImpl implements DataReadManager {
   @Override
   public Map<Long, Integer> getMapOfDatesToIAMBindings(String projectId) {
     HashMap<Long, Integer> datesToBindings = new HashMap<Long, Integer>();
-    AtomicReference<Long> date = new AtomicReference<Long>(Long.parseLong("1590883200000"));
+    AtomicReference<Long> date = new AtomicReference<Long>(1590883200000L);
 
     if (projectId.equals("project-id-1")) {
       Arrays.asList(1000, 1000, 1000, 2000, 2050, 2150, 2150, 2150, 2150, 

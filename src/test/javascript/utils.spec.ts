@@ -34,7 +34,7 @@ describe('Utility functions', () => {
     });
   });
 
-  describe('createIamRows()', () => {
+  /*describe('createIamRows()', () => {
     it('Should create rows with no recommendations taken', () => {
       let dates = [new Date(2020, 6, 1), new Date(2020, 6, 2), new Date(2020, 6, 3)];
       let dateToIamBindings = {
@@ -99,9 +99,9 @@ describe('Utility functions', () => {
       strictEqual(rows[1][2], 'IAM Bindings: 150');
       strictEqual(rows[2][2], `${rec2}\n${rec3}`);
     })
-  });
+  });*/
 
-  describe('createIamColumns()', () => {
+  describe('addIamColumns()', () => {
     let graphData: ProjectGraphData[] = [];
     before(() => {
       let dates = [new Date(2020, 6, 1), new Date(2020, 6, 2), new Date(2020, 6, 3)];
@@ -126,27 +126,28 @@ describe('Utility functions', () => {
     });
 
     it('Should work for a single project graph', () => {
-      let result = utils.createIamColumns([graphData[0]]);
+      let columns = [];
+      utils.addIamColumns(columns, graphData[0]);
 
-      strictEqual(result.length, 4);
-      strictEqual(result[0], 'Time');
-      strictEqual(result[1], 'prj-1');
-      strictEqual(result[2].role, 'tooltip');
-      strictEqual(result[3].role, 'style');
+      strictEqual(columns.length, 3);
+      strictEqual(columns[0], 'prj-1');
+      strictEqual(columns[1].role, 'tooltip');
+      strictEqual(columns[2].role, 'style');
     });
 
     it('Should work for multiple projects', () => {
-      let result = utils.createIamColumns(graphData);
+      let columns = [];
+      utils.addIamColumns(columns, graphData[0]);
+      utils.addIamColumns(columns, graphData[1]);
 
-      strictEqual(result.length, 7);
-      strictEqual(result[0], 'Time');
-      strictEqual(result[1], 'prj-1');
-      strictEqual(result[2].role, 'tooltip');
-      strictEqual(result[3].role, 'style');
+      strictEqual(columns.length, 6);
+      strictEqual(columns[0], 'prj-1');
+      strictEqual(columns[1].role, 'tooltip');
+      strictEqual(columns[2].role, 'style');
 
-      strictEqual(result[4], 'prj-2');
-      strictEqual(result[5].role, 'tooltip');
-      strictEqual(result[6].role, 'style');
+      strictEqual(columns[3], 'prj-2');
+      strictEqual(columns[4].role, 'tooltip');
+      strictEqual(columns[5].role, 'style');
     });
   })
 });

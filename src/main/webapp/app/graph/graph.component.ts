@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
-import { request, fakeProjects, createIamGraphProperties } from '../../utils';
+import { getAdditionsDeletions, initProperties, addToGraph } from '../../utils';
 import { Project } from '../../model/project';
+import { ProjectGraphData } from '../../model/project-graph-data';
 
 @Component({
   selector: 'app-graph',
@@ -27,11 +28,11 @@ export class GraphComponent implements OnInit {
   @Input()
   public projects: Project[];
 
-  public options: google.visualization.LineChartOptions;
-  public graphData: any[];
-  public columns: any[];
+  public properties: { options: google.visualization.LineChartOptions, graphData: any[], columns: any[] } = initProperties();
+
   public type = "LineChart";
   public title: string;
+
   /** Whether to show the chart. When it's not selected, prompt the user to select a project */
   public showChart: boolean;
 
@@ -41,24 +42,14 @@ export class GraphComponent implements OnInit {
 
   /** Called when an input field changes */
   ngOnChanges(changes: SimpleChanges) {
-    // Perform GET for each project asynchronously
-    let promises = [];
-    this.projects.forEach(project => promises.push(request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r => r.json())));
+    console.log(changes);
+    this.showChart = this.projects.length > 0;
 
-    Promise.all(promises).then(graphData => {
-      if (graphData.length > 0) {
-        // Generate the information needed for the graph
-        let properties = createIamGraphProperties(graphData, this.projects);
-        this.columns = properties.columns;
-        this.graphData = properties.rows;
-        this.options = properties.options;
+    let additionsDeletions = getAdditionsDeletions(changes.projects);
 
-        this.title = `IAM Bindings - ${properties.startDate.toLocaleDateString()} to ${properties.endDate.toLocaleDateString()}`;
-        this.showChart = true;
-      } else {
-        this.showChart = false;
-      }
-    });
+    additionsDeletions.added.forEach(addition => ProjectGraphData.getProject(addition.projectId).then(data => { addToGraph(this.properties, data, addition); console.log(this.properties) }));
+
+    // this.projects.forEach(project => promises.push(request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r => r.json())));
   }
 
 

@@ -17,6 +17,7 @@ import { Recommendation } from './model/recommendation';
 import { ProjectMetaData } from './model/project-metadata';
 import { Project } from './model/project';
 import { RecommenderType } from './model/recommender-type';
+import { SimpleChange } from '@angular/core';
 
 /** Whether this is a test or not. */
 export var defaultIsTest: boolean = true;
@@ -112,51 +113,59 @@ function uniqueDays(graphData: ProjectGraphData[]): Date[] {
   return out;
 }
 
-/** Creates the table rows from the given ProjectGraphData The first row contains the column headers */
-export function createIamRows(graphData: ProjectGraphData[], colors?: string[], days?: Date[]): any[] {
-  if (!days) {
-    // First, get all the days we need to add if it hasn't already been provided
-    days = uniqueDays(graphData);
-  }
-  if (!colors) {
-    colors = defaultColors;
-  }
+/** Checks if the rows already includes the given day */
+function includesDay(rows: any[], day: Date): boolean {
+  return rows.findIndex(row => row[0].getTime() === day.getTime()) !== -1;
+}
 
-  // Each row is [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...]
-  let rows: any[] = [];
-  // Add a row for each unique day
-  days.forEach(day => rows.push([day]));
+/** Returns the row representing the given day */
+function getRow(rows: any[], day: Date): any[] {
+  return rows.find(row => row[0].getTime() === day.getTime());
+}
 
-  graphData.forEach((data, index) => {
-    for (const [key, value] of Object.entries(data.dateToNumberIAMBindings)) {
-      // Convert key from string to number
-      let date = startOfDay(+key);
-      // The row we're adding to is the same index as unique days
-      let row = rows[days.findIndex(findDate => findDate.getTime() === date.getTime())];
+/** Adds the table rows for the given Project. Each row is [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...] */
+export function addIamRows(rows: any[], data: ProjectGraphData, project: Project, seriesNum: number): any[] {
+  // First, get all the days we need to add if it hasn't already been provided
+  let days = uniqueDays([data]);
 
-      let recommendations = getRecommendations(+key, data.dateToRecommendationTaken);
-      let tooltip = getTooltip(value, recommendations);
-      let point = getPoint(recommendations, colors[index]);
-
-      // Populate the existing row with information
-      row.push(value, tooltip, point);
+  // Add a row for each new unique day
+  days.filter(day => !includesDay(rows, day)).forEach(day => {
+    let row = [day];
+    // Fill in columns for all existing projects with empty data
+    for (let i = 0; i < seriesNum * 3; i++) {
+      row.push(undefined);
     }
+    rows.push(row);
   });
+
+  // Sort rows in increasing order
+  rows.sort((a, b) => a[0].getTime() - b[0].getTime());
+
+  for (const [key, value] of Object.entries(data.dateToNumberIAMBindings)) {
+    // Convert key from string to number
+    let date = startOfDay(+key);
+    // The row we're adding to is the same index as unique days
+    let row = getRow(rows, date);
+
+    let recommendations = getRecommendations(+key, data.dateToRecommendationTaken);
+    let tooltip = getTooltip(value, recommendations);
+    let point = getPoint(recommendations, project.color);
+
+    // Populate the existing row with information
+    row.push(value, tooltip, point);
+  }
 
   return rows;
 }
 
-/** Creates the column headers for an IAM graph */
-export function createIamColumns(graphData: ProjectGraphData[]): any[] {
-  let columns: any[] = ['Time'];
-  graphData.forEach(data => {
-    // Populate the header row, which contains the column purposes
-    columns.push(data.projectId, { type: 'string', role: 'tooltip' }, { type: 'string', role: 'style' });
-  });
-  return columns;
+/** Adds the column headers for a single project on an IAM graph */
+export function addIamColumns(columns: any[], data: ProjectGraphData): void {
+  // Populate the header row, which contains the column purposes
+  columns.push(data.projectId, { type: 'string', role: 'tooltip' }, { type: 'string', role: 'style' });
 }
 
-export function createIamOptions(graphData: ProjectGraphData[], colors?: string[]): google.visualization.LineChartOptions {
+/** Create options for a LineChart */
+export function createOptions(): google.visualization.LineChartOptions {
   let options: google.visualization.LineChartOptions = {
     animation: {
       duration: 250,
@@ -178,32 +187,46 @@ export function createIamOptions(graphData: ProjectGraphData[], colors?: string[
     },
     series: {}
   }
-
-  if (!colors) {
-    colors = defaultColors;
-  }
-  graphData.forEach((data, index) => {
-    options.series[index] = { color: colors[index % colors.length] };
-  })
   return options;
 }
 
-/** Pull the colors from projects into the order of projects in graphData so colors can be assigned easily */
-function matchColors(graphData: ProjectGraphData[], projects: Project[]): string[] {
-  let colors = [];
-  graphData.forEach(data => colors.push(projects.find(project => project.projectId === data.projectId).color));
-  return colors;
+/** From a given SimpleChange, extract the projects that were added or deleted */
+export function getAdditionsDeletions(change: SimpleChange): { added: Project[], removed: Project[] } {
+  let out = { added: [], removed: [] };
+  if (change.previousValue === undefined) {
+    out.added = change.currentValue;
+    return out;
+  }
+
+  // Look for additions
+  change.currentValue.filter(c => !change.previousValue.includes(c)).forEach(addition => out.added.push(addition));
+  // Look for removals
+  change.previousValue.filter(c => !change.currentValue.includes(c)).forEach(deletion => out.removed.push(deletion));
+  return out;
 }
 
-/** Creates the required properties for an IAM graph */
-export function createIamGraphProperties(graphData: ProjectGraphData[], projects: Project[]): { startDate: Date, endDate: Date, rows: any[], columns: any[], options: google.visualization.LineChartOptions } {
-  let days = uniqueDays(graphData);
-  let colors = matchColors(graphData, projects);
+/** Initialize the chart properties with empty data */
+export function initProperties(): { options: google.visualization.LineChartOptions, graphData: any[], columns: any[] } {
+  let out: any = {};
+  out.options = createOptions();
+  out.graphData = [];
+  out.columns = ['Time']
+  return out;
+}
 
-  let rows = createIamRows(graphData, colors, days);
-  let columns = createIamColumns(graphData);
-  let options = createIamOptions(graphData, colors);
-  return { startDate: days[0], endDate: days[days.length - 1], rows: rows, columns: columns, options: options };
+/** Adds the given project to the graph */
+export function addToGraph(properties: { options: google.visualization.LineChartOptions, graphData: any[], columns: any[] }, data: ProjectGraphData, project: Project) {
+  let seriesNum: number = (properties.columns.length - 1) / 3;
+  // Set the color and add the new columns
+  properties.options.series[seriesNum] = { color: project.color };
+  addIamColumns(properties.columns, data);
+  // Add the new rows
+  addIamRows(properties.graphData, data, project, seriesNum);
+  properties.graphData = [].concat(properties.graphData);
+}
+
+export function removeFromGraph(properties: { options: google.visualization.LineChartOptions, graphData: any[], columns: any[] }, project: Project) {
+  
 }
 
 /** Gets the fake response for the given request */

@@ -16,6 +16,6 @@ limitations under the License.
 
 <h1 class="center" id="project-prompt" *ngIf="!showChart">Please select a project below to generate a graph</h1>
 
-<google-chart #chart id="chart" class="center" *ngIf="showChart" [type]="type" [columns]="columns" [data]="graphData"
-  [options]="options" [title]="title">
+<google-chart #chart id="chart" class="center" *ngIf="showChart" [type]="type" [columns]="properties.columns"
+  [data]="properties.graphData" [options]="properties.options" [title]="title">
 </google-chart>

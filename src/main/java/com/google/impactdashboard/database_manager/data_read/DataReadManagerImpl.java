@@ -1,10 +1,13 @@
 package com.google.impactdashboard.database_manager.data_read;
 
 import com.google.impactdashboard.data.project.ProjectIdentification;
+import com.google.impactdashboard.data.recommendation.IAMRecommenderMetadata;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
-import java.lang.UnsupportedOperationException;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Class for returning data from the database. */
 public class DataReadManagerImpl implements DataReadManager {
@@ -15,7 +18,9 @@ public class DataReadManagerImpl implements DataReadManager {
    */
   @Override
   public List<ProjectIdentification> listProjects() {
-    throw new UnsupportedOperationException("Unimplemented");
+    return Arrays.asList( 
+      ProjectIdentification.create("project-1", "project-id-1", 123456789123L), 
+      ProjectIdentification.create("project-2", "project-id-2", 234567890123L));
   }
 
   /** 
@@ -26,7 +31,12 @@ public class DataReadManagerImpl implements DataReadManager {
    */
   @Override
   public double getAverageIAMBindingsInPastYear(String projectId) {
-    throw new UnsupportedOperationException("Unimplemented");
+    if (projectId.equals("project-id-1")) {
+      return 1545;
+    } else if (projectId.equals("project-id-2")) {
+      return 715;
+    }
+    return 0;
   }
 
   /**
@@ -35,7 +45,38 @@ public class DataReadManagerImpl implements DataReadManager {
    */
   @Override
   public Map<Long, Recommendation> getMapOfDatesToRecommendationTaken(String projectId) {
-    throw new UnsupportedOperationException("Unimplemented");
+    HashMap<Long, Recommendation> datesToRecommendations = new HashMap<Long, Recommendation>(); 
+
+    if (projectId.equals("project-id-1")) {
+      datesToRecommendations.put(1591633823000L, 
+        Recommendation.create("project-id-1", 
+          "remove unused permissions from user account test@google.com", 
+          Recommendation.RecommenderType.IAM_BINDING, 1591633823000L, 
+          IAMRecommenderMetadata.create(1000)));    
+      datesToRecommendations.put(1592486585000L, 
+        Recommendation.create("project-id-1", 
+          "remove unused permissions from user account test2@google.com", 
+          Recommendation.RecommenderType.IAM_BINDING, 1592486585000L, 
+          IAMRecommenderMetadata.create(1000)));  
+      datesToRecommendations.put(1592486705000L, 
+        Recommendation.create("project-id-1", 
+          "remove unused permissions from user account test3@google.com", 
+          Recommendation.RecommenderType.IAM_BINDING, 1592486705000L, 
+          IAMRecommenderMetadata.create(300)));      
+    } else if (projectId.equals("project-id-2")) {
+      datesToRecommendations.put(1591704613000L, 
+        Recommendation.create("project-id-2", 
+          "remove unused permissions from user account test4@google.com", 
+          Recommendation.RecommenderType.IAM_BINDING, 1591704613000L, 
+          IAMRecommenderMetadata.create(500)));    
+      datesToRecommendations.put(1593072312000L, 
+        Recommendation.create("project-id-2", 
+          "remove unused permissions from user account test5@google.com", 
+          Recommendation.RecommenderType.IAM_BINDING, 1593072312000L, 
+          IAMRecommenderMetadata.create(350)));    
+    }
+
+    return datesToRecommendations;
   }
 
   /** 
@@ -45,6 +86,27 @@ public class DataReadManagerImpl implements DataReadManager {
    */
   @Override
   public Map<Long, Integer> getMapOfDatesToIAMBindings(String projectId) {
-    throw new UnsupportedOperationException("Unimplemented");
+    HashMap<Long, Integer> datesToBindings = new HashMap<Long, Integer>();
+    AtomicReference<Long> date = new AtomicReference<Long>(1590883200000L);
+
+    if (projectId.equals("project-id-1")) {
+      Arrays.asList(1000, 1000, 1000, 2000, 2050, 2150, 2150, 2150, 2150, 
+        1150, 1150, 1150, 1150, 2000, 2000, 2500, 2500, 2300, 2300, 1000, 
+        1000, 1000, 1100, 1100, 1000, 1000, 1300, 1300, 1350, 1350)
+        .forEach(numberBindings -> {
+          datesToBindings.put(date.get(), numberBindings);
+          date.set(date.get() + 86400000);
+        });
+    } else if (projectId.equals("project-id-2")) {
+      Arrays.asList(500, 500, 750, 750, 750, 750, 750, 1000, 1000, 
+        1000, 500, 500, 500, 600, 600, 600, 600, 300, 300, 1000, 
+        1000, 1000, 1100, 1100, 1000, 1000, 500, 500, 500, 500)
+        .forEach(numberBindings -> {
+          datesToBindings.put(date.get(), numberBindings);
+          date.set(date.get() + 86400000);
+        });
+    }
+
+    return datesToBindings;
   }
 }

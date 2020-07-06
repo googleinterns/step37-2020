@@ -21,8 +21,9 @@ public class ErrorHandlerServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception");
+    String message = (String) request.getAttribute("javax.servlet.error.message");
 
-    ErrorMessage error = new ErrorMessage(exception.getMessage(), exception);
+    ErrorMessage error = new ErrorMessage(message, exception);
 
     Gson gson = new Gson();
     String json  = gson.toJson(error);

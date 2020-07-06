@@ -1,13 +1,16 @@
 package com.google.impactdashboard.server;
 
 import com.google.impactdashboard.data.project.Project;
+import com.google.impactdashboard.data.project.ProjectGraphData;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.project.ProjectMetaData;
+import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.impactdashboard.database_manager.data_read.DataReadManager;
 import com.google.impactdashboard.database_manager.data_read.DataReadManagerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /** Retrieves all the information about the projects in the database */
 public class ProjectInformationRetriever {
@@ -19,6 +22,14 @@ public class ProjectInformationRetriever {
    */
   public static ProjectInformationRetriever create() {
     return new ProjectInformationRetriever(DataReadManagerFactory.create());
+  }
+
+  /**
+   * Static factory for creating a ProjectInformationRetriever with a pre-made instance of DataReadManager.
+   * @return New instance of ProjectInformationRetriever
+   */
+  public static ProjectInformationRetriever create(DataReadManager readManger) {
+    return new ProjectInformationRetriever(readManger);
   }
 
   private ProjectInformationRetriever(DataReadManager readManager) {
@@ -42,6 +53,20 @@ public class ProjectInformationRetriever {
       projectList.add(project);
     });
     return projectList;
+  }
+
+  /**
+   * Gets the information about the project specified by the projectId from the database.
+   * @param projectId The id of the project the data is being retrieved from
+   * @return The ProjectGraphData from the projectId that was specified
+   */
+  public ProjectGraphData getProjectData(String projectId) {
+    Map<Long, Integer> numberIAMBindingsOnDate =
+        readManager.getMapOfDatesToIAMBindings(projectId);
+    Map<Long, Recommendation> recommendationsAppliedOnDate =
+        readManager.getMapOfDatesToRecommendationTaken(projectId);
+    return ProjectGraphData.create(projectId, numberIAMBindingsOnDate,
+        recommendationsAppliedOnDate);
   }
 
   /**

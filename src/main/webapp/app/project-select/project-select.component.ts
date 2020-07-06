@@ -72,7 +72,6 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Toggles the given projects presence on the graph */
   toggleProject(project: Project) {
-    console.log(project);
     if (this.activeProjects.has(project)) {
       this.activeProjects.delete(project);
     } else {

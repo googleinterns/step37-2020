@@ -1,3 +1,7 @@
+* {
+  transition: color .3s;
+}
+
 #projects-table {
   padding: 10px;
   border-collapse: collapse;
@@ -28,4 +32,8 @@
 th div {
   float: left;
   margin: 0 5px;
+}
+
+tr:hover fa-icon {
+  color: lightgrey !important;
 }

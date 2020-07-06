@@ -46,3 +46,7 @@ th div {
 #projects-table td {
   padding-left: 8px;
 }
+
+#project-filter {
+  margin: 5px;
+}

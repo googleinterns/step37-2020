@@ -48,7 +48,6 @@ export class GraphComponent implements OnInit {
 
     additionsDeletions.added.forEach(addition => ProjectGraphData.getProject(addition.projectId).then(data => addToGraph(this.properties, data, addition)));
     additionsDeletions.removed.forEach(removal => removeFromGraph(this.properties, removal));
-    // this.projects.forEach(project => promises.push(request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r => r.json())));
   }
 
 

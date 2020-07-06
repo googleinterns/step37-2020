@@ -71,6 +71,7 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Toggles the given projects presence on the graph */
   toggleProject(project: Project) {
+    console.log(project);
     if (this.activeProjects.has(project)) {
       this.activeProjects.delete(project);
     } else {
@@ -116,18 +117,21 @@ export class ProjectSelectComponent implements OnInit {
     } else {
       this.currentSortDirection = SortDirection.DESCENDING;
     }
-    // Sort by the selected fields
-    this.projects.sort(ProjectComparators.getComparator(this.currentSortDirection, this.currentSortField));
-
     // Animate the selected field
     this.swapAnimationProperty(field);
   }
 
   /** Returns a sorted and filtered view of the projects */
   getProjects(): Project[] {
+    if(this.projects === undefined) {
+      return [];
+    }
     let display = [];
+
     let regex = new RegExp(this.query, 'i');
     this.projects.filter(project => project.name.match(regex) || project.projectId.match(regex)).forEach(project => display.push(project));
+
+    display.sort(ProjectComparators.getComparator(this.currentSortDirection, this.currentSortField));
     return display;
   }
 

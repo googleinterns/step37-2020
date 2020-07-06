@@ -7,20 +7,20 @@
       <div [@rotateSort]="sortRotated.iamBindings"><fa-icon [icon]="faArrow" [ngClass]="getSortClass(iamBindings)" (click)="changeSort(iamBindings)" id="iam-sort" class="clickable"></fa-icon></div> Bindings
     </th>
     <th>
-      <div [@rotateSort]="sortRotated.projectId"><fa-icon [icon]="faArrow" [ngClass]="getSortClass(projectId)" (click)="changeSort(projectId)" id="id-sort" class="clickable"></fa-icon></div> Project ID
-    </th>
-    <th>
       <div [@rotateSort]="sortRotated.projectNumber"><fa-icon [icon]="faArrow" [ngClass]="getSortClass(projectNumber)" (click)="changeSort(projectNumber)" id="number-sort" class="clickable"></fa-icon></div> Project
       Number
     </th>
-    <input type="text" (input)="search($event.target.value)"/>
+    <th>
+      <div [@rotateSort]="sortRotated.projectId"><fa-icon [icon]="faArrow" [ngClass]="getSortClass(projectId)" (click)="changeSort(projectId)" id="id-sort" class="clickable"></fa-icon></div> Project ID
+    </th>
+    <th><input type="text" (input)="search($event.target.value)" placeholder="Search by Name or ID" id="project-filter"/></th>
   </tr>
   <tr *ngFor="let project of getProjects()" (click)="toggleProject(project)" class="toggle-project clickable">
     <td>
       <fa-icon [icon]="faCircle" [ngStyle]="{'color': getColor(project)}"></fa-icon>{{ project.name }}
     </td>
     <td>{{ project.metaData.avgIAMBindingsInPastYear }}</td>
-    <td>{{ project.projectId }}</td>
     <td>{{ project.projectNumber }}</td>
+    <td colspan="2">{{ project.projectId }}</td>
   </tr>
 </table>

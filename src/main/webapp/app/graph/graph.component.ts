@@ -42,12 +42,11 @@ export class GraphComponent implements OnInit {
 
   /** Called when an input field changes */
   ngOnChanges(changes: SimpleChanges) {
-    console.log(changes);
     this.showChart = this.projects.length > 0;
 
     let additionsDeletions = getAdditionsDeletions(changes.projects);
 
-    additionsDeletions.added.forEach(addition => ProjectGraphData.getProject(addition.projectId).then(data => { addToGraph(this.properties, data, addition); console.log(this.properties) }));
+    additionsDeletions.added.forEach(addition => ProjectGraphData.getProject(addition.projectId).then(data => addToGraph(this.properties, data, addition)));
     additionsDeletions.removed.forEach(removal => removeFromGraph(this.properties, removal));
     // this.projects.forEach(project => promises.push(request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r => r.json())));
   }

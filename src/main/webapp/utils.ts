@@ -233,7 +233,8 @@ export function removeFromGraph(properties: { options: google.visualization.Line
   
   for (let [key, value] of Object.entries(properties.options.series)) {
     if(+key >= seriesNum) {
-      properties.options.series[key] = properties.options.series[+key + 1]
+      properties.options.series[key] = properties.options.series[+key + 1];
+      delete properties.options.series[+key + 1];
     }
   }
 

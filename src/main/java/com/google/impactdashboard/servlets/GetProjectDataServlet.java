@@ -20,7 +20,7 @@ public class GetProjectDataServlet extends HttpServlet {
   private ProjectInformationRetriever projectInformationRetriever;
 
   /**
-   * Handles the creation of the server classes the first time the servlet is run
+   * Handles the creation of the server classes the first time the servlet is run.
    */
   @Override
   public void init() {

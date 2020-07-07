@@ -1,6 +1,6 @@
 package com.google.impactdashboard.server.utilities;
 
-/** Error message class that will be sent to frontend */
+/** Error message class that will be sent to frontend. */
 public class ErrorMessage {
 
   private String message;

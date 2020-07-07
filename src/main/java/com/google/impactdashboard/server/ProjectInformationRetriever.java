@@ -8,15 +8,13 @@ import com.google.impactdashboard.data.project.ProjectMetaData;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.impactdashboard.database_manager.data_read.DataReadManager;
 import com.google.impactdashboard.database_manager.data_read.DataReadManagerFactory;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/** Retrieves all the information about the projects in the database */
+/** Retrieves all the information about the projects in the database. */
 public class ProjectInformationRetriever {
-  private DataReadManager readManager;
+  private final DataReadManager readManager;
 
   /**
    * Static factory for creating a ProjectInformationRetriever with a new instance of DataReadManager.
@@ -26,16 +24,8 @@ public class ProjectInformationRetriever {
     return new ProjectInformationRetriever(DataReadManagerFactory.create());
   }
 
-  /**
-   * Static factory for creating a ProjectInformationRetriever with a pre-made instance of DataReadManager.
-   * @return New instance of ProjectInformationRetriever
-   */
-  public static ProjectInformationRetriever create(DataReadManager readManger) {
-    return new ProjectInformationRetriever(readManger);
-  }
-
   @VisibleForTesting
-  private ProjectInformationRetriever(DataReadManager readManager) {
+  protected ProjectInformationRetriever(DataReadManager readManager) {
     this.readManager = readManager;
   }
 

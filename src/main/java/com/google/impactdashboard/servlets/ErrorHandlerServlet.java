@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Servlet that will be called when exception is thrown by any other servlet
+ * Servlet that will be called when exception is thrown by any other servlet.
  */
 @WebServlet("/error-handler")
 public class ErrorHandlerServlet extends HttpServlet {

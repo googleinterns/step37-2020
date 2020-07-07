@@ -1,5 +1,6 @@
 package com.google.impactdashboard.server;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.api_utilities.LogRetriever;
 import com.google.impactdashboard.api_utilities.RecommendationRetriever;
 import com.google.impactdashboard.data.recommendation.Recommendation;
@@ -9,14 +10,15 @@ import com.google.impactdashboard.database_manager.data_update.DataUpdateManager
 import java.io.IOException;
 import java.util.List;
 
-/** Class for updating the information in the database from the API */
+/** Class for updating the information in the database from the API. */
 public class DataUpdater {
 
-  private LogRetriever logRetriever;
-  private RecommendationRetriever recommendationRetriever;
-  private DataUpdateManager updateManager;
+  private final LogRetriever logRetriever;
+  private final RecommendationRetriever recommendationRetriever;
+  private final DataUpdateManager updateManager;
 
-  private DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
+  @VisibleForTesting
+  protected DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
                       DataUpdateManager updateManager) {
     this.logRetriever = logRetriever;
     this.recommendationRetriever = recommendationRetriever;
@@ -28,29 +30,18 @@ public class DataUpdater {
    * and RecommendationRetriever.
    * @return New instance of DataUpdater
    */
-  public DataUpdater create() throws IOException {
+  public static DataUpdater create() throws IOException {
     return new DataUpdater(LogRetriever.create(), RecommendationRetriever.create(),
         DataUpdateManagerFactory.create());
   }
 
   /**
-   * Static factory for creating a new instance of DataUpdater with existing LogRetriever
-   * and RecommendationRetriever.
-   * @return New instance of DataUpdater
-   */
-  public DataUpdater create(LogRetriever logRetriever,
-                            RecommendationRetriever recommendationRetriever,
-                            DataUpdateManager updateManager) {
-    return new DataUpdater(logRetriever, recommendationRetriever, updateManager);
-  }
-
-  /**
-   * Updates the database with any new information about recommendations and IAMBinding logging
+   * Updates the database with any new information about recommendations and IAMBinding logging.
    */
   public void updateDatabase() {}
 
   /**
-   * Gets the new Recommendation data from the Recommender API
+   * Gets the new Recommendation data from the Recommender API.
    * @return a List of Recommendations
    */
   private List<Recommendation> getUpdatedRecommendations() {

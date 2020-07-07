@@ -20,12 +20,12 @@ import {Project} from '../model/project';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-/** The base angular component for the impact dashboard */
+/** The base angular component for the impact dashboard. */
 export class AppComponent implements OnInit {
   public displayProjects: Project[] = [];
   async ngOnInit() {}
 
-  /** Called when the project-select component changes the projects to display */
+  /** Called when the project-select component changes the projects to display. */
   changeProjects(projects: Project[]) {
     this.displayProjects = projects;
   }

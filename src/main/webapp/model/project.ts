@@ -118,8 +118,12 @@ export enum SortDirection {
 
 /** The field to sort project by */
 export enum SortBy {
+  /** The IAM Bindings for a given project */
   IAM_BINDINGS,
+  /** The name of a given project */
   NAME,
+  /** The ID of a given project */
   PROJECT_ID,
+  /** The number of a given project */
   PROJECT_NUMBER,
 }

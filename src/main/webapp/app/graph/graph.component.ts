@@ -33,11 +33,11 @@ export class GraphComponent implements OnInit {
   public type = 'LineChart';
   public title: string;
   /** Whether to show the chart. When it's not selected, prompt the user to select a project */
-  public showChart: boolean;
+  public shouldShowChart: boolean;
 
   constructor() {
     this.projects = [];
-    this.showChart = false;
+    this.shouldShowChart = false;
     this.title = '';
     this.graphData = [];
     this.columns = [];
@@ -65,9 +65,9 @@ export class GraphComponent implements OnInit {
         this.options = properties.options;
 
         this.title = `IAM Bindings - ${properties.startDate.toLocaleDateString()} to ${properties.endDate.toLocaleDateString()}`;
-        this.showChart = true;
+        this.shouldShowChart = true;
       } else {
-        this.showChart = false;
+        this.shouldShowChart = false;
       }
     });
   }

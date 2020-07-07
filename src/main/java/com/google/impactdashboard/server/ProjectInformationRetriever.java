@@ -11,6 +11,7 @@ import com.google.impactdashboard.database_manager.data_read.DataReadManagerFact
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /** Retrieves all the information about the projects in the database */
 public class ProjectInformationRetriever {
@@ -42,17 +43,14 @@ public class ProjectInformationRetriever {
    * @return List of Projects from database
    */
   public List<Project> listProjectInformation() {
-    List<Project> projectList = new ArrayList<>();
     List<ProjectIdentification> projectIdentificationList = readManager.listProjects();
-    projectIdentificationList.forEach( projectIdentification -> {
+    return projectIdentificationList.stream().map((projectIdentification -> {
       ProjectMetaData projectMetadata = ProjectMetaData.create(readManager.
           getAverageIAMBindingsInPastYear(projectIdentification.getProjectId()));
-      Project project = Project.create(projectIdentification.getName(),
+      return Project.create(projectIdentification.getName(),
           projectIdentification.getProjectId(), projectIdentification.getProjectNumber(),
           projectMetadata);
-      projectList.add(project);
-    });
-    return projectList;
+    })).collect(Collectors.toList());
   }
 
   /**

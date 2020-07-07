@@ -1,7 +1,7 @@
 {
   "scripts": {
     "test": "mocha -r ts-node/register src/test/**/*.spec.ts",
-    "build": "ng build && cp -r src/main/webapp/WEB-INF dist/frontend/WEB-INF && mvn appengine:run",
+    "build": "ng build && cp -r src/main/webapp/WEB-INF dist/frontend/WEB-INF && mvn package appengine:run",
     "serve": "ng serve --open"
   },
   "dependencies": {

@@ -16,7 +16,7 @@ import { ProjectGraphData } from './model/project-graph-data';
 import { Recommendation } from './model/recommendation';
 
 /** Whether this is a test or not. */
-export var defaultIsTest: boolean = true;
+export var defaultIsTest: boolean = false;
 
 /** Used internally to dish out fake responses when requested. Effectively a map from URL to response */
 var fakeResponses: { [key: string]: any } = {};

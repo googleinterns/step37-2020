@@ -1,12 +1,21 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { Project, SortDirection, SortBy, ProjectComparators } from '../../model/project';
-import { request, fakeProjects, defaultColors } from '../../utils';
-import { faArrowDown, faArrowUp, faCircle } from '@fortawesome/free-solid-svg-icons';
+import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import {
+  Project,
+  SortDirection,
+  SortBy,
+  ProjectComparators,
+} from '../../model/project';
+import {request, fakeProjects, DEFAULT_COLORS} from '../../utils';
+import {
+  faArrowDown,
+  faArrowUp,
+  faCircle,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'project-select',
   templateUrl: './project-select.component.html',
-  styleUrls: ['./project-select.component.css']
+  styleUrls: ['./project-select.component.css'],
 })
 /** Component which lets users select which projects to display on the graph */
 export class ProjectSelectComponent implements OnInit {
@@ -74,7 +83,8 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Sets the sorting icons on the table as appropriate. If a field is not being sorted, the arrow will be facing down */
   setSortIcons() {
-    let primaryArrow = this.sortDirection === SortDirection.ASCENDING ? faArrowUp : faArrowDown;
+    const primaryArrow =
+      this.sortDirection === SortDirection.ASCENDING ? faArrowUp : faArrowDown;
 
     if (this.sortField === SortBy.IAM_BINDINGS) {
       this.faIamArrow = primaryArrow;
@@ -114,23 +124,31 @@ export class ProjectSelectComponent implements OnInit {
       this.sortDirection = SortDirection.ASCENDING;
     }
     // Sort by the selected fields
-    this.projects.sort(ProjectComparators.getComparator(this.sortDirection, this.sortField));
+    this.projects.sort(
+      ProjectComparators.getComparator(this.sortDirection, this.sortField)
+    );
     this.setSortIcons();
   }
 
   ngOnInit() {
     fakeProjects();
-    request('/list-project-summaries', 'GET').then(r => r.json()).then(projects => {
-      // Sort by the selected fields
-      projects.sort(ProjectComparators.getComparator(this.sortDirection, this.sortField));
-      // Assign colors based on initial IAM Bindings order
-      projects.forEach((project, index) => project.color = defaultColors[index % defaultColors.length])
-      this.projects = projects;
-      // Add the highest IAM Bindings project by default
-      if (projects.length > 0) {
-        this.toggleProject(projects[0]);
-      }
-    });
+    request('/list-project-summaries', 'GET')
+      .then(r => r.json())
+      .then(projects => {
+        // Sort by the selected fields
+        projects.sort(
+          ProjectComparators.getComparator(this.sortDirection, this.sortField)
+        );
+        // Assign colors based on initial IAM Bindings order
+        projects.forEach(
+          (project, index) =>
+            (project.color = DEFAULT_COLORS[index % DEFAULT_COLORS.length])
+        );
+        this.projects = projects;
+        // Add the highest IAM Bindings project by default
+        if (projects.length > 0) {
+          this.toggleProject(projects[0]);
+        }
+      });
   }
-
 }

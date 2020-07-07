@@ -12,51 +12,67 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ProjectGraphData } from './model/project-graph-data';
-import { Recommendation } from './model/recommendation';
-import { ProjectMetaData } from './model/project-metadata';
-import { Project } from './model/project';
-import { RecommenderType } from './model/recommender-type';
+import {ProjectGraphData} from './model/project-graph-data';
+import {Recommendation} from './model/recommendation';
+import {ProjectMetaData} from './model/project-metadata';
+import {Project} from './model/project';
+import {RecommenderType} from './model/recommender-type';
 
 /** Whether this is a test or not. */
-export var defaultIsTest: boolean = true;
-export var defaultColors: string[] = ['#3c78d8', '#cc0000', '#ff9900', '#b6d7a8', '#9c27b0'];
+export const DEFAULT_IS_TEST = true;
+export const DEFAULT_COLORS: string[] = [
+  '#3c78d8',
+  '#cc0000',
+  '#ff9900',
+  '#b6d7a8',
+  '#9c27b0',
+];
 
 /** Used internally to dish out fake responses when requested. Effectively a map from URL to response */
-var fakeResponses: { [key: string]: any } = {};
+const fakeResponses: {[key: string]: any} = {};
 
 /** Sends the given request to HTTP if isTest is false, otherwise fakes out the request */
-export async function request(url: string, method: string, body = undefined, isTest: boolean = defaultIsTest): Promise<{ json: any }> {
+export async function request(
+  url: string,
+  method: string,
+  body = undefined,
+  isTest: boolean = DEFAULT_IS_TEST
+): Promise<{json: any}> {
   if (isTest) {
     return new Promise(resolve => {
-      let response = getFake(url, method);
-      // When the user calls json() on the promise, 
-      resolve({ json: () => response });
+      const response = getFake(url);
+      // When the user calls json() on the promise,
+      resolve({json: () => response});
     });
   } else {
     return fetch(url, {
       method: method,
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
   }
 }
 
 /** Checks if the two timestamps (millis since epoch) fall on the same day. Returns true if they do */
 export function fallOnSameDay(time1: number, time2: number): boolean {
-  let date1 = new Date(0);
+  const date1 = new Date(0);
   date1.setTime(time1);
-  let date2 = new Date(0);
+  const date2 = new Date(0);
   date2.setTime(time2);
 
-  return date1.getFullYear() === date2.getFullYear() &&
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
     date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate();
+    date1.getDate() === date2.getDate()
+  );
 }
 
 /** Returns the recommendations which occured on the same day as the given time, which is in milliseconds since epoch */
-function getRecommendations(time: number, dateToRecommendation: { [key: number]: Recommendation }): Recommendation[] {
-  let recommendations: Recommendation[] = [];
-  for (let [key, value] of Object.entries(dateToRecommendation)) {
+function getRecommendations(
+  time: number,
+  dateToRecommendation: {[key: number]: Recommendation}
+): Recommendation[] {
+  const recommendations: Recommendation[] = [];
+  for (const [key, value] of Object.entries(dateToRecommendation)) {
     if (fallOnSameDay(time, +key)) {
       recommendations.push(value);
     }
@@ -65,7 +81,10 @@ function getRecommendations(time: number, dateToRecommendation: { [key: number]:
 }
 
 /** Returns the tooltip associated with the given IAM Bindings time */
-function getTooltip(numberBindings: number, matchingRecommendations: Recommendation[]): string {
+function getTooltip(
+  numberBindings: number,
+  matchingRecommendations: Recommendation[]
+): string {
   // The list of recommendations on the same day
   if (matchingRecommendations.length === 0) {
     return `IAM Bindings: ${numberBindings}`;
@@ -82,7 +101,10 @@ function getTooltip(numberBindings: number, matchingRecommendations: Recommendat
 }
 
 /** Returns the point styling associated with the given recommendation */
-function getPoint(matchingRecommendations: Recommendation[], color: string): string {
+function getPoint(
+  matchingRecommendations: Recommendation[],
+  color: string
+): string {
   if (matchingRecommendations.length === 0) {
     return null;
   }
@@ -91,19 +113,21 @@ function getPoint(matchingRecommendations: Recommendation[], color: string): str
 
 /** Converts the given millis since epoch to the start of the day in the local timezone */
 function startOfDay(time: number): Date {
-  let date = new Date(time);
+  const date = new Date(time);
   date.setHours(0, 0, 0, 0);
   return date;
 }
 
 /** Extract all the unique days from the given mappings and returns them sorted */
 function uniqueDays(graphData: ProjectGraphData[]): Date[] {
-  let days: Set<number> = new Set();
+  const days: Set<number> = new Set();
   graphData.forEach(data => {
-    Object.keys(data.dateToNumberIAMBindings).map(time => startOfDay(+time)).forEach(date => days.add(date.getTime()));
+    Object.keys(data.dateToNumberIAMBindings)
+      .map(time => startOfDay(+time))
+      .forEach(date => days.add(date.getTime()));
   });
 
-  let out: Date[] = [];
+  const out: Date[] = [];
   days.forEach(time => {
     out.push(new Date(time));
   });
@@ -113,30 +137,38 @@ function uniqueDays(graphData: ProjectGraphData[]): Date[] {
 }
 
 /** Creates the table rows from the given ProjectGraphData The first row contains the column headers */
-export function createIamRows(graphData: ProjectGraphData[], colors?: string[], days?: Date[]): any[] {
+export function createIamRows(
+  graphData: ProjectGraphData[],
+  colors?: string[],
+  days?: Date[]
+): any[] {
   if (!days) {
     // First, get all the days we need to add if it hasn't already been provided
     days = uniqueDays(graphData);
   }
   if (!colors) {
-    colors = defaultColors;
+    colors = DEFAULT_COLORS;
   }
 
   // Each row is [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...]
-  let rows: any[] = [];
+  const rows: any[] = [];
   // Add a row for each unique day
   days.forEach(day => rows.push([day]));
 
   graphData.forEach((data, index) => {
     for (const [key, value] of Object.entries(data.dateToNumberIAMBindings)) {
       // Convert key from string to number
-      let date = startOfDay(+key);
+      const date = startOfDay(+key);
       // The row we're adding to is the same index as unique days
-      let row = rows[days.findIndex(findDate => findDate.getTime() === date.getTime())];
+      const row =
+        rows[days.findIndex(findDate => findDate.getTime() === date.getTime())];
 
-      let recommendations = getRecommendations(+key, data.dateToRecommendationTaken);
-      let tooltip = getTooltip(value, recommendations);
-      let point = getPoint(recommendations, colors[index]);
+      const recommendations = getRecommendations(
+        +key,
+        data.dateToRecommendationTaken
+      );
+      const tooltip = getTooltip(value, recommendations);
+      const point = getPoint(recommendations, colors[index]);
 
       // Populate the existing row with information
       row.push(value, tooltip, point);
@@ -148,66 +180,94 @@ export function createIamRows(graphData: ProjectGraphData[], colors?: string[], 
 
 /** Creates the column headers for an IAM graph */
 export function createIamColumns(graphData: ProjectGraphData[]): any[] {
-  let columns: any[] = ['Time'];
+  const columns: any[] = ['Time'];
   graphData.forEach(data => {
     // Populate the header row, which contains the column purposes
-    columns.push(data.projectId, { type: 'string', role: 'tooltip' }, { type: 'string', role: 'style' });
+    columns.push(
+      data.projectId,
+      {type: 'string', role: 'tooltip'},
+      {type: 'string', role: 'style'}
+    );
   });
   return columns;
 }
 
-export function createIamOptions(graphData: ProjectGraphData[], colors?: string[]): google.visualization.LineChartOptions {
-  let options: google.visualization.LineChartOptions = {
+export function createIamOptions(
+  graphData: ProjectGraphData[],
+  colors: string[] = DEFAULT_COLORS
+): google.visualization.LineChartOptions {
+  const options: google.visualization.LineChartOptions = {
     animation: {
       duration: 250,
       easing: 'ease-in-out',
-      startup: true
+      startup: true,
     },
-    legend: { position: 'none' },
+    legend: {position: 'none'},
     height: 700,
     width: 1000,
     hAxis: {
       gridlines: {
-        color: 'white'
-      }
+        color: 'white',
+      },
     },
     vAxis: {
       minorGridlines: {
-        color: 'white'
-      }
+        color: 'white',
+      },
     },
-    series: {}
-  }
-
-  if (!colors) {
-    colors = defaultColors;
-  }
+    series: {},
+  };
   graphData.forEach((data, index) => {
-    options.series[index] = { color: colors[index % colors.length] };
-  })
+    options.series[index] = {color: colors[index % colors.length]};
+  });
   return options;
 }
 
 /** Pull the colors from projects into the order of projects in graphData so colors can be assigned easily */
-function matchColors(graphData: ProjectGraphData[], projects: Project[]): string[] {
-  let colors = [];
-  graphData.forEach(data => colors.push(projects.find(project => project.projectId === data.projectId).color));
+function matchColors(
+  graphData: ProjectGraphData[],
+  projects: Project[]
+): string[] {
+  const colors: string[] = [];
+  graphData.forEach(data => {
+    const project = projects.find(
+      project => project.projectId === data.projectId
+    );
+    if (project) {
+      colors.push(project.color);
+    }
+  });
   return colors;
 }
 
 /** Creates the required properties for an IAM graph */
-export function createIamGraphProperties(graphData: ProjectGraphData[], projects: Project[]): { startDate: Date, endDate: Date, rows: any[], columns: any[], options: google.visualization.LineChartOptions } {
-  let days = uniqueDays(graphData);
-  let colors = matchColors(graphData, projects);
+export function createIamGraphProperties(
+  graphData: ProjectGraphData[],
+  projects: Project[]
+): {
+  startDate: Date;
+  endDate: Date;
+  rows: any[];
+  columns: any[];
+  options: google.visualization.LineChartOptions;
+} {
+  const days = uniqueDays(graphData);
+  const colors = matchColors(graphData, projects);
 
-  let rows = createIamRows(graphData, colors, days);
-  let columns = createIamColumns(graphData);
-  let options = createIamOptions(graphData, colors);
-  return { startDate: days[0], endDate: days[days.length - 1], rows: rows, columns: columns, options: options };
+  const rows = createIamRows(graphData, colors, days);
+  const columns = createIamColumns(graphData);
+  const options = createIamOptions(graphData, colors);
+  return {
+    startDate: days[0],
+    endDate: days[days.length - 1],
+    rows: rows,
+    columns: columns,
+    options: options,
+  };
 }
 
 /** Gets the fake response for the given request */
-function getFake(url: string, method: string): any {
+function getFake(url: string): any {
   return fakeResponses[url];
 }
 
@@ -218,9 +278,9 @@ export function setResponse(url: string, response: any) {
 
 /** Generate fake data for project 1 */
 function fakeProject1(): void {
-  let projectId = 'project-1';
+  const projectId = 'project-1';
   // Fake data for showing the graph
-  let iamBindings: { [key: number]: number } = {
+  const iamBindings: {[key: number]: number} = {
     [Date.parse('1 Jun 2020 UTC')]: 131,
     [Date.parse('2 Jun 2020 UTC')]: 56,
     [Date.parse('3 Jun 2020 UTC')]: 84,
@@ -242,24 +302,47 @@ function fakeProject1(): void {
     [Date.parse('19 Jun 2020 UTC')]: 87,
     [Date.parse('20 Jun 2020 UTC')]: 57,
   };
-  let recommendations: { [key: number]: Recommendation } = {
-    [Date.parse('5 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING, Date.parse('5 Jun 2020 UTC')),
-    [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING, Date.parse('9 Jun 2020 UTC')),
-    [Date.parse('17 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING, Date.parse('17 Jun 2020 UTC')),
+  const recommendations: {[key: number]: Recommendation} = {
+    [Date.parse('5 Jun 2020 UTC')]: new Recommendation(
+      projectId,
+      'Rec 1',
+      RecommenderType.IAM_BINDING,
+      Date.parse('5 Jun 2020 UTC')
+    ),
+    [Date.parse('9 Jun 2020 UTC')]: new Recommendation(
+      projectId,
+      'Rec 2',
+      RecommenderType.IAM_BINDING,
+      Date.parse('9 Jun 2020 UTC')
+    ),
+    [Date.parse('17 Jun 2020 UTC')]: new Recommendation(
+      projectId,
+      'Rec 3',
+      RecommenderType.IAM_BINDING,
+      Date.parse('17 Jun 2020 UTC')
+    ),
     // Simulate two recommendations on one day
-    [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING, Date.parse('17 Jun 2020 UTC') + 1),
-  }
+    [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation(
+      projectId,
+      'Rec 4',
+      RecommenderType.IAM_BINDING,
+      Date.parse('17 Jun 2020 UTC') + 1
+    ),
+  };
 
-  let url = `/get-project-data?id="${projectId}"`;
+  const url = `/get-project-data?id="${projectId}"`;
   // Fake out the given url to the generated fake project
-  setResponse(url, new ProjectGraphData(projectId, iamBindings, recommendations));
+  setResponse(
+    url,
+    new ProjectGraphData(projectId, iamBindings, recommendations)
+  );
 }
 
 /** Generate fake data for project 2 */
 function fakeProject2(): void {
-  let projectId = 'project-2';
+  const projectId = 'project-2';
   // Fake data for showing the graph
-  let iamBindings: { [key: number]: number } = {
+  const iamBindings: {[key: number]: number} = {
     [Date.parse('1 Jun 2020 UTC')]: 28,
     [Date.parse('2 Jun 2020 UTC')]: 36,
     [Date.parse('3 Jun 2020 UTC')]: 22,
@@ -281,23 +364,56 @@ function fakeProject2(): void {
     [Date.parse('19 Jun 2020 UTC')]: 20,
     [Date.parse('20 Jun 2020 UTC')]: 47,
   };
-  let recommendations: { [key: number]: Recommendation } = {
-    [Date.parse('1 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING, Date.parse('1 Jun 2020 UTC')),
-    [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING, Date.parse('9 Jun 2020 UTC')),
-    [Date.parse('20 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING, Date.parse('20 Jun 2020 UTC')),
+  const recommendations: {[key: number]: Recommendation} = {
+    [Date.parse('1 Jun 2020 UTC')]: new Recommendation(
+      projectId,
+      'Rec 1',
+      RecommenderType.IAM_BINDING,
+      Date.parse('1 Jun 2020 UTC')
+    ),
+    [Date.parse('9 Jun 2020 UTC')]: new Recommendation(
+      projectId,
+      'Rec 2',
+      RecommenderType.IAM_BINDING,
+      Date.parse('9 Jun 2020 UTC')
+    ),
+    [Date.parse('20 Jun 2020 UTC')]: new Recommendation(
+      projectId,
+      'Rec 3',
+      RecommenderType.IAM_BINDING,
+      Date.parse('20 Jun 2020 UTC')
+    ),
     // Simulate two recommendations on one day
-    [Date.parse('20 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING, Date.parse('20 Jun 2020 UTC') + 1),
-  }
+    [Date.parse('20 Jun 2020 UTC') + 1]: new Recommendation(
+      projectId,
+      'Rec 4',
+      RecommenderType.IAM_BINDING,
+      Date.parse('20 Jun 2020 UTC') + 1
+    ),
+  };
 
-  let url = `/get-project-data?id="${projectId}"`;
+  const url = `/get-project-data?id="${projectId}"`;
   // Fake out the given url to the generated fake project
-  setResponse(url, new ProjectGraphData(projectId, iamBindings, recommendations));
+  setResponse(
+    url,
+    new ProjectGraphData(projectId, iamBindings, recommendations)
+  );
 }
 
 /** Generate fake data for projects 1 and 2 and sets the appropriate response from request() */
 export function fakeProjects(): void {
-  let prj1 = new Project('Project 1', 'project-1', 1, new ProjectMetaData(100));
-  let prj2 = new Project('Project 2', 'project-2', 2, new ProjectMetaData(70));
+  const prj1 = new Project(
+    'Project 1',
+    'project-1',
+    1,
+    new ProjectMetaData(100)
+  );
+  const prj2 = new Project(
+    'Project 2',
+    'project-2',
+    2,
+    new ProjectMetaData(70)
+  );
   setResponse('/list-project-summaries', [prj1, prj2]);
   fakeProject1();
   fakeProject2();

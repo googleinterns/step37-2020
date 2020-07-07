@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { RecommenderType } from './recommender-type';
-import { RecommenderMetadata } from './recommender-metadata';
+import {RecommenderType} from './recommender-type';
+import {RecommenderMetadata} from './recommender-metadata';
 
 /** Represents a single accepted recommendation */
 export class Recommendation {
@@ -23,7 +23,13 @@ export class Recommendation {
   acceptedTimestamp: number;
   metadata: RecommenderMetadata;
 
-  constructor(projectId: string, description: string, recommender: RecommenderType, acceptedTimestamp: number, metadata?: RecommenderMetadata) {
+  constructor(
+    projectId: string,
+    description: string,
+    recommender: RecommenderType,
+    acceptedTimestamp: number,
+    metadata?: RecommenderMetadata
+  ) {
     this.projectId = projectId;
     this.description = description;
     this.recommender = recommender;

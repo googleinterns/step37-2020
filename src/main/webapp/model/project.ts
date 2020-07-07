@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ProjectMetaData } from './project-metadata';
+import {ProjectMetaData} from './project-metadata';
 
 /** Represents relevent fields for a single project */
 export class Project {
@@ -23,7 +23,12 @@ export class Project {
   /** The color to display the given project as */
   color: string;
 
-  constructor(name: string, projectId: string, projectNumber: number, metaData: ProjectMetaData) {
+  constructor(
+    name: string,
+    projectId: string,
+    projectNumber: number,
+    metaData: ProjectMetaData
+  ) {
     this.name = name;
     this.projectId = projectId;
     this.projectNumber = projectNumber;
@@ -36,29 +41,41 @@ export class ProjectComparators {
   static getComparator(order: SortDirection, field: SortBy) {
     if (order === SortDirection.ASCENDING) {
       switch (field) {
-        case SortBy.IAM_BINDINGS: return this.iamAscending;
-        case SortBy.NAME: return this.nameAscending;
-        case SortBy.PROJECT_ID: return this.projectIdAscending;
-        case SortBy.PROJECT_NUMBER: return this.projectNumberAscending
+        case SortBy.IAM_BINDINGS:
+          return this.iamAscending;
+        case SortBy.NAME:
+          return this.nameAscending;
+        case SortBy.PROJECT_ID:
+          return this.projectIdAscending;
+        case SortBy.PROJECT_NUMBER:
+          return this.projectNumberAscending;
       }
     } else {
       switch (field) {
-        case SortBy.IAM_BINDINGS: return this.iamDescending;
-        case SortBy.NAME: return this.nameDescending;
-        case SortBy.PROJECT_ID: return this.projectIdDescending;
-        case SortBy.PROJECT_NUMBER: return this.projectNumberDescending
+        case SortBy.IAM_BINDINGS:
+          return this.iamDescending;
+        case SortBy.NAME:
+          return this.nameDescending;
+        case SortBy.PROJECT_ID:
+          return this.projectIdDescending;
+        case SortBy.PROJECT_NUMBER:
+          return this.projectNumberDescending;
       }
     }
   }
 
   /** Comparator for sorting projects in descending order by IAM Bindings */
   static iamDescending(a: Project, b: Project): number {
-    return b.metaData.avgIAMBindingsInPastYear - a.metaData.avgIAMBindingsInPastYear;
+    return (
+      b.metaData.avgIAMBindingsInPastYear - a.metaData.avgIAMBindingsInPastYear
+    );
   }
 
   /** Comparator for sorting projects in ascending order by IAM Bindings */
   static iamAscending(a: Project, b: Project): number {
-    return a.metaData.avgIAMBindingsInPastYear - b.metaData.avgIAMBindingsInPastYear;
+    return (
+      a.metaData.avgIAMBindingsInPastYear - b.metaData.avgIAMBindingsInPastYear
+    );
   }
 
   /** Comparator for sorting projects in descending order alphabetically by name */
@@ -79,7 +96,6 @@ export class ProjectComparators {
   /** Comparator for sorting projects in ascending order alphabetically by project ID */
   static projectIdAscending(a: Project, b: Project): number {
     return b.projectId.localeCompare(a.projectId);
-    
   }
 
   /** Comparator for sorting projects in descending order by project number */
@@ -95,10 +111,14 @@ export class ProjectComparators {
 
 /** The order to sort projects by */
 export enum SortDirection {
-  ASCENDING, DESCENDING
+  ASCENDING,
+  DESCENDING,
 }
 
 /** The field to sort project by */
 export enum SortBy {
-  IAM_BINDINGS, NAME, PROJECT_ID, PROJECT_NUMBER
+  IAM_BINDINGS,
+  NAME,
+  PROJECT_ID,
+  PROJECT_NUMBER,
 }

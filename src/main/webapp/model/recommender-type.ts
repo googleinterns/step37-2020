@@ -14,5 +14,5 @@
 
 /** The type of recommendation applied */
 export enum RecommenderType {
-  IAM_BINDING
+  IAM_BINDING,
 }

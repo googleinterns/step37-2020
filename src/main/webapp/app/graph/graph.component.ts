@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
-import { request, fakeProjects, createIamGraphProperties } from '../../utils';
-import { Project } from '../../model/project';
+import {Component, OnInit, Input, SimpleChanges} from '@angular/core';
+import {request, createIamGraphProperties} from '../../utils';
+import {Project} from '../../model/project';
 
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
-  styleUrls: ['./graph.component.css']
+  styleUrls: ['./graph.component.css'],
 })
 /** The angular component that contains the graph and associated logic */
 export class GraphComponent implements OnInit {
@@ -30,7 +30,7 @@ export class GraphComponent implements OnInit {
   public options: google.visualization.LineChartOptions;
   public graphData: any[];
   public columns: any[];
-  public type = "LineChart";
+  public type = 'LineChart';
   public title: string;
   /** Whether to show the chart. When it's not selected, prompt the user to select a project */
   public showChart: boolean;
@@ -42,13 +42,19 @@ export class GraphComponent implements OnInit {
   /** Called when an input field changes */
   ngOnChanges(changes: SimpleChanges) {
     // Perform GET for each project asynchronously
-    let promises = [];
-    this.projects.forEach(project => promises.push(request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r => r.json())));
+    const promises = [];
+    this.projects.forEach(project =>
+      promises.push(
+        request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r =>
+          r.json()
+        )
+      )
+    );
 
     Promise.all(promises).then(graphData => {
       if (graphData.length > 0) {
         // Generate the information needed for the graph
-        let properties = createIamGraphProperties(graphData, this.projects);
+        const properties = createIamGraphProperties(graphData, this.projects);
         this.columns = properties.columns;
         this.graphData = properties.rows;
         this.options = properties.options;
@@ -61,8 +67,5 @@ export class GraphComponent implements OnInit {
     });
   }
 
-
-  async ngOnInit() {
-
-  }
+  async ngOnInit() {}
 }

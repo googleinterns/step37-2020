@@ -12,15 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Recommendation } from './recommendation';
+import {Recommendation} from './recommendation';
 
 /** Represents the data being put on a graph for a particular project */
 export class ProjectGraphData {
   projectId: string;
-  dateToNumberIAMBindings: { [key: number]: number };
-  dateToRecommendationTaken: { [key: number]: Recommendation };
+  dateToNumberIAMBindings: {[key: number]: number};
+  dateToRecommendationTaken: {[key: number]: Recommendation};
 
-  constructor(projectId: string, dateToNumberIAMBindings: { [key: number]: number }, dateToRecommendationTaken: { [key: number]: Recommendation }) {
+  constructor(
+    projectId: string,
+    dateToNumberIAMBindings: {[key: number]: number},
+    dateToRecommendationTaken: {[key: number]: Recommendation}
+  ) {
     this.projectId = projectId;
     this.dateToNumberIAMBindings = dateToNumberIAMBindings;
     this.dateToRecommendationTaken = dateToRecommendationTaken;

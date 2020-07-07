@@ -3,10 +3,10 @@
     "test": "mocha -r ts-node/register src/test/**/*.spec.ts",
     "build": "ng build && cp -r src/main/webapp/WEB-INF dist/frontend/WEB-INF && mvn appengine:run",
     "serve": "ng serve --open",
-    "check": "gts check",
+    "check": "gts check **/*.ts",
     "clean": "gts clean",
     "compile": "tsc",
-    "fix": "gts fix",
+    "fix": "gts fix **/*.ts",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run check"

@@ -66,7 +66,7 @@ export class ProjectComparators {
   }
 
   /** Comparator for sorting projects in descending order by IAM Bindings. */
-  static iamDescending(a: Project, b: Project): number {
+  private static iamDescending(a: Project, b: Project): number {
     return (
       b.metaData.averageIAMBindingsInPastYear -
       a.metaData.averageIAMBindingsInPastYear
@@ -74,7 +74,7 @@ export class ProjectComparators {
   }
 
   /** Comparator for sorting projects in ascending order by IAM Bindings. */
-  static iamAscending(a: Project, b: Project): number {
+  private static iamAscending(a: Project, b: Project): number {
     return (
       a.metaData.averageIAMBindingsInPastYear -
       b.metaData.averageIAMBindingsInPastYear
@@ -82,32 +82,32 @@ export class ProjectComparators {
   }
 
   /** Comparator for sorting projects in descending order alphabetically by name. */
-  static nameDescending(a: Project, b: Project): number {
+  private static nameDescending(a: Project, b: Project): number {
     return a.name.localeCompare(b.name);
   }
 
   /** Comparator for sorting projects in ascending order alphabetically by name. */
-  static nameAscending(a: Project, b: Project): number {
+  private static nameAscending(a: Project, b: Project): number {
     return b.name.localeCompare(a.name);
   }
 
   /** Comparator for sorting projects in descending order alphabetically by project ID. */
-  static projectIdDescending(a: Project, b: Project): number {
+  private static projectIdDescending(a: Project, b: Project): number {
     return a.projectId.localeCompare(b.projectId);
   }
 
   /** Comparator for sorting projects in ascending order alphabetically by project ID. */
-  static projectIdAscending(a: Project, b: Project): number {
+  private static projectIdAscending(a: Project, b: Project): number {
     return b.projectId.localeCompare(a.projectId);
   }
 
   /** Comparator for sorting projects in descending order by project number. */
-  static projectNumberDescending(a: Project, b: Project): number {
+  private static projectNumberDescending(a: Project, b: Project): number {
     return b.projectNumber - a.projectNumber;
   }
 
   /** Comparator for sorting projects in ascending order by project number. */
-  static projectNumberAscending(a: Project, b: Project): number {
+  private static projectNumberAscending(a: Project, b: Project): number {
     return a.projectNumber - b.projectNumber;
   }
 }

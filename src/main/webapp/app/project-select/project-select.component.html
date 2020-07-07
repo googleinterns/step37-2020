@@ -1,26 +1,26 @@
 <table id="projects-table" class="center">
   <tr id="header">
     <th>
-      <fa-icon [icon]="faNameArrow" [ngClass]="getSortClass(projectName)" 
+      <fa-icon [icon]="nameArrow" [ngClass]="getSortClass(projectName)" 
       (click)="changeSort(projectName)" id="name-sort" class="clickable"></fa-icon> Project Name
     </th>
     <th>
-      <fa-icon [icon]="faIamArrow" [ngClass]="getSortClass(iamBindings)" 
+      <fa-icon [icon]="iamArrow" [ngClass]="getSortClass(iamBindings)" 
       (click)="changeSort(iamBindings)" id="iam-sort" class="clickable"></fa-icon> Bindings
     </th>
     <th>
-      <fa-icon [icon]="faProjectIdArrow" [ngClass]="getSortClass(projectId)" 
+      <fa-icon [icon]="projectIdArrow" [ngClass]="getSortClass(projectId)" 
       (click)="changeSort(projectId)" id="id-sort" class="clickable"></fa-icon> Project ID
     </th>
     <th>
-      <fa-icon [icon]="faProjectNumberArrow" [ngClass]="getSortClass(projectNumber)" 
+      <fa-icon [icon]="projectNumberArrow" [ngClass]="getSortClass(projectNumber)" 
       (click)="changeSort(projectNumber)" id="number-sort" class="clickable"></fa-icon> Project
       Number
     </th>
   </tr>
   <tr *ngFor="let project of projects" (click)="toggleProject(project)" class="toggle-project clickable">
     <td>
-      <fa-icon [icon]="faCircle" [ngStyle]="{'color': getColor(project)}"></fa-icon>{{ project.name }}
+      <fa-icon [icon]="circle" [ngStyle]="{'color': getColor(project)}"></fa-icon>{{ project.name }}
     </td>
     <td>{{ project.metaData.averageIAMBindingsInPastYear }}</td>
     <td>{{ project.projectId }}</td>

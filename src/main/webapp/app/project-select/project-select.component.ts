@@ -36,11 +36,11 @@ export class ProjectSelectComponent implements OnInit {
   public projectNumber = SortBy.PROJECT_NUMBER;
 
   // #region Fontawesome icons
-  faIamArrow: IconDefinition;
-  faNameArrow: IconDefinition;
-  faProjectIdArrow: IconDefinition;
-  faProjectNumberArrow: IconDefinition;
-  faCircle: IconDefinition;
+  iamArrow: IconDefinition;
+  nameArrow: IconDefinition;
+  projectIdArrow: IconDefinition;
+  projectNumberArrow: IconDefinition;
+  circle: IconDefinition;
   // #endregion
 
   @Output()
@@ -48,11 +48,11 @@ export class ProjectSelectComponent implements OnInit {
 
   constructor() {
     this.activeProjects = new Set();
-    this.faIamArrow = faArrowDown;
-    this.faNameArrow = faArrowDown;
-    this.faProjectIdArrow = faArrowDown;
-    this.faProjectNumberArrow = faArrowDown;
-    this.faCircle = faCircle;
+    this.iamArrow = faArrowDown;
+    this.nameArrow = faArrowDown;
+    this.projectIdArrow = faArrowDown;
+    this.projectNumberArrow = faArrowDown;
+    this.circle = faCircle;
 
     this.projects = [];
     this.sortDirection = SortDirection.DESCENDING;
@@ -91,25 +91,25 @@ export class ProjectSelectComponent implements OnInit {
       this.sortDirection === SortDirection.ASCENDING ? faArrowUp : faArrowDown;
 
     if (this.sortField === SortBy.IAM_BINDINGS) {
-      this.faIamArrow = primaryArrow;
-      this.faNameArrow = faArrowDown;
-      this.faProjectIdArrow = faArrowDown;
-      this.faProjectNumberArrow = faArrowDown;
+      this.iamArrow = primaryArrow;
+      this.nameArrow = faArrowDown;
+      this.projectIdArrow = faArrowDown;
+      this.projectNumberArrow = faArrowDown;
     } else if (this.sortField === SortBy.NAME) {
-      this.faIamArrow = faArrowDown;
-      this.faNameArrow = primaryArrow;
-      this.faProjectIdArrow = faArrowDown;
-      this.faProjectNumberArrow = faArrowDown;
+      this.iamArrow = faArrowDown;
+      this.nameArrow = primaryArrow;
+      this.projectIdArrow = faArrowDown;
+      this.projectNumberArrow = faArrowDown;
     } else if (this.sortField === SortBy.PROJECT_ID) {
-      this.faIamArrow = faArrowDown;
-      this.faNameArrow = faArrowDown;
-      this.faProjectIdArrow = primaryArrow;
-      this.faProjectNumberArrow = faArrowDown;
+      this.iamArrow = faArrowDown;
+      this.nameArrow = faArrowDown;
+      this.projectIdArrow = primaryArrow;
+      this.projectNumberArrow = faArrowDown;
     } else if (this.sortField === SortBy.PROJECT_NUMBER) {
-      this.faIamArrow = faArrowDown;
-      this.faNameArrow = faArrowDown;
-      this.faProjectIdArrow = faArrowDown;
-      this.faProjectNumberArrow = primaryArrow;
+      this.iamArrow = faArrowDown;
+      this.nameArrow = faArrowDown;
+      this.projectIdArrow = faArrowDown;
+      this.projectNumberArrow = primaryArrow;
     }
   }
 

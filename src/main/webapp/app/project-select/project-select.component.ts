@@ -1,10 +1,5 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
-import {
-  Project,
-  SortDirection,
-  SortBy,
-  ProjectComparators,
-} from '../../model/project';
+import {Project} from '../../model/project';
 import {request, fakeProjects, DEFAULT_COLORS} from '../../utils';
 import {
   faArrowDown,
@@ -12,6 +7,11 @@ import {
   faCircle,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
+import {
+  SortDirection,
+  SortBy,
+  ProjectComparators,
+} from '../../model/project-sort';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({

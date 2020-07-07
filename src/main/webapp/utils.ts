@@ -20,12 +20,16 @@ import {RecommenderType} from './model/recommender-type';
 
 /** Whether this is a test or not. */
 export const DEFAULT_IS_TEST = true;
+// See https://standards.google/guidelines/brand-standards/color/palette/#brand-colors
 export const DEFAULT_COLORS: string[] = [
-  '#3c78d8',
-  '#cc0000',
-  '#ff9900',
-  '#b6d7a8',
-  '#9c27b0',
+  // Google blue
+  '#174ea6',
+  // Google red
+  '#a50e0e',
+  // Google yellow
+  '#e37400',
+  // Google green
+  '#0d652d',
 ];
 
 /** Used internally to dish out fake responses when requested. Effectively a map from URL to response */

@@ -1,11 +1,11 @@
 import {strictEqual} from 'assert';
 import {describe, it, before, beforeEach} from 'mocha';
-import * as utils from '../../main/webapp/utils';
-import {ProjectGraphData} from '../../main/webapp/model/project-graph-data';
-import {Recommendation} from '../../main/webapp/model/recommendation';
-import {RecommenderType} from '../../main/webapp/model/recommender-type';
-import {Project} from '../../main/webapp/model/project';
-import {ProjectMetaData} from '../../main/webapp/model/project-metadata';
+import * as utils from '../../main/angular/utils';
+import {ProjectGraphData} from '../../main/angular/model/project-graph-data';
+import {Recommendation} from '../../main/angular/model/recommendation';
+import {RecommenderType} from '../../main/angular/model/recommender-type';
+import {Project} from '../../main/angular/model/project';
+import {ProjectMetaData} from '../../main/angular/model/project-metadata';
 
 describe('Utility functions', () => {
   describe('fallOnSameDay()', () => {

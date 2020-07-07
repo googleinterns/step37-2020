@@ -20,7 +20,7 @@ import {RecommenderType} from './model/recommender-type';
 import {SimpleChange} from '@angular/core';
 
 /** Whether this is a test or not. */
-export const DEFAULT_IS_TEST = true;
+export const DEFAULT_IS_TEST = false;
 // See https://standards.google/guidelines/brand-standards/color/palette/#brand-colors
 export const DEFAULT_COLORS: string[] = [
   // Google blue

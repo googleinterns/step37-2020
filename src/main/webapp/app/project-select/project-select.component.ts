@@ -13,12 +13,12 @@ import {
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 
+/** Component which lets users select which projects to display on the graph */
 @Component({
   selector: 'project-select',
   templateUrl: './project-select.component.html',
   styleUrls: ['./project-select.component.css'],
 })
-/** Component which lets users select which projects to display on the graph */
 export class ProjectSelectComponent implements OnInit {
   /** All projects we have access to */
   public projects: Project[];

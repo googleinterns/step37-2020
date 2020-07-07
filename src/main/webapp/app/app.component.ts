@@ -15,12 +15,12 @@
 import {Component, OnInit} from '@angular/core';
 import {Project} from '../model/project';
 
+/** The base angular component for the impact dashboard. */
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-/** The base angular component for the impact dashboard. */
 export class AppComponent implements OnInit {
   public displayProjects: Project[] = [];
   async ngOnInit() {}

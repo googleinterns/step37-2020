@@ -16,12 +16,12 @@ import {Component, OnInit, Input, SimpleChanges} from '@angular/core';
 import {request, createIamGraphProperties} from '../../utils';
 import {Project} from '../../model/project';
 
+/** The angular component that contains the graph and associated logic */
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.css'],
 })
-/** The angular component that contains the graph and associated logic */
 export class GraphComponent implements OnInit {
   /** The projects to display on the graph */
   @Input()

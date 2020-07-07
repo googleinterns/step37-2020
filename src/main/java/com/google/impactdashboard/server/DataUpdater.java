@@ -59,6 +59,11 @@ public class DataUpdater {
    * @return a List of Recommendations
    */
   private List<Recommendation> listUpdatedRecommendations() {
+    // Steps for implementing this function (may require more methods for single responsibility)
+    // retrieve recommendations from cloud logging and recommender
+    // retrieve current recommendations stored by database
+    // filter out any duplicate recommendations
+    // add non duplicate recommendation to the database
     throw new UnsupportedOperationException("Not Implemented");
   }
 
@@ -67,6 +72,12 @@ public class DataUpdater {
    * @return A List of IAMBindingDatabaseEntry
    */
   private List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
+    // Steps for implementing this function (may require more methods for single responsibility)
+    // retrieve IAMBinding information from cloud logging and IAM API
+    // retrieve IAMBinding from database
+    // (TODO determine whether to retrieve all info or info for a certain time range)
+    // filter out any duplicate IAM Information
+    // add non duplicates to database
     throw new UnsupportedOperationException("Not Implemented");
   }
 

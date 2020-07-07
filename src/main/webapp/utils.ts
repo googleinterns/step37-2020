@@ -72,9 +72,9 @@ export function fallOnSameDay(time1: number, time2: number): boolean {
 }
 
 /** Returns the recommendations which occured on the same day as the given time, which is in milliseconds since epoch */
-function getRecommendations(
+function getRecommendationsOnSameDay(
   time: number,
-  dateToRecommendation: {[key: number]: Recommendation}
+  dateToRecommendation: {[timeInMillis: number]: Recommendation}
 ): Recommendation[] {
   const recommendations: Recommendation[] = [];
   for (const [key, value] of Object.entries(dateToRecommendation)) {
@@ -160,7 +160,7 @@ export function createIamRows(
       const row =
         rows[days.findIndex(findDate => findDate.getTime() === date.getTime())];
 
-      const recommendations = getRecommendations(
+      const recommendations = getRecommendationsOnSameDay(
         +key,
         data.dateToRecommendationTaken
       );
@@ -280,7 +280,7 @@ export function setResponse(url: string, response: any) {
 function fakeProject1(): void {
   const projectId = 'project-1';
   // Fake data for showing the graph
-  const iamBindings: {[key: number]: number} = {
+  const iamBindings: {[timeInMillis: number]: number} = {
     [Date.parse('1 Jun 2020 UTC')]: 131,
     [Date.parse('2 Jun 2020 UTC')]: 56,
     [Date.parse('3 Jun 2020 UTC')]: 84,
@@ -302,7 +302,7 @@ function fakeProject1(): void {
     [Date.parse('19 Jun 2020 UTC')]: 87,
     [Date.parse('20 Jun 2020 UTC')]: 57,
   };
-  const recommendations: {[key: number]: Recommendation} = {
+  const recommendations: {[timeInMillis: number]: Recommendation} = {
     [Date.parse('5 Jun 2020 UTC')]: new Recommendation(
       projectId,
       'Rec 1',
@@ -342,7 +342,7 @@ function fakeProject1(): void {
 function fakeProject2(): void {
   const projectId = 'project-2';
   // Fake data for showing the graph
-  const iamBindings: {[key: number]: number} = {
+  const iamBindings: {[timeInMillis: number]: number} = {
     [Date.parse('1 Jun 2020 UTC')]: 28,
     [Date.parse('2 Jun 2020 UTC')]: 36,
     [Date.parse('3 Jun 2020 UTC')]: 22,
@@ -364,7 +364,7 @@ function fakeProject2(): void {
     [Date.parse('19 Jun 2020 UTC')]: 20,
     [Date.parse('20 Jun 2020 UTC')]: 47,
   };
-  const recommendations: {[key: number]: Recommendation} = {
+  const recommendations: {[timeInMillis: number]: Recommendation} = {
     [Date.parse('1 Jun 2020 UTC')]: new Recommendation(
       projectId,
       'Rec 1',

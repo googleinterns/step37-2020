@@ -3,6 +3,7 @@ target/
 .vscode/
 bin/
 node_modules/
+build/
 .idea
 .iml
 .classpath

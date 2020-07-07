@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "build",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "lib": ["dom"]
   },
   "include": [
     "src/**/*.ts",

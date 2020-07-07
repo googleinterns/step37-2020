@@ -36,6 +36,7 @@ export class GraphComponent implements OnInit {
   public showChart: boolean;
 
   constructor() {
+    this.projects = [];
     this.showChart = false;
     this.title = '';
     this.graphData = [];

@@ -16,14 +16,14 @@ import {Component, OnInit, Input, SimpleChanges} from '@angular/core';
 import {request, createIamGraphProperties} from '../../utils';
 import {Project} from '../../model/project';
 
-/** The angular component that contains the graph and associated logic */
+/** The angular component that contains the graph and associated logic. */
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.css'],
 })
 export class GraphComponent implements OnInit {
-  /** The projects to display on the graph */
+  /** The projects to display on the graph. */
   @Input()
   public projects: Project[];
 
@@ -32,7 +32,7 @@ export class GraphComponent implements OnInit {
   public columns: any[];
   public type = 'LineChart';
   public title: string;
-  /** Whether to show the chart. When it's not selected, prompt the user to select a project */
+  /** Whether to show the chart. When it's not selected, prompt the user to select a project. */
   public shouldShowChart: boolean;
 
   constructor() {
@@ -44,7 +44,7 @@ export class GraphComponent implements OnInit {
     this.options = {};
   }
 
-  /** Called when an input field changes */
+  /** Called when an input field changes. */
   ngOnChanges(changes: SimpleChanges) {
     // Perform GET for each project asynchronously
     const promises: Promise<any>[] = [];

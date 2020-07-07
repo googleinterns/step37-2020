@@ -1,7 +1,7 @@
-/** Handles different types of recommendations */
+/** Handles different types of recommendations. */
 export abstract class RecommenderMetadata {}
 
-/** Metadata specifically for IAM Bindings */
+/** Metadata specifically for IAM Bindings. */
 export class IAMRecommenderMetadata extends RecommenderMetadata {
   impactInIAMBindings: number;
 

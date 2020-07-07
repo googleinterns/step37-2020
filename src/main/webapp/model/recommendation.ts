@@ -15,7 +15,7 @@
 import {RecommenderType} from './recommender-type';
 import {RecommenderMetadata} from './recommender-metadata';
 
-/** Represents a single accepted recommendation */
+/** Represents a single accepted recommendation. */
 export class Recommendation {
   projectId: string;
   description: string;

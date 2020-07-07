@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/** Represents misc data for a project for extensibility purposes */
+/** Represents misc data for a project for extensibility purposes. */
 export class ProjectMetaData {
   averageIAMBindingsInPastYear: number;
 

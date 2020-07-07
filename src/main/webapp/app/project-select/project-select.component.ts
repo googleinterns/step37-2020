@@ -13,20 +13,20 @@ import {
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 
-/** Component which lets users select which projects to display on the graph */
+/** Component which lets users select which projects to display on the graph. */
 @Component({
   selector: 'project-select',
   templateUrl: './project-select.component.html',
   styleUrls: ['./project-select.component.css'],
 })
 export class ProjectSelectComponent implements OnInit {
-  /** All projects we have access to */
+  /** All projects we have access to. */
   public projects: Project[];
-  /** All projects that are currently selected */
+  /** All projects that are currently selected. */
   public activeProjects: Set<Project>;
-  /** The sort direction */
+  /** The sort direction. */
   public sortDirection: SortDirection;
-  /** The field sorting by */
+  /** The field sorting by. */
   public sortField: SortBy;
 
   // Convenience selectors for the DOM
@@ -60,7 +60,7 @@ export class ProjectSelectComponent implements OnInit {
     this.setSortIcons();
   }
 
-  /** Returns the color associated with the given project */
+  /** Returns the color associated with the given project. */
   getColor(project: Project): string {
     if (this.activeProjects.has(project)) {
       return project.color;
@@ -68,7 +68,7 @@ export class ProjectSelectComponent implements OnInit {
     return '#b8b8b8';
   }
 
-  /** Toggles the given projects presence on the graph */
+  /** Toggles the given projects presence on the graph. */
   toggleProject(project: Project) {
     if (this.activeProjects.has(project)) {
       this.activeProjects.delete(project);
@@ -78,7 +78,7 @@ export class ProjectSelectComponent implements OnInit {
     this.changeProjects.emit(Array.from(this.activeProjects));
   }
 
-  /** Returns the class placed on a sorting arrow, which decides whether it's grayed out or not */
+  /** Returns the class placed on a sorting arrow, which decides whether it's grayed out or not. */
   getSortClass(field: SortBy) {
     // let field = this.getField(fieldName);
     if (field === this.sortField) {
@@ -87,7 +87,7 @@ export class ProjectSelectComponent implements OnInit {
     return 'sort-inactive';
   }
 
-  /** Sets the sorting icons on the table as appropriate. If a field is not being sorted, the arrow will be facing down */
+  /** Sets the sorting icons on the table as appropriate. If a field is not being sorted, the arrow will be facing down. */
   setSortIcons() {
     const primaryArrow =
       this.sortDirection === SortDirection.ASCENDING ? faArrowUp : faArrowDown;
@@ -115,7 +115,7 @@ export class ProjectSelectComponent implements OnInit {
     }
   }
 
-  /** Change the sort field/direction, adjusts styling and sorts projects */
+  /** Change the sort field/direction, adjusts styling and sorts projects. */
   changeSort(field: SortBy) {
     if (this.sortField === field) {
       // Just toggle the sort direction if we're sorting by the same field

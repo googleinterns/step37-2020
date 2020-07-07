@@ -4,11 +4,10 @@ import java.lang.UnsupportedOperationException;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 
 /** 
- * An interface for building query configuration builder object and storing them, 
+ * An interface for building query configuration builder objects and storing them, 
  * so that they only need ot be built once. 
  */
 public interface QueryConfigurationBuilder {
-
   /** Returns the only instance of the class. */
   public static QueryConfigurationBuilder getInstance() {
     throw new UnsupportedOperationException("Must be overriden");
@@ -39,7 +38,9 @@ public interface QueryConfigurationBuilder {
   public QueryJobConfiguration.Builder getDatesToBindingsConfiguration();
 
   /**
-   * Retrieves parameterized query job configuration that retrieves all (timestamp, recomendation) data in the table for a single project, from the IAM Bindings Recommender.
+   * Retrieves parameterized query job configuration that retrieves all 
+   * (timestamp, recomendation) data in the table for a single project, from the 
+   * IAM Bindings Recommender.
    */
   public QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration();
 
@@ -52,7 +53,28 @@ public interface QueryConfigurationBuilder {
       to be inserted having a value for every column in the specified table, and 
       with no comma at the end of the list of rows. 
    */
-  public QueryJobConfiguration.Builder insertValuesIntoIAMTableConfiguration(String values);
+  public QueryJobConfiguration.Builder insertValuesIAMTableConfiguration(String values);
 
+  /**
+   * Retrieves query job configuration that inserts {@code values} into the 
+   * Recommendations table. 
+   * @param values The values to be inserted. Must be formatted as 
+      {@code "(column1Value1, column2Value1, column3Value1, ....), 
+      (column1Value2, column2Value2, column3Value2, ....), ..."}, with each row 
+      to be inserted having a value for every column in the specified table, and 
+      with no comma at the end of the list of rows. 
+   */
+  public QueryJobConfiguration.Builder insertValuesRecommendationsTableConfiguration(String values);
   
+  /** 
+   * Retrieves query job configuration that deletes 365-day-old data from the 
+   * IAM bindings table.
+   */
+  public QueryJobConfiguration.Builder deleteOldDataIAMTableConfiguration();
+
+  /**
+   * Retrieves query job configuration that deletes 365-day-old data from the 
+   * Recommendations table.
+   */
+  public QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration();
 }

@@ -35,9 +35,9 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder getProjectIdsConfiguration() {
     if (getProjectIdsConfiguration == null) {
       getProjectIdsConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.GET_PROJECT_IDS
-        .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-      .setUseLegacySql(false);
+        .newBuilder(Queries.GET_PROJECT_IDS
+          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+        .setUseLegacySql(false);
     }
 
     return getProjectIdsConfiguration;
@@ -50,9 +50,9 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration() {
     if (getProjectIdentificationInformationConfiguration == null) {
       getProjectIdentificationInformationConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.GET_PROJECT_IDENTIFICATION_INFORMATION
-        .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-      .setUseLegacySql(false);
+        .newBuilder(Queries.GET_PROJECT_IDENTIFICATION_INFORMATION
+          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+        .setUseLegacySql(false);
     }
 
     return getProjectIdentificationInformationConfiguration;
@@ -65,9 +65,9 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder getAverageBindingsConfiguration() {
     if (getAverageBindingsConfiguration == null) {
       getAverageBindingsConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.GET_AVERAGE_BINDINGS
-        .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-      .setUseLegacySql(false);
+        .newBuilder(Queries.GET_AVERAGE_BINDINGS
+          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+        .setUseLegacySql(false);
     }
 
     return getAverageBindingsConfiguration;
@@ -80,9 +80,9 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder getDatesToBindingsConfiguration() {
     if (getDatesToBindingsConfiguration == null) {
       getDatesToBindingsConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.GET_DATES_TO_BINDINGS
-        .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-      .setUseLegacySql(false);
+        .newBuilder(Queries.GET_DATES_TO_BINDINGS
+          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+        .setUseLegacySql(false);
     }
 
     return getDatesToBindingsConfiguration;
@@ -96,9 +96,9 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration() {
     if (getDatesToIAMRecommendationsConfiguration == null) {
       getDatesToIAMRecommendationsConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.GET_DATES_TO_IAM_RECOMMENDATIONS
-        .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-      .setUseLegacySql(false);
+        .newBuilder(Queries.GET_DATES_TO_IAM_RECOMMENDATIONS
+          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+        .setUseLegacySql(false);
     }
 
     return getDatesToIAMRecommendationsConfiguration;
@@ -152,9 +152,9 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder deleteOldDataIAMTableConfiguration() {
     if (deleteOldDataIAMTableConfiguration == null) {
       deleteOldDataIAMTableConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.DELETE_OLD_DATA_FROM_IAM_TABLE
-        .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-      .setUseLegacySql(false);
+        .newBuilder(Queries.DELETE_OLD_DATA_FROM_IAM_TABLE
+          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+        .setUseLegacySql(false);
     }
 
     return deleteOldDataIAMTableConfiguration;
@@ -167,9 +167,9 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration() {
     if (deleteOldDataRecommendationsTableConfiguration == null) {
       deleteOldDataRecommendationsTableConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.DELETE_OLD_DATA_FROM_RECOMMENDATIONS_TABLE
-        .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-      .setUseLegacySql(false);
+        .newBuilder(Queries.DELETE_OLD_DATA_FROM_RECOMMENDATIONS_TABLE
+          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+        .setUseLegacySql(false);
     }
 
     return deleteOldDataRecommendationsTableConfiguration;

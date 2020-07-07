@@ -34,7 +34,7 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder getProjectIdsConfiguration() {
     if (getProjectIdsConfiguration == null) {
       getProjectIdsConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.GET_PROJECT_IDS).setUseLegacySql(false);
+        .newBuilder(Queries.GET_PROJECT_IDS).setUseLegacySql(false);
     }
 
     return getProjectIdsConfiguration;
@@ -47,7 +47,7 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration() {
     if (getProjectIdentificationInformationConfiguration == null) {
       getProjectIdentificationInformationConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.GET_PROJECT_IDENTIFICATION_INFORMATION).setUseLegacySql(false);
+        .newBuilder(Queries.GET_PROJECT_IDENTIFICATION_INFORMATION).setUseLegacySql(false);
     }
 
     return getProjectIdentificationInformationConfiguration;
@@ -60,7 +60,7 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder getAverageBindingsConfiguration() {
     if (getAverageBindingsConfiguration == null) {
       getAverageBindingsConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.GET_AVERAGE_BINDINGS).setUseLegacySql(false);
+        .newBuilder(Queries.GET_AVERAGE_BINDINGS).setUseLegacySql(false);
     }
 
     return getAverageBindingsConfiguration;
@@ -73,7 +73,7 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder getDatesToBindingsConfiguration() {
     if (getDatesToBindingsConfiguration == null) {
       getDatesToBindingsConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.GET_DATES_TO_BINDINGS).setUseLegacySql(false);
+        .newBuilder(Queries.GET_DATES_TO_BINDINGS).setUseLegacySql(false);
     }
 
     return getDatesToBindingsConfiguration;
@@ -87,7 +87,7 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration() {
     if (getDatesToIAMRecommendationsConfiguration == null) {
       getDatesToIAMRecommendationsConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.GET_DATES_TO_IAM_RECOMMENDATIONS).setUseLegacySql(false);
+        .newBuilder(Queries.GET_DATES_TO_IAM_RECOMMENDATIONS).setUseLegacySql(false);
     }
 
     return getDatesToIAMRecommendationsConfiguration;
@@ -139,7 +139,7 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder deleteOldDataIAMTableConfiguration() {
     if (deleteOldDataIAMTableConfiguration == null) {
       deleteOldDataIAMTableConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.DELETE_OLD_DATA_FROM_IAM_TABLE).setUseLegacySql(false);
+        .newBuilder(Queries.DELETE_OLD_DATA_FROM_IAM_TABLE).setUseLegacySql(false);
     }
 
     return deleteOldDataIAMTableConfiguration;
@@ -152,7 +152,7 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   public QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration() {
     if (deleteOldDataRecommendationsTableConfiguration == null) {
       deleteOldDataRecommendationsTableConfiguration = QueryJobConfiguration
-      .newBuilder(Queries.DELETE_OLD_DATA_FROM_RECOMMENDATIONS_TABLE).setUseLegacySql(false);
+        .newBuilder(Queries.DELETE_OLD_DATA_FROM_RECOMMENDATIONS_TABLE).setUseLegacySql(false);
     }
 
     return deleteOldDataRecommendationsTableConfiguration;

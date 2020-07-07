@@ -55,6 +55,4 @@ public class Constants {
 
   /** The name of the column holding the number of IAM Bindings. */
   public static final String NUMBER_BINDINGS_COLUMN = "NumberOfBindings";
-
-  
 }

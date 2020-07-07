@@ -17,7 +17,7 @@ public interface DataReadManager {
    *  Returns the average number of IAM bindings that the project with id 
    *  {@code projectId} had per day over the past 365 days (or, if there are 
    *  not 365 days of data in the IAM Bindings table, the average over however 
-   *  many days of data are in the table). 
+   *  many days of data are in the table). If the project has no data, returns 0.
    */
   public double getAverageIAMBindingsInPastYear(String projectId);
 

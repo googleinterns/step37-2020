@@ -1,4 +1,4 @@
-package com.google.impactdashboard.api_utilities;
+package com.google.impactdashboard.server.api_utilities;
 
 import com.google.cloud.logging.v2.LoggingClient;
 import com.google.logging.v2.LogEntry;

@@ -1,7 +1,7 @@
 package com.google.impactdashboard.server;
 
-import com.google.impactdashboard.api_utilities.LogRetriever;
-import com.google.impactdashboard.api_utilities.RecommendationRetriever;
+import com.google.impactdashboard.server.api_utilities.LogRetriever;
+import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManager;

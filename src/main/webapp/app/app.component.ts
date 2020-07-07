@@ -12,23 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
-import { Project } from '../model/project';
+import {Component, OnInit} from '@angular/core';
+import {Project} from '../model/project';
 
-
+/** The base angular component for the impact dashboard. */
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
-/** The base angular component for the impact dashboard */
 export class AppComponent implements OnInit {
   public displayProjects: Project[] = [];
-  async ngOnInit() {
+  async ngOnInit() {}
 
-  }
-
-  /** Called when the project-select component changes the projects to display */
+  /** Called when the project-select component changes the projects to display. */
   changeProjects(projects: Project[]) {
     this.displayProjects = projects;
   }

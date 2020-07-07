@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Recommendation } from '../model/recommendation';
-import { RecommenderType } from '../model/recommender-type';
-import { ProjectGraphData } from '../model/project-graph-data';
-import { Project } from '../model/project';
-import { ProjectMetaData } from '../model/project-metadata';
+import {Injectable} from '@angular/core';
+import {Recommendation} from '../model/recommendation';
+import {RecommenderType} from '../model/recommender-type';
+import {ProjectGraphData} from '../model/project-graph-data';
+import {Project} from '../model/project';
+import {ProjectMetaData} from '../model/project-metadata';
 
 /** Contains fake data for use with HTTP service */
 @Injectable()
@@ -12,7 +12,12 @@ export class FakeDataService {
   private projects: [Project, ProjectGraphData][];
 
   constructor() {
-    this.projects = [FakeDataService.fakeProject1(), FakeDataService.fakeProject2(), FakeDataService.fakeProject3(), FakeDataService.fakeProject4()];
+    this.projects = [
+      FakeDataService.fakeProject1(),
+      FakeDataService.fakeProject2(),
+      FakeDataService.fakeProject3(),
+      FakeDataService.fakeProject4(),
+    ];
   }
 
   /** Returns all the fake projects */
@@ -22,14 +27,20 @@ export class FakeDataService {
 
   /** Returns the data associated with the given project */
   getProjectGraphData(id: string): ProjectGraphData | undefined {
-    return this.projects.find(row => row[0].projectId === id)[1];
+    const result: [Project, ProjectGraphData] | undefined = this.projects.find(
+      row => row[0].projectId === id
+    );
+    if (result) {
+      return result[1];
+    }
+    return undefined;
   }
 
   /** Generate fake data for project 1 */
   private static fakeProject1(): [Project, ProjectGraphData] {
-    let projectId = 'project-1';
+    const projectId = 'project-1';
     // Fake data for showing the graph
-    let iamBindings: { [key: number]: number } = {
+    const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Jun 2020 UTC')]: 131,
       [Date.parse('2 Jun 2020 UTC')]: 56,
       [Date.parse('3 Jun 2020 UTC')]: 84,
@@ -51,21 +62,44 @@ export class FakeDataService {
       [Date.parse('19 Jun 2020 UTC')]: 87,
       [Date.parse('20 Jun 2020 UTC')]: 57,
     };
-    let recommendations: { [key: number]: Recommendation } = {
-      [Date.parse('5 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING, Date.parse('5 Jun 2020 UTC')),
-      [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING, Date.parse('9 Jun 2020 UTC')),
-      [Date.parse('17 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING, Date.parse('17 Jun 2020 UTC')),
+    const recommendations: {[key: number]: Recommendation} = {
+      [Date.parse('5 Jun 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 1',
+        RecommenderType.IAM_BINDING,
+        Date.parse('5 Jun 2020 UTC')
+      ),
+      [Date.parse('9 Jun 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 2',
+        RecommenderType.IAM_BINDING,
+        Date.parse('9 Jun 2020 UTC')
+      ),
+      [Date.parse('17 Jun 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 3',
+        RecommenderType.IAM_BINDING,
+        Date.parse('17 Jun 2020 UTC')
+      ),
       // Simulate two recommendations on one day
-      [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING, Date.parse('17 Jun 2020 UTC') + 1),
-    }
-    return [new Project("Project 1", projectId, 1, new ProjectMetaData(100)), new ProjectGraphData(projectId, iamBindings, recommendations)];
+      [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation(
+        projectId,
+        'Rec 4',
+        RecommenderType.IAM_BINDING,
+        Date.parse('17 Jun 2020 UTC') + 1
+      ),
+    };
+    return [
+      new Project('Project 1', projectId, 1, new ProjectMetaData(100)),
+      new ProjectGraphData(projectId, iamBindings, recommendations),
+    ];
   }
 
   /** Generate fake data for project 2 */
   private static fakeProject2(): [Project, ProjectGraphData] {
-    let projectId = 'project-2';
+    const projectId = 'project-2';
     // Fake data for showing the graph
-    let iamBindings: { [key: number]: number } = {
+    const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Jun 2020 UTC')]: 28,
       [Date.parse('2 Jun 2020 UTC')]: 36,
       [Date.parse('3 Jun 2020 UTC')]: 22,
@@ -87,22 +121,45 @@ export class FakeDataService {
       [Date.parse('19 Jun 2020 UTC')]: 20,
       [Date.parse('20 Jun 2020 UTC')]: 47,
     };
-    let recommendations: { [key: number]: Recommendation } = {
-      [Date.parse('1 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING, Date.parse('1 Jun 2020 UTC')),
-      [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING, Date.parse('9 Jun 2020 UTC')),
-      [Date.parse('20 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING, Date.parse('20 Jun 2020 UTC')),
+    const recommendations: {[key: number]: Recommendation} = {
+      [Date.parse('1 Jun 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 1',
+        RecommenderType.IAM_BINDING,
+        Date.parse('1 Jun 2020 UTC')
+      ),
+      [Date.parse('9 Jun 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 2',
+        RecommenderType.IAM_BINDING,
+        Date.parse('9 Jun 2020 UTC')
+      ),
+      [Date.parse('20 Jun 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 3',
+        RecommenderType.IAM_BINDING,
+        Date.parse('20 Jun 2020 UTC')
+      ),
       // Simulate two recommendations on one day
-      [Date.parse('20 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING, Date.parse('20 Jun 2020 UTC') + 1),
-    }
+      [Date.parse('20 Jun 2020 UTC') + 1]: new Recommendation(
+        projectId,
+        'Rec 4',
+        RecommenderType.IAM_BINDING,
+        Date.parse('20 Jun 2020 UTC') + 1
+      ),
+    };
 
-    return [new Project('Project 2', projectId, 2, new ProjectMetaData(70)), new ProjectGraphData(projectId, iamBindings, recommendations)];
+    return [
+      new Project('Project 2', projectId, 2, new ProjectMetaData(70)),
+      new ProjectGraphData(projectId, iamBindings, recommendations),
+    ];
   }
 
   /** Generate fake data for project 3 */
   private static fakeProject3(): [Project, ProjectGraphData] {
-    let projectId = 'test-long-project-id-project-3';
+    const projectId = 'test-long-project-id-project-3';
     // Fake data for showing the graph
-    let iamBindings: { [key: number]: number } = {
+    const iamBindings: {[key: number]: number} = {
       [Date.parse('6 Jun 2020 UTC')]: 125,
       [Date.parse('7 Jun 2020 UTC')]: 201,
       [Date.parse('8 Jun 2020 UTC')]: 177,
@@ -124,22 +181,50 @@ export class FakeDataService {
       [Date.parse('24 Jun 2020 UTC')]: 153,
       [Date.parse('25 Jun 2020 UTC')]: 187,
     };
-    let recommendations: { [key: number]: Recommendation } = {
-      [Date.parse('7 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING, Date.parse('7 Jun 2020 UTC')),
-      [Date.parse('9 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING, Date.parse('9 Jun 2020 UTC')),
-      [Date.parse('22 Jun 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING, Date.parse('22 Jun 2020 UTC')),
+    const recommendations: {[key: number]: Recommendation} = {
+      [Date.parse('7 Jun 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 1',
+        RecommenderType.IAM_BINDING,
+        Date.parse('7 Jun 2020 UTC')
+      ),
+      [Date.parse('9 Jun 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 2',
+        RecommenderType.IAM_BINDING,
+        Date.parse('9 Jun 2020 UTC')
+      ),
+      [Date.parse('22 Jun 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 3',
+        RecommenderType.IAM_BINDING,
+        Date.parse('22 Jun 2020 UTC')
+      ),
       // Simulate two recommendations on one day
-      [Date.parse('122 Jun 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING, Date.parse('22 Jun 2020 UTC') + 1),
-    }
+      [Date.parse('122 Jun 2020 UTC') + 1]: new Recommendation(
+        projectId,
+        'Rec 4',
+        RecommenderType.IAM_BINDING,
+        Date.parse('22 Jun 2020 UTC') + 1
+      ),
+    };
 
-    return [new Project('Test Long Project ID Project 3', projectId, 3, new ProjectMetaData(173)), new ProjectGraphData(projectId, iamBindings, recommendations)];
+    return [
+      new Project(
+        'Test Long Project ID Project 3',
+        projectId,
+        3,
+        new ProjectMetaData(173)
+      ),
+      new ProjectGraphData(projectId, iamBindings, recommendations),
+    ];
   }
 
   /** Generate fake data for project 4 */
   private static fakeProject4(): [Project, ProjectGraphData] {
-    let projectId = 'quite-the-long-project-4';
+    const projectId = 'quite-the-long-project-4';
     // Fake data for showing the graph
-    let iamBindings: { [key: number]: number } = {
+    const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Jul 2020 UTC')]: 14,
       [Date.parse('2 Jul 2020 UTC')]: 24,
       [Date.parse('3 Jul 2020 UTC')]: 23,
@@ -161,14 +246,42 @@ export class FakeDataService {
       [Date.parse('19 Jul 2020 UTC')]: 34,
       [Date.parse('20 Jul 2020 UTC')]: 27,
     };
-    let recommendations: { [key: number]: Recommendation } = {
-      [Date.parse('1 Jul 2020 UTC')]: new Recommendation(projectId, 'Rec 1', RecommenderType.IAM_BINDING, Date.parse('1 Jul 2020 UTC')),
-      [Date.parse('9 Jul 2020 UTC')]: new Recommendation(projectId, 'Rec 2', RecommenderType.IAM_BINDING, Date.parse('9 Jul 2020 UTC')),
-      [Date.parse('20 Jul 2020 UTC')]: new Recommendation(projectId, 'Rec 3', RecommenderType.IAM_BINDING, Date.parse('20 Jul 2020 UTC')),
+    const recommendations: {[key: number]: Recommendation} = {
+      [Date.parse('1 Jul 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 1',
+        RecommenderType.IAM_BINDING,
+        Date.parse('1 Jul 2020 UTC')
+      ),
+      [Date.parse('9 Jul 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 2',
+        RecommenderType.IAM_BINDING,
+        Date.parse('9 Jul 2020 UTC')
+      ),
+      [Date.parse('20 Jul 2020 UTC')]: new Recommendation(
+        projectId,
+        'Rec 3',
+        RecommenderType.IAM_BINDING,
+        Date.parse('20 Jul 2020 UTC')
+      ),
       // Simulate two recommendations on one day
-      [Date.parse('20 Jul 2020 UTC') + 1]: new Recommendation(projectId, 'Rec 4', RecommenderType.IAM_BINDING, Date.parse('20 Jul 2020 UTC') + 1),
-    }
+      [Date.parse('20 Jul 2020 UTC') + 1]: new Recommendation(
+        projectId,
+        'Rec 4',
+        RecommenderType.IAM_BINDING,
+        Date.parse('20 Jul 2020 UTC') + 1
+      ),
+    };
 
-    return [new Project('Quite the Long Project 4', projectId, 4, new ProjectMetaData(33)), new ProjectGraphData(projectId, iamBindings, recommendations)];
+    return [
+      new Project(
+        'Quite the Long Project 4',
+        projectId,
+        4,
+        new ProjectMetaData(33)
+      ),
+      new ProjectGraphData(projectId, iamBindings, recommendations),
+    ];
   }
 }

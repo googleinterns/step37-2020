@@ -1,5 +1,9 @@
 package com.google.impactdashboard.servlets;
 
+import com.google.gson.Gson;
+import com.google.impactdashboard.data.project.ProjectGraphData;
+import com.google.impactdashboard.server.ProjectInformationRetriever;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +17,16 @@ import java.io.IOException;
 @WebServlet("/get-project-data")
 public class GetProjectDataServlet extends HttpServlet {
 
+  private ProjectInformationRetriever projectInformationRetriever;
+
+  /**
+   * Handles the creation of the server classes the first time the servlet is run
+   */
+  @Override
+  public void init() {
+    projectInformationRetriever = ProjectInformationRetriever.create();
+  }
+
   /**
    * Method called by the frontend to get the data needed to graph a projects information.
    * @param request contains the project data is requested for.
@@ -20,6 +34,13 @@ public class GetProjectDataServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    throw new UnsupportedOperationException("Not Implemented");
+    String projectId = request.getParameter("id");
+
+    ProjectGraphData graphData = projectInformationRetriever.getProjectData(projectId);
+
+    Gson gson = new Gson();
+    String json = gson.toJson(graphData);
+    response.setContentType("application/json;");
+    response.getWriter().println(json);
   }
 }

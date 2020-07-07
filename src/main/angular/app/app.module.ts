@@ -10,6 +10,8 @@ import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FakeDataService} from './fake-data.service';
 import {HttpClientModule} from '@angular/common/http';
+import {DateUtilitiesService} from './date-utilities.service';
+import {GraphProcessorService} from './graph-processor.service';
 
 @NgModule({
   declarations: [AppComponent, GraphComponent, ProjectSelectComponent],
@@ -21,7 +23,7 @@ import {HttpClientModule} from '@angular/common/http';
     BrowserAnimationsModule,
     HttpClientModule,
   ],
-  providers: [FakeDataService],
+  providers: [FakeDataService, DateUtilitiesService, GraphProcessorService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

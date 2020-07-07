@@ -169,10 +169,12 @@ export class ProjectSelectComponent implements OnInit {
     return display;
   }
 
+  /** Changes the query string */
   search(query: string) {
     this.query = query;
   }
 
+  /** Called when the component is ready to be displayed */
   ngOnInit() {
     this.httpService.listProjects().then(projects => {
       // Sort by the selected fields

@@ -13,15 +13,10 @@
 // limitations under the License.
 
 import {Component, OnInit, Input, SimpleChanges} from '@angular/core';
-import {
-  getAdditionsDeletions,
-  initProperties,
-  addToGraph,
-  removeFromGraph,
-} from '../../utils';
 import {Project} from '../../model/project';
-import {ProjectGraphData} from '../../model/project-graph-data';
 import {HttpService} from '../http.service';
+import {GraphProcessorService} from '../graph-processor.service';
+import {GraphProperties} from '../../model/types';
 
 /** The angular component that contains the graph and associated logic. */
 @Component({
@@ -34,37 +29,26 @@ export class GraphComponent implements OnInit {
   @Input()
   public projects: Project[];
 
-  public properties: {
-    options: google.visualization.LineChartOptions;
-    graphData: any[];
-    columns: any[];
-  } = initProperties();
-
-  public type = 'LineChart';
-  public title: string;
+  public properties: GraphProperties = this.graphProcessor.initProperties();
 
   /** Whether to show the chart. When it's not selected, prompt the user to select a project */
   public shouldShowChart: boolean;
 
-  constructor(private httpService: HttpService) {
+  constructor(
+    private httpService: HttpService,
+    private graphProcessor: GraphProcessorService
+  ) {
     this.shouldShowChart = false;
-    this.title = '';
     this.projects = [];
   }
 
   /** Called when an input field changes. */
   ngOnChanges(changes: SimpleChanges) {
     this.shouldShowChart = this.projects.length > 0;
-
-    const additionsDeletions = getAdditionsDeletions(changes.projects);
-
-    additionsDeletions.added.forEach(addition =>
+    this.graphProcessor.processChanges(
+      changes,
+      this.properties,
       this.httpService
-        .getProjectGraphData(addition.projectId)
-        .then(data => addToGraph(this.properties, data, addition))
-    );
-    additionsDeletions.removed.forEach(removal =>
-      removeFromGraph(this.properties, removal)
     );
   }
 

@@ -1,5 +1,6 @@
 package com.google.impactdashboard.server;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.data.project.Project;
 import com.google.impactdashboard.data.project.ProjectGraphData;
 import com.google.impactdashboard.data.project.ProjectIdentification;
@@ -11,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/** Retrieves all the information about the projects in the database */
+/** Retrieves all the information about the projects in the database. */
 public class ProjectInformationRetriever {
-  private DataReadManager readManager;
+  private final DataReadManager readManager;
 
   /**
    * Static factory for creating a ProjectInformationRetriever with a new instance of DataReadManager.
@@ -23,15 +24,8 @@ public class ProjectInformationRetriever {
     return new ProjectInformationRetriever(DataReadManagerFactory.create());
   }
 
-  /**
-   * Static factory for creating a ProjectInformationRetriever with a pre-made instance of DataReadManager.
-   * @return New instance of ProjectInformationRetriever
-   */
-  public static ProjectInformationRetriever create(DataReadManager readManger) {
-    return new ProjectInformationRetriever(readManger);
-  }
-
-  private ProjectInformationRetriever(DataReadManager readManager) {
+  @VisibleForTesting
+  protected ProjectInformationRetriever(DataReadManager readManager) {
     this.readManager = readManager;
   }
 

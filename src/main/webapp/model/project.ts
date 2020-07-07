@@ -12,19 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ProjectMetaData } from './project-metadata';
+import {ProjectMetaData} from './project-metadata';
 
-/** Represents relevent fields for a single project */
+/** Represents relevent fields for a single project. */
 export class Project {
   name: string;
   projectId: string;
   projectNumber: number;
   metaData: ProjectMetaData;
+  /** The color to display the given project as. */
+  color: string;
 
-  constructor(name: string, projectId: string, projectNumber: number, metaData: ProjectMetaData) {
+  constructor(
+    name: string,
+    projectId: string,
+    projectNumber: number,
+    metaData: ProjectMetaData
+  ) {
     this.name = name;
     this.projectId = projectId;
     this.projectNumber = projectNumber;
     this.metaData = metaData;
+    this.color = '';
   }
 }

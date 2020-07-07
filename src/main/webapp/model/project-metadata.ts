@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/** Represents misc data for a project for extensibility purposes */
+/** Represents misc data for a project for extensibility purposes. */
 export class ProjectMetaData {
-  avgIAMBindingsInPastYear: number;
+  averageIAMBindingsInPastYear: number;
 
   constructor(avgIAMBindingsInPastYear: number) {
-    this.avgIAMBindingsInPastYear = avgIAMBindingsInPastYear;
+    this.averageIAMBindingsInPastYear = avgIAMBindingsInPastYear;
   }
 }

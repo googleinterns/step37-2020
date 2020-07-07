@@ -32,9 +32,6 @@ public class ProjectInformationRetrieverTest extends Mockito {
 
   public static final String RECOMMENDATION_DESCRIPTION = "This is a recommendation";
 
-  public static final Map<Long, Integer> PROJECT_IAM_DATA = new HashMap<>();
-  public static final Map<Long, Recommendation> PROJECT_RECOMMENDATION_DATA = new HashMap<>();
-
   private DataReadManager readManager;
   private ProjectInformationRetriever informationRetriever;
 
@@ -92,6 +89,9 @@ public class ProjectInformationRetrieverTest extends Mockito {
   @Test
   public void projectWithData() {
     // Project exists and data is present
+    Map<Long, Integer> PROJECT_IAM_DATA = new HashMap<>();
+    Map<Long, Recommendation> PROJECT_RECOMMENDATION_DATA = new HashMap<>();
+
     PROJECT_IAM_DATA.put(123L, 2000);
     PROJECT_IAM_DATA.put(234L, 3456);
     PROJECT_IAM_DATA.put(23645543L, 78654);

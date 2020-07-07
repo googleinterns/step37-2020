@@ -20,7 +20,8 @@ limitations under the License.
 </div>
 
 <div class="content">
-  <app-graph></app-graph>
+  <app-graph [projects]="displayProjects"></app-graph>
+  <project-select (changeProjects)="changeProjects($event)"></project-select>
 </div>
 
 <router-outlet></router-outlet>

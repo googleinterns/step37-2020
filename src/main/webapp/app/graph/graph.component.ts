@@ -12,73 +12,65 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
-import { request, setResponse, createIamRows } from '../../utils';
-import { ProjectGraphData } from '../../model/project-graph-data';
-import { Recommendation } from '../../model/recommendation';
-import { RecommenderType } from '../../model/recommender-type';
+import {Component, OnInit, Input, SimpleChanges} from '@angular/core';
+import {request, createIamGraphProperties} from '../../utils';
+import {Project} from '../../model/project';
 
+/** The angular component that contains the graph and associated logic. */
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
-  styleUrls: ['./graph.component.css']
+  styleUrls: ['./graph.component.css'],
 })
-/** The angular component that contains the graph and associated logic */
 export class GraphComponent implements OnInit {
-  public title = 'IAM Bindings';
-  public options: google.visualization.LineChartOptions = {
-    animation: {
-      duration: 250,
-      easing: 'ease-in-out',
-      startup: true
-    },
-    legend: { position: 'none' },
-    height: 700,
-    width: 1000,
-  }
-  public graphData;
-  public columns = ['Time', 'number', { type: 'string', role: 'tooltip' }];
-  public type = "LineChart";
+  /** The projects to display on the graph. */
+  @Input()
+  public projects: Project[];
+
+  public options: google.visualization.LineChartOptions;
+  public graphData: any[];
+  public columns: any[];
+  public type = 'LineChart';
+  public title: string;
+  /** Whether to show the chart. When it's not selected, prompt the user to select a project. */
+  public shouldShowChart: boolean;
 
   constructor() {
+    this.projects = [];
+    this.shouldShowChart = false;
+    this.title = '';
+    this.graphData = [];
+    this.columns = [];
+    this.options = {};
   }
 
-  async ngOnInit() {
-    // Fake data for showing the graph
-    let iamBindings: { [key: number]: number } = {
-      [Date.parse('1 Jun 2020 UTC')]: 131,
-      [Date.parse('2 Jun 2020 UTC')]: 56,
-      [Date.parse('3 Jun 2020 UTC')]: 84,
-      [Date.parse('4 Jun 2020 UTC')]: 101,
-      [Date.parse('5 Jun 2020 UTC')]: 100,
-      [Date.parse('6 Jun 2020 UTC')]: 90,
-      [Date.parse('7 Jun 2020 UTC')]: 66,
-      [Date.parse('8 Jun 2020 UTC')]: 136,
-      [Date.parse('9 Jun 2020 UTC')]: 108,
-      [Date.parse('10 Jun 2020 UTC')]: 50,
-      [Date.parse('11 Jun 2020 UTC')]: 92,
-      [Date.parse('12 Jun 2020 UTC')]: 136,
-      [Date.parse('13 Jun 2020 UTC')]: 55,
-      [Date.parse('14 Jun 2020 UTC')]: 148,
-      [Date.parse('15 Jun 2020 UTC')]: 141,
-      [Date.parse('16 Jun 2020 UTC')]: 64,
-      [Date.parse('17 Jun 2020 UTC')]: 102,
-      [Date.parse('18 Jun 2020 UTC')]: 139,
-      [Date.parse('19 Jun 2020 UTC')]: 87,
-      [Date.parse('20 Jun 2020 UTC')]: 57,
-    };
-    let recommendations: { [key: number]: Recommendation } = {
-      [Date.parse('5 Jun 2020 UTC')]: new Recommendation('project-1', 'Rec 1', RecommenderType.IAM_BINDING),
-      [Date.parse('9 Jun 2020 UTC')]: new Recommendation('project-1', 'Rec 2', RecommenderType.IAM_BINDING),
-      [Date.parse('17 Jun 2020 UTC')]: new Recommendation('project-1', 'Rec 3', RecommenderType.IAM_BINDING),
-      // Simulate two recommendations on one day
-      [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation('project-1', 'Rec 4', RecommenderType.IAM_BINDING),
-    }
-    // Fake out the given url to the generated fake project
-    setResponse('/get-project-data?id="project-1"', new ProjectGraphData('project-1', iamBindings, recommendations));
+  /** Called when an input field changes. */
+  ngOnChanges(changes: SimpleChanges) {
+    // Perform GET for each project asynchronously
+    const promises: Promise<any>[] = [];
+    this.projects.forEach(project =>
+      promises.push(
+        request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r =>
+          r.json()
+        )
+      )
+    );
 
-    //hardcoded project ID for now
-    let data = await request('/get-project-data?id="project-1"', 'GET').then(r => r.json());
-    this.graphData = createIamRows(data);
+    Promise.all(promises).then(graphData => {
+      if (graphData.length > 0) {
+        // Generate the information needed for the graph
+        const properties = createIamGraphProperties(graphData, this.projects);
+        this.columns = properties.columns;
+        this.graphData = properties.rows;
+        this.options = properties.options;
+
+        this.title = `IAM Bindings - ${properties.startDate.toLocaleDateString()} to ${properties.endDate.toLocaleDateString()}`;
+        this.shouldShowChart = true;
+      } else {
+        this.shouldShowChart = false;
+      }
+    });
   }
+
+  async ngOnInit() {}
 }

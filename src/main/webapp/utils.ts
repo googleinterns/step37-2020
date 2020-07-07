@@ -45,6 +45,7 @@ export async function request(
       resolve({json: () => response});
     });
   } else {
+    // eslint-disable-next-line no-undef
     return fetch(url, {
       method: method,
       body: JSON.stringify(body),

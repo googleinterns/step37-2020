@@ -7,8 +7,6 @@ import com.google.impactdashboard.data.project.ProjectMetaData;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.impactdashboard.database_manager.data_read.DataReadManager;
 import com.google.impactdashboard.database_manager.data_read.DataReadManagerFactory;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

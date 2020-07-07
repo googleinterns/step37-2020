@@ -13,9 +13,9 @@ import java.util.List;
 /** Class for updating the information in the database from the API */
 public class DataUpdater {
 
-  private LogRetriever logRetriever;
-  private RecommendationRetriever recommendationRetriever;
-  private DataUpdateManager updateManager;
+  private final LogRetriever logRetriever;
+  private final RecommendationRetriever recommendationRetriever;
+  private final DataUpdateManager updateManager;
 
   private DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
                       DataUpdateManager updateManager) {

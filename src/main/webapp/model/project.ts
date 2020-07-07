@@ -33,6 +33,7 @@ export class Project {
     this.projectId = projectId;
     this.projectNumber = projectNumber;
     this.metaData = metaData;
+    this.color = '';
   }
 }
 

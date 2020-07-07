@@ -104,9 +104,9 @@ function getTooltip(
 function getPoint(
   matchingRecommendations: Recommendation[],
   color: string
-): string {
+): string | undefined {
   if (matchingRecommendations.length === 0) {
-    return null;
+    return undefined;
   }
   return `point { size: 10; shape-type: circle; fill-color: ${color}; visible: true; }`;
 }
@@ -139,17 +139,9 @@ function uniqueDays(graphData: ProjectGraphData[]): Date[] {
 /** Creates the table rows from the given ProjectGraphData The first row contains the column headers */
 export function createIamRows(
   graphData: ProjectGraphData[],
-  colors?: string[],
-  days?: Date[]
+  colors: string[] = DEFAULT_COLORS,
+  days: Date[] = uniqueDays(graphData)
 ): any[] {
-  if (!days) {
-    // First, get all the days we need to add if it hasn't already been provided
-    days = uniqueDays(graphData);
-  }
-  if (!colors) {
-    colors = DEFAULT_COLORS;
-  }
-
   // Each row is [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...]
   const rows: any[] = [];
   // Add a row for each unique day
@@ -218,7 +210,10 @@ export function createIamOptions(
     series: {},
   };
   graphData.forEach((data, index) => {
-    options.series[index] = {color: colors[index % colors.length]};
+    // TypeScript won't compile without this.
+    if (options.series) {
+      options.series[index] = {color: colors[index % colors.length]};
+    }
   });
   return options;
 }

@@ -10,6 +10,7 @@ import {
   faArrowDown,
   faArrowUp,
   faCircle,
+  IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -35,11 +36,11 @@ export class ProjectSelectComponent implements OnInit {
   public projectNumber = SortBy.PROJECT_NUMBER;
 
   // #region Fontawesome icons
-  faIamArrow;
-  faNameArrow;
-  faProjectIdArrow;
-  faProjectNumberArrow;
-  faCircle;
+  faIamArrow: IconDefinition;
+  faNameArrow: IconDefinition;
+  faProjectIdArrow: IconDefinition;
+  faProjectNumberArrow: IconDefinition;
+  faCircle: IconDefinition;
   // #endregion
 
   @Output()
@@ -47,8 +48,13 @@ export class ProjectSelectComponent implements OnInit {
 
   constructor() {
     this.activeProjects = new Set();
+    this.faIamArrow = faArrowDown;
+    this.faNameArrow = faArrowDown;
+    this.faProjectIdArrow = faArrowDown;
+    this.faProjectNumberArrow = faArrowDown;
     this.faCircle = faCircle;
 
+    this.projects = [];
     this.sortDirection = SortDirection.DESCENDING;
     this.sortField = SortBy.IAM_BINDINGS;
     this.setSortIcons();
@@ -141,7 +147,7 @@ export class ProjectSelectComponent implements OnInit {
         );
         // Assign colors based on initial IAM Bindings order
         projects.forEach(
-          (project, index) =>
+          (project: Project, index: number) =>
             (project.color = DEFAULT_COLORS[index % DEFAULT_COLORS.length])
         );
         this.projects = projects;

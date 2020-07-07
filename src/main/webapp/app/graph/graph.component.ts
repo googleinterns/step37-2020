@@ -37,12 +37,16 @@ export class GraphComponent implements OnInit {
 
   constructor() {
     this.showChart = false;
+    this.title = '';
+    this.graphData = [];
+    this.columns = [];
+    this.options = {};
   }
 
   /** Called when an input field changes */
   ngOnChanges(changes: SimpleChanges) {
     // Perform GET for each project asynchronously
-    const promises = [];
+    const promises: Promise<any>[] = [];
     this.projects.forEach(project =>
       promises.push(
         request(`/get-project-data?id="${project.projectId}"`, 'GET').then(r =>

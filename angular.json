@@ -67,6 +67,16 @@
             }
           }
         },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "karmaConfig": "./karma.conf.js",
+            "polyfills": "src/main/angular/polyfills.ts",
+            "tsConfig": "./tsconfig.spec.json",
+            "scripts": [],
+            "main": "src/main/angular/main.ts"
+          }
+        },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {

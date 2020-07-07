@@ -1,8 +1,13 @@
+/* eslint-disable node/no-unpublished-require */
 module.exports = function (config) {
   config.set({
     basePath: '',
-    frameworks: ['jasmine', '@angular/cli'],
-    plugins: [require('karma-jasmine'), require('karma-jasmine-html-reporter')],
+    frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    plugins: [
+      require('karma-jasmine'),
+      require('karma-coverage-istanbul-reporter'),
+      require('@angular-devkit/build-angular/plugins/karma'),
+    ],
     client: {
       clearContext: false, // leave Jasmine Spec Runner output visible in browser
     },
@@ -13,12 +18,11 @@ module.exports = function (config) {
     angularCli: {
       environment: 'dev',
     },
-    reporters: ['progress', 'kjhtml'],
+    reporters: ['progress'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['Chrome'],
+    autoWatch: false,
     singleRun: false,
   });
 };

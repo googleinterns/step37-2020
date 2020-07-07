@@ -68,14 +68,14 @@ export class ProjectComparators {
   /** Comparator for sorting projects in descending order by IAM Bindings */
   static iamDescending(a: Project, b: Project): number {
     return (
-      b.metaData.avgIAMBindingsInPastYear - a.metaData.avgIAMBindingsInPastYear
+      b.metaData.averageIAMBindingsInPastYear - a.metaData.averageIAMBindingsInPastYear
     );
   }
 
   /** Comparator for sorting projects in ascending order by IAM Bindings */
   static iamAscending(a: Project, b: Project): number {
     return (
-      a.metaData.avgIAMBindingsInPastYear - b.metaData.avgIAMBindingsInPastYear
+      a.metaData.averageIAMBindingsInPastYear - b.metaData.averageIAMBindingsInPastYear
     );
   }
 

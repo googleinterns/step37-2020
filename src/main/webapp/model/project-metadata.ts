@@ -14,9 +14,9 @@
 
 /** Represents misc data for a project for extensibility purposes */
 export class ProjectMetaData {
-  avgIAMBindingsInPastYear: number;
+  averageIAMBindingsInPastYear: number;
 
   constructor(avgIAMBindingsInPastYear: number) {
-    this.avgIAMBindingsInPastYear = avgIAMBindingsInPastYear;
+    this.averageIAMBindingsInPastYear = avgIAMBindingsInPastYear;
   }
 }

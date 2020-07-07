@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License. 
 -->
 
-<h1 class="center" id="project-prompt" *ngIf="!showChart">Please select a project below to generate a graph</h1>
+<h1 class="center" id="project-prompt" *ngIf="!shouldShowChart">Please select a project below to generate a graph</h1>
 
-<google-chart #chart id="chart" class="center" *ngIf="showChart" [type]="type" [columns]="columns" [data]="graphData"
+<google-chart #chart id="chart" class="center" *ngIf="shouldShowChart" [type]="type" [columns]="columns" [data]="graphData"
   [options]="options" [title]="title">
 </google-chart>

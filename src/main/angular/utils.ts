@@ -14,24 +14,8 @@
 
 import {ProjectGraphData} from './model/project-graph-data';
 import {Recommendation} from './model/recommendation';
-import {ProjectMetaData} from './model/project-metadata';
 import {Project} from './model/project';
-import {RecommenderType} from './model/recommender-type';
 import {SimpleChange} from '@angular/core';
-
-/** Whether this is a test or not. */
-export const DEFAULT_IS_TEST = false;
-// See https://standards.google/guidelines/brand-standards/color/palette/#brand-colors
-export const DEFAULT_COLORS: string[] = [
-  // Google blue
-  '#174ea6',
-  // Google red
-  '#a50e0e',
-  // Google yellow
-  '#e37400',
-  // Google green
-  '#0d652d',
-];
 
 /** From a given SimpleChange, extract the projects that were added or deleted */
 export function getAdditionsDeletions(

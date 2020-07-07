@@ -1,6 +1,6 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {Project} from '../../model/project';
-import {DEFAULT_COLORS} from '../../utils';
+import {DEFAULT_COLORS} from '../../constants';
 import {
   faArrowDown,
   faCircle,

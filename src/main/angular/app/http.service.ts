@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ProjectGraphData} from '../model/project-graph-data';
 import {Project} from '../model/project';
-import {DEFAULT_IS_TEST} from '../utils';
 import {FakeDataService} from './fake-data.service';
+import {USE_TEST_DATA} from '../constants';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,7 @@ export class HttpService {
 
   /** Gets the graph data for the given project ID */
   getProjectGraphData(id: string): Promise<ProjectGraphData> {
-    if (DEFAULT_IS_TEST) {
+    if (USE_TEST_DATA) {
       return new Promise(resolve =>
         resolve(this.fakeService.getProjectGraphData(id))
       );
@@ -25,7 +25,7 @@ export class HttpService {
 
   /** Gets the project information */
   listProjects(): Promise<Project[]> {
-    if (DEFAULT_IS_TEST) {
+    if (USE_TEST_DATA) {
       return new Promise(resolve => resolve(this.fakeService.listProjects()));
     }
     return this.http.get<Project[]>('/list-project-summaries').toPromise();

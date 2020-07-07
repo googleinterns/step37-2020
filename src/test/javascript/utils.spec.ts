@@ -28,12 +28,12 @@ describe('Utility functions', () => {
 
   describe('request()', () => {
     it('Should fake out correctly', async () => {
-      const fake = {value: false, integer: 7};
+      const fakeData = new ProjectGraphData('1', {}, {});
       const url = '/faked';
-      utils.setResponse(url, fake);
+      utils.setResponse(url, fakeData);
       strictEqual(
         await utils.request(url, 'GET', undefined, true).then(r => r.json()),
-        fake
+        fakeData
       );
     });
   });

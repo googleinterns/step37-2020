@@ -1,6 +1,7 @@
-/* import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
+import {describe, beforeEach, it} from 'jasmine';
 
-import { GraphProcessorService } from './graph-processor.service';
+import {GraphProcessorService} from './graph-processor.service';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
@@ -13,4 +14,4 @@ describe('GraphProcessorService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-}); */
+});

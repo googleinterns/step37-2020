@@ -2,7 +2,14 @@
   "scripts": {
     "test": "mocha -r ts-node/register src/test/**/*.spec.ts",
     "build": "ng build && cp -r src/main/webapp/WEB-INF dist/frontend/WEB-INF && mvn appengine:run",
-    "serve": "ng serve --open"
+    "serve": "ng serve --open",
+    "check": "gts check",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run check"
   },
   "dependencies": {
     "@angular/animations": "~9.1.11",
@@ -29,7 +36,7 @@
     "@angular/cli": "~9.1.9",
     "@angular/compiler-cli": "~9.1.11",
     "@types/jasminewd2": "~2.0.3",
-    "@types/node": "^12.11.1",
+    "@types/node": "^13.11.1",
     "codelyzer": "^5.1.2",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
@@ -41,6 +48,7 @@
     "protractor": "~7.0.0",
     "ts-node": "^8.3.0",
     "tslint": "~6.1.0",
-    "typescript": "~3.8.3"
+    "typescript": "^3.8.3",
+    "gts": "^2.0.2"
   }
 }

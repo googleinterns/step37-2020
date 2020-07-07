@@ -27,14 +27,14 @@ describe('Utility functions', () => {
     });
   });
 
-  describe('request()', () => {
+  /* describe('request()', () => {
     it('Should fake out correctly', async () => {
       let fake = { value: false, integer: 7 };
       let url = '/faked';
       utils.setResponse(url, fake);
       strictEqual(await utils.request(url, 'GET', undefined, true).then(r => r.json()), fake)
     });
-  });
+  }); */
 
   describe('addIamRows()', () => {
     it('Should create rows with no recommendations taken', () => {

@@ -16,6 +16,7 @@ import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import { getAdditionsDeletions, initProperties, addToGraph, removeFromGraph } from '../../utils';
 import { Project } from '../../model/project';
 import { ProjectGraphData } from '../../model/project-graph-data';
+import { HttpService } from '../http.service';
 
 @Component({
   selector: 'app-graph',
@@ -36,7 +37,7 @@ export class GraphComponent implements OnInit {
   /** Whether to show the chart. When it's not selected, prompt the user to select a project */
   public showChart: boolean;
 
-  constructor() {
+  constructor(private httpService: HttpService) {
     this.showChart = false;
   }
 
@@ -46,7 +47,7 @@ export class GraphComponent implements OnInit {
 
     let additionsDeletions = getAdditionsDeletions(changes.projects);
 
-    additionsDeletions.added.forEach(addition => addition.get().then(data => addToGraph(this.properties, data, addition)));
+    additionsDeletions.added.forEach(addition => this.httpService.getProjectGraphData(addition.projectId).then(data => addToGraph(this.properties, data, addition)));
     additionsDeletions.removed.forEach(removal => removeFromGraph(this.properties, removal));
   }
 

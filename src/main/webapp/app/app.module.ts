@@ -8,6 +8,8 @@ import { GraphComponent } from './graph/graph.component';
 import { ProjectSelectComponent } from './project-select/project-select.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { FakeDataService } from './fake-data.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -20,9 +22,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
     AppRoutingModule,
     GoogleChartsModule,
     FontAwesomeModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [FakeDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

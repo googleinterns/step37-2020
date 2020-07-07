@@ -13,8 +13,6 @@
 // limitations under the License.
 
 import { ProjectMetaData } from './project-metadata';
-import { ProjectGraphData } from './project-graph-data';
-import { request } from '../utils';
 
 /** Represents relevent fields for a single project */
 export class Project {
@@ -30,14 +28,6 @@ export class Project {
     this.projectId = projectId;
     this.projectNumber = projectNumber;
     this.metaData = metaData;
-  }
-
-  /** Retrieve the project data from the server */
-  get(): Promise<ProjectGraphData> {
-    return new Promise(resolve => request(`/get-project-data?id="${this.projectId}"`, 'GET').then(r => r.json()).then(response => {
-      let project = new ProjectGraphData(response.projectId, response.dateToNumberIAMBindings, response.dateToRecommendationTaken);
-      resolve(project);
-    }));
   }
 }
 

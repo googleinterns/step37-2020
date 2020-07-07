@@ -33,7 +33,7 @@ export const DEFAULT_COLORS: string[] = [
 ];
 
 /** Used internally to dish out fake responses when requested. Effectively a map from URL to response */
-const fakeResponses: {[key: string]: any} = {};
+const fakeResponses: {[key: string]: Project | ProjectGraphData} = {};
 
 /** Sends the given request to HTTP if isTest is false, otherwise fakes out the request */
 export async function request(
@@ -267,12 +267,12 @@ export function createIamGraphProperties(
 }
 
 /** Gets the fake response for the given request */
-function getFake(url: string): any {
+function getFake(url: string): Project | ProjectGraphData {
   return fakeResponses[url];
 }
 
 /** Sets the faked-out test response for the given url. Response should be a JS object that can be stringified */
-export function setResponse(url: string, response: any) {
+export function setResponse(url: string, response: Project | ProjectGraphData) {
   fakeResponses[url] = response;
 }
 

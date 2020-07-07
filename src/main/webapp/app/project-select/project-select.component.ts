@@ -57,7 +57,6 @@ export class ProjectSelectComponent implements OnInit {
     this.projects = [];
     this.sortDirection = SortDirection.DESCENDING;
     this.sortField = SortBy.IAM_BINDINGS;
-    this.setSortIcons();
   }
 
   /** Returns the color associated with the given project. */
@@ -80,7 +79,6 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Returns the class placed on a sorting arrow, which decides whether it's grayed out or not. */
   getSortClass(field: SortBy) {
-    // let field = this.getField(fieldName);
     if (field === this.sortField) {
       return 'sort-active';
     }
@@ -137,6 +135,7 @@ export class ProjectSelectComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.setSortIcons();
     fakeProjects();
     request('/list-project-summaries', 'GET')
       .then(r => r.json())

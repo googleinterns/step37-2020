@@ -9,31 +9,27 @@ import {ProjectMetaData} from '../model/project-metadata';
 @Injectable()
 export class FakeDataService {
   /** Contains the projects that are faked. */
-  private projects: [Project, ProjectGraphData][];
+  private projects: {[projectId: string]: [Project, ProjectGraphData]};
 
   constructor() {
-    this.projects = [
+    this.projects = {};
+    const fakes = [
       FakeDataService.fakeProject1(),
       FakeDataService.fakeProject2(),
       FakeDataService.fakeProject3(),
       FakeDataService.fakeProject4(),
     ];
+    fakes.forEach(tuple => (this.projects[tuple[0].projectId] = tuple));
   }
 
   /** Returns all the fake projects. */
   listProjects(): Project[] {
-    return this.projects.map(row => row[0]);
+    return Object.values(this.projects).map(tuple => tuple[0]);
   }
 
   /** Returns the data associated with the given project. */
   getProjectGraphData(id: string): ProjectGraphData | undefined {
-    const result: [Project, ProjectGraphData] | undefined = this.projects.find(
-      row => row[0].projectId === id
-    );
-    if (result) {
-      return result[1];
-    }
-    return undefined;
+    return this.projects[id][1];
   }
 
   /** Generate fake data for project 1. */

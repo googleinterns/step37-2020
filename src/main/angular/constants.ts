@@ -1,4 +1,4 @@
-/** Contains several constants in use throughout the application./*/* */
+/** Contains several constants in use throughout the application. */
 /** Whether to use test data or not. */
 export const USE_TEST_DATA = true;
 

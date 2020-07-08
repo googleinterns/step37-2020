@@ -10,7 +10,7 @@ describe('DateUtilitiesService', () => {
   });
 
   describe('fallOnSameDay()', () => {
-    it('Should work for equal times', () => {
+    it('Returns true for equal times', () => {
       const date1 = new Date(2020, 6, 1);
       const date2 = new Date(2020, 6, 1);
       expect(
@@ -18,7 +18,7 @@ describe('DateUtilitiesService', () => {
       ).toBeTrue();
     });
 
-    it('Should work for different hours', () => {
+    it('Returns true for different hours of the same day', () => {
       const date1 = new Date(2020, 6, 1, 7);
       const date2 = new Date(2020, 6, 1, 12);
       expect(
@@ -26,7 +26,7 @@ describe('DateUtilitiesService', () => {
       ).toBeTrue();
     });
 
-    it('Should detect exact 24 hour difference', () => {
+    it('Returns false for an exact 24 hour difference', () => {
       const date1 = new Date(2020, 6, 1);
       const date2 = new Date(2020, 1, 7);
       expect(
@@ -36,13 +36,13 @@ describe('DateUtilitiesService', () => {
   });
 
   describe('startOfDay()', () => {
-    it('Should work for exact start of day', () => {});
-    it('Should work for times in the middle of the day', () => {});
+    it('Effects no change on an exact start of day', () => {});
+    it('Gets the start of day from times throughout the day', () => {});
   });
 
   describe('uniqueDays()', () => {
-    it('Should work for a single project', () => {});
-    it('Should work for multiple projects on the same timeframe', () => {});
-    it('Should work for multiple projects on different timeframes', () => {});
+    it('Gets unique days from a single project', () => {});
+    it('Gets unique days from multiple projects on the same timeframe', () => {});
+    it('Gets unique days from multiple projects on different timeframes', () => {});
   });
 });

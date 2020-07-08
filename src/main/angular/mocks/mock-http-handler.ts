@@ -11,6 +11,7 @@ import {FakeDataService} from '../app/fake-data.service';
 /** Mock class for Angular's HttpHandler. */
 export class MockHttpHandler extends HttpHandler {
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+    console.log(req.url);
     if (req.url === '/list-project-summaries') {
       return new Observable(observer => {
         observer.next(
@@ -19,7 +20,7 @@ export class MockHttpHandler extends HttpHandler {
           })
         );
       });
-    } else if (req.url === '/get-project-data') {
+    } else if (req.url.includes('/get-project-data')) {
       return new Observable(observer => {
         const id = req.params.get('id');
         if (id) {

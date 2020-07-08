@@ -18,7 +18,7 @@ describe('GraphProcessorService', () => {
   });
 
   describe('initProperties()', () => {
-    it('Should contain empty data', () => {
+    it('Initializes empty data', () => {
       const properties: GraphProperties = service.initProperties();
 
       expect(properties.columns).toEqual(['Time']);
@@ -48,7 +48,7 @@ describe('GraphProcessorService', () => {
     });
 
     describe('Adding projects to graph', () => {
-      it('Should add a single project', async () => {
+      it('Adds a single project successfully', async () => {
         const project: Project = fakeDataService.listProjects()[0];
         const projectData:
           | ProjectGraphData
@@ -92,7 +92,7 @@ describe('GraphProcessorService', () => {
         }
       });
 
-      it('Should add multiple projects', async () => {
+      it('Adds multiple projects successfully', async () => {
         const projects = fakeDataService.listProjects();
         const projectData: (
           | ProjectGraphData
@@ -132,7 +132,7 @@ describe('GraphProcessorService', () => {
     });
 
     describe('Removing projects from the graph', () => {
-      it('Should be able to remove a single project', async () => {
+      it('Remove a single project successfully', async () => {
         const allProjects: Project[] = fakeDataService.listProjects();
         // Add the projects
         changes.projects = new SimpleChange([], allProjects, true);
@@ -172,7 +172,7 @@ describe('GraphProcessorService', () => {
           }
         });
       });
-      it('Should be able to remove multiple projects', async () => {
+      it('Removes multiple projects successfully', async () => {
         const allProjects: Project[] = fakeDataService.listProjects();
         // Add the projects
         changes.projects = new SimpleChange([], allProjects, true);
@@ -216,7 +216,7 @@ describe('GraphProcessorService', () => {
         });
       });
     });
-    it('Should be able to re-add removed projects', async () => {
+    it('Re-adds projects that have been removed', async () => {
       const allProjects: Project[] = fakeDataService.listProjects();
       // Add the projects
       changes.projects = new SimpleChange([], allProjects, true);

@@ -11,7 +11,7 @@ import {USE_TEST_DATA} from '../constants';
 export class HttpService {
   constructor(private http: HttpClient, private fakeService: FakeDataService) {}
 
-  /** Gets the graph data for the given project ID */
+  /** Gets the graph data for the given project ID. */
   getProjectGraphData(id: string): Promise<ProjectGraphData> {
     if (USE_TEST_DATA) {
       return new Promise(resolve =>
@@ -23,7 +23,7 @@ export class HttpService {
       .toPromise();
   }
 
-  /** Gets the project information */
+  /** Gets the project information. */
   listProjects(): Promise<Project[]> {
     if (USE_TEST_DATA) {
       return new Promise(resolve => resolve(this.fakeService.listProjects()));

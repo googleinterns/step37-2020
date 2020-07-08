@@ -33,15 +33,15 @@ export class ProjectSelectComponent implements OnInit {
   public projects: Project[];
   /** All projects that are currently selected. */
   public activeProjects: Set<Project>;
-  /** The sort direction */
+  /** The sort direction. */
   public currentSortDirection: SortDirection;
-  /** The field sorting by */
+  /** The field sorting by. */
   public currentSortField: SortBy;
-  /** The value to filter by */
+  /** The value to filter by. */
   public query: string;
 
   // #region DOM interraction variables
-  /** Whether a particular arrow is rotated or not */
+  /** Whether a particular arrow is rotated or not. */
   sortRotated: {[key: string]: 'down' | 'up'} = {
     iamBindings: 'down',
     projectName: 'down',
@@ -98,7 +98,7 @@ export class ProjectSelectComponent implements OnInit {
     return 'sort-inactive';
   }
 
-  /** Returns the status (up or down) of the animation associated with the given sort field */
+  /** Returns the status (up or down) of the animation associated with the given sort field. */
   getAnimationStatus(field: SortBy): 'down' | 'up' {
     switch (field) {
       case SortBy.IAM_BINDINGS:
@@ -112,7 +112,7 @@ export class ProjectSelectComponent implements OnInit {
     }
   }
 
-  /** Swap the given animation from up to down or vice versa */
+  /** Swap the given animation from up to down or vice versa. */
   swapAnimationProperty(field: SortBy) {
     switch (field) {
       case SortBy.IAM_BINDINGS:
@@ -146,7 +146,7 @@ export class ProjectSelectComponent implements OnInit {
     this.swapAnimationProperty(field);
   }
 
-  /** Returns a sorted and filtered view of the projects */
+  /** Returns a sorted and filtered view of the projects. */
   getProjects(): Project[] {
     if (this.projects === undefined) {
       return [];
@@ -169,12 +169,12 @@ export class ProjectSelectComponent implements OnInit {
     return display;
   }
 
-  /** Changes the query string */
+  /** Changes the query string. */
   search(query: string) {
     this.query = query;
   }
 
-  /** Called when the component is ready to be displayed */
+  /** Called when the component is ready to be displayed. */
   ngOnInit() {
     this.httpService.listProjects().then(projects => {
       // Sort by the selected fields

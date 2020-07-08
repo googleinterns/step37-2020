@@ -1,9 +1,9 @@
-/** Contains several constants in use throughout the application */
-/** Whether to use test data or not */
+/** Contains several constants in use throughout the application./*/* */
+/** Whether to use test data or not. */
 export const USE_TEST_DATA = true;
 
 // See https://standards.google/guidelines/brand-standards/color/palette/#brand-colors
-/** Default colors for use with the projects */
+/** Default colors for use with the projects. */
 export const DEFAULT_COLORS: string[] = [
   // Google blue
   '#174ea6',

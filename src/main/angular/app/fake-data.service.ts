@@ -5,10 +5,10 @@ import {ProjectGraphData} from '../model/project-graph-data';
 import {Project} from '../model/project';
 import {ProjectMetaData} from '../model/project-metadata';
 
-/** Contains fake data for use with HTTP service */
+/** Contains fake data for use with HTTP service. */
 @Injectable()
 export class FakeDataService {
-  /** Contains the projects that are faked */
+  /** Contains the projects that are faked. */
   private projects: [Project, ProjectGraphData][];
 
   constructor() {
@@ -20,12 +20,12 @@ export class FakeDataService {
     ];
   }
 
-  /** Returns all the fake projects */
+  /** Returns all the fake projects. */
   listProjects(): Project[] {
     return this.projects.map(row => row[0]);
   }
 
-  /** Returns the data associated with the given project */
+  /** Returns the data associated with the given project. */
   getProjectGraphData(id: string): ProjectGraphData | undefined {
     const result: [Project, ProjectGraphData] | undefined = this.projects.find(
       row => row[0].projectId === id
@@ -36,7 +36,7 @@ export class FakeDataService {
     return undefined;
   }
 
-  /** Generate fake data for project 1 */
+  /** Generate fake data for project 1. */
   private static fakeProject1(): [Project, ProjectGraphData] {
     const projectId = 'project-1';
     // Fake data for showing the graph
@@ -95,7 +95,7 @@ export class FakeDataService {
     ];
   }
 
-  /** Generate fake data for project 2 */
+  /** Generate fake data for project 2. */
   private static fakeProject2(): [Project, ProjectGraphData] {
     const projectId = 'project-2';
     // Fake data for showing the graph
@@ -155,7 +155,7 @@ export class FakeDataService {
     ];
   }
 
-  /** Generate fake data for project 3 */
+  /** Generate fake data for project 3. */
   private static fakeProject3(): [Project, ProjectGraphData] {
     const projectId = 'test-long-project-id-project-3';
     // Fake data for showing the graph
@@ -220,7 +220,7 @@ export class FakeDataService {
     ];
   }
 
-  /** Generate fake data for project 4 */
+  /** Generate fake data for project 4. */
   private static fakeProject4(): [Project, ProjectGraphData] {
     const projectId = 'quite-the-long-project-4';
     // Fake data for showing the graph

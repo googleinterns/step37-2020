@@ -31,7 +31,7 @@ export class GraphComponent implements OnInit {
 
   public properties: GraphProperties = this.graphProcessor.initProperties();
 
-  /** Whether to show the chart. When it's not selected, prompt the user to select a project */
+  /** Whether to show the chart. When it's not selected, prompt the user to select a project. */
   public shouldShowChart: boolean;
 
   constructor(

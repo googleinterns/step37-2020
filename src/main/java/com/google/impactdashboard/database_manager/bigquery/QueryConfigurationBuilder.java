@@ -1,18 +1,12 @@
 package com.google.impactdashboard.database_manager.bigquery;
 
-import java.lang.UnsupportedOperationException;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 
 /** 
  * An interface for building query configuration builder objects and storing them, 
- * so that they only need ot be built once. 
+ * so that they only need to be built once. 
  */
 public interface QueryConfigurationBuilder {
-  /** Returns the only instance of the class. */
-  public static QueryConfigurationBuilder getInstance() {
-    throw new UnsupportedOperationException("Must be overriden");
-  }
-
   /** 
    * Retrieves query job configuration that retrieves all project ids from the 
    * database. 

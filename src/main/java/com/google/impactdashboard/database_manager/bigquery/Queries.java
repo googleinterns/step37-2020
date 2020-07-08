@@ -23,7 +23,7 @@ public class Queries {
 
   /** Retrieves all project ids from the database. */
   public static final String GET_PROJECT_IDS = 
-    "SELECT DISTINCT " + Constants.PROJECT_ID_COLUMN_IAM +
+    "SELECT DISTINCT " + Constants.IAM_PROJECT_ID_COLUMN +
       " FROM `" + IAM_TABLE + "`";
 
   /** 
@@ -31,9 +31,11 @@ public class Queries {
    * {@code projectId}. 
    */
   public static final String GET_PROJECT_IDENTIFICATION_INFORMATION = 
-    "SELECT " + Constants.NAME_COLUMN + ", " + Constants.NUMBER_COLUMN +
+    "SELECT " + 
+      Constants.PROJECT_NAME_COLUMN + ", " + 
+      Constants.PROJECT_NUMBER_COLUMN +
       " FROM `" + IAM_TABLE + "`" +
-      " WHERE " + Constants.PROJECT_ID_COLUMN_IAM + " = @projectId" +
+      " WHERE " + Constants.IAM_PROJECT_ID_COLUMN + " = @projectId" +
       " LIMIT 1";
 
   /** 
@@ -43,8 +45,8 @@ public class Queries {
   public static final String GET_AVERAGE_BINDINGS = 
     "SELECT AVG(" + Constants.NUMBER_BINDINGS_COLUMN + ") AS AverageBindings" +
       " FROM " + IAM_TABLE + 
-      " GROUP BY " + Constants.PROJECT_ID_COLUMN_IAM +
-      " HAVING " + Constants.PROJECT_ID_COLUMN_IAM + " = @projectId";
+      " GROUP BY " + Constants.IAM_PROJECT_ID_COLUMN +
+      " HAVING " + Constants.IAM_PROJECT_ID_COLUMN + " = @projectId";
 
   /** 
    * Retrieves all (timestamp, number of bindings) data in the table for 
@@ -53,7 +55,7 @@ public class Queries {
   public static final String GET_DATES_TO_BINDINGS = 
     "SELECT " + Constants.TIMESTAMP_COLUMN + ", " + Constants.NUMBER_BINDINGS_COLUMN +
       " FROM " + IAM_TABLE +
-      " WHERE " + Constants.PROJECT_ID_COLUMN_IAM + " = @projectId";
+      " WHERE " + Constants.IAM_PROJECT_ID_COLUMN + " = @projectId";
 
   /** 
    * Retrieves all (timestamp, recommendation) data in the table for 
@@ -65,7 +67,7 @@ public class Queries {
       Constants.DESCRIPTION_COLUMN + ", " +
       Constants.IAM_IMPACT_COLUMN +
       " FROM " + RECOMMENDATIONS_TABLE +
-      " WHERE " + Constants.PROJECT_ID_COLUMN_RECOMMENDATIONS + " = @projectId" +
+      " WHERE " + Constants.RECOMMENDATIONS_PROJECT_ID_COLUMN + " = @projectId" +
       " AND " + Constants.RECOMMENDER_COLUMN + 
         " = '" + Recommendation.RecommenderType.IAM_BINDING + "'";
 

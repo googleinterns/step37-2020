@@ -25,7 +25,7 @@ public class Constants {
   /* Column names of Recommendations Table. */
 
   /** The name of the column holding the project id. */
-  public static final String PROJECT_ID_COLUMN_RECOMMENDATIONS = "ProjectId";
+  public static final String RECOMMENDATIONS_PROJECT_ID_COLUMN = "ProjectId";
 
   /** The name of the column holding the recommender type. */
   public static final String RECOMMENDER_COLUMN = "Recommender";
@@ -42,13 +42,13 @@ public class Constants {
   /* Column names of IAM Bindings Table. */
 
   /** The name of the column holding the project id. */
-  public static final String PROJECT_ID_COLUMN_IAM = "ProjectId";
+  public static final String IAM_PROJECT_ID_COLUMN = "ProjectId";
 
   /** The name of the column holding the name of the project. */
-  public static final String NAME_COLUMN = "ProjectName";
+  public static final String PROJECT_NAME_COLUMN = "ProjectName";
 
   /** The name of the column holding the number of the project. */
-  public static final String NUMBER_COLUMN = "ProjectNumber";
+  public static final String PROJECT_NUMBER_COLUMN = "ProjectNumber";
 
   /** The name of the column holding the timestamp of the bindings data. */
   public static final String TIMESTAMP_COLUMN = "Timestamp";

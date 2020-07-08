@@ -10,6 +10,7 @@ import com.google.logging.v2.LogEntry;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -79,5 +80,12 @@ public class LogRetriever {
     //filter by recommendation log
     //Create new ListLogEntriesRequest with the information
     //Call for logs
+  }
+
+  public static void main(String[] args) throws IOException {
+    System.out.println("Running...");
+    LogRetriever retriever = LogRetriever.create();
+    System.out.println("Retrieving logs...");
+    Collection<LogEntry> logs = retriever.listAuditLogs();
   }
 }

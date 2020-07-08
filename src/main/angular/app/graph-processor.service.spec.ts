@@ -48,7 +48,7 @@ describe('GraphProcessorService', () => {
       beforeEach(() => {
         changes = {};
       });
-      it('Should add a single project', () => {
+      it('Should add a single project', async () => {
         const project: Project = fakeData.listProjects()[0];
         const projectData:
           | ProjectGraphData
@@ -56,13 +56,15 @@ describe('GraphProcessorService', () => {
 
         // Going from no projects to a single one
         changes.projects = new SimpleChange([], [project], true);
-        service.processChanges(changes, properties, httpService);
+        await service.processChanges(changes, properties, httpService);
 
         expect(properties.columns.length).toBe(4);
         expect(properties.columns[1]).toBe(project.projectId);
 
         if (projectData) {
-          const times = Object.keys(projectData.dateToNumberIAMBindings);
+          const times: number[] = Object.keys(
+            projectData.dateToNumberIAMBindings
+          ).map(key => +key);
           properties.graphData.forEach((row, index) => {
             expect(row[0].getTime()).toBe(times[index]);
           });

@@ -44,21 +44,25 @@ export class GraphProcessorService {
   }
 
   /** Process the given changes and adjust from the graph properties as necessary */
-  processChanges(
+  async processChanges(
     changes: SimpleChanges,
     properties: GraphProperties,
     httpService: HttpService
-  ): void {
+  ): Promise<void> {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
+    const promises: Promise<any>[] = [];
 
     additionsDeletions.added.forEach(addition =>
-      httpService
-        .getProjectGraphData(addition.projectId)
-        .then(data => this.addToGraph(properties, data, addition))
+      promises.push(
+        httpService
+          .getProjectGraphData(addition.projectId)
+          .then(data => this.addToGraph(properties, data, addition))
+      )
     );
     additionsDeletions.removed.forEach(removal =>
       this.removeFromGraph(properties, removal)
     );
+    return Promise.all(promises).then(values => undefined);
   }
 
   /** Adds the given project to the graph */

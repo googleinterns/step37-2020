@@ -34,4 +34,15 @@ describe('DateUtilitiesService', () => {
       ).toBeFalse();
     });
   });
+
+  describe('startOfDay()', () => {
+    it('Should work for exact start of day', () => {});
+    it('Should work for times in the middle of the day', () => {});
+  });
+
+  describe('uniqueDays()', () => {
+    it('Should work for a single project', () => {});
+    it('Should work for multiple projects on the same timeframe', () => {});
+    it('Should work for multiple projects on different timeframes', () => {});
+  });
 });

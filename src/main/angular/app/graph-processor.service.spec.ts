@@ -32,6 +32,7 @@ describe('GraphProcessorService', () => {
     let fakeDataService: FakeDataService;
     let properties: GraphProperties;
     let httpService: HttpService;
+    let changes: SimpleChanges;
 
     beforeAll(() => {
       fakeDataService = new FakeDataService();
@@ -43,13 +44,10 @@ describe('GraphProcessorService', () => {
 
     beforeEach(() => {
       properties = service.initProperties();
+      changes = {};
     });
 
     describe('Adding projects to graph', () => {
-      let changes: SimpleChanges;
-      beforeEach(() => {
-        changes = {};
-      });
       it('Should add a single project', async () => {
         const project: Project = fakeDataService.listProjects()[0];
         const projectData:
@@ -132,5 +130,11 @@ describe('GraphProcessorService', () => {
         });
       });
     });
+
+    describe('Removing projects from the graph', () => {
+      it('Should be able to remove a single project', async () => {});
+      it('Should be able to remove multiple projects', async () => {});
+    });
+    it('Should be able to re-add removed projects', async () => {});
   });
 });

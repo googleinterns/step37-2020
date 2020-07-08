@@ -38,7 +38,7 @@ public class ProjectInformationRetrieverTest extends Mockito {
   @Before
   public void setup() {
     readManager = mock(DataReadManager.class);
-    informationRetriever = ProjectInformationRetriever.create(readManager);
+    informationRetriever = new ProjectInformationRetriever(readManager);
   }
 
   @Test

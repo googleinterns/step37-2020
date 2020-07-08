@@ -5,7 +5,6 @@ import {DateUtilitiesService} from './date-utilities.service';
 import {GraphProperties} from '../model/types';
 import {FakeDataService} from './fake-data.service';
 import {HttpService} from './http.service';
-import {HttpClient} from '@angular/common/http';
 import {MockHttpClient} from '../mocks/mock-http-client';
 import {SimpleChanges, SimpleChange} from '@angular/core';
 import {Project} from '../model/project';
@@ -66,7 +65,11 @@ describe('GraphProcessorService', () => {
             projectData.dateToNumberIAMBindings
           ).map(key => +key);
           properties.graphData.forEach((row, index) => {
-            expect(row[0].getTime()).toBe(times[index]);
+            if (row[0] instanceof Date) {
+              expect(row[0].getTime()).toBe(times[index]);
+            } else {
+              fail('First row is not a time');
+            }
           });
         } else {
           fail('FakeDataService failed to match data to a project');

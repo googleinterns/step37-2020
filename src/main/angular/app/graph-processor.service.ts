@@ -4,18 +4,17 @@ import {Recommendation} from '../model/recommendation';
 import {Project} from '../model/project';
 import {SimpleChange} from '@angular/core';
 import {DateUtilitiesService} from './date-utilities.service';
-import {GraphProperties} from '../model/types';
+import {GraphProperties, Columns, Row} from '../model/types';
 import {HttpService} from './http.service';
 
-/** Provides methods to convert data to the format used by Google Charts */
+/** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
 export class GraphProcessorService {
   constructor(private dateUtilities: DateUtilitiesService) {}
 
-  /** Initialize the chart properties with empty data */
+  /** Initialize the chart properties with empty data. */
   initProperties(): GraphProperties {
-    const out: any = {};
-    out.options = {
+    const options: google.visualization.LineChartOptions = {
       animation: {
         duration: 500,
         easing: 'out',
@@ -37,21 +36,23 @@ export class GraphProcessorService {
       },
       series: {},
     };
-    out.graphData = [];
-    out.columns = ['Time'];
-    out.type = 'LineChart';
-    out.title = 'Empty Graph';
-    return out as GraphProperties;
+    return {
+      options: options,
+      graphData: [],
+      columns: ['Time'],
+      type: 'LineChart',
+      title: 'Empty Graph',
+    };
   }
 
-  /** Process the given changes and adjust from the graph properties as necessary */
+  /** Process the given changes and adjust from the graph properties as necessary. */
   async processChanges(
     changes: SimpleChanges,
     properties: GraphProperties,
     httpService: HttpService
   ): Promise<void> {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
-    const promises: Promise<any>[] = [];
+    const promises: Promise<unknown>[] = [];
 
     additionsDeletions.added.forEach(addition =>
       promises.push(
@@ -63,19 +64,15 @@ export class GraphProcessorService {
     additionsDeletions.removed.forEach(removal =>
       this.removeFromGraph(properties, removal)
     );
-    return Promise.all(promises).then(values => {
+    return Promise.all(promises).then(() => {
       properties.title = 'IAM Bindings';
       return undefined;
     });
   }
 
-  /** Adds the given project to the graph */
+  /** Adds the given project to the graph. */
   private addToGraph(
-    properties: {
-      options: google.visualization.LineChartOptions;
-      graphData: any[];
-      columns: any[];
-    },
+    properties: GraphProperties,
     data: ProjectGraphData,
     project: Project
   ) {
@@ -89,24 +86,17 @@ export class GraphProcessorService {
     this.addIamRows(properties.graphData, data, project, seriesNum);
 
     // Force a refresh of the chart
-    const temp: any[] = [];
+    const temp: Columns = [];
     properties.columns = temp.concat(properties.columns);
   }
 
-  /** Removes the given project from the graph */
-  private removeFromGraph(
-    properties: {
-      options: google.visualization.LineChartOptions;
-      graphData: any[];
-      columns: any[];
-    },
-    project: Project
-  ) {
+  /** Removes the given project from the graph. */
+  private removeFromGraph(properties: GraphProperties, project: Project) {
     const seriesNum: number =
       (properties.columns.indexOf(project.projectId) - 1) / 3;
 
     if (properties.options.series) {
-      for (const [key, value] of Object.entries(properties.options.series)) {
+      for (const [key] of Object.entries(properties.options.series)) {
         if (+key >= seriesNum && properties.options.series) {
           properties.options.series[+key] = properties.options.series[+key + 1];
           delete properties.options.series[+key + 1];
@@ -118,17 +108,17 @@ export class GraphProcessorService {
     properties.graphData.forEach(row => row.splice(seriesNum * 3 + 1, 3));
 
     // Force a refresh of the chart
-    const temp: any[] = [];
+    const temp: Columns = [];
     properties.columns = temp.concat(properties.columns);
   }
 
   /** Adds the table rows for the given Project. Each row is [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...] */
   private addIamRows(
-    rows: any[],
+    rows: Row[],
     data: ProjectGraphData,
     project: Project,
     seriesNum: number
-  ): any[] {
+  ): Row[] {
     // First, get all the days we need to add if it hasn't already been provided
     const days = this.dateUtilities.uniqueDays([data]);
 
@@ -136,7 +126,7 @@ export class GraphProcessorService {
     days
       .filter(day => !this.includesDay(rows, day))
       .forEach(day => {
-        const row: any[] = [day];
+        const row: Row = [day];
         // Fill in columns for all existing projects with empty data
         for (let i = 0; i < seriesNum * 3; i++) {
           row.push(undefined);
@@ -160,8 +150,10 @@ export class GraphProcessorService {
       const tooltip = this.getTooltip(value, recommendations);
       const point = this.getPoint(recommendations, project.color);
 
-      // Populate the existing row with information
-      row.push(value, tooltip, point);
+      if (row) {
+        // Populate the existing row with information
+        row.push(value, tooltip, point);
+      }
     }
 
     // Now add empty data for rows that weren't touched
@@ -175,7 +167,7 @@ export class GraphProcessorService {
   }
 
   /** Adds the column headers for a single project on an IAM graph. Takes the form of [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...] */
-  private addIamColumns(columns: any[], data: ProjectGraphData): void {
+  private addIamColumns(columns: Columns, data: ProjectGraphData): void {
     // Populate the header row, which contains the column purposes
     columns.push(
       data.projectId,
@@ -184,7 +176,7 @@ export class GraphProcessorService {
     );
   }
 
-  /** From a given SimpleChange, extract the projects that were added or deleted */
+  /** From a given SimpleChange, extract the projects that were added or deleted. */
   private getAdditionsDeletions(
     change: SimpleChange
   ): {added: Project[]; removed: Project[]} {
@@ -228,7 +220,7 @@ export class GraphProcessorService {
     return tooltip;
   }
 
-  /** Returns the point styling associated with the given recommendation */
+  /** Returns the point styling associated with the given recommendation. */
   private getPoint(
     matchingRecommendations: Recommendation[],
     color: string
@@ -239,7 +231,7 @@ export class GraphProcessorService {
     return `point { size: 10; shape-type: circle; fill-color: ${color}; visible: true; }`;
   }
 
-  /** Returns the recommendations which occured on the same day as the given time, which is in milliseconds since epoch */
+  /** Returns the recommendations which occured on the same day as the given time, which is in milliseconds since epoch. */
   private getRecommendationsOnSameDay(
     time: number,
     dateToRecommendation: {[timeInMillis: number]: Recommendation}
@@ -253,13 +245,13 @@ export class GraphProcessorService {
     return recommendations;
   }
 
-  /** Checks if the rows already includes the given day */
-  private includesDay(rows: any[], day: Date): boolean {
+  /** Checks if the rows already includes the given day. */
+  private includesDay(rows: Row[], day: Date): boolean {
     return rows.findIndex(row => row[0].getTime() === day.getTime()) !== -1;
   }
 
-  /** Returns the row representing the given day */
-  private getRow(rows: any[], day: Date): any[] {
+  /** Returns the row representing the given day. */
+  private getRow(rows: Row[], day: Date): Row | undefined {
     return rows.find(row => row[0].getTime() === day.getTime());
   }
 }

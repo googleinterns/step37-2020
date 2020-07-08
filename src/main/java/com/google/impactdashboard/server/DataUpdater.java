@@ -73,7 +73,7 @@ public class DataUpdater {
     // filter out any duplicate IAM Information
     // add non duplicates to database
     Collection<LogEntry> entries = logRetriever.listAuditLogs();
-    System.out.println(new ArrayList<>(entries).get(0));
+    System.out.println(new ArrayList<>(entries).get(0).getProtoPayload().getAllFields());
     return null;
   }
 

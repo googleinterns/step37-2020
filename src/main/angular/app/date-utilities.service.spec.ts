@@ -1,17 +1,15 @@
-/*import { TestBed } from '@angular/core/testing';
-
-import { UtilitiesService } from './utilities.service';
+/* eslint-disable no-undef */
+import {DateUtilitiesService} from './date-utilities.service';
+import 'jasmine';
 
 describe('UtilitiesService', () => {
-  let service: UtilitiesService;
+  let service: DateUtilitiesService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(UtilitiesService);
+    service = new DateUtilitiesService();
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 });
-*/

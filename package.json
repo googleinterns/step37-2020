@@ -1,7 +1,7 @@
 {
   "name": "recommendations-impact-dashboard",
   "scripts": {
-    "test": "mocha -r ts-node/register src/test/**/*.spec.ts",
+    "test": "ts-node node_modules/jasmine/bin/jasmine src/**/*.spec.ts",
     "build": "ng build && cp -r src/main/angular/WEB-INF src/main/webapp/WEB-INF && mvn package appengine:run",
     "serve": "ng serve --open",
     "check": "gts check src/**/*.ts",

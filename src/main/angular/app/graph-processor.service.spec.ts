@@ -1,14 +1,14 @@
+/* eslint-disable no-undef */
 import {TestBed} from '@angular/core/testing';
-import {describe, beforeEach, it} from 'jasmine';
-
 import {GraphProcessorService} from './graph-processor.service';
+import 'jasmine';
+import {DateUtilitiesService} from './date-utilities.service';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(GraphProcessorService);
+    service = new GraphProcessorService(new DateUtilitiesService());
   });
 
   it('should be created', () => {

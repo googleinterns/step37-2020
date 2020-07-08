@@ -28,6 +28,7 @@ export class GraphProcessorService {
         gridlines: {
           color: 'white',
         },
+        format: 'M/d',
       },
       vAxis: {
         minorGridlines: {
@@ -62,7 +63,10 @@ export class GraphProcessorService {
     additionsDeletions.removed.forEach(removal =>
       this.removeFromGraph(properties, removal)
     );
-    return Promise.all(promises).then(values => undefined);
+    return Promise.all(promises).then(values => {
+      properties.title = 'IAM Bindings';
+      return undefined;
+    });
   }
 
   /** Adds the given project to the graph */

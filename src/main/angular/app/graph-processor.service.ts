@@ -135,7 +135,12 @@ export class GraphProcessorService {
       });
 
     // Sort rows in increasing order
-    rows.sort((a, b) => a[0].getTime() - b[0].getTime());
+    rows.sort((a, b) => {
+      if (a[0] instanceof Date && b[0] instanceof Date) {
+        return a[0].getTime() - b[0].getTime();
+      }
+      return 0;
+    });
 
     for (const [key, value] of Object.entries(data.dateToNumberIAMBindings)) {
       // Convert key from string to number
@@ -247,11 +252,23 @@ export class GraphProcessorService {
 
   /** Checks if the rows already includes the given day. */
   private includesDay(rows: Row[], day: Date): boolean {
-    return rows.findIndex(row => row[0].getTime() === day.getTime()) !== -1;
+    return (
+      rows.findIndex(row => {
+        if (row[0] instanceof Date) {
+          return row[0].getTime() === day.getTime();
+        }
+        return false;
+      }) !== -1
+    );
   }
 
   /** Returns the row representing the given day. */
   private getRow(rows: Row[], day: Date): Row | undefined {
-    return rows.find(row => row[0].getTime() === day.getTime());
+    return rows.find(row => {
+      if (row[0] instanceof Date) {
+        return row[0].getTime() === day.getTime();
+      }
+      return false;
+    });
   }
 }

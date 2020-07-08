@@ -29,13 +29,16 @@ describe('GraphProcessorService', () => {
   });
 
   describe('processChanges()', () => {
-    let fakeData: FakeDataService;
+    let fakeDataService: FakeDataService;
     let properties: GraphProperties;
     let httpService: HttpService;
 
     beforeAll(() => {
-      fakeData = new FakeDataService();
-      httpService = new HttpService(new MockHttpClient(fakeData), fakeData);
+      fakeDataService = new FakeDataService();
+      httpService = new HttpService(
+        new MockHttpClient(fakeDataService),
+        fakeDataService
+      );
     });
 
     beforeEach(() => {
@@ -48,10 +51,10 @@ describe('GraphProcessorService', () => {
         changes = {};
       });
       it('Should add a single project', async () => {
-        const project: Project = fakeData.listProjects()[0];
+        const project: Project = fakeDataService.listProjects()[0];
         const projectData:
           | ProjectGraphData
-          | undefined = fakeData.getProjectGraphData(project.projectId);
+          | undefined = fakeDataService.getProjectGraphData(project.projectId);
 
         // Going from no projects to a single one
         changes.projects = new SimpleChange([], [project], true);
@@ -61,19 +64,41 @@ describe('GraphProcessorService', () => {
         expect(properties.columns[1]).toBe(project.projectId);
 
         if (projectData) {
-          const times: number[] = Object.keys(
+          const bindingTimes: number[] = Object.keys(
             projectData.dateToNumberIAMBindings
           ).map(key => +key);
+          const recommendationTimes: number[] = Object.keys(
+            projectData.dateToRecommendationTaken
+          ).map(key => +key);
           properties.graphData.forEach((row, index) => {
+            let time = -1;
+            // Make sure time is correct
             if (row[0] instanceof Date) {
-              expect(row[0].getTime()).toBe(times[index]);
+              time = row[0].getTime();
+              expect(time).toBe(bindingTimes[index]);
             } else {
-              fail('First row is not a time');
+              fail('First row is not a time!');
+            }
+
+            // Make sure number bindings is correct
+            expect(row[1]).toBe(projectData.dateToNumberIAMBindings[time]);
+            // Make sure tooltips are correct
+            if (!recommendationTimes.includes(time)) {
+              expect(row[2]).toBe(
+                `IAM Bindings: ${projectData.dateToNumberIAMBindings[time]}`
+              );
             }
           });
         } else {
           fail('FakeDataService failed to match data to a project');
         }
+      });
+
+      it('Should add multiple projects', async () => {
+        const projects = fakeDataService.listProjects();
+        const projectData: ProjectGraphData[] = projects.map(project =>
+          fakeDataService.getProjectGraphData(project.projectId)
+        );
       });
     });
   });

@@ -10,11 +10,11 @@ export type GraphProperties = {
 };
 
 /** The different types of data permitted in a row for Google Charts. */
-// Number bindings is a number, tooltip is a string, styling is a string.
-export type RowData = string | number;
+// Timestamp is a date, number bindings is a number, tooltip is a string, styling is a string.
+export type RowData = Date | string | number | undefined;
 
 /** A single row of data in Google Charts. */
-export type Row = [Date, RowData?];
+export type Row = RowData[];
 
 /** The format for columns used by Google Charts. */
 export type Columns = (string | {type: 'string'; role: 'tooltip' | 'style'})[];

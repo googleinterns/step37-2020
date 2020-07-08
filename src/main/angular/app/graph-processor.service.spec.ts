@@ -96,9 +96,40 @@ describe('GraphProcessorService', () => {
 
       it('Should add multiple projects', async () => {
         const projects = fakeDataService.listProjects();
-        const projectData: ProjectGraphData[] = projects.map(project =>
+        const projectData: (
+          | ProjectGraphData
+          | undefined
+        )[] = projects.map(project =>
           fakeDataService.getProjectGraphData(project.projectId)
         );
+        // Going from no projects to adding all of the ones above
+        changes.projects = new SimpleChange([], projects, true);
+        await service.processChanges(changes, properties, httpService);
+
+        expect(properties.columns.length).toBe(1 + 3 * projects.length);
+        projectData.forEach((data, projectIndex) => {
+          if (data) {
+            expect(properties.columns[1 + 3 * projectIndex]).toBe(
+              data.projectId
+            );
+
+            // Make sure each row has the proper value
+            properties.graphData.forEach((row, rowIndex) => {
+              if (row[0] instanceof Date) {
+                const time = row[0].getTime();
+                expect(row[1 + projectIndex * 3]).toBe(
+                  data.dateToNumberIAMBindings[time]
+                );
+              } else {
+                fail(
+                  `Row ${rowIndex} with alue ${row} does not have a date field`
+                );
+              }
+            });
+          } else {
+            fail(`Project data ${projectIndex} does not exist`);
+          }
+        });
       });
     });
   });

@@ -1,6 +1,10 @@
 package com.google.impactdashboard.database_manager.bigquery;
 
 import com.google.cloud.bigquery.QueryJobConfiguration;
+import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
+import com.google.impactdashboard.data.recommendation.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /** 
  * A class for building query configuration builder objects and storing them, 
@@ -96,39 +100,48 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   /**
    * Retrieves query job configuration that inserts {@code values} into the 
    * IAM Bindings table.
-   * @param values The values to be inserted. Must be formatted as 
-      {@code "(column1Value1, column2Value1, column3Value1, ....), 
-      (column1Value2, column2Value2, column3Value2, ....), ..."}, with each row 
-      to be inserted having a value for every column in the specified table, and 
-      with no comma at the end of the list of rows. 
+   * @param values The data to be inserted. 
    */
-  public QueryJobConfiguration.Builder insertValuesIAMTableConfiguration(String values) {
+  public QueryJobConfiguration.Builder 
+    insertValuesIAMTableConfiguration(List<IAMBindingDatabaseEntry> values) {
     if (insertValuesIAMTableConfiguration == null) {
       insertValuesIAMTableConfiguration = Queries.INSERT_VALUES_INTO_IAM_TABLE;
     }
 
+    String sqlFormattedValues = values.stream()
+      .map(bindingData -> String.format(
+        "('%s', '%s', '%s', TIMESTAMP_ADD('1970-01-01 00:00:00 UTC', INTERVAL %s SECOND), %s), ", 
+        bindingData.getProjectId(), bindingData.getProjectName(), 
+        bindingData.getProjectNumber(), bindingData.getTimestamp() / 100, 
+        bindingData.getBindingsNumber()))
+      .collect(Collectors.joining(", "));
+
     return QueryJobConfiguration
-      .newBuilder(insertValuesIAMTableConfiguration + values).setUseLegacySql(false);
+      .newBuilder(insertValuesIAMTableConfiguration + sqlFormattedValues).setUseLegacySql(false);
   }
 
   /**
    * Retrieves query job configuration that inserts {@code values} into the 
    * Recommendations table. 
-   * @param values The values to be inserted. Must be formatted as 
-      {@code "(column1Value1, column2Value1, column3Value1, ....), 
-      (column1Value2, column2Value2, column3Value2, ....), ..."}, with each row 
-      to be inserted having a value for every column in the specified table, and 
-      with no comma at the end of the list of rows. 
+   * @param values The recommendations to be inserted.
    */
   public QueryJobConfiguration.Builder 
-    insertValuesRecommendationsTableConfiguration(String values) {
+    insertValuesRecommendationsTableConfiguration(List<Recommendation> values) {
     if (insertValuesRecommendationsTableConfiguration == null) {
       insertValuesRecommendationsTableConfiguration = 
         Queries.INSERT_VALUES_INTO_RECOMMENDATIONS_TABLE;
     }
 
+    String sqlFormattedValues = values.stream()
+      .map(recommendation -> String.format(
+        "('%s', '%s', '%s', TIMESTAMP_ADD('1970-01-01 00:00:00 UTC', INTERVAL %s SECOND), %s), ", 
+        recommendation.getProjectId(), recommendation.getRecommender(), 
+        recommendation.getDescription(), recommendation.getAcceptedTimestamp() / 100, 
+        ((IAMRecommenderMetadata) recommendation.getMetadata()).getImpactInIAMBindings()))
+      .collect(Collectors.joining(", "));
+
     return QueryJobConfiguration
-      .newBuilder(insertValuesRecommendationsTableConfiguration + values)
+      .newBuilder(insertValuesRecommendationsTableConfiguration + sqlFormattedValues)
       .setUseLegacySql(false);
   }
   

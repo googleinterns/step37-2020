@@ -1,7 +1,9 @@
 package com.google.impactdashboard.database_manager.bigquery;
 
 import com.google.cloud.bigquery.QueryJobConfiguration;
-
+import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
+import com.google.impactdashboard.data.recommendation.*;
+import java.util.List;
 /** 
  * An interface for building query configuration builder objects and storing them, 
  * so that they only need to be built once. 
@@ -41,25 +43,15 @@ public interface QueryConfigurationBuilder {
   /**
    * Retrieves query job configuration that inserts {@code values} into the 
    * IAM Bindings table.
-   * @param values The values to be inserted. Must be formatted as 
-      {@code "(column1Value1, column2Value1, column3Value1, ....), 
-      (column1Value2, column2Value2, column3Value2, ....), ..."}, with each row 
-      to be inserted having a value for every column in the specified table, and 
-      with no comma at the end of the list of rows. 
    */
-  public QueryJobConfiguration.Builder insertValuesIAMTableConfiguration(String values);
-
+  public QueryJobConfiguration.Builder 
+    insertValuesIAMTableConfiguration(List<IAMBindingDatabaseEntry> values);
   /**
    * Retrieves query job configuration that inserts {@code values} into the 
    * Recommendations table. 
-   * @param values The values to be inserted. Must be formatted as 
-      {@code "(column1Value1, column2Value1, column3Value1, ....), 
-      (column1Value2, column2Value2, column3Value2, ....), ..."}, with each row 
-      to be inserted having a value for every column in the specified table, and 
-      with no comma at the end of the list of rows. 
    */
-  public QueryJobConfiguration.Builder insertValuesRecommendationsTableConfiguration(String values);
-  
+  public QueryJobConfiguration.Builder 
+    insertValuesRecommendationsTableConfiguration(List<Recommendation> values);  
   /** 
    * Retrieves query job configuration that deletes 365-day-old data from the 
    * IAM bindings table.

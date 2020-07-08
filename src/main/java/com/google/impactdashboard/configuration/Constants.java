@@ -21,38 +21,4 @@ public class Constants {
 
   /** The name of the database holding the real data. */
   public static final String DATABASE = "";
-
-  /* Column names of Recommendations Table. */
-
-  /** The name of the column holding the project id. */
-  public static final String RECOMMENDATIONS_PROJECT_ID_COLUMN = "ProjectId";
-
-  /** The name of the column holding the recommender type. */
-  public static final String RECOMMENDER_COLUMN = "Recommender";
-
-  /** The name of the column holding the description of the recommendation. */
-  public static final String DESCRIPTION_COLUMN = "Description";
-
-  /** The name of the column holding the accepted timestamp of the recommendation. */
-  public static final String ACCEPTED_TIMESTAMP_COLUMN = "AcceptedTimestamp";
-
-  /** The name of the column holding the IAM bindings impact of the recommendation. */
-  public static final String IAM_IMPACT_COLUMN = "IAMBindingsImpact";
-
-  /* Column names of IAM Bindings Table. */
-
-  /** The name of the column holding the project id. */
-  public static final String IAM_PROJECT_ID_COLUMN = "ProjectId";
-
-  /** The name of the column holding the name of the project. */
-  public static final String PROJECT_NAME_COLUMN = "ProjectName";
-
-  /** The name of the column holding the number of the project. */
-  public static final String PROJECT_NUMBER_COLUMN = "ProjectNumber";
-
-  /** The name of the column holding the timestamp of the bindings data. */
-  public static final String TIMESTAMP_COLUMN = "Timestamp";
-
-  /** The name of the column holding the number of IAM Bindings. */
-  public static final String NUMBER_BINDINGS_COLUMN = "NumberOfBindings";
 }

@@ -23,7 +23,7 @@ public class Queries {
 
   /** Retrieves all project ids from the database. */
   public static final String GET_PROJECT_IDS = 
-    "SELECT DISTINCT " + Constants.IAM_PROJECT_ID_COLUMN +
+    "SELECT DISTINCT " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN +
       " FROM `" + IAM_TABLE + "`";
 
   /** 
@@ -32,10 +32,10 @@ public class Queries {
    */
   public static final String GET_PROJECT_IDENTIFICATION_INFORMATION = 
     "SELECT " + 
-      Constants.PROJECT_NAME_COLUMN + ", " + 
-      Constants.PROJECT_NUMBER_COLUMN +
+      IAMBindingsSchema.PROJECT_NAME_COLUMN + ", " + 
+      IAMBindingsSchema.PROJECT_NUMBER_COLUMN +
       " FROM `" + IAM_TABLE + "`" +
-      " WHERE " + Constants.IAM_PROJECT_ID_COLUMN + " = @projectId" +
+      " WHERE " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN + " = @projectId" +
       " LIMIT 1";
 
   /** 
@@ -43,19 +43,19 @@ public class Queries {
    * entry in the table. 
    */
   public static final String GET_AVERAGE_BINDINGS = 
-    "SELECT AVG(" + Constants.NUMBER_BINDINGS_COLUMN + ") AS AverageBindings" +
+    "SELECT AVG(" + IAMBindingsSchema.NUMBER_BINDINGS_COLUMN + ") AS AverageBindings" +
       " FROM " + IAM_TABLE + 
-      " GROUP BY " + Constants.IAM_PROJECT_ID_COLUMN +
-      " HAVING " + Constants.IAM_PROJECT_ID_COLUMN + " = @projectId";
+      " GROUP BY " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN +
+      " HAVING " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN + " = @projectId";
 
   /** 
    * Retrieves all (timestamp, number of bindings) data in the table for 
    * {@code projectId}. 
    */
   public static final String GET_DATES_TO_BINDINGS = 
-    "SELECT " + Constants.TIMESTAMP_COLUMN + ", " + Constants.NUMBER_BINDINGS_COLUMN +
+    "SELECT " + IAMBindingsSchema.TIMESTAMP_COLUMN + ", " + IAMBindingsSchema.NUMBER_BINDINGS_COLUMN +
       " FROM " + IAM_TABLE +
-      " WHERE " + Constants.IAM_PROJECT_ID_COLUMN + " = @projectId";
+      " WHERE " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN + " = @projectId";
 
   /** 
    * Retrieves all (timestamp, recommendation) data in the table for 
@@ -63,12 +63,12 @@ public class Queries {
    */
   public static final String GET_DATES_TO_IAM_RECOMMENDATIONS = 
     "SELECT " + 
-      Constants.ACCEPTED_TIMESTAMP_COLUMN + ", " +
-      Constants.DESCRIPTION_COLUMN + ", " +
-      Constants.IAM_IMPACT_COLUMN +
+      RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN + ", " +
+      RecommendationsSchema.DESCRIPTION_COLUMN + ", " +
+      RecommendationsSchema.IAM_IMPACT_COLUMN +
       " FROM " + RECOMMENDATIONS_TABLE +
-      " WHERE " + Constants.RECOMMENDATIONS_PROJECT_ID_COLUMN + " = @projectId" +
-      " AND " + Constants.RECOMMENDER_COLUMN + 
+      " WHERE " + RecommendationsSchema.RECOMMENDATIONS_PROJECT_ID_COLUMN + " = @projectId" +
+      " AND " + RecommendationsSchema.RECOMMENDER_COLUMN + 
         " = '" + Recommendation.RecommenderType.IAM_BINDING + "'";
 
   /** 
@@ -90,18 +90,18 @@ public class Queries {
   /** Deletes 365-day-old data from the IAM bindings table. */
   public static final String DELETE_OLD_DATA_FROM_IAM_TABLE = 
     "DELETE FROM `" + IAM_TABLE + "`" +
-      " WHERE " + Constants.TIMESTAMP_COLUMN + " < " + 
+      " WHERE " + IAMBindingsSchema.TIMESTAMP_COLUMN + " < " + 
         " TIMESTAMP_SUB(" +
-          "(SELECT MAX(" + Constants.TIMESTAMP_COLUMN + ")" +
+          "(SELECT MAX(" + IAMBindingsSchema.TIMESTAMP_COLUMN + ")" +
             " FROM " + IAM_TABLE + ")," +
         " INTERVAL 365 DAY)";
 
   /** Deletes 365-day-old data from the recommendations table. */
   public static final String DELETE_OLD_DATA_FROM_RECOMMENDATIONS_TABLE = 
   "DELETE FROM `" + RECOMMENDATIONS_TABLE + "`" +
-  " WHERE " + Constants.ACCEPTED_TIMESTAMP_COLUMN + " < " + 
+  " WHERE " + RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN + " < " + 
     " TIMESTAMP_SUB(" +
-      "(SELECT MAX(" + Constants.TIMESTAMP_COLUMN + ")" +
+      "(SELECT MAX(" + IAMBindingsSchema.TIMESTAMP_COLUMN + ")" +
         " FROM " + IAM_TABLE + ")," +
     " INTERVAL 365 DAY)";
   

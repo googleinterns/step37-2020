@@ -1,9 +1,14 @@
 package com.google.impactdashboard.server.api_utilities;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.logging.v2.LoggingClient;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
+import com.google.cloud.logging.v2.LoggingSettings;
+import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
 import com.google.logging.v2.ListLogEntriesRequest;
 import com.google.logging.v2.LogEntry;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -20,7 +25,13 @@ public class LogRetriever {
    * @return A new instance of {@code LogRetriever}
    */
   public static LogRetriever create() throws IOException{
-    return new LogRetriever(LoggingClient.create());
+    // Change logging client initialization to settings
+    LoggingServiceV2StubSettings stub = LoggingServiceV2StubSettings.newBuilder()
+        .setCredentialsProvider(() -> GoogleCredentials.fromStream(
+            // The path will be changed to use the constants class when it is merged into main
+            new FileInputStream("/usr/local/google/home/ionis/Documents/credentials.json")))
+        .build();
+    return new LogRetriever(LoggingClient.create(LoggingSettings.create(stub)));
   }
 
   private LogRetriever(LoggingClient logger) {
@@ -28,13 +39,14 @@ public class LogRetriever {
   }
 
   /**
-   * Function used to create a {@code ListLogEntriesRequest} and retrieve all the relevant audit logs
+   * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant audit logs.
    * @return A list of all the relevant audit log entries that are stored by the logging API
    */
   public Collection<LogEntry> listAuditLogs() {
     String project_id = "projects/concord-intern"; // needs to be retrieved from resource manager
     // May need tweaking once tested and
-    String filter = "resource.type = project AND severity = NOTICE AND protoPayload.methodName:SetIamPolicy";
+    String filter = "resource.type = project AND severity = NOTICE AND " +
+        "protoPayload.methodName:SetIamPolicy";
     //Test of ListLogEntriesRequest will be changed once logging is tested
     ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder().setFilter(filter)
         .setOrderBy("timestamp desc").addResourceNames(project_id).build();
@@ -49,7 +61,7 @@ public class LogRetriever {
   }
 
   /**
-   * Function used to create create a {@code ListLogEntriesRequest} and retrieve all the relevant Recommendation logs
+   * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant Recommendation logs.
    * @return A list of all the relevant recommendation log entries that are stored by the logging API.
    */
   public Collection<LogEntry> listRecommendationLogs() {

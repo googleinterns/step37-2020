@@ -7,8 +7,11 @@ import com.google.impactdashboard.database_manager.data_update.DataUpdateManager
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManagerFactory;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
+import com.google.logging.v2.LogEntry;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /** Class for updating the information in the database from the API. */
@@ -40,8 +43,8 @@ public class DataUpdater {
    * Updates the database with any new information about recommendations and IAMBinding logging.
    */
   public void updateDatabase() {
-    updateManager.deleteYearOldData();
-    updateManager.updateRecommendations(listUpdatedRecommendations());
+//    updateManager.deleteYearOldData();
+//    updateManager.updateRecommendations(listUpdatedRecommendations());
     updateManager.updateIAMBindings(listUpdatedIAMBindingData());
   }
 
@@ -69,7 +72,9 @@ public class DataUpdater {
     // (TODO determine whether to retrieve all info or info for a certain time range)
     // filter out any duplicate IAM Information
     // add non duplicates to database
-    throw new UnsupportedOperationException("Not Implemented");
+    Collection<LogEntry> entries = logRetriever.listAuditLogs();
+    System.out.println(new ArrayList<>(entries).get(0));
+    return null;
   }
 
 }

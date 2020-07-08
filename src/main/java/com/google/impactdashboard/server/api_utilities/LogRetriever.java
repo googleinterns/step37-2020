@@ -6,6 +6,8 @@ import com.google.logging.v2.ListLogEntriesRequest;
 import com.google.logging.v2.LogEntry;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /** Class that handles all the retrieval of logs stored on the cloud logging API. */
 public class LogRetriever {
@@ -29,20 +31,21 @@ public class LogRetriever {
    * Function used to create a {@code ListLogEntriesRequest} and retrieve all the relevant audit logs
    * @return A list of all the relevant audit log entries that are stored by the logging API
    */
-  public Collection<LogEntry> listAuditLogs(String[] resourceNames, String pageToken) {
-    String project_id = "PROJECT_ID"; // needs to be retrieved from resource manager
+  public Collection<LogEntry> listAuditLogs() {
+    String project_id = "projects/concord-intern"; // needs to be retrieved from resource manager
     // May need tweaking once tested
     String filter = "resource.type = project AND severity = NOTICE AND protoPayload.methodName:SetIamPolicy";
     //Test of ListLogEntriesRequest will be changed once logging is tested
     ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder().setFilter(filter)
-        .setOrderBy("timestamp desc").setResourceNames(0, project_id).build();
+        .setOrderBy("timestamp desc").addResourceNames(project_id).build();
     ListLogEntriesPagedResponse response = logger.listLogEntries(request);
+    return StreamSupport.stream(response.iterateAll().spliterator(), false)
+        .collect(Collectors.toList());
     //Get resources one or multiple [PROJECT_ID], [ORGANIZATION_ID]
     //[BILLING_ACCOUNT_ID], [FOLDER_ID]
     //filter by audit log
     //Create new ListLogEntriesRequest with the information
     //Call for logs
-    throw new UnsupportedOperationException("Not implemented");
   }
 
   /**

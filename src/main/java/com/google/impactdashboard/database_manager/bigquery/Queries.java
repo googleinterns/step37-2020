@@ -10,7 +10,7 @@ public class Queries {
    * Based on system Configuration flags, set to the value of the IAM bindings 
    * table in the database that should be queried. 
    */
-  private static String IAM_TABLE = Constants.PROJECT_ID + "." + 
+  private static final String IAM_TABLE = Constants.PROJECT_ID + "." + 
     Constants.DATABASE + "." + Constants.IAM_BINDINGS_TABLE;
   
 

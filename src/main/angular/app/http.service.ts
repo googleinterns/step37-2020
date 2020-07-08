@@ -19,7 +19,7 @@ export class HttpService {
       );
     }
     return this.http
-      .get<ProjectGraphData>(`/get-project-data?id="${id}"`)
+      .get<ProjectGraphData>(`/get-project-data?id=${id}`)
       .toPromise();
   }
 

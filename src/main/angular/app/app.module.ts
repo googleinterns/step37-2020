@@ -8,10 +8,10 @@ import {GraphComponent} from './graph/graph.component';
 import {ProjectSelectComponent} from './project-select/project-select.component';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {FakeDataService} from './fake-services/fake-data.service';
 import {HttpClientModule} from '@angular/common/http';
-import {DateUtilitiesService} from './date-utilities.service';
-import {GraphProcessorService} from './graph-processor.service';
+import {DateUtilitiesService} from './services/date-utilities.service';
+import {GraphProcessorService} from './services/graph-processor.service';
+import {dataServiceProvider} from './services/data.service.provider';
 
 @NgModule({
   declarations: [AppComponent, GraphComponent, ProjectSelectComponent],
@@ -23,7 +23,7 @@ import {GraphProcessorService} from './graph-processor.service';
     BrowserAnimationsModule,
     HttpClientModule,
   ],
-  providers: [FakeDataService, DateUtilitiesService, GraphProcessorService],
+  providers: [dataServiceProvider, DateUtilitiesService, GraphProcessorService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

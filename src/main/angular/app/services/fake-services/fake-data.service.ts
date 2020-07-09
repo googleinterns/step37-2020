@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Recommendation} from '../../model/recommendation';
-import {RecommenderType} from '../../model/recommender-type';
-import {ProjectGraphData} from '../../model/project-graph-data';
-import {Project} from '../../model/project';
-import {ProjectMetaData} from '../../model/project-metadata';
+import {Recommendation} from '../../../model/recommendation';
+import {RecommenderType} from '../../../model/recommender-type';
+import {ProjectGraphData} from '../../../model/project-graph-data';
+import {Project} from '../../../model/project';
+import {ProjectMetaData} from '../../../model/project-metadata';
 import {DataService} from '../data.service';
 
 /** Contains fake data for use with HTTP service. */

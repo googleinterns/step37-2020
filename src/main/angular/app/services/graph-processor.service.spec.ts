@@ -2,13 +2,13 @@
 import {GraphProcessorService} from './graph-processor.service';
 import 'jasmine';
 import {DateUtilitiesService} from './date-utilities.service';
-import {GraphProperties} from '../model/types';
+import {GraphProperties} from '../../model/types';
 import {FakeDataService} from './fake-services/fake-data.service';
 import {HttpService} from './real-services/http.service';
-import {MockHttpClient} from '../mocks/mock-http-client';
+import {MockHttpClient} from '../../mocks/mock-http-client';
 import {SimpleChanges, SimpleChange} from '@angular/core';
-import {Project} from '../model/project';
-import {ProjectGraphData} from '../model/project-graph-data';
+import {Project} from '../../model/project';
+import {ProjectGraphData} from '../../model/project-graph-data';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
@@ -31,15 +31,10 @@ describe('GraphProcessorService', () => {
   describe('processChanges()', () => {
     let fakeDataService: FakeDataService;
     let properties: GraphProperties;
-    let httpService: HttpService;
     let changes: SimpleChanges;
 
     beforeAll(() => {
       fakeDataService = new FakeDataService();
-      httpService = new HttpService(
-        new MockHttpClient(fakeDataService),
-        fakeDataService
-      );
     });
 
     beforeEach(() => {
@@ -49,14 +44,14 @@ describe('GraphProcessorService', () => {
 
     describe('Adding projects to graph', () => {
       it('Adds a single project successfully', async () => {
-        const project: Project = fakeDataService.listProjects()[0];
-        const projectData:
-          | ProjectGraphData
-          | undefined = fakeDataService.getProjectGraphData(project.projectId);
+        const project: Project = (await fakeDataService.listProjects())[0];
+        const projectData: ProjectGraphData = await fakeDataService.getProjectGraphData(
+          project.projectId
+        );
 
         // Going from no projects to a single one
         changes.projects = new SimpleChange([], [project], true);
-        await service.processChanges(changes, properties, httpService);
+        await service.processChanges(changes, properties, fakeDataService);
 
         expect(properties.columns.length).toBe(4);
         expect(properties.columns[1]).toBe(project.projectId);
@@ -93,16 +88,15 @@ describe('GraphProcessorService', () => {
       });
 
       it('Adds multiple projects successfully', async () => {
-        const projects = fakeDataService.listProjects();
-        const projectData: (
-          | ProjectGraphData
-          | undefined
-        )[] = projects.map(project =>
-          fakeDataService.getProjectGraphData(project.projectId)
+        const projects: Project[] = await fakeDataService.listProjects();
+        const projectData: ProjectGraphData[] = await Promise.all(
+          projects.map(project =>
+            fakeDataService.getProjectGraphData(project.projectId)
+          )
         );
         // Going from no projects to adding all of the ones above
         changes.projects = new SimpleChange([], projects, true);
-        await service.processChanges(changes, properties, httpService);
+        await service.processChanges(changes, properties, fakeDataService);
 
         expect(properties.columns.length).toBe(1 + 3 * projects.length);
         projectData.forEach((data, projectIndex) => {
@@ -133,23 +127,22 @@ describe('GraphProcessorService', () => {
 
     describe('Removing projects from the graph', () => {
       it('Remove a single project successfully', async () => {
-        const allProjects: Project[] = fakeDataService.listProjects();
+        const allProjects: Project[] = await fakeDataService.listProjects();
         // Add the projects
         changes.projects = new SimpleChange([], allProjects, true);
-        await service.processChanges(changes, properties, httpService);
+        await service.processChanges(changes, properties, fakeDataService);
 
         // Remove the first project
         const projects: Project[] = allProjects
           .filter((value, index) => index !== 0)
           .map(value => value);
-        const projectData: (
-          | ProjectGraphData
-          | undefined
-        )[] = projects.map(project =>
-          fakeDataService.getProjectGraphData(project.projectId)
+        const projectData: ProjectGraphData[] = await Promise.all(
+          projects.map(project =>
+            fakeDataService.getProjectGraphData(project.projectId)
+          )
         );
         changes.projects = new SimpleChange(allProjects, projects, false);
-        await service.processChanges(changes, properties, httpService);
+        await service.processChanges(changes, properties, fakeDataService);
 
         const expectedColumns = 1 + projects.length * 3;
         expect(properties.columns.length).toBe(expectedColumns);
@@ -159,13 +152,9 @@ describe('GraphProcessorService', () => {
             const time = row[0].getTime();
             expect(row.length).toBe(expectedColumns);
             projectData.forEach((data, index) => {
-              if (data) {
-                expect(row[1 + 3 * index]).toBe(
-                  data.dateToNumberIAMBindings[time]
-                );
-              } else {
-                fail(`Project at index ${index} is empty!`);
-              }
+              expect(row[1 + 3 * index]).toBe(
+                data.dateToNumberIAMBindings[time]
+              );
             });
           } else {
             fail(`Row ${row} doesn't have a time`);
@@ -173,23 +162,22 @@ describe('GraphProcessorService', () => {
         });
       });
       it('Removes multiple projects successfully', async () => {
-        const allProjects: Project[] = fakeDataService.listProjects();
+        const allProjects: Project[] = await fakeDataService.listProjects();
         // Add the projects
         changes.projects = new SimpleChange([], allProjects, true);
-        await service.processChanges(changes, properties, httpService);
+        await service.processChanges(changes, properties, fakeDataService);
 
         // Remove all but the first two projects
         const projects: Project[] = allProjects
           .filter((value, index) => [0, 1].includes(index))
           .map(value => value);
-        const projectData: (
-          | ProjectGraphData
-          | undefined
-        )[] = projects.map(project =>
-          fakeDataService.getProjectGraphData(project.projectId)
+        const projectData: ProjectGraphData[] = await Promise.all(
+          projects.map(project =>
+            fakeDataService.getProjectGraphData(project.projectId)
+          )
         );
         changes.projects = new SimpleChange(allProjects, projects, false);
-        await service.processChanges(changes, properties, httpService);
+        await service.processChanges(changes, properties, fakeDataService);
 
         const expectedColumns = 1 + projects.length * 3;
         expect(properties.columns.length).toBe(expectedColumns);
@@ -202,13 +190,9 @@ describe('GraphProcessorService', () => {
             const time = row[0].getTime();
             expect(row.length).toBe(expectedColumns);
             projectData.forEach((data, index) => {
-              if (data) {
-                expect(row[1 + 3 * index]).toBe(
-                  data.dateToNumberIAMBindings[time]
-                );
-              } else {
-                fail(`Project at index ${index} is empty!`);
-              }
+              expect(row[1 + 3 * index]).toBe(
+                data.dateToNumberIAMBindings[time]
+              );
             });
           } else {
             fail(`Row ${row} doesn't have a time`);
@@ -217,25 +201,24 @@ describe('GraphProcessorService', () => {
       });
     });
     it('Re-adds projects that have been removed', async () => {
-      const allProjects: Project[] = fakeDataService.listProjects();
+      const allProjects: Project[] = await fakeDataService.listProjects();
       // Add the projects
       changes.projects = new SimpleChange([], allProjects, true);
-      await service.processChanges(changes, properties, httpService);
+      await service.processChanges(changes, properties, fakeDataService);
 
       // Remove the first project
       const projects: Project[] = allProjects
         .filter((value, index) => index !== 0)
         .map(value => value);
       changes.projects = new SimpleChange(allProjects, projects, false);
-      await service.processChanges(changes, properties, httpService);
+      await service.processChanges(changes, properties, fakeDataService);
       changes.projects = new SimpleChange(projects, allProjects, false);
-      await service.processChanges(changes, properties, httpService);
+      await service.processChanges(changes, properties, fakeDataService);
 
-      const projectData: (
-        | ProjectGraphData
-        | undefined
-      )[] = allProjects.map(project =>
-        fakeDataService.getProjectGraphData(project.projectId)
+      const projectData: ProjectGraphData[] = await Promise.all(
+        allProjects.map(project =>
+          fakeDataService.getProjectGraphData(project.projectId)
+        )
       );
 
       const expectedColumns = 1 + allProjects.length * 3;

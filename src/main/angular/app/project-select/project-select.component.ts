@@ -12,7 +12,7 @@ import {
   SortBy,
   ProjectComparators,
 } from '../../model/project-sort';
-import {DataService} from '../data.service';
+import {DataService} from '../services/data.service';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({

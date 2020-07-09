@@ -14,9 +14,9 @@
 
 import {Component, OnInit, Input, SimpleChanges} from '@angular/core';
 import {Project} from '../../model/project';
-import {GraphProcessorService} from '../graph-processor.service';
+import {GraphProcessorService} from '../services/graph-processor.service';
 import {GraphProperties} from '../../model/types';
-import {DataService} from '../data.service';
+import {DataService} from '../services/data.service';
 
 /** The angular component that contains the graph and associated logic. */
 @Component({

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ProjectGraphData} from '../model/project-graph-data';
+import {ProjectGraphData} from '../../model/project-graph-data';
 
 /** Contains some basic utility methods for date wrangling. */
 @Injectable()

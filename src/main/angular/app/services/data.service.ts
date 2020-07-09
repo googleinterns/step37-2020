@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Project} from '../model/project';
-import {ProjectGraphData} from '../model/project-graph-data';
+import {Project} from '../../model/project';
+import {ProjectGraphData} from '../../model/project-graph-data';
 
 /** Model of a service used to get data on projects and project information */
 @Injectable()

@@ -1,10 +1,10 @@
 import {Injectable, SimpleChanges} from '@angular/core';
-import {ProjectGraphData} from '../model/project-graph-data';
-import {Recommendation} from '../model/recommendation';
-import {Project} from '../model/project';
+import {ProjectGraphData} from '../../model/project-graph-data';
+import {Recommendation} from '../../model/recommendation';
+import {Project} from '../../model/project';
 import {SimpleChange} from '@angular/core';
 import {DateUtilitiesService} from './date-utilities.service';
-import {GraphProperties, Columns, Row} from '../model/types';
+import {GraphProperties, Columns, Row} from '../../model/types';
 import {HttpService} from './real-services/http.service';
 import {DataService} from './data.service';
 

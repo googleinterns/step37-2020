@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {ProjectGraphData} from '../../model/project-graph-data';
-import {Project} from '../../model/project';
+import {ProjectGraphData} from '../../../model/project-graph-data';
+import {Project} from '../../../model/project';
 import {DataService} from '../data.service';
 
 @Injectable()

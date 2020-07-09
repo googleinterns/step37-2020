@@ -41,10 +41,10 @@ describe('GraphProcessorService', () => {
 
     describe('Adding projects to graph', () => {
       it('Adds a single project successfully', async () => {
-        const project: Project = (await fakeDataService.listProjects())[0];
-        const projectData: ProjectGraphData = await fakeDataService.getProjectGraphData(
+        const project: Project = ((await fakeDataService.listProjects()) as Project[])[0];
+        const projectData: ProjectGraphData = (await fakeDataService.getProjectGraphData(
           project.projectId
-        );
+        )) as ProjectGraphData;
 
         // Going from no projects to a single one
         changes.projects = new SimpleChange([], [project], true);
@@ -85,12 +85,12 @@ describe('GraphProcessorService', () => {
       });
 
       it('Adds multiple projects successfully', async () => {
-        const projects: Project[] = await fakeDataService.listProjects();
-        const projectData: ProjectGraphData[] = await Promise.all(
+        const projects: Project[] = (await fakeDataService.listProjects()) as Project[];
+        const projectData: ProjectGraphData[] = (await Promise.all(
           projects.map(project =>
             fakeDataService.getProjectGraphData(project.projectId)
           )
-        );
+        )) as ProjectGraphData[];
         // Going from no projects to adding all of the ones above
         changes.projects = new SimpleChange([], projects, true);
         await service.processChanges(changes, properties, fakeDataService);
@@ -124,7 +124,7 @@ describe('GraphProcessorService', () => {
 
     describe('Removing projects from the graph', () => {
       it('Remove a single project successfully', async () => {
-        const allProjects: Project[] = await fakeDataService.listProjects();
+        const allProjects: Project[] = (await fakeDataService.listProjects()) as Project[];
         // Add the projects
         changes.projects = new SimpleChange([], allProjects, true);
         await service.processChanges(changes, properties, fakeDataService);
@@ -133,11 +133,11 @@ describe('GraphProcessorService', () => {
         const projects: Project[] = allProjects
           .filter((value, index) => index !== 0)
           .map(value => value);
-        const projectData: ProjectGraphData[] = await Promise.all(
+        const projectData: ProjectGraphData[] = (await Promise.all(
           projects.map(project =>
             fakeDataService.getProjectGraphData(project.projectId)
           )
-        );
+        )) as ProjectGraphData[];
         changes.projects = new SimpleChange(allProjects, projects, false);
         await service.processChanges(changes, properties, fakeDataService);
 
@@ -159,7 +159,7 @@ describe('GraphProcessorService', () => {
         });
       });
       it('Removes multiple projects successfully', async () => {
-        const allProjects: Project[] = await fakeDataService.listProjects();
+        const allProjects: Project[] = (await fakeDataService.listProjects()) as Project[];
         // Add the projects
         changes.projects = new SimpleChange([], allProjects, true);
         await service.processChanges(changes, properties, fakeDataService);
@@ -168,11 +168,11 @@ describe('GraphProcessorService', () => {
         const projects: Project[] = allProjects
           .filter((value, index) => [0, 1].includes(index))
           .map(value => value);
-        const projectData: ProjectGraphData[] = await Promise.all(
+        const projectData: ProjectGraphData[] = (await Promise.all(
           projects.map(project =>
             fakeDataService.getProjectGraphData(project.projectId)
           )
-        );
+        )) as ProjectGraphData[];
         changes.projects = new SimpleChange(allProjects, projects, false);
         await service.processChanges(changes, properties, fakeDataService);
 
@@ -198,7 +198,7 @@ describe('GraphProcessorService', () => {
       });
     });
     it('Re-adds projects that have been removed', async () => {
-      const allProjects: Project[] = await fakeDataService.listProjects();
+      const allProjects: Project[] = (await fakeDataService.listProjects()) as Project[];
       // Add the projects
       changes.projects = new SimpleChange([], allProjects, true);
       await service.processChanges(changes, properties, fakeDataService);
@@ -212,11 +212,11 @@ describe('GraphProcessorService', () => {
       changes.projects = new SimpleChange(projects, allProjects, false);
       await service.processChanges(changes, properties, fakeDataService);
 
-      const projectData: ProjectGraphData[] = await Promise.all(
+      const projectData: ProjectGraphData[] = (await Promise.all(
         allProjects.map(project =>
           fakeDataService.getProjectGraphData(project.projectId)
         )
-      );
+      )) as ProjectGraphData[];
 
       const expectedColumns = 1 + allProjects.length * 3;
       expect(properties.columns.length).toBe(expectedColumns);

@@ -177,22 +177,26 @@ export class ProjectSelectComponent implements OnInit {
   /** Called when the component is ready to be displayed. */
   ngOnInit() {
     this.dataService.listProjects().then(projects => {
-      // Sort by the selected fields
-      projects.sort(
-        ProjectComparators.getComparator(
-          this.currentSortDirection,
-          this.currentSortField
-        )
-      );
-      // Assign colors based on initial IAM Bindings order
-      projects.forEach(
-        (project, index) =>
-          (project.color = DEFAULT_COLORS[index % DEFAULT_COLORS.length])
-      );
-      this.projects = projects;
-      // Add the highest IAM Bindings project by default
-      if (projects.length > 0) {
-        this.toggleProject(projects[0]);
+      if (projects instanceof Array) {
+        // Sort by the selected fields
+        projects.sort(
+          ProjectComparators.getComparator(
+            this.currentSortDirection,
+            this.currentSortField
+          )
+        );
+        // Assign colors based on initial IAM Bindings order
+        projects.forEach(
+          (project, index) =>
+            (project.color = DEFAULT_COLORS[index % DEFAULT_COLORS.length])
+        );
+        this.projects = projects;
+        // Add the highest IAM Bindings project by default
+        if (projects.length > 0) {
+          this.toggleProject(projects[0]);
+        }
+      } else {
+        
       }
     });
   }

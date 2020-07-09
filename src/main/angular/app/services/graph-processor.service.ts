@@ -6,6 +6,7 @@ import {SimpleChange} from '@angular/core';
 import {DateUtilitiesService} from './date-utilities.service';
 import {GraphProperties, Columns, Row} from '../../model/types';
 import {DataService} from './data.service';
+import {ErrorMessage} from '../../model/error-message';
 
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
@@ -46,14 +47,14 @@ export class GraphProcessorService {
     };
   }
 
-  /** Process the given changes and adjust from the graph properties as necessary. */
+  /** Process the given changes and adjust from the graph properties as necessary. Returns an ErrorMessage if an error occured */
   async processChanges(
     changes: SimpleChanges,
     properties: GraphProperties,
     httpService: DataService
-  ): Promise<void> {
+  ): Promise<boolean | ErrorMessage[]> {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
-    const promises: Promise<unknown>[] = [];
+    const promises: Promise<boolean | ErrorMessage>[] = [];
 
     additionsDeletions.added.forEach(addition =>
       promises.push(
@@ -65,30 +66,43 @@ export class GraphProcessorService {
     additionsDeletions.removed.forEach(removal =>
       this.removeFromGraph(properties, removal)
     );
-    return Promise.all(promises).then(() => {
-      properties.title = 'IAM Bindings';
-      return undefined;
-    });
+    return Promise.all(promises).then(
+      (statuses: (boolean | ErrorMessage)[]) => {
+        const errors: ErrorMessage[] = statuses.filter(
+          status => status instanceof ErrorMessage
+        ) as ErrorMessage[];
+        properties.title = 'IAM Bindings';
+        if (errors.length > 0) {
+          return errors;
+        }
+        return true;
+      }
+    );
   }
 
-  /** Adds the given project to the graph. */
+  /** Adds the given project to the graph. Returns false if the given data was an error */
   private addToGraph(
     properties: GraphProperties,
-    data: ProjectGraphData,
+    data: ProjectGraphData | ErrorMessage,
     project: Project
-  ) {
-    const seriesNum: number = (properties.columns.length - 1) / 3;
-    // Set the color and add the new columns
-    if (properties.options.series) {
-      properties.options.series[seriesNum] = {color: project.color};
-    }
-    this.addIamColumns(properties.columns, data);
-    // Add the new rows
-    this.addIamRows(properties.graphData, data, project, seriesNum);
+  ): boolean | ErrorMessage {
+    if (data instanceof ProjectGraphData) {
+      const seriesNum: number = (properties.columns.length - 1) / 3;
+      // Set the color and add the new columns
+      if (properties.options.series) {
+        properties.options.series[seriesNum] = {color: project.color};
+      }
+      this.addIamColumns(properties.columns, data);
+      // Add the new rows
+      this.addIamRows(properties.graphData, data, project, seriesNum);
 
-    // Force a refresh of the chart
-    const temp: Columns = [];
-    properties.columns = temp.concat(properties.columns);
+      // Force a refresh of the chart
+      const temp: Columns = [];
+      properties.columns = temp.concat(properties.columns);
+      return true;
+    } else {
+      return data as ErrorMessage;
+    }
   }
 
   /** Removes the given project from the graph. */

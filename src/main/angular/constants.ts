@@ -19,3 +19,5 @@ export const DEFAULT_COLORS: string[] = [
 export const WIDTH_SCALE_FACTOR = 6 / 8;
 /** How much of the vertical space on the page is taken up by the graph */
 export const HEIGHT_SCALE_FACTOR = 1 / 2;
+/** The color of a project's bubble when it's not on the graph */
+export const PROJECT_INACTIVE_COLOR = '#b8b8b8';

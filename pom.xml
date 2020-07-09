@@ -86,6 +86,11 @@
       <artifactId>protobuf-java</artifactId>
       <version>3.12.2</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.api.grpc</groupId>
+      <artifactId>proto-google-common-protos</artifactId>
+      <version>1.18.0</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -119,6 +124,9 @@
                 <include>src/main/protobuf/</include>
               </inputDirectories>
               <includeStdTypes>true</includeStdTypes>
+              <includeDirectories>
+                <include>src/main/protoimports</include>
+              </includeDirectories>
             </configuration>
           </execution>
         </executions>

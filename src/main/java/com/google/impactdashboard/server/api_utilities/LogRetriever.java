@@ -1,17 +1,22 @@
 package com.google.impactdashboard.server.api_utilities;
 
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.audit.AuditLog;
 import com.google.cloud.logging.v2.LoggingClient;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingSettings;
 import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
 import com.google.logging.v2.ListLogEntriesRequest;
 import com.google.logging.v2.LogEntry;
+import com.google.protobuf.Any;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
 
 /** Class that handles all the retrieval of logs stored on the cloud logging API. */
 public class LogRetriever {
@@ -86,5 +91,6 @@ public class LogRetriever {
     LogRetriever retriever = LogRetriever.create();
     System.out.println("Retrieving logs...");
     Collection<LogEntry> logs = retriever.listAuditLogs();
+    AuditLog testLog = AuditLog.parseFrom(((List<LogEntry>)logs).get(0).getProtoPayload().getValue());
   }
 }

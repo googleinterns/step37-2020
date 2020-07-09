@@ -3,7 +3,7 @@ package com.google.impactdashboard.database_manager.data_read;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.IAMRecommenderMetadata;
 import com.google.impactdashboard.data.recommendation.Recommendation;
-import com.google.impactdashboard.configuration.Constants;
+import com.google.impactdashboard.configuration.*;
 import com.google.impactdashboard.database_manager.bigquery.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class DataReadManagerImpl implements DataReadManager {
 
     List<ProjectIdentification> listOfProjects = new ArrayList<ProjectIdentification>();
     for (FieldValueList row : results.iterateAll()) {
-      String projectId = row.get(Constants.PROJECT_ID_COLUMN_IAM).getStringValue();
+      String projectId = row.get(IAMBindingsSchema.IAM_PROJECT_ID_COLUMN).getStringValue();
       listOfProjects.add(getProjectIdentificationForProject(projectId));
     }
     return listOfProjects;
@@ -78,10 +78,10 @@ public class DataReadManagerImpl implements DataReadManager {
 
     HashMap<Long, Recommendation> datesToRecommendations = new HashMap<Long, Recommendation>();
     for (FieldValueList row : results.iterateAll()) {
-      long acceptedTimestamp = row.get(Constants.ACCEPTED_TIMESTAMP_COLUMN)
+      long acceptedTimestamp = row.get(RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN)
         .getTimestampValue() / 1000;
-      String description = row.get(Constants.DESCRIPTION_COLUMN).getStringValue();
-      int iamImpact = (int) row.get(Constants.IAM_IMPACT_COLUMN).getLongValue();
+      String description = row.get(RecommendationsSchema.DESCRIPTION_COLUMN).getStringValue();
+      int iamImpact = (int) row.get(RecommendationsSchema.IAM_IMPACT_COLUMN).getLongValue();
 
       datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
         projectId, description, Recommendation.RecommenderType.IAM_BINDING, acceptedTimestamp, 
@@ -105,9 +105,9 @@ public class DataReadManagerImpl implements DataReadManager {
 
     HashMap<Long, Integer> datesToBindings = new HashMap<Long, Integer>();
     for (FieldValueList row : results.iterateAll()) {
-      long timestamp = row.get(Constants.TIMESTAMP_COLUMN)
+      long timestamp = row.get(IAMBindingsSchema.TIMESTAMP_COLUMN)
         .getTimestampValue() / 1000;
-      int iamBindings = (int) row.get(Constants.NUMBER_BINDINGS_COLUMN).getLongValue();
+      int iamBindings = (int) row.get(IAMBindingsSchema.NUMBER_BINDINGS_COLUMN).getLongValue();
 
       datesToBindings.put(timestamp, iamBindings);
     } 
@@ -129,8 +129,8 @@ public class DataReadManagerImpl implements DataReadManager {
     String projectName = null;
     String projectNumber = null;
     for (FieldValueList row : results.iterateAll()) {
-      projectName = row.get(Constants.NAME_COLUMN).getStringValue();
-      projectNumber = row.get(Constants.NUMBER_COLUMN).getStringValue();
+      projectName = row.get(IAMBindingsSchema.PROJECT_NAME_COLUMN).getStringValue();
+      projectNumber = row.get(IAMBindingsSchema.PROJECT_NUMBER_COLUMN).getStringValue();
     }
 
     if (projectName == null || projectNumber == null) {

@@ -11,7 +11,7 @@ public class DataUpdateManagerFactory {
    * If useFakeDataUpdateManager is set to true, returns a fake implementation 
    * of DataUpdateManager. Otherwise returns a real implementation. 
    */
-  public static DataUpdateManager create() {
+  public static DataUpdateManager create() throws java.io.IOException {
     if (Configuration.useFakeDataUpdateManager) {
       return new DataUpdateManagerFake();
     } else {

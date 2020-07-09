@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import {DateUtilitiesService} from './date-utilities.service';
 import 'jasmine';
 import {ProjectGraphData} from '../../model/project-graph-data';

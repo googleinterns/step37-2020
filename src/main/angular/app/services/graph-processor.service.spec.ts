@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import {GraphProcessorService} from './graph-processor.service';
 import 'jasmine';
 import {DateUtilitiesService} from './date-utilities.service';

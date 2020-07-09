@@ -10,7 +10,7 @@ import {ProjectGraphData} from '../../model/project_graph_data';
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
 
-  beforeEach(() => {
+  beforeAll(() => {
     service = new GraphProcessorService(new DateUtilitiesService());
   });
 
@@ -88,43 +88,46 @@ describe('GraphProcessorService', () => {
         });
       });
 
-      it('Adds multiple projects successfully', async () => {
-        properties = service.initProperties();
-        changes = {};
+      describe('Adds multiple projects successfully', () => {
+        let projects: Project[];
+        let projectData: ProjectGraphData[];
 
-        const projects: Project[] = await fakeDataService.listProjects();
-        const projectData: ProjectGraphData[] = await Promise.all(
-          projects.map(project =>
-            fakeDataService.getProjectGraphData(project.projectId)
-          )
-        );
-        // Going from no projects to adding all of the ones above
-        changes.projects = new SimpleChange([], projects, true);
-        await service.processChanges(changes, properties, fakeDataService);
+        beforeAll(async () => {
+          properties = service.initProperties();
+          changes = {};
 
-        expect(properties.columns.length).toBe(1 + 3 * projects.length);
-        projectData.forEach((data, projectIndex) => {
-          if (data) {
-            expect(properties.columns[1 + 3 * projectIndex]).toBe(
-              data.projectId
-            );
+          projects = await fakeDataService.listProjects();
+          projectData = await Promise.all(
+            projects.map(project =>
+              fakeDataService.getProjectGraphData(project.projectId)
+            )
+          );
+          // Going from no projects to adding all of the ones above
+          changes.projects = new SimpleChange([], projects, true);
+          await service.processChanges(changes, properties, fakeDataService);
+        });
 
-            // Make sure each row has the proper value
-            properties.graphData.forEach((row, rowIndex) => {
-              if (row[0] instanceof Date) {
-                const time = row[0].getTime();
-                expect(row[1 + projectIndex * 3]).toBe(
-                  data.dateToNumberIAMBindings[time]
-                );
-              } else {
-                fail(
-                  `Row ${rowIndex} with alue ${row} does not have a date field`
-                );
-              }
-            });
-          } else {
-            fail(`Project data ${projectIndex} does not exist`);
-          }
+        it('Sets up columns properly', () => {
+          const expectedIds = projects.map(project => project.projectId);
+          const actualIds = properties.columns.filter(
+            (value, index) => index % 3 === 1
+          );
+
+          expect(properties.columns.length).toBe(1 + 3 * projects.length);
+          expect(actualIds).toEqual(expectedIds);
+        });
+
+        it('Adds the correct number of bindings', () => {
+          const expected = projectData.map(data =>
+            Object.values(data.dateToNumberIAMBindings)
+          );
+          const actual = projectData.map((data, index) =>
+            properties.graphData
+              .map(row => row[1 + 3 * index])
+              .filter(position => position !== undefined)
+          );
+
+          expect(actual).toEqual(expected);
         });
       });
     });

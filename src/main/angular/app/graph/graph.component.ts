@@ -20,7 +20,7 @@ import {
   HostListener,
 } from '@angular/core';
 import {Project} from '../../model/project';
-import {GraphProcessorService} from '../services/graph-processor.service';
+import {GraphProcessorService} from '../services/graph_processor.service';
 import {GraphProperties} from '../../model/types';
 import {DataService} from '../services/data.service';
 import {WIDTH_SCALE_FACTOR, HEIGHT_SCALE_FACTOR} from '../../constants';

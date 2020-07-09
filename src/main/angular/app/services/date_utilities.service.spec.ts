@@ -1,6 +1,6 @@
-import {DateUtilitiesService} from './date-utilities.service';
+import {DateUtilitiesService} from './date_utilities.service';
 import 'jasmine';
-import {ProjectGraphData} from '../../model/project-graph-data';
+import {ProjectGraphData} from '../../model/project_graph_data';
 
 describe('DateUtilitiesService', () => {
   let service: DateUtilitiesService;

@@ -11,14 +11,14 @@ import {
   SortDirection,
   SortBy,
   ProjectComparators,
-} from '../../model/project-sort';
+} from '../../model/project_sort';
 import {DataService} from '../services/data.service';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({
   selector: 'project-select',
-  templateUrl: './project-select.component.html',
-  styleUrls: ['./project-select.component.css'],
+  templateUrl: './project_select.component.html',
+  styleUrls: ['./project_select.component.css'],
   animations: [
     trigger('rotateSort', [
       state('down', style({transform: 'rotate(0)'})),

@@ -26,6 +26,7 @@ export class GraphProcessorService {
           color: 'white',
         },
         format: 'M/d',
+        minTextSpacing: 100,
       },
       vAxis: {
         minorGridlines: {

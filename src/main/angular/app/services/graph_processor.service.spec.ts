@@ -34,57 +34,64 @@ describe('GraphProcessorService', () => {
       fakeDataService = new FakeDataService();
     });
 
-    beforeEach(() => {
-      properties = service.initProperties();
-      changes = {};
-    });
-
     describe('Adding projects to graph', () => {
-      it('Adds a single project successfully', async () => {
-        const project: Project = (await fakeDataService.listProjects())[0];
-        const projectData: ProjectGraphData = await fakeDataService.getProjectGraphData(
-          project.projectId
-        );
+      describe('Adds a single project sucessfully', () => {
+        let project: Project;
+        let projectData: ProjectGraphData;
+        let bindingTimes: number[];
 
-        // Going from no projects to a single one
-        changes.projects = new SimpleChange([], [project], true);
-        await service.processChanges(changes, properties, fakeDataService);
+        beforeAll(async () => {
+          changes = {};
+          properties = service.initProperties();
 
-        expect(properties.columns.length).toBe(4);
-        expect(properties.columns[1]).toBe(project.projectId);
+          project = (await fakeDataService.listProjects())[0];
+          projectData = await fakeDataService.getProjectGraphData(
+            project.projectId
+          );
+          // Going from no projects to a single one
+          changes.projects = new SimpleChange([], [project], true);
+          await service.processChanges(changes, properties, fakeDataService);
 
-        if (projectData) {
-          const bindingTimes: number[] = Object.keys(
-            projectData.dateToNumberIAMBindings
-          ).map(key => +key);
-          const recommendationTimes: number[] = Object.keys(
-            projectData.dateToRecommendationTaken
-          ).map(key => +key);
-          properties.graphData.forEach((row, index) => {
-            let time = -1;
-            // Make sure time is correct
+          bindingTimes = Object.keys(projectData.dateToNumberIAMBindings).map(
+            key => +key
+          );
+        });
+
+        it('Sets up columns properly', () => {
+          expect(properties.columns.length).toBe(4);
+          expect(properties.columns[1]).toBe(project.projectId);
+        });
+
+        it('Adds the correct times', () => {
+          const actual: number[] = [];
+          properties.graphData.forEach(row => {
             if (row[0] instanceof Date) {
-              time = row[0].getTime();
-              expect(time).toBe(bindingTimes[index]);
+              actual.push(row[0].getTime());
             } else {
-              fail('First row is not a time!');
-            }
-
-            // Make sure number bindings is correct
-            expect(row[1]).toBe(projectData.dateToNumberIAMBindings[time]);
-            // Make sure tooltips are correct
-            if (!recommendationTimes.includes(time)) {
-              expect(row[2]).toBe(
-                `IAM Bindings: ${projectData.dateToNumberIAMBindings[time]}`
-              );
+              fail('First row is not a Date!');
             }
           });
-        } else {
-          fail('FakeDataService failed to match data to a project');
-        }
+          expect(actual).toEqual(bindingTimes);
+        });
+
+        it('Adds the correct number of bindings', () => {
+          const expected: number[] = Object.values(
+            projectData.dateToNumberIAMBindings
+          );
+          const actual: number[] = [];
+
+          properties.graphData.forEach(row => {
+            actual.push(row[1] as number);
+          });
+
+          expect(actual).toEqual(expected);
+        });
       });
 
       it('Adds multiple projects successfully', async () => {
+        properties = service.initProperties();
+        changes = {};
+
         const projects: Project[] = await fakeDataService.listProjects();
         const projectData: ProjectGraphData[] = await Promise.all(
           projects.map(project =>
@@ -123,6 +130,11 @@ describe('GraphProcessorService', () => {
     });
 
     describe('Removing projects from the graph', () => {
+      beforeEach(() => {
+        properties = service.initProperties();
+        changes = {};
+      });
+
       it('Remove a single project successfully', async () => {
         const allProjects: Project[] = await fakeDataService.listProjects();
         // Add the projects
@@ -198,6 +210,9 @@ describe('GraphProcessorService', () => {
       });
     });
     it('Re-adds projects that have been removed', async () => {
+      properties = service.initProperties();
+      changes = {};
+
       const allProjects: Project[] = await fakeDataService.listProjects();
       // Add the projects
       changes.projects = new SimpleChange([], allProjects, true);

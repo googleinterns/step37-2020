@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import {DateUtilitiesService} from './date-utilities.service';
 import 'jasmine';
+import {ProjectGraphData} from '../../model/project-graph-data';
 
 describe('DateUtilitiesService', () => {
   let service: DateUtilitiesService;
@@ -56,8 +57,61 @@ describe('DateUtilitiesService', () => {
   });
 
   describe('uniqueDays()', () => {
-    it('Gets unique days from a single project', () => {});
-    it('Gets unique days from multiple projects on the same timeframe', () => {});
-    it('Gets unique days from multiple projects on different timeframes', () => {});
+    // June 1 - 5
+    let earlyJune: Date[];
+    // June 6 - 10
+    let midJune: Date[];
+    // June 4 - 8
+    let midEarlyJune: Date[];
+    let dateToBindings: {[time: number]: number};
+
+    beforeAll(() => {
+      earlyJune = [1, 2, 3, 4, 5].map(i => new Date(2020, 5, i));
+      midJune = [6, 7, 8, 9, 10].map(i => new Date(2020, 5, i));
+      midEarlyJune = [4, 5, 6, 7, 8].map(i => new Date(2020, 5, i));
+    });
+
+    beforeEach(() => {
+      dateToBindings = {};
+    });
+
+    it('Gets unique days from a single project', () => {
+      earlyJune.forEach(date => (dateToBindings[date.getTime()] = 5));
+
+      expect(
+        service.uniqueDays([new ProjectGraphData('', dateToBindings, {})])
+      ).toEqual(earlyJune);
+    });
+
+    it('Gets unique days from multiple projects on the same timeframe', () => {
+      earlyJune.forEach(date => (dateToBindings[date.getTime()] = 5));
+      const data1 = new ProjectGraphData('', dateToBindings, {});
+      const data2 = new ProjectGraphData('', dateToBindings, {});
+
+      expect(service.uniqueDays([data1, data2])).toEqual(earlyJune);
+    });
+
+    it('Gets unique days from multiple projects on different timeframes', () => {
+      earlyJune.forEach(date => (dateToBindings[date.getTime()] = 5));
+      const data1 = new ProjectGraphData('', dateToBindings, {});
+      dateToBindings = {};
+      midJune.forEach(date => (dateToBindings[date.getTime()] = 7));
+      const data2 = new ProjectGraphData('', dateToBindings, {});
+
+      expect(service.uniqueDays([data1, data2])).toEqual(
+        earlyJune.concat(midJune)
+      );
+    });
+
+    it('Gets unique days from multiple projects on overlapping timeframes', () => {
+      earlyJune.forEach(date => (dateToBindings[date.getTime()] = 5));
+      const data1 = new ProjectGraphData('', dateToBindings, {});
+      dateToBindings = {};
+      midEarlyJune.forEach(date => (dateToBindings[date.getTime()] = 7));
+      const data2 = new ProjectGraphData('', dateToBindings, {});
+
+      const expected = [1, 2, 3, 4, 5, 6, 7, 8].map(i => new Date(2020, 5, i));
+      expect(service.uniqueDays([data1, data2])).toEqual(expected);
+    });
   });
 });

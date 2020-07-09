@@ -103,6 +103,26 @@
           <port>8080</port>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>com.github.os72</groupId>
+        <artifactId>protoc-jar-maven-plugin</artifactId>
+        <version>3.11.4</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <protocVersion>3.12.3</protocVersion>
+              <inputDirectories>
+                <include>src/main/protobuf/</include>
+              </inputDirectories>
+              <includeStdTypes>true</includeStdTypes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>

@@ -3,6 +3,7 @@ package com.google.impactdashboard.database_manager.bigquery;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.recommendation.*;
+import com.google.impactdashboard.configuration.Constants;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
       .replace(Constants.DATABASE, Constants.TEST_DATABASE))
       .setUseLegacySql(false);
 
-  private QueryConfigurationBuilderImpl() { }
+  private QueryConfigurationBuilderFake() { }
 
   /** Returns the only instance of the class. */
   public static QueryConfigurationBuilder getInstance() {

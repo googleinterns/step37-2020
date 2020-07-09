@@ -5,27 +5,51 @@ import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.recommendation.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.google.impactdashboard.configuration.Constants;
 
 /** 
  * A class for building query configuration builder objects and storing them, 
- * so that they only need to be built once. The query job configuration builder 
- * objects will be configured to query the database with test project information.
+ * so that they only need ot be built once. The query job configuration builder 
+ * objects will be configured to query the database with test project information. 
  */
 public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder {
   private static final QueryConfigurationBuilderFake INSTANCE = new QueryConfigurationBuilderFake();
   
-  private QueryJobConfiguration.Builder getProjectIdsConfiguration = null;
-  private QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration = null;
-  private QueryJobConfiguration.Builder getAverageBindingsConfiguration = null;
-  private QueryJobConfiguration.Builder getDatesToBindingsConfiguration = null;
-  private QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration = null;
-  private String insertValuesIAMTableConfiguration = null;
-  private String insertValuesRecommendationsTableConfiguration = null;
-  private QueryJobConfiguration.Builder deleteOldDataIAMTableConfiguration = null;
-  private QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration = null;
+  private QueryJobConfiguration.Builder getProjectIdsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_PROJECT_IDS
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration =  
+    QueryJobConfiguration.newBuilder(Queries.GET_PROJECT_IDENTIFICATION_INFORMATION
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getAverageBindingsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_AVERAGE_BINDINGS
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getDatesToBindingsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_DATES_TO_BINDINGS
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_DATES_TO_IAM_RECOMMENDATIONS
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .setUseLegacySql(false);
+  private String insertValuesIAMTableConfiguration = 
+    Queries.INSERT_VALUES_INTO_IAM_TABLE
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE);
+  private String insertValuesRecommendationsTableConfiguration = 
+    Queries.INSERT_VALUES_INTO_RECOMMENDATIONS_TABLE
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE);
+  private QueryJobConfiguration.Builder deleteOldDataIAMTableConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.DELETE_OLD_DATA_FROM_IAM_TABLE
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.DELETE_OLD_DATA_FROM_RECOMMENDATIONS_TABLE
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .setUseLegacySql(false);
 
-  private QueryConfigurationBuilderFake() { }
+  private QueryConfigurationBuilderImpl() { }
 
   /** Returns the only instance of the class. */
   public static QueryConfigurationBuilder getInstance() {
@@ -37,13 +61,6 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
    * database. 
    */
   public QueryJobConfiguration.Builder getProjectIdsConfiguration() {
-    if (getProjectIdsConfiguration == null) {
-      getProjectIdsConfiguration = QueryJobConfiguration
-        .newBuilder(Queries.GET_PROJECT_IDS
-          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-        .setUseLegacySql(false);
-    }
-
     return getProjectIdsConfiguration;
   }
 
@@ -52,13 +69,6 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
    * identifying information for a single project from the database.
    */
   public QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration() {
-    if (getProjectIdentificationInformationConfiguration == null) {
-      getProjectIdentificationInformationConfiguration = QueryJobConfiguration
-        .newBuilder(Queries.GET_PROJECT_IDENTIFICATION_INFORMATION
-          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-        .setUseLegacySql(false);
-    }
-
     return getProjectIdentificationInformationConfiguration;
   }
 
@@ -67,13 +77,6 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
    * average number of bindings for a single project for every entry in the table. 
    */
   public QueryJobConfiguration.Builder getAverageBindingsConfiguration() {
-    if (getAverageBindingsConfiguration == null) {
-      getAverageBindingsConfiguration = QueryJobConfiguration
-        .newBuilder(Queries.GET_AVERAGE_BINDINGS
-          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-        .setUseLegacySql(false);
-    }
-
     return getAverageBindingsConfiguration;
   }
 
@@ -82,13 +85,6 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
    * (timestamp, number of bindings) data in tetheh table for a single project. 
    */
   public QueryJobConfiguration.Builder getDatesToBindingsConfiguration() {
-    if (getDatesToBindingsConfiguration == null) {
-      getDatesToBindingsConfiguration = QueryJobConfiguration
-        .newBuilder(Queries.GET_DATES_TO_BINDINGS
-          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-        .setUseLegacySql(false);
-    }
-
     return getDatesToBindingsConfiguration;
   }
 
@@ -98,13 +94,6 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
    * IAM Bindings Recommender.
    */
   public QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration() {
-    if (getDatesToIAMRecommendationsConfiguration == null) {
-      getDatesToIAMRecommendationsConfiguration = QueryJobConfiguration
-        .newBuilder(Queries.GET_DATES_TO_IAM_RECOMMENDATIONS
-          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-        .setUseLegacySql(false);
-    }
-
     return getDatesToIAMRecommendationsConfiguration;
   }
 
@@ -115,42 +104,30 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
    */
   public QueryJobConfiguration.Builder 
     insertValuesIAMTableConfiguration(List<IAMBindingDatabaseEntry> values) {
-    if (insertValuesIAMTableConfiguration == null) {
-      insertValuesIAMTableConfiguration = Queries.INSERT_VALUES_INTO_IAM_TABLE
-        .replace(Constants.DATABASE, Constants.TEST_DATABASE);
-    }
-
     String sqlFormattedValues = values.stream()
       .map(bindingData -> String.format(
         "('%s', '%s', '%s', TIMESTAMP_ADD('1970-01-01 00:00:00 UTC', INTERVAL %s SECOND), %s)", 
         bindingData.getProjectId(), bindingData.getProjectName(), 
-        bindingData.getProjectNumber(), bindingData.getTimestamp() / 100, 
+        bindingData.getProjectNumber(), bindingData.getTimestamp() / 1000, 
         bindingData.getBindingsNumber()))
       .collect(Collectors.joining(", "));
 
     return QueryJobConfiguration
-      .newBuilder(insertValuesIAMTableConfiguration + sqlFormattedValues)
-      .setUseLegacySql(false);
+      .newBuilder(insertValuesIAMTableConfiguration + sqlFormattedValues).setUseLegacySql(false);
   }
 
   /**
    * Retrieves query job configuration that inserts {@code values} into the 
    * Recommendations table. 
-   * @param values The recommendations to be inserted. 
+   * @param values The recommendations to be inserted.
    */
   public QueryJobConfiguration.Builder 
     insertValuesRecommendationsTableConfiguration(List<Recommendation> values) {
-    if (insertValuesRecommendationsTableConfiguration == null) {
-      insertValuesRecommendationsTableConfiguration = 
-        Queries.INSERT_VALUES_INTO_RECOMMENDATIONS_TABLE
-          .replace(Constants.DATABASE, Constants.TEST_DATABASE);
-    }
-
     String sqlFormattedValues = values.stream()
       .map(recommendation -> String.format(
         "('%s', '%s', '%s', TIMESTAMP_ADD('1970-01-01 00:00:00 UTC', INTERVAL %s SECOND), %s)", 
         recommendation.getProjectId(), recommendation.getRecommender(), 
-        recommendation.getDescription(), recommendation.getAcceptedTimestamp() / 100, 
+        recommendation.getDescription(), recommendation.getAcceptedTimestamp() / 1000, 
         ((IAMRecommenderMetadata) recommendation.getMetadata()).getImpactInIAMBindings()))
       .collect(Collectors.joining(", "));
 
@@ -164,13 +141,6 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
    * IAM bindings table.
    */
   public QueryJobConfiguration.Builder deleteOldDataIAMTableConfiguration() {
-    if (deleteOldDataIAMTableConfiguration == null) {
-      deleteOldDataIAMTableConfiguration = QueryJobConfiguration
-        .newBuilder(Queries.DELETE_OLD_DATA_FROM_IAM_TABLE
-          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-        .setUseLegacySql(false);
-    }
-
     return deleteOldDataIAMTableConfiguration;
   }
 
@@ -179,13 +149,6 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
    * Recommendations table.
    */
   public QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration() {
-    if (deleteOldDataRecommendationsTableConfiguration == null) {
-      deleteOldDataRecommendationsTableConfiguration = QueryJobConfiguration
-        .newBuilder(Queries.DELETE_OLD_DATA_FROM_RECOMMENDATIONS_TABLE
-          .replace(Constants.DATABASE, Constants.TEST_DATABASE))
-        .setUseLegacySql(false);
-    }
-
     return deleteOldDataRecommendationsTableConfiguration;
   }
 }

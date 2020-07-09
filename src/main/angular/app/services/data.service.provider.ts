@@ -12,6 +12,7 @@ const dataServiceFactory = (http: HttpClient) => {
   }
 };
 
+/** Provider that will programatically decide whether to use the fake data serivce or the HTTP service depending on the constant USE_TEST_DATA */
 export const dataServiceProvider = {
   provide: DataService,
   useFactory: dataServiceFactory,

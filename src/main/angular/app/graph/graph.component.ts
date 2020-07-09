@@ -23,6 +23,7 @@ import {Project} from '../../model/project';
 import {GraphProcessorService} from '../services/graph-processor.service';
 import {GraphProperties} from '../../model/types';
 import {DataService} from '../services/data.service';
+import {WIDTH_SCALE_FACTOR, HEIGHT_SCALE_FACTOR} from '../../constants';
 
 /** The angular component that contains the graph and associated logic. */
 @Component({
@@ -59,14 +60,14 @@ export class GraphComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.properties.width = (window.innerWidth * 6) / 8;
-    this.properties.height = (window.innerHeight * 1) / 2;
+    this.properties.width = window.innerWidth * WIDTH_SCALE_FACTOR;
+    this.properties.height = window.innerHeight * HEIGHT_SCALE_FACTOR;
   }
 
   /** Listen for resizes of the window */
   @HostListener('window:resize')
   onResize() {
-    this.properties.width = (window.innerWidth * 6) / 8;
-    this.properties.height = (window.innerHeight * 1) / 2;
+    this.properties.width = window.innerWidth * WIDTH_SCALE_FACTOR;
+    this.properties.height = window.innerHeight * HEIGHT_SCALE_FACTOR;
   }
 }

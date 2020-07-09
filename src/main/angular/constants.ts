@@ -14,3 +14,8 @@ export const DEFAULT_COLORS: string[] = [
   // Google green
   '#0d652d',
 ];
+
+/** How much of the horizontal space on the page is taken up by the graph */
+export const WIDTH_SCALE_FACTOR = 6 / 8;
+/** How much of the vertical space on the page is taken up by the graph */
+export const HEIGHT_SCALE_FACTOR = 1 / 2;

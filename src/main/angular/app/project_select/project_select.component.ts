@@ -1,6 +1,10 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {Project} from '../../model/project';
-import {DEFAULT_COLORS, PROJECT_INACTIVE_COLOR} from '../../constants';
+import {
+  DEFAULT_COLORS,
+  PROJECT_INACTIVE_COLOR,
+  ERROR_PAGE_URL,
+} from '../../constants';
 import {
   faArrowDown,
   faCircle,
@@ -13,6 +17,7 @@ import {
   ProjectComparators,
 } from '../../model/project_sort';
 import {DataService} from '../services/data.service';
+import {Router} from '@angular/router';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({
@@ -63,7 +68,7 @@ export class ProjectSelectComponent implements OnInit {
   @Output()
   public changeProjects = new EventEmitter<Project[]>();
 
-  constructor(private dataService: DataService) {
+  constructor(private dataService: DataService, private router: Router) {
     this.query = '';
     this.projects = [];
     this.activeProjects = new Set();
@@ -196,6 +201,8 @@ export class ProjectSelectComponent implements OnInit {
         if (projects.length > 0) {
           this.toggleProject(projects[0]);
         }
+      } else {
+        this.router.navigate([`/${ERROR_PAGE_URL}`]);
       }
     });
   }

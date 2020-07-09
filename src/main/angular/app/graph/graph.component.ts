@@ -23,7 +23,12 @@ import {Project} from '../../model/project';
 import {GraphProcessorService} from '../services/graph_processor.service';
 import {GraphProperties} from '../../model/types';
 import {DataService} from '../services/data.service';
-import {WIDTH_SCALE_FACTOR, HEIGHT_SCALE_FACTOR} from '../../constants';
+import {
+  WIDTH_SCALE_FACTOR,
+  HEIGHT_SCALE_FACTOR,
+  ERROR_PAGE_URL,
+} from '../../constants';
+import {Router} from '@angular/router';
 
 /** The angular component that contains the graph and associated logic. */
 @Component({
@@ -43,7 +48,8 @@ export class GraphComponent implements OnInit {
 
   constructor(
     private dataService: DataService,
-    private graphProcessor: GraphProcessorService
+    private graphProcessor: GraphProcessorService,
+    private router: Router
   ) {
     this.shouldShowChart = false;
     this.projects = [];
@@ -52,11 +58,16 @@ export class GraphComponent implements OnInit {
   /** Called when an input field changes. */
   ngOnChanges(changes: SimpleChanges) {
     this.shouldShowChart = this.projects.length > 0;
-    this.graphProcessor.processChanges(
+    const result = this.graphProcessor.processChanges(
       changes,
       this.properties,
       this.dataService
     );
+
+    if (result instanceof Array) {
+      // We got an error message
+      this.router.navigate([`/${ERROR_PAGE_URL}`]);
+    }
   }
 
   ngOnInit() {

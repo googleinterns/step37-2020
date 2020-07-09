@@ -4,8 +4,6 @@ import 'jasmine';
 import {DateUtilitiesService} from './date-utilities.service';
 import {GraphProperties} from '../../model/types';
 import {FakeDataService} from './fake-services/fake-data.service';
-import {HttpService} from './real-services/http.service';
-import {MockHttpClient} from '../../mocks/mock-http-client';
 import {SimpleChanges, SimpleChange} from '@angular/core';
 import {Project} from '../../model/project';
 import {ProjectGraphData} from '../../model/project-graph-data';

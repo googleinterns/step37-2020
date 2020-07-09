@@ -71,18 +71,19 @@ describe('GraphProcessorService', () => {
               fail('First row is not a Date!');
             }
           });
+
           expect(actual).toEqual(bindingTimes);
         });
 
         it('Adds the correct number of bindings', () => {
-          const expected: number[] = Object.values(
-            projectData.dateToNumberIAMBindings
-          );
           const actual: number[] = [];
 
           properties.graphData.forEach(row => {
             actual.push(row[1] as number);
           });
+          const expected: number[] = Object.values(
+            projectData.dateToNumberIAMBindings
+          );
 
           expect(actual).toEqual(expected);
         });
@@ -162,8 +163,10 @@ describe('GraphProcessorService', () => {
 
         it('Removes columns correctly', () => {
           const expectedColumns = 1 + projects.length * 3;
+          const removedId = allProjects[0].projectId;
+
           expect(properties.columns.length).toBe(expectedColumns);
-          expect(properties.columns).not.toContain(allProjects[0].projectId);
+          expect(properties.columns).not.toContain(removedId);
         });
 
         it('Removes data correctly', () => {
@@ -210,6 +213,7 @@ describe('GraphProcessorService', () => {
 
         it('Removes columns correctly', () => {
           const expectedColumns = 1 + projects.length * 3;
+
           expect(properties.columns.length).toBe(expectedColumns);
           for (let i = 2; i < allProjects.length; i++) {
             expect(properties.columns).not.toContain(allProjects[i].projectId);

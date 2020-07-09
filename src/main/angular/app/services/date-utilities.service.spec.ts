@@ -36,8 +36,23 @@ describe('DateUtilitiesService', () => {
   });
 
   describe('startOfDay()', () => {
-    it('Effects no change on an exact start of day', () => {});
-    it('Gets the start of day from times throughout the day', () => {});
+    it('Effects no change on an exact start of day', () => {
+      const dates = [
+        new Date(2020, 6, 1),
+        new Date(2020, 6, 2),
+        new Date(2020, 7, 8),
+      ];
+      dates.forEach(date => {
+        expect(service.startOfDay(date.getTime())).toEqual(date);
+      });
+    });
+    it('Gets the start of day from times throughout the day', () => {
+      const expected = new Date(2020, 6, 1);
+      for (let hour = 1; hour < 24; hour++) {
+        const date = new Date(2020, 6, 1, hour);
+        expect(service.startOfDay(date.getTime())).toEqual(expected);
+      }
+    });
   });
 
   describe('uniqueDays()', () => {

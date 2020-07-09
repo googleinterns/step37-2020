@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {ProjectGraphData} from '../../../model/project-graph-data';
+import {ProjectGraphData} from '../../../model/project_graph_data';
 import {Project} from '../../../model/project';
 import {DataService} from '../data.service';
-import {ErrorMessage} from '../../../model/error-message';
+import {ErrorMessage} from '../../../model/error_message';
 
 @Injectable()
 export class HttpService implements DataService {

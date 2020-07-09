@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {RecommenderType} from './recommender-type';
-import {RecommenderMetadata} from './recommender-metadata';
+import {RecommenderType} from './recommender_type';
+import {RecommenderMetadata} from './recommender_metadata';
 
 /** Represents a single accepted recommendation. */
 export class Recommendation {

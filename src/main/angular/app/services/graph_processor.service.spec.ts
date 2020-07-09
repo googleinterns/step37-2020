@@ -1,11 +1,11 @@
-import {GraphProcessorService} from './graph-processor.service';
+import {GraphProcessorService} from './graph_processor.service';
 import 'jasmine';
-import {DateUtilitiesService} from './date-utilities.service';
+import {DateUtilitiesService} from './date_utilities.service';
 import {GraphProperties} from '../../model/types';
-import {FakeDataService} from './fake-services/fake-data.service';
+import {FakeDataService} from './fake_services/fake_data.service';
 import {SimpleChanges, SimpleChange} from '@angular/core';
 import {Project} from '../../model/project';
-import {ProjectGraphData} from '../../model/project-graph-data';
+import {ProjectGraphData} from '../../model/project_graph_data';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;

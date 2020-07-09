@@ -6,7 +6,7 @@ import {Project} from '../../../model/project';
 import {ProjectMetaData} from '../../../model/project_metadata';
 import {DataService} from '../data.service';
 
-/** Contains fake data for use with HTTP service. */
+/** Contains fake data. */
 @Injectable()
 export class FakeDataService implements DataService {
   /** Contains the projects that are faked. */

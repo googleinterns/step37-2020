@@ -3,16 +3,16 @@
 export const USE_TEST_DATA = true;
 
 // See https://standards.google/guidelines/brand-standards/color/palette/#brand-colors
+export const GOOGLE_BLUE = '#174ea6';
+export const GOOGLE_RED = '#a50e0e';
+export const GOOGLE_YELLOW = '#e37400';
+export const GOOGLE_GREEN = '#0d652d';
 /** Default colors for use with the projects. */
 export const DEFAULT_COLORS: string[] = [
-  // Google blue
-  '#174ea6',
-  // Google red
-  '#a50e0e',
-  // Google yellow
-  '#e37400',
-  // Google green
-  '#0d652d',
+  GOOGLE_BLUE,
+  GOOGLE_RED,
+  GOOGLE_YELLOW,
+  GOOGLE_GREEN,
 ];
 
 /** How much of the horizontal space on the page is taken up by the graph */

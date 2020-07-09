@@ -4,8 +4,9 @@ import {ProjectGraphData} from '../../../model/project_graph_data';
 import {Project} from '../../../model/project';
 import {DataService} from '../data.service';
 
+/** Service which actually retrieves data from the server */
 @Injectable()
-export class HttpService implements DataService {
+export class DataServiceImpl implements DataService {
   constructor(private http: HttpClient) {}
 
   /** Gets the graph data for the given project ID. */

@@ -148,6 +148,7 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Returns a sorted and filtered view of the projects. */
   getProjects(): Project[] {
+    // TODO: Rebuild projects only when sort or filter changes.
     if (this.projects === undefined) {
       return [];
     }

@@ -133,121 +133,151 @@ describe('GraphProcessorService', () => {
     });
 
     describe('Removing projects from the graph', () => {
-      beforeEach(() => {
-        properties = service.initProperties();
-        changes = {};
+      describe('Remove a single project successfully', () => {
+        let allProjects: Project[];
+        let projects: Project[];
+        let projectData: ProjectGraphData[];
+
+        beforeAll(async () => {
+          properties = service.initProperties();
+          changes = {};
+
+          allProjects = await fakeDataService.listProjects();
+          // Add the projects
+          changes.projects = new SimpleChange([], allProjects, true);
+          await service.processChanges(changes, properties, fakeDataService);
+
+          // Remove the first project
+          projects = allProjects
+            .filter((value, index) => index !== 0)
+            .map(value => value);
+          projectData = await Promise.all(
+            projects.map(project =>
+              fakeDataService.getProjectGraphData(project.projectId)
+            )
+          );
+          changes.projects = new SimpleChange(allProjects, projects, false);
+          await service.processChanges(changes, properties, fakeDataService);
+        });
+
+        it('Removes columns correctly', () => {
+          const expectedColumns = 1 + projects.length * 3;
+          expect(properties.columns.length).toBe(expectedColumns);
+          expect(properties.columns).not.toContain(allProjects[0].projectId);
+        });
+
+        it('Removes data correctly', () => {
+          const expected = projectData.map(data =>
+            Object.values(data.dateToNumberIAMBindings)
+          );
+          const actual = projectData.map((data, index) =>
+            properties.graphData
+              .map(row => row[1 + index * 3])
+              .filter(value => value !== undefined)
+          );
+
+          expect(actual).toEqual(expected);
+        });
       });
 
-      it('Remove a single project successfully', async () => {
-        const allProjects: Project[] = await fakeDataService.listProjects();
+      describe('Removes multiple projects successfully', () => {
+        let allProjects: Project[];
+        let projects: Project[];
+        let projectData: ProjectGraphData[];
+
+        beforeAll(async () => {
+          properties = service.initProperties();
+          changes = {};
+
+          allProjects = await fakeDataService.listProjects();
+
+          // Add the projects
+          changes.projects = new SimpleChange([], allProjects, true);
+          await service.processChanges(changes, properties, fakeDataService);
+
+          // Remove all but the first two projects
+          projects = allProjects
+            .filter((value, index) => [0, 1].includes(index))
+            .map(value => value);
+          projectData = await Promise.all(
+            projects.map(project =>
+              fakeDataService.getProjectGraphData(project.projectId)
+            )
+          );
+          changes.projects = new SimpleChange(allProjects, projects, false);
+          await service.processChanges(changes, properties, fakeDataService);
+        });
+
+        it('Removes columns correctly', () => {
+          const expectedColumns = 1 + projects.length * 3;
+          expect(properties.columns.length).toBe(expectedColumns);
+          for (let i = 2; i < allProjects.length; i++) {
+            expect(properties.columns).not.toContain(allProjects[i].projectId);
+          }
+        });
+
+        it('Removes data correctly', () => {
+          const expected = projectData.map(data =>
+            Object.values(data.dateToNumberIAMBindings)
+          );
+          const actual = projectData.map((data, index) =>
+            properties.graphData
+              .map(row => row[1 + index * 3])
+              .filter(value => value !== undefined)
+          );
+
+          expect(actual).toEqual(expected);
+        });
+      });
+    });
+    describe('Re-adds projects that have been removed', () => {
+      let allProjects: Project[];
+      let projects: Project[];
+      let projectData: ProjectGraphData[];
+
+      beforeAll(async () => {
+        properties = service.initProperties();
+        changes = {};
+
+        allProjects = await fakeDataService.listProjects();
         // Add the projects
         changes.projects = new SimpleChange([], allProjects, true);
         await service.processChanges(changes, properties, fakeDataService);
 
         // Remove the first project
-        const projects: Project[] = allProjects
+        projects = allProjects
           .filter((value, index) => index !== 0)
           .map(value => value);
-        const projectData: ProjectGraphData[] = await Promise.all(
-          projects.map(project =>
+        changes.projects = new SimpleChange(allProjects, projects, false);
+        await service.processChanges(changes, properties, fakeDataService);
+        changes.projects = new SimpleChange(projects, allProjects, false);
+        await service.processChanges(changes, properties, fakeDataService);
+
+        projectData = await Promise.all(
+          allProjects.map(project =>
             fakeDataService.getProjectGraphData(project.projectId)
           )
         );
-        changes.projects = new SimpleChange(allProjects, projects, false);
-        await service.processChanges(changes, properties, fakeDataService);
-
-        const expectedColumns = 1 + projects.length * 3;
-        expect(properties.columns.length).toBe(expectedColumns);
-        expect(properties.columns).not.toContain(allProjects[0].projectId);
-        properties.graphData.forEach(row => {
-          if (row[0] instanceof Date) {
-            const time = row[0].getTime();
-            expect(row.length).toBe(expectedColumns);
-            projectData.forEach((data, index) => {
-              expect(row[1 + 3 * index]).toBe(
-                data.dateToNumberIAMBindings[time]
-              );
-            });
-          } else {
-            fail(`Row ${row} doesn't have a time`);
-          }
-        });
       });
-      it('Removes multiple projects successfully', async () => {
-        const allProjects: Project[] = await fakeDataService.listProjects();
-        // Add the projects
-        changes.projects = new SimpleChange([], allProjects, true);
-        await service.processChanges(changes, properties, fakeDataService);
 
-        // Remove all but the first two projects
-        const projects: Project[] = allProjects
-          .filter((value, index) => [0, 1].includes(index))
-          .map(value => value);
-        const projectData: ProjectGraphData[] = await Promise.all(
-          projects.map(project =>
-            fakeDataService.getProjectGraphData(project.projectId)
-          )
+      it('Should re-add the columns', () => {
+        const expectedColumns = 1 + allProjects.length * 3;
+        const addedId = allProjects[0].projectId;
+
+        expect(properties.columns.length).toBe(expectedColumns);
+        expect(properties.columns).toContain(addedId);
+      });
+
+      it('Should re-add the data', () => {
+        const expected = Object.values(projectData[0].dateToNumberIAMBindings);
+        const columnIndex: number = properties.columns.findIndex(
+          value => value === allProjects[0].projectId
         );
-        changes.projects = new SimpleChange(allProjects, projects, false);
-        await service.processChanges(changes, properties, fakeDataService);
+        const actual = properties.graphData
+          .map(row => row[columnIndex])
+          .filter(value => value !== undefined);
 
-        const expectedColumns = 1 + projects.length * 3;
-        expect(properties.columns.length).toBe(expectedColumns);
-        for (let i = 2; i < allProjects.length; i++) {
-          expect(properties.columns).not.toContain(allProjects[i].projectId);
-        }
-
-        properties.graphData.forEach(row => {
-          if (row[0] instanceof Date) {
-            const time = row[0].getTime();
-            expect(row.length).toBe(expectedColumns);
-            projectData.forEach((data, index) => {
-              expect(row[1 + 3 * index]).toBe(
-                data.dateToNumberIAMBindings[time]
-              );
-            });
-          } else {
-            fail(`Row ${row} doesn't have a time`);
-          }
-        });
-      });
-    });
-    it('Re-adds projects that have been removed', async () => {
-      properties = service.initProperties();
-      changes = {};
-
-      const allProjects: Project[] = await fakeDataService.listProjects();
-      // Add the projects
-      changes.projects = new SimpleChange([], allProjects, true);
-      await service.processChanges(changes, properties, fakeDataService);
-
-      // Remove the first project
-      const projects: Project[] = allProjects
-        .filter((value, index) => index !== 0)
-        .map(value => value);
-      changes.projects = new SimpleChange(allProjects, projects, false);
-      await service.processChanges(changes, properties, fakeDataService);
-      changes.projects = new SimpleChange(projects, allProjects, false);
-      await service.processChanges(changes, properties, fakeDataService);
-
-      const projectData: ProjectGraphData[] = await Promise.all(
-        allProjects.map(project =>
-          fakeDataService.getProjectGraphData(project.projectId)
-        )
-      );
-
-      const expectedColumns = 1 + allProjects.length * 3;
-      expect(properties.columns.length).toBe(expectedColumns);
-      expect(properties.columns).toContain(allProjects[0].projectId);
-
-      properties.graphData.forEach(row => {
-        if (row[0] instanceof Date) {
-          const time = row[0].getTime();
-          expect(row.length).toBe(expectedColumns);
-          expect(row).toContain(projectData[0]?.dateToNumberIAMBindings[time]);
-        } else {
-          fail(`Row ${row} doesn't have a time`);
-        }
+        expect(actual).toEqual(expected);
       });
     });
   });

@@ -13,25 +13,28 @@ describe('DateUtilitiesService', () => {
     it('Returns true for equal times', () => {
       const date1 = new Date(2020, 6, 1);
       const date2 = new Date(2020, 6, 1);
-      expect(
-        service.fallOnSameDay(date1.getTime(), date2.getTime())
-      ).toBeTrue();
+
+      const result = service.fallOnSameDay(date1.getTime(), date2.getTime());
+
+      expect(result).toBeTrue();
     });
 
     it('Returns true for different hours of the same day', () => {
       const date1 = new Date(2020, 6, 1, 7);
       const date2 = new Date(2020, 6, 1, 12);
-      expect(
-        service.fallOnSameDay(date1.getTime(), date2.getTime())
-      ).toBeTrue();
+
+      const result = service.fallOnSameDay(date1.getTime(), date2.getTime());
+
+      expect(result).toBeTrue();
     });
 
     it('Returns false for an exact 24 hour difference', () => {
       const date1 = new Date(2020, 6, 1);
       const date2 = new Date(2020, 1, 7);
-      expect(
-        service.fallOnSameDay(date1.getTime(), date2.getTime())
-      ).toBeFalse();
+
+      const result = service.fallOnSameDay(date1.getTime(), date2.getTime());
+
+      expect(result).toBeFalse();
     });
   });
 
@@ -42,16 +45,23 @@ describe('DateUtilitiesService', () => {
         new Date(2020, 6, 2),
         new Date(2020, 7, 8),
       ];
-      dates.forEach(date => {
-        expect(service.startOfDay(date.getTime())).toEqual(date);
-      });
+
+      const result = dates.map(date => service.startOfDay(date.getTime()));
+
+      expect(result).toEqual(dates);
     });
+
     it('Gets the start of day from times throughout the day', () => {
-      const expected = new Date(2020, 6, 1);
+      const expected = [];
+      const actual = [];
       for (let hour = 1; hour < 24; hour++) {
+        expected.push(new Date(2020, 6, 1));
         const date = new Date(2020, 6, 1, hour);
-        expect(service.startOfDay(date.getTime())).toEqual(expected);
+
+        actual.push(service.startOfDay(date.getTime()));
       }
+
+      expect(actual).toEqual(expected);
     });
   });
 
@@ -77,9 +87,11 @@ describe('DateUtilitiesService', () => {
     it('Gets unique days from a single project', () => {
       earlyJune.forEach(date => (dateToBindings[date.getTime()] = 5));
 
-      expect(
-        service.uniqueDays([new ProjectGraphData('', dateToBindings, {})])
-      ).toEqual(earlyJune);
+      const actual = service.uniqueDays([
+        new ProjectGraphData('', dateToBindings, {}),
+      ]);
+
+      expect(actual).toEqual(earlyJune);
     });
 
     it('Gets unique days from multiple projects on the same timeframe', () => {
@@ -87,7 +99,9 @@ describe('DateUtilitiesService', () => {
       const data1 = new ProjectGraphData('', dateToBindings, {});
       const data2 = new ProjectGraphData('', dateToBindings, {});
 
-      expect(service.uniqueDays([data1, data2])).toEqual(earlyJune);
+      const actual = service.uniqueDays([data1, data2]);
+
+      expect(actual).toEqual(earlyJune);
     });
 
     it('Gets unique days from multiple projects on different timeframes', () => {
@@ -97,9 +111,10 @@ describe('DateUtilitiesService', () => {
       midJune.forEach(date => (dateToBindings[date.getTime()] = 7));
       const data2 = new ProjectGraphData('', dateToBindings, {});
 
-      expect(service.uniqueDays([data1, data2])).toEqual(
-        earlyJune.concat(midJune)
-      );
+      const actual = service.uniqueDays([data1, data2]);
+      const expected = earlyJune.concat(midJune);
+
+      expect(actual).toEqual(expected);
     });
 
     it('Gets unique days from multiple projects on overlapping timeframes', () => {
@@ -109,8 +124,10 @@ describe('DateUtilitiesService', () => {
       midEarlyJune.forEach(date => (dateToBindings[date.getTime()] = 7));
       const data2 = new ProjectGraphData('', dateToBindings, {});
 
+      const actual = service.uniqueDays([data1, data2]);
       const expected = [1, 2, 3, 4, 5, 6, 7, 8].map(i => new Date(2020, 5, i));
-      expect(service.uniqueDays([data1, data2])).toEqual(expected);
+
+      expect(actual).toEqual(expected);
     });
   });
 });

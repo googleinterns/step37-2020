@@ -1,6 +1,6 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {Project} from '../../model/project';
-import {DEFAULT_COLORS} from '../../constants';
+import {DEFAULT_COLORS, PROJECT_INACTIVE_COLOR} from '../../constants';
 import {
   faArrowDown,
   faCircle,
@@ -77,7 +77,7 @@ export class ProjectSelectComponent implements OnInit {
     if (this.activeProjects.has(project)) {
       return project.color;
     }
-    return '#b8b8b8';
+    return PROJECT_INACTIVE_COLOR;
   }
 
   /** Toggles the given projects presence on the graph. */
@@ -148,6 +148,7 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Returns a sorted and filtered view of the projects. */
   getProjects(): Project[] {
+    // TODO: Rebuild projects only when sort or filter changes.
     if (this.projects === undefined) {
       return [];
     }

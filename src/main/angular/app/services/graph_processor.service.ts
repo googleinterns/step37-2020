@@ -87,14 +87,14 @@ export class GraphProcessorService {
     project: Project
   ): boolean | ErrorMessage {
     if (data instanceof ProjectGraphData) {
-      const seriesNum: number = (properties.columns.length - 1) / 3;
+      const seriesNumber: number = (properties.columns.length - 1) / 3;
       // Set the color and add the new columns
       if (properties.options.series) {
-        properties.options.series[seriesNum] = {color: project.color};
+        properties.options.series[seriesNumber] = {color: project.color};
       }
       this.addIamColumns(properties.columns, data);
       // Add the new rows
-      this.addIamRows(properties.graphData, data, project, seriesNum);
+      this.addIamRows(properties.graphData, data, project, seriesNumber);
 
       // Force a refresh of the chart
       const temp: Columns = [];
@@ -107,20 +107,20 @@ export class GraphProcessorService {
 
   /** Removes the given project from the graph. */
   private removeFromGraph(properties: GraphProperties, project: Project) {
-    const seriesNum: number =
+    const seriesNumber: number =
       (properties.columns.indexOf(project.projectId) - 1) / 3;
 
     if (properties.options.series) {
       for (const [key] of Object.entries(properties.options.series)) {
-        if (+key >= seriesNum && properties.options.series) {
+        if (+key >= seriesNumber && properties.options.series) {
           properties.options.series[+key] = properties.options.series[+key + 1];
           delete properties.options.series[+key + 1];
         }
       }
     }
 
-    properties.columns.splice(seriesNum * 3 + 1, 3);
-    properties.graphData.forEach(row => row.splice(seriesNum * 3 + 1, 3));
+    properties.columns.splice(seriesNumber * 3 + 1, 3);
+    properties.graphData.forEach(row => row.splice(seriesNumber * 3 + 1, 3));
 
     // Force a refresh of the chart
     const temp: Columns = [];
@@ -132,7 +132,7 @@ export class GraphProcessorService {
     rows: Row[],
     data: ProjectGraphData,
     project: Project,
-    seriesNum: number
+    seriesNumber: number
   ): Row[] {
     // First, get all the days we need to add if it hasn't already been provided
     const days = this.dateUtilities.uniqueDays([data]);
@@ -143,7 +143,7 @@ export class GraphProcessorService {
       .forEach(day => {
         const row: Row = [day];
         // Fill in columns for all existing projects with empty data
-        for (let i = 0; i < seriesNum * 3; i++) {
+        for (let i = 0; i < seriesNumber * 3; i++) {
           row.push(undefined);
         }
         rows.push(row);
@@ -178,7 +178,7 @@ export class GraphProcessorService {
 
     // Now add empty data for rows that weren't touched
     rows.forEach(row => {
-      if (row.length < (seriesNum + 1) * 3 + 1) {
+      if (row.length < (seriesNumber + 1) * 3 + 1) {
         row.push(undefined, undefined, undefined);
       }
     });

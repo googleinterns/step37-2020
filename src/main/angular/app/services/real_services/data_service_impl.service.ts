@@ -5,8 +5,9 @@ import {Project} from '../../../model/project';
 import {DataService} from '../data.service';
 import {ErrorMessage} from '../../../model/error_message';
 
+/** Service which actually retrieves data from the server */
 @Injectable()
-export class HttpService implements DataService {
+export class DataServiceImpl implements DataService {
   constructor(private http: HttpClient) {}
 
   /** Gets the graph data for the given project ID. */

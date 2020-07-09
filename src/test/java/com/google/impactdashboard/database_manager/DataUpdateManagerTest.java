@@ -1,4 +1,4 @@
-package com.google.impactdashboard;
+package com.google.impactdashboard.database_manager;
 
 import static org.junit.Assert.*;
 

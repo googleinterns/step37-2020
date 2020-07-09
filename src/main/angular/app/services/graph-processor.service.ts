@@ -21,8 +21,6 @@ export class GraphProcessorService {
         startup: true,
       },
       legend: {position: 'none'},
-      height: 700,
-      width: 1000,
       hAxis: {
         gridlines: {
           color: 'white',
@@ -42,6 +40,8 @@ export class GraphProcessorService {
       columns: ['Time'],
       type: 'LineChart',
       title: 'Empty Graph',
+      width: 960,
+      height: 600,
     };
   }
 

@@ -12,7 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Component, OnInit, Input, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  SimpleChanges,
+  HostListener,
+} from '@angular/core';
 import {Project} from '../../model/project';
 import {GraphProcessorService} from '../services/graph-processor.service';
 import {GraphProperties} from '../../model/types';
@@ -52,5 +58,15 @@ export class GraphComponent implements OnInit {
     );
   }
 
-  async ngOnInit() {}
+  ngOnInit() {
+    this.properties.width = (window.innerWidth * 6) / 8;
+    this.properties.height = window.innerHeight * 1/2;
+  }
+
+  /** Listen for resizes of the window */
+  @HostListener('window:resize')
+  onResize() {
+    this.properties.width = (window.innerWidth * 6) / 8;
+    this.properties.height = window.innerHeight * 1/2;
+  }
 }

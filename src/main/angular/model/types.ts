@@ -7,6 +7,8 @@ export type GraphProperties = {
   columns: Columns;
   type: 'LineChart';
   title: string;
+  width: number;
+  height: number;
 };
 
 /** The different types of data permitted in a row for Google Charts. */

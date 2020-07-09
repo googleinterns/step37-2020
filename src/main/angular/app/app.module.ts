@@ -12,9 +12,15 @@ import {HttpClientModule} from '@angular/common/http';
 import {DateUtilitiesService} from './services/date-utilities.service';
 import {GraphProcessorService} from './services/graph-processor.service';
 import {dataServiceProvider} from './services/data.service.provider';
+import {ErrorPageComponent} from './error-page/error-page.component';
 
 @NgModule({
-  declarations: [AppComponent, GraphComponent, ProjectSelectComponent],
+  declarations: [
+    AppComponent,
+    GraphComponent,
+    ProjectSelectComponent,
+    ErrorPageComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

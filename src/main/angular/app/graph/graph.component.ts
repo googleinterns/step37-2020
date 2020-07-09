@@ -14,9 +14,9 @@
 
 import {Component, OnInit, Input, SimpleChanges} from '@angular/core';
 import {Project} from '../../model/project';
-import {HttpService} from '../http.service';
 import {GraphProcessorService} from '../graph-processor.service';
 import {GraphProperties} from '../../model/types';
+import {DataService} from '../data.service';
 
 /** The angular component that contains the graph and associated logic. */
 @Component({
@@ -35,7 +35,7 @@ export class GraphComponent implements OnInit {
   public shouldShowChart: boolean;
 
   constructor(
-    private httpService: HttpService,
+    private dataService: DataService,
     private graphProcessor: GraphProcessorService
   ) {
     this.shouldShowChart = false;
@@ -48,7 +48,7 @@ export class GraphComponent implements OnInit {
     this.graphProcessor.processChanges(
       changes,
       this.properties,
-      this.httpService
+      this.dataService
     );
   }
 

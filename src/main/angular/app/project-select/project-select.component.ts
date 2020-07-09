@@ -7,12 +7,12 @@ import {
   faFilter,
 } from '@fortawesome/free-solid-svg-icons';
 import {trigger, state, style, transition, animate} from '@angular/animations';
-import {HttpService} from '../http.service';
 import {
   SortDirection,
   SortBy,
   ProjectComparators,
 } from '../../model/project-sort';
+import {DataService} from '../data.service';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({
@@ -63,7 +63,7 @@ export class ProjectSelectComponent implements OnInit {
   @Output()
   public changeProjects = new EventEmitter<Project[]>();
 
-  constructor(private httpService: HttpService) {
+  constructor(private dataService: DataService) {
     this.query = '';
     this.projects = [];
     this.activeProjects = new Set();
@@ -176,7 +176,7 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Called when the component is ready to be displayed. */
   ngOnInit() {
-    this.httpService.listProjects().then(projects => {
+    this.dataService.listProjects().then(projects => {
       // Sort by the selected fields
       projects.sort(
         ProjectComparators.getComparator(

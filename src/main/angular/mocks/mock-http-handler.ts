@@ -6,7 +6,7 @@ import {
   HttpResponse,
 } from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {FakeDataService} from '../app/fake-data.service';
+import {FakeDataService} from '../app/fake-services/fake-data.service';
 
 /** Mock class for Angular's HttpHandler. */
 export class MockHttpHandler extends HttpHandler {

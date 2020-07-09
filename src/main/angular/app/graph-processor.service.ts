@@ -5,7 +5,8 @@ import {Project} from '../model/project';
 import {SimpleChange} from '@angular/core';
 import {DateUtilitiesService} from './date-utilities.service';
 import {GraphProperties, Columns, Row} from '../model/types';
-import {HttpService} from './http.service';
+import {HttpService} from './real-services/http.service';
+import {DataService} from './data.service';
 
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
@@ -49,7 +50,7 @@ export class GraphProcessorService {
   async processChanges(
     changes: SimpleChanges,
     properties: GraphProperties,
-    httpService: HttpService
+    httpService: DataService
   ): Promise<void> {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
     const promises: Promise<unknown>[] = [];

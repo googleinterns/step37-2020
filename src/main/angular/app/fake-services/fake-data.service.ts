@@ -1,13 +1,14 @@
 import {Injectable} from '@angular/core';
-import {Recommendation} from '../model/recommendation';
-import {RecommenderType} from '../model/recommender-type';
-import {ProjectGraphData} from '../model/project-graph-data';
-import {Project} from '../model/project';
-import {ProjectMetaData} from '../model/project-metadata';
+import {Recommendation} from '../../model/recommendation';
+import {RecommenderType} from '../../model/recommender-type';
+import {ProjectGraphData} from '../../model/project-graph-data';
+import {Project} from '../../model/project';
+import {ProjectMetaData} from '../../model/project-metadata';
+import {DataService} from '../data.service';
 
 /** Contains fake data for use with HTTP service. */
 @Injectable()
-export class FakeDataService {
+export class FakeDataService implements DataService {
   /** Contains the projects that are faked. */
   private projects: {[projectId: string]: [Project, ProjectGraphData]};
 
@@ -23,13 +24,15 @@ export class FakeDataService {
   }
 
   /** Returns all the fake projects. */
-  listProjects(): Project[] {
-    return Object.values(this.projects).map(tuple => tuple[0]);
+  listProjects(): Promise<Project[]> {
+    return new Promise(resolve =>
+      resolve(Object.values(this.projects).map(tuple => tuple[0]))
+    );
   }
 
   /** Returns the data associated with the given project. */
-  getProjectGraphData(id: string): ProjectGraphData | undefined {
-    return this.projects[id][1];
+  getProjectGraphData(id: string): Promise<ProjectGraphData> {
+    return new Promise(resolve => resolve(this.projects[id][1]));
   }
 
   /** Generate fake data for project 1. */

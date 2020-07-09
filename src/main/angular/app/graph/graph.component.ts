@@ -60,13 +60,13 @@ export class GraphComponent implements OnInit {
 
   ngOnInit() {
     this.properties.width = (window.innerWidth * 6) / 8;
-    this.properties.height = window.innerHeight * 1/2;
+    this.properties.height = (window.innerHeight * 1) / 2;
   }
 
   /** Listen for resizes of the window */
   @HostListener('window:resize')
   onResize() {
     this.properties.width = (window.innerWidth * 6) / 8;
-    this.properties.height = window.innerHeight * 1/2;
+    this.properties.height = (window.innerHeight * 1) / 2;
   }
 }

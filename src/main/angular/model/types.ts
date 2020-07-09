@@ -13,6 +13,7 @@ export type GraphProperties = {
 
 /** The different types of data permitted in a row for Google Charts. */
 // Timestamp is a date, number bindings is a number, tooltip is a string, styling is a string.
+// A row is undefined if there is no data (i.e. series is not active at that point in time)
 export type RowData = Date | string | number | undefined;
 
 /** A single row of data in Google Charts. */

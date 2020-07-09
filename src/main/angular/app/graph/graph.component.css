@@ -2,4 +2,12 @@
   display:flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid #9AA0A6;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  background-color: #F8F9FA;
+}
+
+#project-prompt h1 {
+  font-size: 50px;
 }

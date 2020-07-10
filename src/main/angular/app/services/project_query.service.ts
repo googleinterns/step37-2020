@@ -57,7 +57,7 @@ export class ProjectQueryService {
     if (this.query === query) {
       // Don't change anything
       return;
-    } else if (this.query.includes(query)) {
+    } else if (query.includes(this.query)) {
       // New query will be a subset of the existing one
       this.projectsCache = this.projectsCache.filter(project =>
         project.includes(query)

@@ -7,11 +7,7 @@ import {
   faFilter,
 } from '@fortawesome/free-solid-svg-icons';
 import {trigger, state, style, transition, animate} from '@angular/animations';
-import {
-  SortDirection,
-  SortBy,
-  ProjectComparators,
-} from '../../model/project_sort';
+import {SortDirection, SortBy} from '../../model/project_sort';
 import {DataService} from '../services/data.service';
 import {ErrorMessageService} from '../services/error_message.service';
 import {ErrorMessage} from '../../model/error_message';

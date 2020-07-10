@@ -20,5 +20,5 @@ public class Constants {
   public static final String TEST_DATABASE = "Test_Capstone";
 
   /** The name of the database holding the real data. */
-  public static final String DATABASE = "Placeholder";
+  public static final String DATABASE = "Recommendations_Impact_Dashboard";
 }

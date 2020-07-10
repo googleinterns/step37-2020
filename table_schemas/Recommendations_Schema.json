@@ -1,0 +1,27 @@
+[
+  {
+    "mode": "REQUIRED",
+    "name": "ProjectId",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "Recommender",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "Description",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "AcceptedTimestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "IAMBindingsImpact",
+    "type": "INTEGER"
+  }
+]

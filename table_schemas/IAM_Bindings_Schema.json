@@ -1,0 +1,27 @@
+[
+  {
+    "mode": "REQUIRED",
+    "name": "ProjectId",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "ProjectName",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "ProjectNumber",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "Timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "NumberOfBindings",
+    "type": "INTEGER"
+  }
+]

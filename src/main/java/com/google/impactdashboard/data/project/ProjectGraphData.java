@@ -9,8 +9,8 @@ import com.google.auto.value.AutoValue;
 public abstract class ProjectGraphData {
 
   public abstract String getProjectId();
-  public abstract Map<Long, Integer> getNumberIAMBindingsOnDate();
-  public abstract Map<Long, Recommendation> getRecommendationsAppliedOnDate();
+  public abstract Map<Long, Integer> getDateToNumberIAMBindings();
+  public abstract Map<Long, Recommendation> getDateToRecommendationAppliedTaken();
 
   /** 
    * Create an {@code ProjectGraphData} object for project {@code projectId}, where 
@@ -23,7 +23,7 @@ public abstract class ProjectGraphData {
   public static ProjectGraphData create(String projectId, 
     Map<Long, Integer> numberIAMBindingsOnDate, 
     Map<Long, Recommendation> recommendationsAppliedOnDate) {
-    return new AutoValue_ProjectGraphData(projectId, numberIAMBindingsOnDate, 
+    return new AutoValue_ProjectGraphData(projectId, numberIAMBindingsOnDate,
       recommendationsAppliedOnDate);
   }
 

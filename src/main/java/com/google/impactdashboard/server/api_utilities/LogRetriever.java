@@ -6,10 +6,9 @@ import com.google.cloud.logging.v2.LoggingClient;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingSettings;
 import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
-import com.google.iam.v1.Policy;
 import com.google.logging.v2.ListLogEntriesRequest;
 import com.google.logging.v2.LogEntry;
-
+import com.google.protobuf.ListValue;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;

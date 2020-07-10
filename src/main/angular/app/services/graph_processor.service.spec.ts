@@ -8,16 +8,20 @@ import {Project} from '../../model/project';
 import {ProjectGraphData} from '../../model/project_graph_data';
 import {ErrorMessageService} from './error_message.service';
 import {FakeRedirrectService} from './fake_services/fake_redirrect.service';
+import {ProjectMetaData} from '../../model/project_metadata';
+import {ErrorMessage} from '../../model/error_message';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
   let fakeRedirrect: FakeRedirrectService;
+  let errorService: ErrorMessageService;
 
   beforeAll(() => {
     fakeRedirrect = new FakeRedirrectService();
+    errorService = new ErrorMessageService(fakeRedirrect);
     service = new GraphProcessorService(
       new DateUtilitiesService(),
-      new ErrorMessageService(fakeRedirrect)
+      errorService
     );
   });
 
@@ -293,6 +297,42 @@ describe('GraphProcessorService', () => {
       });
     });
 
-    describe('Sends users to error page when an error occurs', () => {});
+    describe('Sends users to error page when an error occurs', () => {
+      let project: Project;
+
+      beforeAll(() => {
+        changes = {};
+        properties = service.initProperties();
+
+        project = new Project(
+          '',
+          'project-with-no-equivalent-id-in-system',
+          1,
+          new ProjectMetaData(1)
+        );
+
+        // Going from no projects to a single one
+        changes.projects = new SimpleChange([], [project], true);
+        service.processChanges(changes, properties, fakeDataService);
+      });
+
+      it('Adds an error', () => {
+        const errors = errorService.getErrors();
+        const expected = [
+          new ErrorMessage(
+            `Error retrieving project of ID ${project.projectId} from FakeDataService`,
+            {}
+          ),
+        ];
+
+        expect(errors).toEqual(expected);
+      });
+
+      it('Sends a redirrect', () => {
+        const redirrected = fakeRedirrect.redirrectSent('error');
+
+        expect(redirrected).toBeTrue();
+      });
+    });
   });
 });

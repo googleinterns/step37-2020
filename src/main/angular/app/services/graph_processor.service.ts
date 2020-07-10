@@ -57,7 +57,7 @@ export class GraphProcessorService {
     changes: SimpleChanges,
     properties: GraphProperties,
     dataService: DataService
-  ): void {
+  ): Promise<void> {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
     const promises: Promise<boolean | ErrorMessage>[] = [];
 
@@ -71,15 +71,17 @@ export class GraphProcessorService {
     additionsDeletions.removed.forEach(removal =>
       this.removeFromGraph(properties, removal)
     );
-    Promise.all(promises).then((statuses: (boolean | ErrorMessage)[]) => {
-      const errors: ErrorMessage[] = statuses.filter(
-        status => status instanceof ErrorMessage
-      ) as ErrorMessage[];
-      properties.title = 'IAM Bindings';
-      if (errors.length > 0) {
-        this.errorService.setErrors(errors);
+    return Promise.all(promises).then(
+      (statuses: (boolean | ErrorMessage)[]) => {
+        const errors: ErrorMessage[] = statuses.filter(
+          status => status instanceof ErrorMessage
+        ) as ErrorMessage[];
+        properties.title = 'IAM Bindings';
+        if (errors.length > 0) {
+          this.errorService.setErrors(errors);
+        }
       }
-    });
+    );
   }
 
   /** Adds the given project to the graph. Returns false if the given data was an error */

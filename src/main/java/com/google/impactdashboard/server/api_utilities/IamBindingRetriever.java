@@ -1,5 +1,6 @@
 package com.google.impactdashboard.server.api_utilities;
 
+import com.google.api.services.iam.v1.Iam;
 import com.google.cloud.audit.AuditLog;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.logging.v2.LogEntry;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
  */
 public class IamBindingRetriever {
 
-  private Map<String, Integer> mapRoleToNumberOfMembers;
+  private final Map<String, Integer> mapRoleToNumberOfMembers;
 
   protected IamBindingRetriever( Map<String, Integer> mapRoleToNumberOfMembers) {
     this.mapRoleToNumberOfMembers = mapRoleToNumberOfMembers;

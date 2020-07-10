@@ -18,6 +18,6 @@ jobs:
           java-version: 1.8
       - run: mvn install -DskipTests
       - name: Run Backend Tests
-        run: mvn test
+        run: mvn clean test
         env:
           SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_Security_Key }}

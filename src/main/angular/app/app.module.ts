@@ -16,7 +16,7 @@ import {ErrorPageComponent} from './error-page/error-page.component';
 import {MainPageComponent} from './main-page/main-page.component';
 import {ErrorMessageService} from './services/error_message.service';
 import {RedirrectService} from './redirrect.service';
-import {RedirrectImplService} from './services/real_services/redirrect-impl.service';
+import {RedirrectImplService} from './services/real_services/redirrect_impl.service';
 
 @NgModule({
   declarations: [

@@ -6,12 +6,19 @@ import {FakeDataService} from './fake_services/fake_data.service';
 import {SimpleChanges, SimpleChange} from '@angular/core';
 import {Project} from '../../model/project';
 import {ProjectGraphData} from '../../model/project_graph_data';
+import {ErrorMessageService} from './error_message.service';
+import {FakeRedirrectService} from './fake_services/fake_redirrect.service';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
+  let fakeRedirrect: FakeRedirrectService;
 
   beforeAll(() => {
-    service = new GraphProcessorService(new DateUtilitiesService());
+    fakeRedirrect = new FakeRedirrectService();
+    service = new GraphProcessorService(
+      new DateUtilitiesService(),
+      new ErrorMessageService(fakeRedirrect)
+    );
   });
 
   describe('initProperties()', () => {
@@ -234,6 +241,7 @@ describe('GraphProcessorService', () => {
         });
       });
     });
+
     describe('Re-adds projects that have been removed', () => {
       let allProjects: Project[];
       let projects: Project[];
@@ -284,5 +292,7 @@ describe('GraphProcessorService', () => {
         expect(actual).toEqual(expected);
       });
     });
+
+    describe('Sends users to error page when an error occurs', () => {});
   });
 });

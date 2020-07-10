@@ -45,7 +45,7 @@ export class DataServiceImpl implements DataService {
     return new Promise(resolve => {
       // eslint-disable-next-line no-prototype-builtins
       if (response.hasOwnProperty('message')) {
-        resolve();
+        resolve(new ErrorMessage(response.message, response.exception));
       } else {
         const projects: Project[] = [];
         response.forEach((project: any) => {

@@ -17,7 +17,8 @@ import {
   ProjectComparators,
 } from '../../model/project_sort';
 import {DataService} from '../services/data.service';
-import {Router} from '@angular/router';
+import {ErrorMessageService} from '../services/error_message.service';
+import { ErrorMessage } from '../../model/error_message';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({
@@ -68,7 +69,10 @@ export class ProjectSelectComponent implements OnInit {
   @Output()
   public changeProjects = new EventEmitter<Project[]>();
 
-  constructor(private dataService: DataService, private router: Router) {
+  constructor(
+    private dataService: DataService,
+    private errorMessageService: ErrorMessageService
+  ) {
     this.query = '';
     this.projects = [];
     this.activeProjects = new Set();
@@ -201,8 +205,8 @@ export class ProjectSelectComponent implements OnInit {
         if (projects.length > 0) {
           this.toggleProject(projects[0]);
         }
-      } else {
-        this.router.navigate([`/${ERROR_PAGE_URL}`]);
+      } else if (projects instanceof ErrorMessage) {
+        this.errorMessageService.addError([projects]);
       }
     });
   }

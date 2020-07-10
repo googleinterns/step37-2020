@@ -23,12 +23,8 @@ import {Project} from '../../model/project';
 import {GraphProcessorService} from '../services/graph_processor.service';
 import {GraphProperties} from '../../model/types';
 import {DataService} from '../services/data.service';
-import {
-  WIDTH_SCALE_FACTOR,
-  HEIGHT_SCALE_FACTOR,
-  ERROR_PAGE_URL,
-} from '../../constants';
-import {Router} from '@angular/router';
+import {WIDTH_SCALE_FACTOR, HEIGHT_SCALE_FACTOR} from '../../constants';
+import {ErrorMessageService} from '../services/error_message.service';
 
 /** The angular component that contains the graph and associated logic. */
 @Component({
@@ -49,7 +45,7 @@ export class GraphComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private graphProcessor: GraphProcessorService,
-    private router: Router
+    private errorMessageService: ErrorMessageService
   ) {
     this.shouldShowChart = false;
     1;
@@ -67,7 +63,7 @@ export class GraphComponent implements OnInit {
 
     if (result instanceof Array) {
       // We got an error message
-      this.router.navigate([`/${ERROR_PAGE_URL}`, {error: result}]);
+      this.errorMessageService.addError(result);
     }
   }
 

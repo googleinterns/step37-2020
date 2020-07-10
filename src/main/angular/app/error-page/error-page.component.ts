@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ErrorMessageService} from '../services/error_message.service';
+import {ErrorMessage} from '../../model/error_message';
 
 @Component({
   selector: 'app-error-page',
@@ -7,12 +8,13 @@ import {ActivatedRoute} from '@angular/router';
   styleUrls: ['./error-page.component.css'],
 })
 export class ErrorPageComponent implements OnInit {
-  constructor(private activatedRoute: ActivatedRoute) {}
+  errors: ErrorMessage[];
+
+  constructor(private errorMessageService: ErrorMessageService) {
+    this.errors = [];
+  }
 
   ngOnInit() {
-    console.log('error-page');
-    this.activatedRoute.params.subscribe(params => {
-      console.log(params);
-    });
+    console.log(this.errorMessageService.getError());
   }
 }

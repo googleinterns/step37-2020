@@ -13,7 +13,8 @@ import {DateUtilitiesService} from './services/date_utilities.service';
 import {GraphProcessorService} from './services/graph_processor.service';
 import {dataServiceProvider} from './services/data.service.provider';
 import {ErrorPageComponent} from './error-page/error-page.component';
-import { MainPageComponent } from './main-page/main-page.component';
+import {MainPageComponent} from './main-page/main-page.component';
+import {ErrorMessageService} from './services/error_message.service';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,12 @@ import { MainPageComponent } from './main-page/main-page.component';
     BrowserAnimationsModule,
     HttpClientModule,
   ],
-  providers: [dataServiceProvider, DateUtilitiesService, GraphProcessorService],
+  providers: [
+    dataServiceProvider,
+    DateUtilitiesService,
+    GraphProcessorService,
+    ErrorMessageService,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

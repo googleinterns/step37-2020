@@ -51,14 +51,14 @@ export class GraphProcessorService {
   async processChanges(
     changes: SimpleChanges,
     properties: GraphProperties,
-    httpService: DataService
+    dataService: DataService
   ): Promise<boolean | ErrorMessage[]> {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
     const promises: Promise<boolean | ErrorMessage>[] = [];
 
     additionsDeletions.added.forEach(addition =>
       promises.push(
-        httpService
+        dataService
           .getProjectGraphData(addition.projectId)
           .then(data => this.addToGraph(properties, data, addition))
       )

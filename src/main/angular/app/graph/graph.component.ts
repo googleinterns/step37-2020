@@ -52,13 +52,14 @@ export class GraphComponent implements OnInit {
     private router: Router
   ) {
     this.shouldShowChart = false;
+    1;
     this.projects = [];
   }
 
   /** Called when an input field changes. */
-  ngOnChanges(changes: SimpleChanges) {
+  async ngOnChanges(changes: SimpleChanges) {
     this.shouldShowChart = this.projects.length > 0;
-    const result = this.graphProcessor.processChanges(
+    const result = await this.graphProcessor.processChanges(
       changes,
       this.properties,
       this.dataService
@@ -66,7 +67,7 @@ export class GraphComponent implements OnInit {
 
     if (result instanceof Array) {
       // We got an error message
-      this.router.navigate([`/${ERROR_PAGE_URL}`]);
+      this.router.navigate([`/${ERROR_PAGE_URL}`, {error: result}]);
     }
   }
 

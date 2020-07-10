@@ -1,23 +1,24 @@
 import {Injectable} from '@angular/core';
 import {ErrorMessage} from '../../model/error_message';
-import {Router} from '@angular/router';
-import {ERROR_PAGE_URL} from '../../constants';
+import {RedirrectService} from '../redirrect.service';
 
 /** Facilitates the transfer of an error message from one component to the error page and redirrects users to the error page */
 @Injectable()
 export class ErrorMessageService {
-  constructor(private router: Router) {
-    this.errorMessage = [];
+  constructor(private redirrect: RedirrectService) {
+    this.errors = [];
   }
 
-  private errorMessage: ErrorMessage[];
+  private errors: ErrorMessage[];
 
-  setError(errors: ErrorMessage[]) {
-    this.router.navigate([`/${ERROR_PAGE_URL}`]);
-    this.errorMessage = errors;
+  /** Sets the error and sends a redirrect to the error paeg */
+  setErrors(errors: ErrorMessage[]) {
+    this.redirrect.redirrect('error');
+    this.errors = errors;
   }
 
-  getError(): ErrorMessage[] {
-    return this.errorMessage;
+  /** Returns the errors that have been logged */
+  getErrors(): ErrorMessage[] {
+    return this.errors;
   }
 }

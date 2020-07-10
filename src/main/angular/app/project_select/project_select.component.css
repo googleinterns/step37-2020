@@ -2,8 +2,15 @@
   transition: color .3s;
 }
 
-#table-container {
+#root {
   display: flex;
+}
+
+#content {
+  border: 1px solid #9AA0A6;
+  border-radius: 3px;
+  margin: 0 auto;
+  max-width: 75%;
 }
 
 #projects-table {
@@ -11,10 +18,6 @@
   border-collapse: collapse;
   text-align: left;
   display: inline-block;
-  border: 1px solid #9AA0A6;
-  border-radius: 3px;
-  margin: 0 auto;
-  max-width: 75%;
 }
 
 #header {
@@ -74,6 +77,10 @@ th div {
 
 #filter-header {
   float: right;
+}
+
+#filter-container {
+  padding: 5px;
 }
 
 .project-color-icon {

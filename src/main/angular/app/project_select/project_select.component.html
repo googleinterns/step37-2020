@@ -1,47 +1,50 @@
-<div id="table-container">
-  <table id="projects-table" class="center">
-    <tr id="header">
-      <th>
-        <div [@rotateSort]="sortRotated.projectName">
-          <fa-icon [icon]="arrow" [ngClass]="getSortClass(projectName)"
-            (click)="changeSort(projectName)" id="name-sort" class="clickable"></fa-icon>
-        </div> Project Name
-      </th>
-      <th>
-        <div [@rotateSort]="sortRotated.iamBindings">
-          <fa-icon [icon]="arrow" [ngClass]="getSortClass(iamBindings)"
-            (click)="changeSort(iamBindings)" id="iam-sort" class="clickable"></fa-icon>
-        </div> Avg Bindings
-      </th>
-      <th>
-        <div [@rotateSort]="sortRotated.projectNumber">
-          <fa-icon [icon]="arrow" [ngClass]="getSortClass(projectNumber)"
-            (click)="changeSort(projectNumber)" id="number-sort" class="clickable"></fa-icon>
-        </div> Project
-        Number
-      </th>
-      <th>
-        <div [@rotateSort]="sortRotated.projectId">
-          <fa-icon [icon]="arrow" [ngClass]="getSortClass(projectId)"
-            (click)="changeSort(projectId)" id="id-sort" class="clickable"></fa-icon>
-        </div> Project ID
-      </th>
-      <th id="filter-header">
-        <fa-icon [icon]="filter" id="filter-icon"></fa-icon><input type="text"
-          (input)="search($event.target.value)" placeholder="Search by Name or ID"
-          id="project-filter" />
-      </th>
-    </tr>
+<div id="root">
+  <div id="content">
+    <div id="filter-container">
+      <fa-icon [icon]="filter" id="filter-icon"></fa-icon><input type="text"
+        (input)="search($event.target.value)" placeholder="Search by Name or ID"
+        id="project-filter" />
+    </div>
 
-    <tr *ngFor="let project of getProjects()" (click)="toggleProject(project)"
-      class="toggle-project clickable" title="Toggle project">
-      <td>
-        <fa-icon [icon]="circle" [ngStyle]="{'color': getColor(project)}"
-          class="project-color-icon"></fa-icon>{{ project.name }}
-      </td>
-      <td>{{ project.metaData.averageIAMBindingsInPastYear }}</td>
-      <td>{{ project.projectNumber }}</td>
-      <td colspan="2">{{ project.projectId }}</td>
-    </tr>
-  </table>
+    <table id="projects-table" class="center">
+      <tr id="header">
+        <th>
+          <div [@rotateSort]="sortRotated.projectName">
+            <fa-icon [icon]="arrow" [ngClass]="getSortClass(projectName)"
+              (click)="changeSort(projectName)" id="name-sort" class="clickable"></fa-icon>
+          </div> Project Name
+        </th>
+        <th>
+          <div [@rotateSort]="sortRotated.iamBindings">
+            <fa-icon [icon]="arrow" [ngClass]="getSortClass(iamBindings)"
+              (click)="changeSort(iamBindings)" id="iam-sort" class="clickable"></fa-icon>
+          </div> Avg Bindings
+        </th>
+        <th>
+          <div [@rotateSort]="sortRotated.projectNumber">
+            <fa-icon [icon]="arrow" [ngClass]="getSortClass(projectNumber)"
+              (click)="changeSort(projectNumber)" id="number-sort" class="clickable"></fa-icon>
+          </div> Project
+          Number
+        </th>
+        <th>
+          <div [@rotateSort]="sortRotated.projectId">
+            <fa-icon [icon]="arrow" [ngClass]="getSortClass(projectId)"
+              (click)="changeSort(projectId)" id="id-sort" class="clickable"></fa-icon>
+          </div> Project ID
+        </th>
+      </tr>
+
+      <tr *ngFor="let project of getProjects()" (click)="toggleProject(project)"
+        class="toggle-project clickable" title="Toggle project">
+        <td>
+          <fa-icon [icon]="circle" [ngStyle]="{'color': getColor(project)}"
+            class="project-color-icon"></fa-icon>{{ project.name }}
+        </td>
+        <td>{{ project.metaData.averageIAMBindingsInPastYear }}</td>
+        <td>{{ project.projectNumber }}</td>
+        <td>{{ project.projectId }}</td>
+      </tr>
+    </table>
+  </div>
 </div>

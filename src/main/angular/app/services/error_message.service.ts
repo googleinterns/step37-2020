@@ -14,8 +14,7 @@ export class ErrorMessageService {
 
   setError(errors: ErrorMessage[]) {
     this.router.navigate([`/${ERROR_PAGE_URL}`]);
-    this.errorMessage = [];
-    errors.forEach(error => this.errorMessage.push(error, error, error));
+    this.errorMessage = errors;
   }
 
   getError(): ErrorMessage[] {

@@ -4,6 +4,7 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.iam.v1.Iam;
 import com.google.api.services.iam.v1.IamScopes;
+import com.google.api.services.iam.v1.model.Role;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.audit.AuditLog;
@@ -12,6 +13,7 @@ import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Value;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -57,16 +59,33 @@ public class IamBindingRetriever {
   /**
    * Takes audit logs and uses the IAM API with the bindings from the audit logs to
    * calculate the IAMBindingsNumber for Each log.
-   * @param auditLogs List of audit logs that set IAM policy
+   * @param logEntries List of audit logs that set IAM policy
    * @return the Database entries of IAMBindings from the audit logs
    */
-  public List<IAMBindingDatabaseEntry> listIAMBindingData(Collection<AuditLog> auditLogs,
-                                      String projectId, String projectName, String projectNumber) {
-    auditLogs.forEach(auditLog -> {
-      Map<String, Integer> membersForRoles = getMembersForRoles(auditLog.getResponse()
+  public List<IAMBindingDatabaseEntry> listIAMBindingData(Collection<LogEntry> logEntries,
+                                      String projectId, String projectName,
+                                      String projectNumber){
+    Map<Long, AuditLog> timeToAuditLogMap = logEntries.stream().map(log -> {
+          AuditLog auditLog;
+          try {
+            auditLog = AuditLog.parseFrom(log.getProtoPayload().getValue());
+          } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException("Invalid Protocol Buffer used");
+          }
+          return new SimpleImmutableEntry<>(log.getTimestamp().getSeconds(), auditLog);
+        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+
+    return timeToAuditLogMap.entrySet().stream().map(entry -> {
+      Map<String, Integer> membersForRoles = getMembersForRoles(entry.getValue().getResponse()
           .getFieldsMap().get("bindings").getListValue().getValuesList());
-    });
-    throw new UnsupportedOperationException("Not fully implemented");
+      try {
+        return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, entry.getKey(),
+            getIamBindings(membersForRoles));
+      } catch (IOException e) {
+        throw new RuntimeException("Error in getting IAM Roles");
+      }
+    }).collect(Collectors.toList());
   }
 
   /**
@@ -82,5 +101,18 @@ public class IamBindingRetriever {
           bindingMap.get("member").getListValue().getValuesList().size());
     });
     return membersforRoles;
+  }
+
+  /**
+   * Calls IAM API to get all roles for a project and then calculate the IAM bindings for the given map.
+   * @param membersForRoles map of membersPerRole to calculate the number of total bindings.
+   * @return Total number of IAMBindings for the given map
+   */
+  private int getIamBindings(Map<String, Integer> membersForRoles) throws IOException {
+    int iamBindings;
+    List<Role> roles = iamService.roles().list().execute().getRoles();
+    iamBindings = roles.stream().filter(role -> membersForRoles.containsKey(role.getName()))
+        .mapToInt(role -> role.getIncludedPermissions().size() * membersForRoles.get(role.getName())).sum();
+    return iamBindings;
   }
 }

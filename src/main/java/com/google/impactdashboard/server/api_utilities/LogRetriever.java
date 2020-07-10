@@ -59,7 +59,7 @@ public class LogRetriever {
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant audit logs.
    * @return A list of all the relevant audit log entries that are stored by the logging API
    */
-  public Collection<AuditLog> listAuditLogs() {
+  public Collection<LogEntry> listAuditLogs() {
     String project_id = "projects/concord-intern"; // needs to be retrieved from resource manager
     // May need tweaking once tested and
     String filter = "resource.type = project AND severity = NOTICE AND " +
@@ -68,13 +68,8 @@ public class LogRetriever {
     ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder().setFilter(filter)
         .setOrderBy("timestamp desc").addResourceNames(project_id).build();
     ListLogEntriesPagedResponse response = logger.listLogEntries(request);
-    return StreamSupport.stream(response.iterateAll().spliterator(), false).map(log -> {
-      try {
-        return AuditLog.parseFrom(log.getProtoPayload().getValue());
-      } catch (InvalidProtocolBufferException e) {
-        throw new RuntimeException("Invalid Protocol Buffer used");
-      }
-    }).collect(Collectors.toList());
+    return StreamSupport.stream(response.iterateAll().spliterator(), false)
+        .collect(Collectors.toList());
     //Get resources one or multiple [PROJECT_ID], [ORGANIZATION_ID]
     //[BILLING_ACCOUNT_ID], [FOLDER_ID]
     //filter by audit log

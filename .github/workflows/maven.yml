@@ -20,4 +20,4 @@ jobs:
     - name: Run Backend Tests
       run: mvn test
       env: 
-        SERVICE_ACCOUNT_KEY: ${{ GCP_Security_Key }}
+        SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_Security_Key }}

@@ -11,6 +11,7 @@ import com.google.cloud.audit.AuditLog;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Timestamp;
 import com.google.protobuf.Value;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -19,6 +20,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.checkerframework.checker.nullness.Opt.get;
 
 /**
  * Class that counts number of members in each IAM role and determines the total number of bindings
@@ -65,14 +68,14 @@ public class IamBindingRetriever {
   public List<IAMBindingDatabaseEntry> listIAMBindingData(Collection<LogEntry> logEntries,
                                       String projectId, String projectName,
                                       String projectNumber){
-    Map<Long, AuditLog> timeToAuditLogMap = logEntries.stream().map(log -> {
+    Map<Timestamp, AuditLog> timeToAuditLogMap = logEntries.stream().map(log -> {
           AuditLog auditLog;
           try {
             auditLog = AuditLog.parseFrom(log.getProtoPayload().getValue());
           } catch (InvalidProtocolBufferException e) {
             throw new RuntimeException("Invalid Protocol Buffer used");
           }
-          return new SimpleImmutableEntry<>(log.getTimestamp().getSeconds(), auditLog);
+          return new SimpleImmutableEntry<>(log.getTimestamp(), auditLog);
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 
@@ -80,7 +83,7 @@ public class IamBindingRetriever {
       Map<String, Integer> membersForRoles = getMembersForRoles(entry.getValue().getResponse()
           .getFieldsMap().get("bindings").getListValue().getValuesList());
       try {
-        return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, entry.getKey(),
+        return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, entry.getKey().getSeconds(),
             getIamBindings(membersForRoles));
       } catch (IOException e) {
         throw new RuntimeException("Error in getting IAM Roles");
@@ -98,7 +101,7 @@ public class IamBindingRetriever {
     bindings.forEach(bindingValue -> {
       Map<String, Value> bindingMap = bindingValue.getStructValue().getFieldsMap();
       membersforRoles.put(bindingMap.get("role").getStringValue(),
-          bindingMap.get("member").getListValue().getValuesList().size());
+          bindingMap.get("members").getListValue().getValuesList().size());
     });
     return membersforRoles;
   }

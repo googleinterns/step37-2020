@@ -97,4 +97,13 @@ public class LogRetriever {
     //Create new ListLogEntriesRequest with the information
     //Call for logs
   }
+
+  public static void main(String[] args) throws Exception {
+    LogRetriever logRetriever = LogRetriever.create();
+
+    IamBindingRetriever iamBindingRetriever = IamBindingRetriever.create();
+
+    iamBindingRetriever.listIAMBindingData(logRetriever.listAuditLogs(), "concord-intern",
+        "Concord Intern", "12345");
+  }
 }

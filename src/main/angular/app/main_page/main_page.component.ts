@@ -4,8 +4,8 @@ import {Project} from '../../model/project';
 /** The main landing page for the application. It primarily contains the graph and project select */
 @Component({
   selector: 'app-main-page',
-  templateUrl: './main-page.component.html',
-  styleUrls: ['./main-page.component.css'],
+  templateUrl: './main_page.component.html',
+  styleUrls: ['./main_page.component.css'],
 })
 export class MainPageComponent implements OnInit {
   public displayProjects: Project[] = [];

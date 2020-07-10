@@ -32,6 +32,7 @@
           id="project-filter" />
       </th>
     </tr>
+
     <tr *ngFor="let project of getProjects()" (click)="toggleProject(project)"
       class="toggle-project clickable" title="Toggle project">
       <td>

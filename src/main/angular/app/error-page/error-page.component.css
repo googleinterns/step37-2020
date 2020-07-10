@@ -1,10 +1,4 @@
 #error-popup {
   border: 1px solid black;
   border-radius: 3px;
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  left: 50%;
-  top: 50%;
-  background-color: white;
 }

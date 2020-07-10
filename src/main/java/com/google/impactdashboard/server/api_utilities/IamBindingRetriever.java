@@ -38,6 +38,10 @@ public class IamBindingRetriever {
        throw new RuntimeException("Invalid Protocol Buffer used");
      }
     }).collect(Collectors.toList());
+    auditLogs.forEach(auditLog -> {
+      getMembersForRoles(auditLog.getResponse().getFieldsMap().get("bindings").getListValue()
+          .getValuesList());
+    });
     throw new UnsupportedOperationException("Not fully implemented");
   }
 

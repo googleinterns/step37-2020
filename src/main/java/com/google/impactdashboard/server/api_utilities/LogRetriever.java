@@ -11,6 +11,7 @@ import com.google.logging.v2.LogEntry;
 import com.google.protobuf.ListValue;
 import com.google.protobuf.Value;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
@@ -33,9 +34,18 @@ public class LogRetriever {
   public static LogRetriever create() throws IOException{
     // Change logging client initialization to settings
     LoggingServiceV2StubSettings stub = LoggingServiceV2StubSettings.newBuilder()
-        .setCredentialsProvider(() -> GoogleCredentials.fromStream(
-            // The path will be changed to use the constants class when it is merged into main
-            new FileInputStream("/usr/local/google/home/ionis/Documents/credentials.json")))
+        .setCredentialsProvider(() -> {
+          GoogleCredentials credentials;
+          try {
+            credentials = GoogleCredentials
+                // The path will be changed to use the constants class when it is merged into main
+                .fromStream(new FileInputStream("/usr/local/google/home/ionis/Documents/credentials.json"));
+          } catch (IOException e) {
+            credentials = GoogleCredentials
+                .fromStream(new ByteArrayInputStream(System.getenv("SERVICE_ACCOUNT_KEY").getBytes()));
+          }
+        return credentials;
+        })
         .build();
     return new LogRetriever(LoggingClient.create(LoggingSettings.create(stub)));
   }

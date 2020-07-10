@@ -47,7 +47,7 @@ export class FakeDataService implements DataService {
     }
   }
 
-  /** Create a project that has an incorrect mapping, so when it's pressed a redirrect is sent to the error page */
+  /** Create a project that has an incorrect mapping, so when it's pressed a redirect is sent to the error page */
   generateErrorProject() {
     // Now simulate an extra 'project 5' with no graph data
     const project = new Project(

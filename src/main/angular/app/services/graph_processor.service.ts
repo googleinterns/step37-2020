@@ -52,7 +52,7 @@ export class GraphProcessorService {
   }
 
   /** Process the given changes and adjust from the graph properties as necessary.
-   * Redirrects to the error page if an error occured. */
+   * Redirects to the error page if an error occured. */
   processChanges(
     changes: SimpleChanges,
     properties: GraphProperties,

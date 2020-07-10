@@ -1,16 +1,16 @@
 import 'jasmine';
 import {ErrorMessageService} from './error_message.service';
 import {ErrorMessage} from '../../model/error_message';
-import {FakeRedirrectService} from './fake_services/fake_redirrect.service';
+import {FakeRedirectService} from './fake_services/fake_redirect.service';
 
 describe('ErrorMessageService', () => {
   let service: ErrorMessageService;
   let errorMessages: ErrorMessage[];
-  let fakeRedirrect: FakeRedirrectService;
+  let fakeRedirect: FakeRedirectService;
 
   beforeAll(() => {
-    fakeRedirrect = new FakeRedirrectService();
-    service = new ErrorMessageService(fakeRedirrect);
+    fakeRedirect = new FakeRedirectService();
+    service = new ErrorMessageService(fakeRedirect);
     errorMessages = [
       new ErrorMessage('err1', {}),
       new ErrorMessage('err2', {}),
@@ -28,10 +28,10 @@ describe('ErrorMessageService', () => {
       expect(actual).toEqual(errorMessages);
     });
 
-    it('Sends a redirrect', () => {
-      const redirrected = fakeRedirrect.redirrectSent('error');
+    it('Sends a redirect', () => {
+      const redirected = fakeRedirect.redirectSent('error');
 
-      expect(redirrected).toBeTrue();
+      expect(redirected).toBeTrue();
     });
   });
 });

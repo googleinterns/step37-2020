@@ -15,8 +15,8 @@ import {dataServiceProvider} from './services/data.service.provider';
 import {ErrorPageComponent} from './error_page/error_page.component';
 import {MainPageComponent} from './main_page/main_page.component';
 import {ErrorMessageService} from './services/error_message.service';
-import {RedirrectService} from './services/redirrect.service';
-import {RedirrectImplService} from './services/real_services/redirrect_impl.service';
+import {RedirectService} from './services/redirect.service';
+import {RedirectImplService} from './services/real_services/redirect_impl.service';
 
 @NgModule({
   declarations: [
@@ -40,8 +40,8 @@ import {RedirrectImplService} from './services/real_services/redirrect_impl.serv
     GraphProcessorService,
     ErrorMessageService,
     {
-      provide: RedirrectService,
-      useClass: RedirrectImplService,
+      provide: RedirectService,
+      useClass: RedirectImplService,
     },
   ],
   bootstrap: [AppComponent],

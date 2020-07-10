@@ -7,18 +7,18 @@ import {SimpleChanges, SimpleChange} from '@angular/core';
 import {Project} from '../../model/project';
 import {ProjectGraphData} from '../../model/project_graph_data';
 import {ErrorMessageService} from './error_message.service';
-import {FakeRedirrectService} from './fake_services/fake_redirrect.service';
+import {FakeRedirectService} from './fake_services/fake_redirect.service';
 import {ProjectMetaData} from '../../model/project_metadata';
 import {ErrorMessage} from '../../model/error_message';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
-  let fakeRedirrect: FakeRedirrectService;
+  let fakeRedirect: FakeRedirectService;
   let errorService: ErrorMessageService;
 
   beforeAll(() => {
-    fakeRedirrect = new FakeRedirrectService();
-    errorService = new ErrorMessageService(fakeRedirrect);
+    fakeRedirect = new FakeRedirectService();
+    errorService = new ErrorMessageService(fakeRedirect);
     service = new GraphProcessorService(
       new DateUtilitiesService(),
       errorService
@@ -328,10 +328,10 @@ describe('GraphProcessorService', () => {
         expect(errors).toEqual(expected);
       });
 
-      it('Sends a redirrect', () => {
-        const redirrected = fakeRedirrect.redirrectSent('error');
+      it('Sends a redirect', () => {
+        const redirected = fakeRedirect.redirectSent('error');
 
-        expect(redirrected).toBeTrue();
+        expect(redirected).toBeTrue();
       });
     });
   });

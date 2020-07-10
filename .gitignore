@@ -4,6 +4,7 @@ target/
 bin/
 node_modules/
 build/
+webapp/
 .idea
 .iml
 .classpath

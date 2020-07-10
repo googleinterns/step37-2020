@@ -18,10 +18,6 @@ import java.util.*;
 @RunWith(JUnit4.class)
 public class ProjectInformationRetrieverTest extends Mockito {
 
-  @Test
-  public void pss() {}
-  /*
-
   public static final String PROJECT_NAME_1 = "project-1";
   public static final String PROJECT_NAME_2 = "project-2";
 
@@ -112,6 +108,6 @@ public class ProjectInformationRetrieverTest extends Mockito {
     ProjectGraphData actual = informationRetriever.getProjectData(PROJECT_ID_1);
 
     Assert.assertEquals(expected, actual);
-  } */
+  } 
 
 }

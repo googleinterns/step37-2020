@@ -14,6 +14,8 @@ import com.google.impactdashboard.configuration.Constants;
 import com.google.auth.oauth2.GoogleCredentials;
 import java.io.FileInputStream;
 import java.io.IOException;
+import com.google.common.io.CharSource;
+import java.io.ByteArrayInputStream;
 
 /** A class that queries the database. */
 public class DatabaseAccessor {
@@ -26,8 +28,15 @@ public class DatabaseAccessor {
    * system configuration flags. 
    */
   public DatabaseAccessor() throws IOException {
-    GoogleCredentials credentials = GoogleCredentials
-      .fromStream(new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY));
+    GoogleCredentials credentials;
+    try {
+      credentials = GoogleCredentials
+        .fromStream(new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY));
+    } catch (IOException e) {
+      credentials = GoogleCredentials
+        .fromStream(new ByteArrayInputStream(System.getenv("SERVICE_ACCOUNT_KEY").getBytes()));
+    }
+
     bigquery = BigQueryOptions.newBuilder()
       .setCredentials(credentials).build().getService();
   }

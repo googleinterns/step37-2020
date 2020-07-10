@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Project} from '../../model/project';
 
-/** The main landing page for the application. It primarily contains the graph and project select */
+/** The main landing page for the application. It primarily contains the graph and project select. */
 @Component({
   selector: 'app-main-page',
   templateUrl: './main_page.component.html',

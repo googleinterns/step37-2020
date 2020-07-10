@@ -84,7 +84,7 @@ export class GraphProcessorService {
     );
   }
 
-  /** Adds the given project to the graph. Returns false if the given data was an error */
+  /** Adds the given project to the graph. Returns false if the given data was an error. */
   private addToGraph(
     properties: GraphProperties,
     data: ProjectGraphData | ErrorMessage,

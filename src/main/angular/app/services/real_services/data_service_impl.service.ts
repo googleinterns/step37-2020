@@ -7,7 +7,7 @@ import {DataService} from '../data.service';
 import {ErrorMessage} from '../../../model/error_message';
 import {ProjectMetaData} from '../../../model/project_metadata';
 
-/** Service which actually retrieves data from the server */
+/** Service which actually retrieves data from the server. */
 @Injectable()
 export class DataServiceImpl implements DataService {
   constructor(private http: HttpClient) {}

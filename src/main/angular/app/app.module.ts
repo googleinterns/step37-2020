@@ -15,7 +15,7 @@ import {dataServiceProvider} from './services/data.service.provider';
 import {ErrorPageComponent} from './error_page/error_page.component';
 import {MainPageComponent} from './main_page/main_page.component';
 import {ErrorMessageService} from './services/error_message.service';
-import {RedirrectService} from './redirrect.service';
+import {RedirrectService} from './services/redirrect.service';
 import {RedirrectImplService} from './services/real_services/redirrect_impl.service';
 
 @NgModule({

@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
-import {RedirrectService} from '../../redirrect.service';
+import {RedirrectService} from '../redirrect.service';
 
-/** Service used to fake out redirrects in the application */
+/** Service used to fake out redirrects in the application. */
 @Injectable()
 export class FakeRedirrectService implements RedirrectService {
-  /** The redirrects sent by the application */
+  /** The redirrects sent by the application. */
   private redirrects: string[];
 
   constructor() {
@@ -15,7 +15,7 @@ export class FakeRedirrectService implements RedirrectService {
     this.redirrects.push(path);
   }
 
-  /** Checks if the given path had a redirrected sent */
+  /** Checks if the given path had a redirrected sent. */
   redirrectSent(path: string): boolean {
     return this.redirrects.includes(path);
   }

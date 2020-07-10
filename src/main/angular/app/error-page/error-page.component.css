@@ -1,4 +1,22 @@
-#error-popup {
+#error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+#errors {
+  max-width: 75%
+}
+
+.error {
+  text-align: center;
+  margin: 5px;
+  padding: 3px;
   border: 1px solid black;
   border-radius: 3px;
+}
+
+.error:nth-child(even) {
+  background-color: #F1F3F4
 }

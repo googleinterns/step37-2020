@@ -63,7 +63,7 @@ export class GraphComponent implements OnInit {
 
     if (result instanceof Array) {
       // We got an error message
-      this.errorMessageService.addError(result);
+      this.errorMessageService.setError(result);
     }
   }
 

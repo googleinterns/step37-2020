@@ -202,7 +202,7 @@ export class ProjectSelectComponent implements OnInit {
           this.toggleProject(projects[0]);
         }
       } else if (projects instanceof ErrorMessage) {
-        this.errorMessageService.addError([projects]);
+        this.errorMessageService.setError([projects]);
       }
     });
   }

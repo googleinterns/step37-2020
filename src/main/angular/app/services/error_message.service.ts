@@ -12,9 +12,10 @@ export class ErrorMessageService {
 
   private errorMessage: ErrorMessage[];
 
-  addError(errors: ErrorMessage[]) {
+  setError(errors: ErrorMessage[]) {
     this.router.navigate([`/${ERROR_PAGE_URL}`]);
-    this.errorMessage = errors;
+    this.errorMessage = [];
+    errors.forEach(error => this.errorMessage.push(error, error, error));
   }
 
   getError(): ErrorMessage[] {

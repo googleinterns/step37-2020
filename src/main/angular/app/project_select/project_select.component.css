@@ -14,7 +14,7 @@
 }
 
 #projects-table {
-  padding: 5px;
+  padding: 0 5px 5px 5px;
   border-collapse: collapse;
   text-align: left;
   display: inline-block;
@@ -73,6 +73,7 @@ th div {
 
 #filter-icon {
   color: #666666;
+  margin: 5px 2px 2px 5px;
 }
 
 #filter-header {
@@ -80,9 +81,10 @@ th div {
 }
 
 #filter-container {
-  padding: 5px;
+  margin: 5px 5px 0 5px;
   margin-left: 5px;
   display: flex;
+  background-color: #E8EAED;
 }
 
 .project-color-icon {

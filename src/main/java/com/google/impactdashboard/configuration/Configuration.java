@@ -14,4 +14,10 @@ public class Configuration {
    * fake of DataUpdateManager for testing purposes. 
    */
   public static boolean useFakeDataUpdateManager = false; 
+
+  /** 
+   * When set to true, DatabaseAccessor will access a small test database for 
+   * testing purposes instead of the real database.  
+   */
+  public static boolean useTestDatabase = true;
 }

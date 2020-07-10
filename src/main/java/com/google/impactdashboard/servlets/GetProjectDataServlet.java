@@ -24,8 +24,10 @@ public class GetProjectDataServlet extends HttpServlet {
    */
   @Override
   public void init() {
+    try {
     projectInformationRetriever = ProjectInformationRetriever.create();
-  }
+    } catch (java.io.IOException e) {}
+   }
 
   /**
    * Method called by the frontend to get the data needed to graph a projects information.

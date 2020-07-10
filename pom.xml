@@ -109,7 +109,7 @@
         <version>2.2.0</version>
         <configuration>
           <!-- TODO: set project ID. -->
-          <deploy.projectId>PROJECT_ID_HERE</deploy.projectId>
+          <deploy.projectId>concord-intern</deploy.projectId>
           <deploy.version>1</deploy.version>
           <port>8080</port>
         </configuration>

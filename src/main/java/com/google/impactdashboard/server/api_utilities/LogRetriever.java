@@ -9,10 +9,13 @@ import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
 import com.google.logging.v2.ListLogEntriesRequest;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.ListValue;
+import com.google.protobuf.Value;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -91,5 +94,7 @@ public class LogRetriever {
     System.out.println("Retrieving logs...");
     Collection<LogEntry> logs = retriever.listAuditLogs();
     AuditLog testLog = AuditLog.parseFrom(((List<LogEntry>)logs).get(0).getProtoPayload().getValue());
+    List<Value> values = testLog.getResponse().getFieldsMap().get("bindings").getListValue().getValuesList();
+        //.getStructValue().getFieldsMap();
   }
 }

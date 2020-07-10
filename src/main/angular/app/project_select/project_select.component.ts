@@ -1,10 +1,6 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {Project} from '../../model/project';
-import {
-  DEFAULT_COLORS,
-  PROJECT_INACTIVE_COLOR,
-  ERROR_PAGE_URL,
-} from '../../constants';
+import {DEFAULT_COLORS, PROJECT_INACTIVE_COLOR} from '../../constants';
 import {
   faArrowDown,
   faCircle,
@@ -18,7 +14,7 @@ import {
 } from '../../model/project_sort';
 import {DataService} from '../services/data.service';
 import {ErrorMessageService} from '../services/error_message.service';
-import { ErrorMessage } from '../../model/error_message';
+import {ErrorMessage} from '../../model/error_message';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({

@@ -24,7 +24,7 @@ export class FakeDataService implements DataService {
     fakes.forEach(tuple => (this.projects[tuple[0].projectId] = tuple));
 
     // Now simulate an extra 'project 5' with no graph data
-    const project = new Project(
+    /* const project = new Project(
       "Project with unequal ID's",
       'project-with-unequal-ids',
       5,
@@ -33,7 +33,7 @@ export class FakeDataService implements DataService {
     const graphData = new ProjectGraphData('project-with-unequal-ids', {}, {});
     // Make sure the keys aren't the same, so getProjectGraphData will be unable
     // to retrieve the proper ID, to simulate an error
-    this.projects.prj5 = [project, graphData];
+    this.projects.prj5 = [project, graphData]; */
   }
 
   /** Returns all the fake projects. */

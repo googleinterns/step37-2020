@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs';
 import {ErrorMessage} from '../../model/error_message';
 import {Router} from '@angular/router';
 import {ERROR_PAGE_URL} from '../../constants';

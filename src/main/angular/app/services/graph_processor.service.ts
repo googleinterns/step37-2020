@@ -7,11 +7,15 @@ import {DateUtilitiesService} from './date_utilities.service';
 import {GraphProperties, Columns, Row} from '../../model/types';
 import {DataService} from './data.service';
 import {ErrorMessage} from '../../model/error_message';
+import {ErrorMessageService} from './error_message.service';
 
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
 export class GraphProcessorService {
-  constructor(private dateUtilities: DateUtilitiesService) {}
+  constructor(
+    private dateUtilities: DateUtilitiesService,
+    private errorService: ErrorMessageService
+  ) {}
 
   /** Initialize the chart properties with empty data. */
   initProperties(): GraphProperties {
@@ -47,12 +51,13 @@ export class GraphProcessorService {
     };
   }
 
-  /** Process the given changes and adjust from the graph properties as necessary. Returns an ErrorMessage if an error occured */
-  async processChanges(
+  /** Process the given changes and adjust from the graph properties as necessary.
+   * Redirrects to the error page if an error occured. */
+  processChanges(
     changes: SimpleChanges,
     properties: GraphProperties,
     dataService: DataService
-  ): Promise<boolean | ErrorMessage[]> {
+  ): void {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
     const promises: Promise<boolean | ErrorMessage>[] = [];
 
@@ -66,18 +71,15 @@ export class GraphProcessorService {
     additionsDeletions.removed.forEach(removal =>
       this.removeFromGraph(properties, removal)
     );
-    return Promise.all(promises).then(
-      (statuses: (boolean | ErrorMessage)[]) => {
-        const errors: ErrorMessage[] = statuses.filter(
-          status => status instanceof ErrorMessage
-        ) as ErrorMessage[];
-        properties.title = 'IAM Bindings';
-        if (errors.length > 0) {
-          return errors;
-        }
-        return true;
+    Promise.all(promises).then((statuses: (boolean | ErrorMessage)[]) => {
+      const errors: ErrorMessage[] = statuses.filter(
+        status => status instanceof ErrorMessage
+      ) as ErrorMessage[];
+      properties.title = 'IAM Bindings';
+      if (errors.length > 0) {
+        this.errorService.setErrors(errors);
       }
-    );
+    });
   }
 
   /** Adds the given project to the graph. Returns false if the given data was an error */

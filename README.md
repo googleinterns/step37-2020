@@ -50,6 +50,12 @@ npm run build
 ```
 Which will compile angular and bundle it with the appropriate Java files.
 
+## Deploying the application to AppEngine
+To deploy to AppEngine, please run
+```
+npm run deploy
+```
+
 ## Licensing
 A special thanks to the authors of these libraries:
 - angular-google-charts - [MIT](https://github.com/FERNman/angular-google-charts/blob/master/LICENSE.md)

@@ -63,7 +63,7 @@ public class DataReadManagerTest {
 
   @Test
   public void testAverageBindingsOnProject1() {
-    int actual = Math.round(dataReadManager.getAverageIAMBindingsInPastYear(PROJECT_ID_1));
+    int actual = (int) Math.round(dataReadManager.getAverageIAMBindingsInPastYear(PROJECT_ID_1));
     int expected = 1545;
 
     assertEquals(expected, actual);
@@ -71,7 +71,7 @@ public class DataReadManagerTest {
 
   @Test
   public void testAverageBindingsOnProject2() {
-    int actual = Math.round(dataReadManager.getAverageIAMBindingsInPastYear(PROJECT_ID_2));
+    int actual = (int) Math.round(dataReadManager.getAverageIAMBindingsInPastYear(PROJECT_ID_2));
     int expected = 715;
 
     assertEquals(expected, actual);
@@ -79,7 +79,7 @@ public class DataReadManagerTest {
 
   @Test
   public void testAverageBindingsReturnsZeroForNonexistentProject() {
-    int actual = Math.round(dataReadManager.getAverageIAMBindingsInPastYear("does-not-exist"));
+    int actual = (int) Math.round(dataReadManager.getAverageIAMBindingsInPastYear("does-not-exist"));
     int expected = 0;
 
     assertEquals(expected, actual);

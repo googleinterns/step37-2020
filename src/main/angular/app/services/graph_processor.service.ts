@@ -33,6 +33,11 @@ export class GraphProcessorService {
         minorGridlines: {
           color: 'white',
         },
+        title: 'IAM Bindings',
+        titleTextStyle: {
+          italic: false,
+          bold: true,
+        },
       },
       tooltip: {
         isHtml: true,
@@ -44,7 +49,6 @@ export class GraphProcessorService {
       graphData: [],
       columns: ['Time'],
       type: 'LineChart',
-      title: 'Empty Graph',
       width: 960,
       height: 600,
     };

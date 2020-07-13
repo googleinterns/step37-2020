@@ -6,7 +6,6 @@ export type GraphProperties = {
   graphData: Row[];
   columns: Columns;
   type: 'LineChart';
-  title: string;
   width: number;
   height: number;
 };

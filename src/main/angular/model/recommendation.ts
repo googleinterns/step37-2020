@@ -21,7 +21,7 @@ export class Recommendation {
   description: string;
   recommender: RecommenderType;
   acceptedTimestamp: number;
-  metadata?: RecommenderMetadata;
+  metadata: RecommenderMetadata;
 
   constructor(
     projectId: string,
@@ -34,6 +34,10 @@ export class Recommendation {
     this.description = description;
     this.recommender = recommender;
     this.acceptedTimestamp = acceptedTimestamp;
-    this.metadata = metadata;
+    if (metadata) {
+      this.metadata = metadata;
+    } else {
+      this.metadata = new RecommenderMetadata(50);
+    }
   }
 }

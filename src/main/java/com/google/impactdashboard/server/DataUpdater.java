@@ -40,9 +40,9 @@ public class DataUpdater {
    * Updates the database with any new information about recommendations and IAMBinding logging.
    */
   public void updateDatabase() {
-    updateManager.deleteYearOldData();
     updateManager.updateRecommendations(listUpdatedRecommendations());
     updateManager.updateIAMBindings(listUpdatedIAMBindingData());
+    updateManager.deleteYearOldData();
   }
 
   /**

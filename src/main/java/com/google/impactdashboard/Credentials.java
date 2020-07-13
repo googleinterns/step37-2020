@@ -7,6 +7,7 @@ import com.google.auth.appengine.AppEngineCredentials;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** 
  * A class for retrieving the proper credentials for the current environment in 
@@ -20,24 +21,31 @@ public class Credentials {
    */
   public static GoogleCredentials getCredentials() {
 
-    GoogleCredentials credentials = null;
+    AtomicReference<GoogleCredentials> credentials = new AtomicReference<GoogleCredentials>();
 
     if (assignLocalCredentials(credentials)) {
-      return credentials;
+      return credentials.get();
     }
     if (assignGithubSecretCredentials(credentials)) {
-      return credentials;
+      return credentials.get();
     }
     if (assignAppEngineCredentials(credentials)) {
-      return credentials;
+      return credentials.get();
     }
 
     throw new RuntimeException("Unable to assign credentials");
   }
 
-  private static boolean assignAppEngineCredentials(GoogleCredentials credentials) {
+  /**
+   * Attempts to use the default AppEngine credentials. If it succeeds, returns true.
+   * @param credentials The credentials to be set.
+   * @return whether or not the assignment succeeded.
+   * @throws RuntimeException if the assignment fails for any reason.
+   */
+  private static boolean assignAppEngineCredentials(
+    AtomicReference<GoogleCredentials> credentials) {
     try {
-      credentials = AppEngineCredentials.getApplicationDefault();
+      credentials.set(AppEngineCredentials.getApplicationDefault());
     } catch (Exception e) {
       throw new RuntimeException(
         "Attempt to assign App Engine default credentials failed with unexpected error: " + 
@@ -55,10 +63,11 @@ public class Credentials {
    * @throws RuntimeException if the assignment fails for any reason other than 
       the environment variable not being found.
    */
-  private static boolean assignGithubSecretCredentials(GoogleCredentials credentials) {
+  private static boolean assignGithubSecretCredentials(
+    AtomicReference<GoogleCredentials> credentials) {
     try {
-      credentials = GoogleCredentials.fromStream(
-        new ByteArrayInputStream(System.getenv("SERVICE_ACCOUNT_KEY").getBytes()));
+      credentials.set(GoogleCredentials.fromStream(
+        new ByteArrayInputStream(System.getenv("SERVICE_ACCOUNT_KEY").getBytes())));
     } catch (NullPointerException np) {
       return false;
     } catch (Exception e) {
@@ -77,10 +86,11 @@ public class Credentials {
    * @throws RuntimeException if the assignment fails for any reason other than 
       an IOException. 
    */
-  private static boolean assignLocalCredentials(GoogleCredentials credentials) {
+  private static boolean assignLocalCredentials(
+    AtomicReference<GoogleCredentials> credentials) {
     try {
-      credentials = GoogleCredentials.fromStream(
-        new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY));
+      credentials.set(GoogleCredentials.fromStream(
+        new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY)));
     } catch (IOException io) {
       return false;
     } catch (Exception e) {

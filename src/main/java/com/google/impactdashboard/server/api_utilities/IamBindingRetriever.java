@@ -8,6 +8,7 @@ import com.google.api.services.iam.v1.model.Role;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.audit.AuditLog;
+import com.google.impactdashboard.configuration.Constants;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -21,10 +22,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.checkerframework.checker.nullness.Opt.get;
-
 /**
- * Class that counts number of members in each IAM role and determines the total number of bindings
+ * Class that counts number of members in each IAM role and determines the total number of bindings.
  */
 public class IamBindingRetriever {
 
@@ -44,8 +43,7 @@ public class IamBindingRetriever {
     GoogleCredentials credentials;
     try {
       credentials = GoogleCredentials
-          // The path will be changed to use the constants class when it is merged into main
-          .fromStream(new FileInputStream("/usr/local/google/home/ionis/Documents/credentials.json"))
+          .fromStream(new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY))
           .createScoped(Collections.singleton(IamScopes.CLOUD_PLATFORM));
     } catch (IOException e) {
       credentials = GoogleCredentials

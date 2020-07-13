@@ -6,6 +6,7 @@ import com.google.cloud.logging.v2.LoggingClient;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingSettings;
 import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
+import com.google.impactdashboard.configuration.Constants;
 import com.google.logging.v2.ListLogEntriesRequest;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -33,14 +34,12 @@ public class LogRetriever {
    * @return A new instance of {@code LogRetriever}
    */
   public static LogRetriever create() throws IOException{
-    // Change logging client initialization to settings
     LoggingServiceV2StubSettings stub = LoggingServiceV2StubSettings.newBuilder()
         .setCredentialsProvider(() -> {
           GoogleCredentials credentials;
           try {
             credentials = GoogleCredentials
-                // The path will be changed to use the constants class when it is merged into main
-                .fromStream(new FileInputStream("/usr/local/google/home/ionis/Documents/credentials.json"));
+                .fromStream(new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY));
           } catch (IOException e) {
             credentials = GoogleCredentials
                 .fromStream(new ByteArrayInputStream(System.getenv("SERVICE_ACCOUNT_KEY").getBytes()));
@@ -78,8 +77,8 @@ public class LogRetriever {
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant Recommendation logs.
    * @return A list of all the relevant recommendation log entries that are stored by the logging API.
    */
-  public Collection<LogEntry> listRecommendationLogs() {
-    String project_id = "projects/concord-intern"; // needs to be retrieved from resource manager
+  public Collection<LogEntry> listRecommendationLogs(String projectId) {
+    String project_id = "projects/" + projectId;
     // May need tweaking once tested
     String filter = "resource.type = recommender";
     //Test of ListLogEntriesRequest will be changed once logging is tested
@@ -88,10 +87,5 @@ public class LogRetriever {
     ListLogEntriesPagedResponse response = logger.listLogEntries(request);
     return StreamSupport.stream(response.iterateAll().spliterator(), false)
         .collect(Collectors.toList());
-    //Get resources one or multiple [PROJECT_ID], [ORGANIZATION_ID]
-    //[BILLING_ACCOUNT_ID], [FOLDER_ID]
-    //filter by recommendation log
-    //Create new ListLogEntriesRequest with the information
-    //Call for logs
   }
 }

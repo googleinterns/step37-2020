@@ -13,8 +13,6 @@ import {
   ProjectComparators,
 } from '../../model/project_sort';
 import {DataService} from '../services/data.service';
-import {ErrorService} from '../services/error.service';
-import {ErrorMessage} from '../../model/error_message';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({
@@ -65,10 +63,7 @@ export class ProjectSelectComponent implements OnInit {
   @Output()
   public changeProjects = new EventEmitter<Project[]>();
 
-  constructor(
-    private dataService: DataService,
-    private errorMessageService: ErrorService
-  ) {
+  constructor(private dataService: DataService) {
     this.query = '';
     this.projects = [];
     this.activeProjects = new Set();

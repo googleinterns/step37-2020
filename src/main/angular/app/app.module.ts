@@ -16,6 +16,7 @@ import {ErrorPageComponent} from './error_page/error_page.component';
 import {MainPageComponent} from './main_page/main_page.component';
 import {ErrorService} from './services/error.service';
 import {RedirectService} from './services/redirect.service';
+import {DataShareService} from './services/data_share.service';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import {RedirectService} from './services/redirect.service';
       provide: ErrorHandler,
       useClass: ErrorService,
     },
+    DataShareService,
   ],
   bootstrap: [AppComponent],
 })

@@ -6,19 +6,12 @@ import {FakeDataService} from './fake_services/fake_data.service';
 import {SimpleChanges, SimpleChange} from '@angular/core';
 import {Project} from '../../model/project';
 import {ProjectGraphData} from '../../model/project_graph_data';
-import {ErrorService} from './error.service';
-import {mock, instance} from 'ts-mockito';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
-  let errorService: ErrorService;
 
   beforeAll(() => {
-    errorService = mock(ErrorService);
-    service = new GraphProcessorService(
-      new DateUtilitiesService(),
-      instance(errorService)
-    );
+    service = new GraphProcessorService(new DateUtilitiesService());
   });
 
   describe('initProperties()', () => {

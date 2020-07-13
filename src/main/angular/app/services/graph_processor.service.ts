@@ -54,7 +54,7 @@ export class GraphProcessorService {
     dataService: DataService
   ): Promise<void> {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
-    const promises: Promise<boolean | ErrorMessage>[] = [];
+    const promises: Promise<unknown>[] = [];
 
     additionsDeletions.added.forEach(addition =>
       promises.push(
@@ -69,29 +69,24 @@ export class GraphProcessorService {
     return Promise.all(promises).then();
   }
 
-  /** Adds the given project to the graph. Returns false if the given data was an error. */
+  /** Adds the given project to the graph. */
   private addToGraph(
     properties: GraphProperties,
-    data: ProjectGraphData | ErrorMessage,
+    data: ProjectGraphData,
     project: Project
-  ): boolean | ErrorMessage {
-    if (data instanceof ProjectGraphData) {
-      const seriesNumber: number = (properties.columns.length - 1) / 3;
-      // Set the color and add the new columns
-      if (properties.options.series) {
-        properties.options.series[seriesNumber] = {color: project.color};
-      }
-      this.addIamColumns(properties.columns, data);
-      // Add the new rows
-      this.addIamRows(properties.graphData, data, project, seriesNumber);
-
-      // Force a refresh of the chart
-      const temp: Columns = [];
-      properties.columns = temp.concat(properties.columns);
-      return true;
-    } else {
-      return data as ErrorMessage;
+  ): void {
+    const seriesNumber: number = (properties.columns.length - 1) / 3;
+    // Set the color and add the new columns
+    if (properties.options.series) {
+      properties.options.series[seriesNumber] = {color: project.color};
     }
+    this.addIamColumns(properties.columns, data);
+    // Add the new rows
+    this.addIamRows(properties.graphData, data, project, seriesNumber);
+
+    // Force a refresh of the chart
+    const temp: Columns = [];
+    properties.columns = temp.concat(properties.columns);
   }
 
   /** Removes the given project from the graph. */

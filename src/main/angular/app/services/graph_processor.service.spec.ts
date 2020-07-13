@@ -7,21 +7,17 @@ import {SimpleChanges, SimpleChange} from '@angular/core';
 import {Project} from '../../model/project';
 import {ProjectGraphData} from '../../model/project_graph_data';
 import {ErrorService} from './error.service';
-import {FakeRedirectService} from './fake_services/fake_redirect.service';
-import {ProjectMetaData} from '../../model/project_metadata';
-import {ErrorMessage} from '../../model/error_message';
+import {mock, instance} from 'ts-mockito';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
-  let fakeRedirect: FakeRedirectService;
   let errorService: ErrorService;
 
   beforeAll(() => {
-    fakeRedirect = new FakeRedirectService();
-    errorService = new ErrorService(fakeRedirect);
+    errorService = mock(ErrorService);
     service = new GraphProcessorService(
       new DateUtilitiesService(),
-      errorService
+      instance(errorService)
     );
   });
 
@@ -294,44 +290,6 @@ describe('GraphProcessorService', () => {
           .filter(value => value !== undefined);
 
         expect(actual).toEqual(expected);
-      });
-    });
-
-    describe('Sends users to error page when an error occurs', () => {
-      let project: Project;
-
-      beforeAll(() => {
-        changes = {};
-        properties = service.initProperties();
-
-        project = new Project(
-          '',
-          'project-with-no-equivalent-id-in-system',
-          1,
-          new ProjectMetaData(1)
-        );
-
-        // Going from no projects to a single one
-        changes.projects = new SimpleChange([], [project], true);
-        service.processChanges(changes, properties, fakeDataService);
-      });
-
-      it('Adds an error', () => {
-        const errors = errorService.getErrors();
-        const expected = [
-          new ErrorMessage(
-            `Error retrieving project of ID ${project.projectId} from FakeDataService`,
-            {}
-          ),
-        ];
-
-        expect(errors).toEqual(expected);
-      });
-
-      it('Sends a redirect', () => {
-        const redirected = fakeRedirect.redirectSent('error');
-
-        expect(redirected).toBeTrue();
       });
     });
   });

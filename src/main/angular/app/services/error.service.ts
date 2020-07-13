@@ -1,24 +1,23 @@
-import {Injectable} from '@angular/core';
-import {ErrorMessage} from '../../model/error_message';
+import {Injectable, ErrorHandler} from '@angular/core';
 import {RedirectService} from './redirect.service';
 
 /** Facilitates the transfer of an error message from one component to the error page and redirects users to the error page. */
-@Injectable()
-export class ErrorService {
+@Injectable({providedIn: 'root'})
+export class ErrorService implements ErrorHandler {
+  private errors: any[];
+
   constructor(private redirect: RedirectService) {
     this.errors = [];
   }
 
-  private errors: ErrorMessage[];
-
-  /** Sets the error and sends a redirect to the error page. */
-  setErrors(errors: ErrorMessage[]) {
+  /** Add the given error and redirect the user to error page. */
+  handleError(error: any): void {
+    this.errors.push(error);
     this.redirect.redirect('error');
-    this.errors = errors;
   }
 
   /** Returns the errors that have been logged. */
-  getErrors(): ErrorMessage[] {
+  getErrors(): any[] {
     return this.errors;
   }
 }

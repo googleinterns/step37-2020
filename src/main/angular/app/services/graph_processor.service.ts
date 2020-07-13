@@ -51,8 +51,7 @@ export class GraphProcessorService {
     };
   }
 
-  /** Process the given changes and adjust from the graph properties as necessary.
-   * Redirects to the error page if an error occured. */
+  /** Process the given changes and adjust from the graph properties as necessary. */
   processChanges(
     changes: SimpleChanges,
     properties: GraphProperties,
@@ -71,17 +70,7 @@ export class GraphProcessorService {
     additionsDeletions.removed.forEach(removal =>
       this.removeFromGraph(properties, removal)
     );
-    return Promise.all(promises).then(
-      (statuses: (boolean | ErrorMessage)[]) => {
-        const errors: ErrorMessage[] = statuses.filter(
-          status => status instanceof ErrorMessage
-        ) as ErrorMessage[];
-        properties.title = 'IAM Bindings';
-        if (errors.length > 0) {
-          this.errorService.setErrors(errors);
-        }
-      }
-    );
+    return Promise.all(promises).then();
   }
 
   /** Adds the given project to the graph. Returns false if the given data was an error. */

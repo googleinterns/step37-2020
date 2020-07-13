@@ -201,8 +201,6 @@ export class ProjectSelectComponent implements OnInit {
         if (projects.length > 0) {
           this.toggleProject(projects[0]);
         }
-      } else if (projects instanceof ErrorMessage) {
-        this.errorMessageService.setErrors([projects]);
       }
     });
   }

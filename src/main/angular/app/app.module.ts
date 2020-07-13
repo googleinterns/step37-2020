@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {NgModule, ErrorHandler} from '@angular/core';
 import {GoogleChartsModule} from 'angular-google-charts';
 
 import {AppRoutingModule} from './app_routing.module';
@@ -16,7 +16,6 @@ import {ErrorPageComponent} from './error_page/error_page.component';
 import {MainPageComponent} from './main_page/main_page.component';
 import {ErrorService} from './services/error.service';
 import {RedirectService} from './services/redirect.service';
-import {RedirectImplService} from './services/real_services/redirect_impl.service';
 
 @NgModule({
   declarations: [
@@ -38,10 +37,10 @@ import {RedirectImplService} from './services/real_services/redirect_impl.servic
     dataServiceProvider,
     DateUtilitiesService,
     GraphProcessorService,
-    ErrorService,
+    RedirectService,
     {
-      provide: RedirectService,
-      useClass: RedirectImplService,
+      provide: ErrorHandler,
+      useClass: ErrorService,
     },
   ],
   bootstrap: [AppComponent],

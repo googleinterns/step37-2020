@@ -7,9 +7,7 @@ import {ErrorMessage} from '../../model/error_message';
 @Injectable()
 export abstract class DataService {
   /** Returns the list of projects accessible to the user. */
-  abstract async listProjects(): Promise<Project[] | ErrorMessage>;
+  abstract async listProjects(): Promise<Project[]>;
   /** Returns the graph information for a particular user. */
-  abstract async getProjectGraphData(
-    id: string
-  ): Promise<ProjectGraphData | ErrorMessage>;
+  abstract async getProjectGraphData(id: string): Promise<ProjectGraphData>;
 }

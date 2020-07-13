@@ -1,16 +1,17 @@
 import 'jasmine';
 import {ErrorService} from './error.service';
 import {ErrorMessage} from '../../model/error_message';
-import {FakeRedirectService} from './fake_services/fake_redirect.service';
+import {RedirectService} from './redirect.service';
+import {mock, instance, verify} from 'ts-mockito';
 
 describe('ErrorMessageService', () => {
   let service: ErrorService;
   let errorMessages: ErrorMessage[];
-  let fakeRedirect: FakeRedirectService;
+  let redirectService: RedirectService;
 
   beforeAll(() => {
-    fakeRedirect = new FakeRedirectService();
-    service = new ErrorService(fakeRedirect);
+    redirectService = mock(RedirectService);
+    service = new ErrorService(instance(redirectService));
     errorMessages = [
       new ErrorMessage('err1', {}),
       new ErrorMessage('err2', {}),
@@ -19,7 +20,7 @@ describe('ErrorMessageService', () => {
 
   describe('Sends errors properly', () => {
     beforeAll(() => {
-      service.setErrors(errorMessages);
+      errorMessages.forEach(error => service.handleError(error));
     });
 
     it('Properly sets the errors field', () => {
@@ -29,9 +30,7 @@ describe('ErrorMessageService', () => {
     });
 
     it('Sends a redirect', () => {
-      const redirected = fakeRedirect.redirectSent('error');
-
-      expect(redirected).toBeTrue();
+      verify(redirectService.redirect('error')).called();
     });
   });
 });

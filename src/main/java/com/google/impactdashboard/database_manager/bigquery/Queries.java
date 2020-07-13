@@ -96,13 +96,11 @@ public class Queries {
   public static final String DELETE_OLD_DATA_FROM_IAM_TABLE = 
     "DELETE FROM `" + IAM_TABLE + "`" +
       " WHERE " + IAMBindingsSchema.TIMESTAMP_COLUMN + " < " + 
-        " TIMESTAMP_SUB( (" + GET_MOST_RECENT_TIMESTAMP + ")," +
-        " INTERVAL 365 DAY)";
+        " TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 365 DAY)";
 
   /** Deletes 365-day-old data from the recommendations table. */
   public static final String DELETE_OLD_DATA_FROM_RECOMMENDATIONS_TABLE = 
     "DELETE FROM `" + RECOMMENDATIONS_TABLE + "`" +
       " WHERE " + RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN + " < " + 
-        " TIMESTAMP_SUB( (" + GET_MOST_RECENT_TIMESTAMP + ")," +
-        " INTERVAL 365 DAY)";
+        " TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 365 DAY)";
 }

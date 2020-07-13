@@ -12,9 +12,9 @@ import java.lang.RuntimeException;
 import java.lang.InterruptedException;
 import com.google.impactdashboard.configuration.Constants;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.appengine.AppEngineCredentials;
 import java.io.FileInputStream;
 import java.io.IOException;
-import com.google.common.io.CharSource;
 import java.io.ByteArrayInputStream;
 
 /** A class that queries the database. */
@@ -32,13 +32,18 @@ public class DatabaseAccessor {
     try {
       credentials = GoogleCredentials
         .fromStream(new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY));
-    } catch (IOException e) {
+    } catch (Exception e) {
+      try {
       credentials = GoogleCredentials
         .fromStream(new ByteArrayInputStream(System.getenv("SERVICE_ACCOUNT_KEY").getBytes()));
+      } catch (NullPointerException np) {
+      credentials = AppEngineCredentials.getApplicationDefault();
+      }
     }
 
-    bigquery = BigQueryOptions.newBuilder()
+      bigquery = BigQueryOptions.newBuilder()
       .setCredentials(credentials).build().getService();
+
   }
 
   /** 

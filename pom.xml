@@ -97,6 +97,11 @@
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-bigquery</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.auth</groupId>
+      <artifactId>google-auth-library-appengine</artifactId>
+      <version>0.9.0</version>
+    </dependency>
   </dependencies>
 
   <build>

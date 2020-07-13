@@ -46,7 +46,7 @@ public class DataUpdater {
   }
 
   /**
-   * Gets the new Recommendation data from the Recommender API
+   * Gets the new Recommendation data from the Recommender API.
    * @return a List of Recommendations
    */
   private List<Recommendation> listUpdatedRecommendations() {

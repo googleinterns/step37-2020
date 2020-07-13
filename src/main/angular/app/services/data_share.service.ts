@@ -9,7 +9,7 @@ export class DataShareService {
     this.errors = [];
   }
 
-  /** Returns the errors stored by this service */
+  /** Returns the errors stored by this service. */
   getErrors(): any[] {
     return this.errors;
   }

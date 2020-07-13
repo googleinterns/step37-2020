@@ -113,16 +113,28 @@ export class FakeDataService implements DataService {
         RecommenderType.IAM_BINDING,
         Date.parse('17 Jun 2020 UTC')
       ),
-      // Simulate two recommendations on one day
+      // Simulate multiple recommendations on one day
       [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation(
         projectId,
         'Rec 4',
         RecommenderType.IAM_BINDING,
         Date.parse('17 Jun 2020 UTC') + 1
       ),
+      [Date.parse('17 Jun 2020 UTC') + 2]: new Recommendation(
+        projectId,
+        'Rec 5',
+        RecommenderType.IAM_BINDING,
+        Date.parse('17 Jun 2020 UTC') + 2
+      ),
+      [Date.parse('17 Jun 2020 UTC') + 3]: new Recommendation(
+        projectId,
+        'Rec 6',
+        RecommenderType.IAM_BINDING,
+        Date.parse('17 Jun 2020 UTC') + 3
+      ),
     };
     return [
-      new Project('Project 1', projectId, 1, new ProjectMetaData(100)),
+      new Project('Project 1', projectId, 1, new ProjectMetaData(300)),
       new ProjectGraphData(projectId, iamBindings, recommendations),
     ];
   }

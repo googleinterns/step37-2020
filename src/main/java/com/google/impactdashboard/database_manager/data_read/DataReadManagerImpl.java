@@ -115,6 +115,27 @@ public class DataReadManagerImpl implements DataReadManager {
   }
 
   /**
+   * Queries the IAM Table and returns the most recent timestamp, or 0 if there is
+   * no data.
+   */
+  public long getMostRecentTimestamp() {
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getMostRecentTimestampConfiguration()
+      .build();
+    TableResult results = database.readDatabase(queryConfiguration);
+
+    long maxTimestamp = 0;
+    try {
+      for (FieldValueList row : results.iterateAll()) {
+        maxTimestamp = row.get("Max_Timestamp").getTimestampValue() / 1000;
+      }
+    } catch (NullPointerException np) {
+      return 0;
+    }
+    return maxTimestamp;
+  }
+
+  /**
    * Queries the IAM database for information about the project with id 
    * {@code projectId}, and returns a {@code ProjectIdentification} object 
    * containing that information. 

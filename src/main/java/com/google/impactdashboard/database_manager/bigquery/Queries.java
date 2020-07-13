@@ -89,7 +89,7 @@ public class Queries {
 
   /** Retrieves the most recent timestamp from the IAM Bindings Table. */
   public static final String GET_MOST_RECENT_TIMESTAMP = 
-    "SELECT MAX(" + IAMBindingsSchema.TIMESTAMP_COLUMN + ")" + 
+    "SELECT MAX(" + IAMBindingsSchema.TIMESTAMP_COLUMN + ") AS Max_Timestamp" + 
       " FROM " + IAM_TABLE;
 
   /** Deletes 365-day-old data from the IAM bindings table. */

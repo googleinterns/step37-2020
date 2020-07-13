@@ -73,7 +73,9 @@ export class ProjectQueryService {
 
   /** Get the sorted and queried projects */
   getProjects(): Project[] {
-    return this.projectsCache;
+    // Return a clone
+    const temp: Project[] = [];
+    return temp.concat(this.projectsCache);
   }
 
   /** Returns the field being sorted by */

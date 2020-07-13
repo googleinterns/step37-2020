@@ -141,8 +141,37 @@ describe('ProjectQueryService', () => {
   });
 
   describe('changeQuery()', () => {
-    it("Doesn't filter with an empty query", () => {});
-    it('Filters by ID and name', () => {});
-    it('Lets users empty the filter', () => {});
+    beforeEach(() => {
+      service = new ProjectQueryService();
+      service.init(projects);
+    });
+
+    it("Doesn't filter with an empty query", () => {
+      const expected = service.getProjects();
+
+      service.changeQuery('');
+      const actual = service.getProjects();
+
+      expect(actual).toEqual(expected);
+    });
+    it('Filters by ID and name', () => {
+      const query = 'prj';
+      const expected = projects.filter(project => project.includes(query));
+
+      service.changeQuery(query);
+      const actual = service.getProjects();
+
+      expect(actual).toEqual(expected);
+    });
+    it('Lets users empty the filter', () => {
+      let query = 'prj';
+      service.changeQuery(query);
+      query = '';
+      service.changeQuery(query);
+
+      const actual = service.getProjects();
+
+      expect(actual).toEqual(projects);
+    });
   });
 });

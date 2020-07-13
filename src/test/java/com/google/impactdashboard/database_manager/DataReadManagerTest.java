@@ -144,4 +144,12 @@ public class DataReadManagerTest {
 
     assertEquals(expected, actual);
   } 
+
+  @Test
+  public void testCorrectMaxTimestamp() {
+    long actual = dataReadManager.getMostRecentTimestamp();
+    long expected = 1593432000000L;
+
+    assertEquals(expected, actual);
+  }
 }

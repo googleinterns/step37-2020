@@ -38,6 +38,9 @@ export class GraphProcessorService {
           color: 'white',
         },
       },
+      tooltip: {
+        isHtml: true,
+      },
       series: {},
     };
     return {
@@ -195,7 +198,7 @@ export class GraphProcessorService {
     // Populate the header row, which contains the column purposes
     columns.push(
       data.projectId,
-      {type: 'string', role: 'tooltip'},
+      {type: 'string', role: 'tooltip', p: {html: true}},
       {type: 'string', role: 'style'}
     );
   }
@@ -231,19 +234,20 @@ export class GraphProcessorService {
     matchingRecommendations: Recommendation[]
   ): string {
     // Add the date to tooltip
-    let tooltip: string = date.toLocaleDateString() + '\n';
+    let tooltip = `<div style="margin: 5px; font-family: Roboto;"><b>${date.toLocaleDateString()}</b><br/>`;
     // The list of recommendations on the same day
     if (matchingRecommendations.length === 0) {
       tooltip += `IAM Bindings: ${numberBindings}`;
-      return tooltip;
     }
 
     matchingRecommendations.forEach((recommendation, index) => {
       tooltip += recommendation.description;
       if (index < matchingRecommendations.length - 1) {
-        tooltip += '\n';
+        tooltip += '<br/>';
       }
     });
+
+    tooltip += '</div>';
     return tooltip;
   }
 

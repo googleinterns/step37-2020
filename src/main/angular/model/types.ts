@@ -20,4 +20,7 @@ export type RowData = Date | string | number | undefined;
 export type Row = RowData[];
 
 /** The format for columns used by Google Charts. */
-export type Columns = (string | {type: 'string'; role: 'tooltip' | 'style'})[];
+export type Columns = (
+  | string
+  | {type: 'string'; role: 'tooltip' | 'style'; p?: {html: boolean}}
+)[];

@@ -163,12 +163,7 @@ export class GraphProcessorService {
         +key,
         data.dateToRecommendationTaken
       );
-      const tooltip = this.getTooltip(
-        date,
-        value,
-        recommendations,
-        project.color
-      );
+      const tooltip = this.getTooltip(date, value, recommendations, project);
       const point = this.getPoint(recommendations, project.color);
 
       if (row) {
@@ -226,17 +221,20 @@ export class GraphProcessorService {
     date: Date,
     numberBindings: number,
     matchingRecommendations: Recommendation[],
-    color: string
+    project: Project
   ): string {
     // Add the date to tooltip
-    let tooltip = `<table style="border: 1px solid ${color}"><tr><th><b>${date.toLocaleDateString()}</b></th></tr>`;
+    let tooltip = `<table style="border: 1px solid ${project.color}">`;
+    tooltip += `<tr><th><b style="color: ${project.color}">${project.projectId}</b><br/>`;
+    tooltip += `<b>${date.toLocaleDateString()}</b></th></tr>`;
+
     // The list of recommendations on the same day
     if (matchingRecommendations.length === 0) {
-      tooltip += `<tr><td style="border-top: 1px solid ${color};">IAM Bindings: ${numberBindings}</td></tr>`;
+      tooltip += `<tr><td style="border-top: 1px solid ${project.color};">IAM Bindings: ${numberBindings}</td></tr>`;
     }
 
     matchingRecommendations.forEach(recommendation => {
-      tooltip += `<tr class="tooltip-row"><td style="border-top: 1px solid ${color};">`;
+      tooltip += `<tr class="tooltip-row"><td style="border-top: 1px solid ${project.color};">`;
 
       tooltip += `${recommendation.description}<br/>`;
       tooltip += `Impact: ${recommendation.metadata?.impactInIAMBindings} IAM Bindings`;

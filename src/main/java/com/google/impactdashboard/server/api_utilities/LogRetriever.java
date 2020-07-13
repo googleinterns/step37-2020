@@ -57,10 +57,12 @@ public class LogRetriever {
 
   /**
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant audit logs.
+   * @param projectId ID of the project that the audit logs will be retrieved for
+   * @param timeTO latest time to retrieve logs for
    * @return A list of all the relevant audit log entries that are stored by the logging API
    */
-  public Collection<LogEntry> listAuditLogs() {
-    String project_id = "projects/concord-intern"; // needs to be retrieved from resource manager
+  public Collection<LogEntry> listAuditLogs(String projectId, long timeTO) {
+    String project_id = "projects/" + projectId; // needs to be retrieved from resource manager
     // May need tweaking once tested and
     String filter = "resource.type = project AND severity = NOTICE AND " +
         "protoPayload.methodName:SetIamPolicy";
@@ -70,11 +72,6 @@ public class LogRetriever {
     ListLogEntriesPagedResponse response = logger.listLogEntries(request);
     return StreamSupport.stream(response.iterateAll().spliterator(), false)
         .collect(Collectors.toList());
-    //Get resources one or multiple [PROJECT_ID], [ORGANIZATION_ID]
-    //[BILLING_ACCOUNT_ID], [FOLDER_ID]
-    //filter by audit log
-    //Create new ListLogEntriesRequest with the information
-    //Call for logs
   }
 
   /**
@@ -96,14 +93,5 @@ public class LogRetriever {
     //filter by recommendation log
     //Create new ListLogEntriesRequest with the information
     //Call for logs
-  }
-
-  public static void main(String[] args) throws Exception {
-    LogRetriever logRetriever = LogRetriever.create();
-
-    IamBindingRetriever iamBindingRetriever = IamBindingRetriever.create();
-
-    iamBindingRetriever.listIAMBindingData(logRetriever.listAuditLogs(), "concord-intern",
-        "Concord Intern", "12345");
   }
 }

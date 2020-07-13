@@ -113,7 +113,7 @@ public class IamBindingRetriever {
    */
   private int getIamBindings(Map<String, Integer> membersForRoles) throws IOException {
     int iamBindings;
-    List<Role> roles = iamService.roles().list().execute().getRoles();
+    List<Role> roles = iamService.roles().list().setView("full").execute().getRoles();
     iamBindings = roles.stream().filter(role -> membersForRoles.containsKey(role.getName()))
         .mapToInt(role -> role.getIncludedPermissions().size() * membersForRoles.get(role.getName())).sum();
     return iamBindings;

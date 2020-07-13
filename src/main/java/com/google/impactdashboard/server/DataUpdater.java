@@ -2,14 +2,20 @@ package com.google.impactdashboard.server;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
+import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.Recommendation;
+import com.google.impactdashboard.database_manager.data_read.DataReadManager;
+import com.google.impactdashboard.database_manager.data_read.DataReadManagerFactory;
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManager;
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManagerFactory;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
+import com.google.logging.v2.LogEntry;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /** Class for updating the information in the database from the API. */
 public class DataUpdater {
@@ -17,13 +23,15 @@ public class DataUpdater {
   private final LogRetriever logRetriever;
   private final RecommendationRetriever recommendationRetriever;
   private final DataUpdateManager updateManager;
+  private final DataReadManager readManager;
 
   @VisibleForTesting
   protected DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
-                      DataUpdateManager updateManager) {
+                      DataUpdateManager updateManager, DataReadManager readManager) {
     this.logRetriever = logRetriever;
     this.recommendationRetriever = recommendationRetriever;
     this.updateManager = updateManager;
+    this.readManager = readManager;
   }
 
   /**
@@ -33,7 +41,7 @@ public class DataUpdater {
    */
   public static DataUpdater create() throws IOException {
     return new DataUpdater(LogRetriever.create(), RecommendationRetriever.create(),
-        DataUpdateManagerFactory.create());
+        DataUpdateManagerFactory.create(), DataReadManagerFactory.create());
   }
 
   /**
@@ -64,11 +72,12 @@ public class DataUpdater {
    */
   private List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
     // Steps for implementing this function (may require more methods for single responsibility)
-    // retrieve IAMBinding information from cloud logging and IAM API
     // retrieve IAMBinding from database
     // (TODO determine whether to retrieve all info or info for a certain time range)
     // filter out any duplicate IAM Information
+    // retrieve IAMBinding information from cloud logging and IAM API
     // add non duplicates to database
+    List<ProjectIdentification> projects = readManager.listProjects();
     throw new UnsupportedOperationException("Not Implemented");
   }
 

@@ -4,7 +4,7 @@ import {RedirectService} from './redirect.service';
 
 /** Facilitates the transfer of an error message from one component to the error page and redirects users to the error page. */
 @Injectable()
-export class ErrorMessageService {
+export class ErrorService {
   constructor(private redirect: RedirectService) {
     this.errors = [];
   }

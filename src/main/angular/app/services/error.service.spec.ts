@@ -1,16 +1,16 @@
 import 'jasmine';
-import {ErrorMessageService} from './error_message.service';
+import {ErrorService} from './error.service';
 import {ErrorMessage} from '../../model/error_message';
 import {FakeRedirectService} from './fake_services/fake_redirect.service';
 
 describe('ErrorMessageService', () => {
-  let service: ErrorMessageService;
+  let service: ErrorService;
   let errorMessages: ErrorMessage[];
   let fakeRedirect: FakeRedirectService;
 
   beforeAll(() => {
     fakeRedirect = new FakeRedirectService();
-    service = new ErrorMessageService(fakeRedirect);
+    service = new ErrorService(fakeRedirect);
     errorMessages = [
       new ErrorMessage('err1', {}),
       new ErrorMessage('err2', {}),

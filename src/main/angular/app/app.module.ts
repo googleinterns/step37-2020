@@ -14,7 +14,7 @@ import {GraphProcessorService} from './services/graph_processor.service';
 import {dataServiceProvider} from './services/data.service.provider';
 import {ErrorPageComponent} from './error_page/error_page.component';
 import {MainPageComponent} from './main_page/main_page.component';
-import {ErrorMessageService} from './services/error_message.service';
+import {ErrorService} from './services/error.service';
 import {RedirectService} from './services/redirect.service';
 import {RedirectImplService} from './services/real_services/redirect_impl.service';
 
@@ -38,7 +38,7 @@ import {RedirectImplService} from './services/real_services/redirect_impl.servic
     dataServiceProvider,
     DateUtilitiesService,
     GraphProcessorService,
-    ErrorMessageService,
+    ErrorService,
     {
       provide: RedirectService,
       useClass: RedirectImplService,

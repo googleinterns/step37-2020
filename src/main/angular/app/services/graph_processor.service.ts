@@ -7,14 +7,14 @@ import {DateUtilitiesService} from './date_utilities.service';
 import {GraphProperties, Columns, Row} from '../../model/types';
 import {DataService} from './data.service';
 import {ErrorMessage} from '../../model/error_message';
-import {ErrorMessageService} from './error_message.service';
+import {ErrorService} from './error.service';
 
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
 export class GraphProcessorService {
   constructor(
     private dateUtilities: DateUtilitiesService,
-    private errorService: ErrorMessageService
+    private errorService: ErrorService
   ) {}
 
   /** Initialize the chart properties with empty data. */

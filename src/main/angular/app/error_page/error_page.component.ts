@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ErrorMessageService} from '../services/error_message.service';
+import {ErrorService} from '../services/error.service';
 import {ErrorMessage} from '../../model/error_message';
 
 /** Main component on the error page. It displays the error messages from ErrorMessageService. */
@@ -11,7 +11,7 @@ import {ErrorMessage} from '../../model/error_message';
 export class ErrorPageComponent implements OnInit {
   errors: ErrorMessage[];
 
-  constructor(private errorMessageService: ErrorMessageService) {
+  constructor(private errorMessageService: ErrorService) {
     this.errors = [];
   }
 

@@ -6,7 +6,7 @@ import {FakeDataService} from './fake_services/fake_data.service';
 import {SimpleChanges, SimpleChange} from '@angular/core';
 import {Project} from '../../model/project';
 import {ProjectGraphData} from '../../model/project_graph_data';
-import {ErrorMessageService} from './error_message.service';
+import {ErrorService} from './error.service';
 import {FakeRedirectService} from './fake_services/fake_redirect.service';
 import {ProjectMetaData} from '../../model/project_metadata';
 import {ErrorMessage} from '../../model/error_message';
@@ -14,11 +14,11 @@ import {ErrorMessage} from '../../model/error_message';
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
   let fakeRedirect: FakeRedirectService;
-  let errorService: ErrorMessageService;
+  let errorService: ErrorService;
 
   beforeAll(() => {
     fakeRedirect = new FakeRedirectService();
-    errorService = new ErrorMessageService(fakeRedirect);
+    errorService = new ErrorService(fakeRedirect);
     service = new GraphProcessorService(
       new DateUtilitiesService(),
       errorService

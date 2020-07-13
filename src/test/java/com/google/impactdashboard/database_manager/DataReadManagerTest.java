@@ -58,6 +58,10 @@ public class DataReadManagerTest {
 
     assertEquals(expected.size(), actual.size());
     actual.removeAll(expected);
+    // Since we already know the lists are the same length, 
+    // if removing all the elements in the expected list from
+    // the actual list results in an empty list, then the lists
+    // must be equal. 
     assertEquals(Arrays.asList(), actual);
   }
 

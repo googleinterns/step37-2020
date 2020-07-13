@@ -86,13 +86,9 @@ public class LogRetriever {
   public static void main(String[] args) throws IOException {
     LogRetriever retriever = LogRetriever.create();
     RecommendationRetriever recommendationRetriever = RecommendationRetriever.create();
-    Collection<LogEntry> recommendationLogs = retriever.listRecommendationLogs("concord-interns");
+    Collection<LogEntry> recommendationLogs = retriever.listRecommendationLogs("concord-intern");
 
-    List<String> recommendation = recommendationLogs.stream().map(recommendationLog ->
-        recommendationLog.getJsonPayload().getFieldsMap().get("recommendationName")
-            .getStringValue()).collect(Collectors.toList());
-
-//    List<Recommendation> recommendations = recommendationRetriever.listRecommendations(recommendation,
-//        "concord-interns", );
+    List<Recommendation> recommendations = recommendationRetriever.listRecommendations((List<LogEntry>)recommendationLogs,
+        "concord-interns", Recommendation.RecommenderType.IAM_BINDING);
   }
 }

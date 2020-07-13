@@ -28,6 +28,7 @@ export class GraphProcessorService {
         },
         format: 'M/d',
         minTextSpacing: 100,
+        viewWindow: {},
       },
       vAxis: {
         minorGridlines: {

@@ -48,7 +48,6 @@ export class GraphComponent implements OnInit {
     private errorMessageService: ErrorMessageService
   ) {
     this.shouldShowChart = false;
-    1;
     this.projects = [];
   }
 

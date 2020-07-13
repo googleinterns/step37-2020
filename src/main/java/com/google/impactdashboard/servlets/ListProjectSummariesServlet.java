@@ -26,7 +26,9 @@ public class ListProjectSummariesServlet extends HttpServlet {
   public void init() {
     try { 
       projectInformationRetriever = ProjectInformationRetriever.create();
-    } catch (java.io.IOException e) {}
+    } catch (java.io.IOException e) {
+      throw new RuntimeException("Throws IO Exception");
+    }
   }
 
   /**

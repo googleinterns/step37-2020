@@ -15,13 +15,16 @@
 
 /* Customization for GCharts tooltips */
 .google-visualization-tooltip {
-  border: 1px solid #9AA0A6 !important;
-  border-radius: 3px !important;
+  border: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
 }
 
 .google-visualization-tooltip table {
   margin: 5px;
   font-size: 16px;
+  /* Border set programatically */
+  border-radius: 3px;
 }
 
 .google-visualization-tooltip b {
@@ -34,9 +37,7 @@
   padding: 0;
 }
 
-.google-visualization-tooltip td {
-  border-top: 1px solid #666666;
-  padding: 0;
+.google-visualization-tooltip td {  padding: 0;
 }
 
 .tooltip-row:nth-child(odd) {

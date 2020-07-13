@@ -9,12 +9,14 @@ import com.google.impactdashboard.data.recommendation.IAMRecommenderMetadata;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.logging.v2.LogEntry;
 import com.google.cloud.recommender.v1.Impact;
+import com.google.protobuf.Value;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /** Class that calls the Recommender API to get the full information for recommendations. */
@@ -57,10 +59,11 @@ public class RecommendationRetriever {
                                                   String projectId,
                                                   Recommendation.RecommenderType type) {
     return recommendationLogs.stream().map(recommendationLog -> {
+      Map<String, Value> recommendationDataMap = recommendationLog.getJsonPayload().getFieldsMap();
       com.google.cloud.recommender.v1.Recommendation recommendation = recommender
-          .getRecommendation(recommendationLog.getJsonPayload().getFieldsMap()
-              .get("recommendationName").getStringValue());
-      return Recommendation.create(projectId, createRecommendationDescription(recommendation),
+          .getRecommendation(recommendationDataMap.get("recommendationName").getStringValue());
+      return Recommendation.create(projectId, createRecommendationDescription(recommendation,
+          recommendationDataMap.get("actor").getStringValue()),
           type, recommendationLog.getTimestamp().getSeconds(),
           IAMRecommenderMetadata.create(10)); // Fix IamRecommenderMetadata being correct
     }).collect(Collectors.toList());
@@ -72,7 +75,7 @@ public class RecommendationRetriever {
    * @return The full description for the given recommendation
    */
   private String createRecommendationDescription(
-      com.google.cloud.recommender.v1.Recommendation recommendation) {
-    throw new UnsupportedOperationException("not Implemented");
+      com.google.cloud.recommender.v1.Recommendation recommendation, String actor) {
+    throw new UnsupportedOperationException("not implemented");
   }
 }

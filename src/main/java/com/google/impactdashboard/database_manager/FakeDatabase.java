@@ -134,6 +134,16 @@ public class FakeDatabase {
     return averageBindings.get() / dailyBindings.size();
   }
 
+  public static long getMaxTimestamp() {
+    return iamBindings.entrySet().stream()
+      .reduce(0L, 
+        (accumulator, entry) -> 
+          Math.max(accumulator, 
+            entry.getValue().entrySet().stream()
+              .reduce(0L, (maxTime, mapping) -> Math.max(maxTime, mapping.getKey()), Math::max)), 
+        Math::max);
+  }
+
   /** 
    * Returns a map of entries in the recommendations table associated with 
    * {@code projectId}. 

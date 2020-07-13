@@ -234,19 +234,14 @@ export class GraphProcessorService {
     matchingRecommendations: Recommendation[]
   ): string {
     // Add the date to tooltip
-    let tooltip = `<table style="margin: 5px; font-size: 16px;"><tr><th style="background-color: #E8EAED; width: 100%;"><b>${date.toLocaleDateString()}</b></th></tr>`;
+    let tooltip = `<table><tr><th><b>${date.toLocaleDateString()}</b></th></tr>`;
     // The list of recommendations on the same day
     if (matchingRecommendations.length === 0) {
-      tooltip += `<tr><td style="border-top: 1px solid #666666;">IAM Bindings: ${numberBindings}</td></tr>`;
+      tooltip += `<tr><td>IAM Bindings: ${numberBindings}</td></tr>`;
     }
 
-    matchingRecommendations.forEach((recommendation, index) => {
-      let style = 'border-top: 1px solid #666666;';
-      if (index % 2 === 1) {
-        style += 'background-color: #F1F3F4;';
-      }
-
-      tooltip += `<tr><td style="${style}">`;
+    matchingRecommendations.forEach(recommendation => {
+      tooltip += '<tr class="tooltip-row"><td>';
 
       tooltip += `${recommendation.description}<br/>`;
       tooltip += `Impact: ${recommendation.metadata?.impactInIAMBindings} IAM Bindings`;

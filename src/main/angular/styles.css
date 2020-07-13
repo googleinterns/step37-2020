@@ -12,3 +12,31 @@
   margin: 0 auto;
   text-align: center;
 }
+
+/* Customization for GCharts tooltips */
+.google-visualization-tooltip {
+  border: 1px solid #9AA0A6 !important;
+  border-radius: 3px !important;
+}
+
+.google-visualization-tooltip table {
+  margin: 5px;
+  font-size: 16px;
+}
+
+.google-visualization-tooltip b {
+  font-size: 16px;
+}
+
+.google-visualization-tooltip th {
+  background-color: #E8EAED;
+  width: 100%;
+}
+
+.google-visualization-tooltip td {
+  border-top: 1px solid #666666; 
+}
+
+.tooltip-row:nth-child(odd) {
+  background-color: #F1F3F4;
+}

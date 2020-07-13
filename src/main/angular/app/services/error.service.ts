@@ -11,6 +11,7 @@ export class ErrorService implements ErrorHandler {
   ) {}
 
   /** Add the given error and redirect the user to error page. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleError(error: any): void {
     this.dataShare.addError(error);
     this.redirect.redirect('error');

@@ -43,7 +43,7 @@ export class GraphComponent implements OnInit {
 
   constructor(
     private dataService: DataService,
-    private graphProcessor: GraphProcessorService,
+    private graphProcessor: GraphProcessorService
   ) {
     this.shouldShowChart = false;
     this.projects = [];

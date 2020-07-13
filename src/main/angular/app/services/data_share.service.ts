@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {Injectable} from '@angular/core';
 
 /** Used for sharing data between unrelated components. Just used for storing errors for now. */

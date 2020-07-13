@@ -63,4 +63,10 @@ public interface QueryConfigurationBuilder {
    * Recommendations table.
    */
   public QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration();
+
+  /**
+   * Retrieves query job configuration that gets the most recent timestamp from 
+   * the IAM Bindings Table.
+   */
+  public QueryJobConfiguration.Builder getMostRecentTimestampConfiguration();
 }

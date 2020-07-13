@@ -87,22 +87,22 @@ public class Queries {
     "INSERT INTO `" + IAM_TABLE + "`" +
       " VALUES ";
 
+  /** Retrieves the most recent timestamp from the IAM Bindings Table. */
+  public static final String GET_MOST_RECENT_TIMESTAMP = 
+    "SELECT MAX(" + IAMBindingsSchema.TIMESTAMP_COLUMN + ")" + 
+      " FROM " + IAM_TABLE;
+
   /** Deletes 365-day-old data from the IAM bindings table. */
   public static final String DELETE_OLD_DATA_FROM_IAM_TABLE = 
     "DELETE FROM `" + IAM_TABLE + "`" +
       " WHERE " + IAMBindingsSchema.TIMESTAMP_COLUMN + " < " + 
-        " TIMESTAMP_SUB(" +
-          "(SELECT MAX(" + IAMBindingsSchema.TIMESTAMP_COLUMN + ")" +
-            " FROM " + IAM_TABLE + ")," +
+        " TIMESTAMP_SUB( (" + GET_MOST_RECENT_TIMESTAMP + ")," +
         " INTERVAL 365 DAY)";
 
   /** Deletes 365-day-old data from the recommendations table. */
   public static final String DELETE_OLD_DATA_FROM_RECOMMENDATIONS_TABLE = 
-  "DELETE FROM `" + RECOMMENDATIONS_TABLE + "`" +
-  " WHERE " + RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN + " < " + 
-    " TIMESTAMP_SUB(" +
-      "(SELECT MAX(" + IAMBindingsSchema.TIMESTAMP_COLUMN + ")" +
-        " FROM " + IAM_TABLE + ")," +
-    " INTERVAL 365 DAY)";
-  
+    "DELETE FROM `" + RECOMMENDATIONS_TABLE + "`" +
+      " WHERE " + RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN + " < " + 
+        " TIMESTAMP_SUB( (" + GET_MOST_RECENT_TIMESTAMP + ")," +
+        " INTERVAL 365 DAY)";
 }

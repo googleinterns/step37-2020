@@ -14,7 +14,6 @@ import com.google.impactdashboard.configuration.Constants;
 import com.google.auth.oauth2.GoogleCredentials;
 import java.io.FileInputStream;
 import java.io.IOException;
-import com.google.common.io.CharSource;
 import java.io.ByteArrayInputStream;
 
 /** A class that queries the database. */

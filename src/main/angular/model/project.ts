@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {ProjectMetaData} from './project-metadata';
+import {ProjectMetaData} from './project_metadata';
 
 /** Represents relevent fields for a single project. */
 export class Project {

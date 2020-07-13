@@ -6,22 +6,22 @@
     "frontend": {
       "projectType": "application",
       "schematics": {},
-      "root": "src/main/webapp",
-      "sourceRoot": "src/main/webapp",
+      "root": "src/main/angular",
+      "sourceRoot": "src/main/angular",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/frontend",
-            "index": "src/main/webapp/index.html",
-            "main": "src/main/webapp/main.ts",
-            "polyfills": "src/main/webapp/polyfills.ts",
+            "outputPath": "src/main/webapp",
+            "index": "src/main/angular/index.html",
+            "main": "src/main/angular/main.ts",
+            "polyfills": "src/main/angular/polyfills.ts",
             "tsConfig": "tsconfig.json",
             "aot": true,
             "assets": [],
             "styles": [
-              "src/main/webapp/styles.css"
+              "src/main/angular/styles.css"
             ],
             "scripts": []
           },
@@ -29,8 +29,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "src/main/webapp/environments/environment.ts",
-                  "with": "src/main/webapp/environments/environment.prod.ts"
+                  "replace": "src/main/angular/environments/environment.ts",
+                  "with": "src/main/angular/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -65,6 +65,16 @@
             "production": {
               "browserTarget": "frontend:build:production"
             }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "karmaConfig": "./karma.conf.js",
+            "polyfills": "src/main/angular/polyfills.ts",
+            "tsConfig": "./tsconfig.spec.json",
+            "scripts": [],
+            "main": "src/main/angular/main.ts"
           }
         },
         "lint": {

@@ -4,7 +4,6 @@ import com.google.impactdashboard.data.recommendation.*;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.database_manager.bigquery.*;
 import java.util.List;
-import java.io.IOException;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 
 /** Class for managing updates to the database. */
@@ -12,7 +11,7 @@ public class DataUpdateManagerImpl implements DataUpdateManager {
   DatabaseAccessor database;
   QueryConfigurationBuilder queryConfigurationBuilder;
 
-  public DataUpdateManagerImpl() throws IOException {
+  public DataUpdateManagerImpl() {
     database = new DatabaseAccessor(); 
     queryConfigurationBuilder = QueryConfigurationBuilderFactory.create();
   }

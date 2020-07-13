@@ -24,9 +24,7 @@ public class ListProjectSummariesServlet extends HttpServlet {
    */
   @Override
   public void init() {
-    try { 
       projectInformationRetriever = ProjectInformationRetriever.create();
-    } catch (java.io.IOException e) {}
   }
 
   /**

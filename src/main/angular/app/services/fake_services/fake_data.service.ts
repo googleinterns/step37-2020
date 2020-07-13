@@ -31,24 +31,20 @@ export class FakeDataService implements DataService {
   }
 
   /** Returns all the fake projects. */
-  listProjects(): Promise<Project[] | ErrorMessage> {
+  listProjects(): Promise<Project[]> {
     return new Promise(resolve =>
       resolve(Object.values(this.projects).map(tuple => tuple[0]))
     );
   }
 
   /** Returns the data associated with the given project. */
-  getProjectGraphData(id: string): Promise<ProjectGraphData | ErrorMessage> {
+  getProjectGraphData(id: string): Promise<ProjectGraphData> {
     if (this.projects[id]) {
       return new Promise(resolve => resolve(this.projects[id][1]));
     } else {
-      return new Promise(resolve =>
-        resolve(
-          new ErrorMessage(
-            `Error retrieving project of ID ${id} from FakeDataService`,
-            {}
-          )
-        )
+      throw new ErrorMessage(
+        `Error retrieving project of ID ${id} from FakeDataService`,
+        {}
       );
     }
   }

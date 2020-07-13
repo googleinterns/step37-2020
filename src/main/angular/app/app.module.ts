@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {NgModule, ErrorHandler} from '@angular/core';
 import {GoogleChartsModule} from 'angular-google-charts';
 
 import {AppRoutingModule} from './app_routing.module';
@@ -14,10 +14,10 @@ import {GraphProcessorService} from './services/graph_processor.service';
 import {dataServiceProvider} from './services/data.service.provider';
 import {ErrorPageComponent} from './error_page/error_page.component';
 import {MainPageComponent} from './main_page/main_page.component';
-import {ErrorMessageService} from './services/error_message.service';
+import {ErrorService} from './services/error.service';
 import {RedirectService} from './services/redirect.service';
-import {RedirectImplService} from './services/real_services/redirect_impl.service';
 import {ProjectQueryService} from './services/project_query.service';
+import {DataShareService} from './services/data_share.service';
 
 @NgModule({
   declarations: [
@@ -39,12 +39,13 @@ import {ProjectQueryService} from './services/project_query.service';
     dataServiceProvider,
     DateUtilitiesService,
     GraphProcessorService,
-    ErrorMessageService,
+    RedirectService,
     {
-      provide: RedirectService,
-      useClass: RedirectImplService,
+      provide: ErrorHandler,
+      useClass: ErrorService,
     },
     ProjectQueryService,
+    DataShareService,
   ],
   bootstrap: [AppComponent],
 })

@@ -24,7 +24,6 @@ import {GraphProcessorService} from '../services/graph_processor.service';
 import {GraphProperties} from '../../model/types';
 import {DataService} from '../services/data.service';
 import {WIDTH_SCALE_FACTOR, HEIGHT_SCALE_FACTOR} from '../../constants';
-import {ErrorMessageService} from '../services/error_message.service';
 
 /** The angular component that contains the graph and associated logic. */
 @Component({
@@ -44,11 +43,9 @@ export class GraphComponent implements OnInit {
 
   constructor(
     private dataService: DataService,
-    private graphProcessor: GraphProcessorService,
-    private errorMessageService: ErrorMessageService
+    private graphProcessor: GraphProcessorService
   ) {
     this.shouldShowChart = false;
-    1;
     this.projects = [];
   }
 

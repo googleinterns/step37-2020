@@ -6,23 +6,12 @@ import {FakeDataService} from './fake_services/fake_data.service';
 import {SimpleChanges, SimpleChange} from '@angular/core';
 import {Project} from '../../model/project';
 import {ProjectGraphData} from '../../model/project_graph_data';
-import {ErrorMessageService} from './error_message.service';
-import {FakeRedirectService} from './fake_services/fake_redirect.service';
-import {ProjectMetaData} from '../../model/project_metadata';
-import {ErrorMessage} from '../../model/error_message';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
-  let fakeRedirect: FakeRedirectService;
-  let errorService: ErrorMessageService;
 
   beforeAll(() => {
-    fakeRedirect = new FakeRedirectService();
-    errorService = new ErrorMessageService(fakeRedirect);
-    service = new GraphProcessorService(
-      new DateUtilitiesService(),
-      errorService
-    );
+    service = new GraphProcessorService(new DateUtilitiesService());
   });
 
   describe('initProperties()', () => {
@@ -294,44 +283,6 @@ describe('GraphProcessorService', () => {
           .filter(value => value !== undefined);
 
         expect(actual).toEqual(expected);
-      });
-    });
-
-    describe('Sends users to error page when an error occurs', () => {
-      let project: Project;
-
-      beforeAll(() => {
-        changes = {};
-        properties = service.initProperties();
-
-        project = new Project(
-          '',
-          'project-with-no-equivalent-id-in-system',
-          1,
-          new ProjectMetaData(1)
-        );
-
-        // Going from no projects to a single one
-        changes.projects = new SimpleChange([], [project], true);
-        service.processChanges(changes, properties, fakeDataService);
-      });
-
-      it('Adds an error', () => {
-        const errors = errorService.getErrors();
-        const expected = [
-          new ErrorMessage(
-            `Error retrieving project of ID ${project.projectId} from FakeDataService`,
-            {}
-          ),
-        ];
-
-        expect(errors).toEqual(expected);
-      });
-
-      it('Sends a redirect', () => {
-        const redirected = fakeRedirect.redirectSent('error');
-
-        expect(redirected).toBeTrue();
       });
     });
   });

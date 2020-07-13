@@ -9,8 +9,8 @@ import com.google.auto.value.AutoValue;
 public abstract class ProjectGraphData {
 
   public abstract String getProjectId();
-  public abstract Map<Long, Integer> getNumberIAMBindingsOnDate();
-  public abstract Map<Long, Recommendation> getRecommendationsAppliedOnDate();
+  public abstract Map<Long, Integer> getDateToNumberIAMBindings();
+  public abstract Map<Long, Recommendation> getDateToRecommendationTaken();
 
   /** 
    * Create an {@code ProjectGraphData} object for project {@code projectId}, where 

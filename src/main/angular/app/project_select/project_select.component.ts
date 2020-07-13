@@ -9,8 +9,6 @@ import {
 import {trigger, state, style, transition, animate} from '@angular/animations';
 import {SortDirection, SortBy} from '../../model/project_sort';
 import {DataService} from '../services/data.service';
-import {ErrorMessageService} from '../services/error_message.service';
-import {ErrorMessage} from '../../model/error_message';
 import {ProjectQueryService} from '../services/project_query.service';
 
 /** Component which lets users select which projects to display on the graph. */
@@ -56,7 +54,6 @@ export class ProjectSelectComponent implements OnInit {
 
   constructor(
     private dataService: DataService,
-    private errorMessageService: ErrorMessageService,
     private projectQueryService: ProjectQueryService
   ) {
     this.activeProjects = new Set();
@@ -162,8 +159,6 @@ export class ProjectSelectComponent implements OnInit {
         if (projects.length > 0) {
           this.toggleProject(projects[0]);
         }
-      } else if (projects instanceof ErrorMessage) {
-        this.errorMessageService.setErrors([projects]);
       }
     });
   }

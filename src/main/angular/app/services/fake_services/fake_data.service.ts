@@ -22,6 +22,7 @@ export class FakeDataService implements DataService {
       FakeDataService.fakeProject4(),
     ];
     fakes.forEach(tuple => (this.projects[tuple[0].projectId] = tuple));
+    this.generateErrorProject();
   }
 
   /** Returns all the fake projects. */

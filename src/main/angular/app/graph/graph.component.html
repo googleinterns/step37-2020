@@ -21,6 +21,8 @@ limitations under the License.
     generate a graph.</h1>
 </div>
 
+<app-date-select *ngIf="shouldShowChart" [possibleRange]="properties.dateRange"></app-date-select>
+
 <google-chart #chart id="chart" class="center" *ngIf="shouldShowChart" [type]="properties.type"
   [columns]="properties.columns" [data]="properties.graphData" [options]="properties.options"
   [width]="properties.width" [height]="properties.height">

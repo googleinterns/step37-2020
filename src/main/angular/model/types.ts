@@ -8,6 +8,7 @@ export type GraphProperties = {
   type: 'LineChart';
   width: number;
   height: number;
+  dateRange: DateRange;
 };
 
 /** The different types of data permitted in a row for Google Charts. */
@@ -23,3 +24,6 @@ export type Columns = (
   | string
   | {type: 'string'; role: 'tooltip' | 'style'; p?: {html: boolean}}
 )[];
+
+/** Represents a range of dates */
+export type DateRange = {start: Date; end: Date};

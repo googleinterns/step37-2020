@@ -6,7 +6,6 @@ import {SimpleChange} from '@angular/core';
 import {DateUtilitiesService} from './date_utilities.service';
 import {GraphProperties, Columns, Row} from '../../model/types';
 import {DataService} from './data.service';
-import {ErrorMessage} from '../../model/error_message';
 
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
@@ -52,6 +51,7 @@ export class GraphProcessorService {
       type: 'LineChart',
       width: 960,
       height: 600,
+      dateRange: {start: new Date(), end: new Date()},
     };
   }
 
@@ -91,6 +91,10 @@ export class GraphProcessorService {
     this.addIamColumns(properties.columns, data);
     // Add the new rows
     this.addIamRows(properties.graphData, data, project, seriesNumber);
+    // Modify the date range as appropriate
+    properties.dateRange = this.dateUtilities.getDateRange(
+      properties.graphData
+    );
 
     // Force a refresh of the chart
     const temp: Columns = [];
@@ -113,6 +117,15 @@ export class GraphProcessorService {
 
     properties.columns.splice(seriesNumber * 3 + 1, 3);
     properties.graphData.forEach(row => row.splice(seriesNumber * 3 + 1, 3));
+    // Look for rows with empty data and remove them
+    properties.graphData = properties.graphData.filter(row =>
+      row.some((value, index) => value && index !== 0)
+    );
+
+    // Modify the date range as appropriate
+    properties.dateRange = this.dateUtilities.getDateRange(
+      properties.graphData
+    );
 
     // Force a refresh of the chart
     const temp: Columns = [];

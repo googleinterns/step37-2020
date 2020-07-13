@@ -18,6 +18,7 @@ import {ErrorService} from './services/error.service';
 import {RedirectService} from './services/redirect.service';
 import {ProjectQueryService} from './services/project_query.service';
 import {DataShareService} from './services/data_share.service';
+import {DateSelectComponent} from './date_select/date_select.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import {DataShareService} from './services/data_share.service';
     ProjectSelectComponent,
     ErrorPageComponent,
     MainPageComponent,
+    DateSelectComponent,
   ],
   imports: [
     BrowserModule,

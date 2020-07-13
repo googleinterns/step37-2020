@@ -31,10 +31,12 @@
 .google-visualization-tooltip th {
   background-color: #E8EAED;
   width: 100%;
+  padding: 0;
 }
 
 .google-visualization-tooltip td {
-  border-top: 1px solid #666666; 
+  border-top: 1px solid #666666;
+  padding: 0;
 }
 
 .tooltip-row:nth-child(odd) {

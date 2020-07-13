@@ -69,8 +69,75 @@ describe('ProjectQueryService', () => {
   });
 
   describe('changeField()', () => {
-    it('Changes the field with the same direction', () => {});
-    it('Changes the field with a different direction', () => {});
+    describe('Change the field with the same direction', () => {
+      let expectedField: SortBy;
+      let currentDirection: SortDirection;
+
+      beforeAll(() => {
+        service = new ProjectQueryService();
+        service.init(projects);
+        expectedField = SortBy.NAME;
+        currentDirection = service.sortDirection;
+
+        service.changeField(expectedField, currentDirection);
+      });
+
+      it('Changes the field', () => {
+        const actual = service.sortField;
+
+        expect(actual).toBe(expectedField);
+      });
+
+      it('Leaves the direction', () => {
+        const actual = service.sortDirection;
+
+        expect(actual).toBe(currentDirection);
+      });
+
+      it('Sorts properly', () => {
+        const actual = service.getProjects();
+        const expected = projects.sort(
+          ProjectComparators.getComparator(currentDirection, expectedField)
+        );
+
+        expect(actual).toEqual(expected);
+      });
+    });
+
+    describe('Change the field with a different direction', () => {
+      let expectedField: SortBy;
+      let expectedDirection: SortDirection;
+
+      beforeAll(() => {
+        service = new ProjectQueryService();
+        service.init(projects);
+        expectedField = SortBy.NAME;
+        expectedDirection = SortDirection.ASCENDING;
+
+        service.changeField(expectedField, expectedDirection);
+      });
+
+      it('Changes the field', () => {
+        const actual = service.sortField;
+
+        expect(actual).toBe(expectedField);
+      });
+
+      it('Changes the sort direction', () => {
+        const actual = service.sortDirection;
+
+        expect(actual).toBe(expectedDirection);
+      });
+
+      it('Sorts properly', () => {
+        const actual = service.getProjects();
+        const expected = projects.sort(
+          ProjectComparators.getComparator(expectedDirection, expectedField)
+        );
+
+        expect(actual).toEqual(expected);
+      });
+    });
   });
 
   describe('changeQuery()', () => {

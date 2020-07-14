@@ -16,7 +16,7 @@ public class Constants {
   public static final String IAM_BINDINGS_TABLE = "IAM_Bindings";
 
   /** The name of the database holding the test data. */
-  public static final String TEST_DATABASE = "Test_Capstone";
+  public static final String TEST_DATABASE = "Test_Impact_Dashboard";
 
   /** The name of the database holding the real data. */
   public static final String DATABASE = "Recommendations_Impact_Dashboard";

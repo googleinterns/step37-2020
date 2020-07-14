@@ -49,10 +49,7 @@ public class DataUpdateManagerImpl implements DataUpdateManager {
   }
 
   /**
-   * Deletes data from the IAM Bindings table that is over 365 days old. More 
-   * specifically, deletes data that is more than 365 older than the newest entry 
-   * in the table, since the tables should hold at most a window of 365 days 
-   * of information.
+   * Deletes data from the IAM Bindings table that is over 365 days old.
    */
   private void deleteYearOldDataFromIAMTable() {
     QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
@@ -61,10 +58,7 @@ public class DataUpdateManagerImpl implements DataUpdateManager {
   }
 
   /**
-   * Deletes data from the Recommendations table that is over 365 days old. More 
-   * specifically, deletes data that is more than 365 older than the newest entry 
-   * in the IAM table, since the tables should hold at most a window of 365 days 
-   * of information.
+   * Deletes data from the Recommendations table that is over 365 days old.
    */
   private void deleteYearOldDataFromRecommendationsTable() {
     QueryJobConfiguration queryConfiguration = queryConfigurationBuilder

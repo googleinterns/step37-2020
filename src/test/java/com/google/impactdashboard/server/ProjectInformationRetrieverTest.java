@@ -108,6 +108,6 @@ public class ProjectInformationRetrieverTest extends Mockito {
     ProjectGraphData actual = informationRetriever.getProjectData(PROJECT_ID_1);
 
     Assert.assertEquals(expected, actual);
-  } 
+  }
 
 }

@@ -82,13 +82,4 @@ public class LogRetriever {
     return StreamSupport.stream(response.iterateAll().spliterator(), false)
         .collect(Collectors.toList());
   }
-
-  public static void main(String[] args) throws IOException {
-    LogRetriever retriever = LogRetriever.create();
-    RecommendationRetriever recommendationRetriever = RecommendationRetriever.create();
-    Collection<LogEntry> recommendationLogs = retriever.listRecommendationLogs("concord-intern");
-
-    List<Recommendation> recommendations = recommendationRetriever.listRecommendations((List<LogEntry>)recommendationLogs,
-        "concord-interns", Recommendation.RecommenderType.IAM_BINDING);
-  }
 }

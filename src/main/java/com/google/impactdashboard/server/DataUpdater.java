@@ -8,30 +8,31 @@ import com.google.impactdashboard.database_manager.data_read.DataReadManager;
 import com.google.impactdashboard.database_manager.data_read.DataReadManagerFactory;
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManager;
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManagerFactory;
+import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
-import com.google.logging.v2.LogEntry;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /** Class for updating the information in the database from the API. */
 public class DataUpdater {
 
   private final LogRetriever logRetriever;
   private final RecommendationRetriever recommendationRetriever;
+  private final IamBindingRetriever iamRetriever;
   private final DataUpdateManager updateManager;
   private final DataReadManager readManager;
 
   @VisibleForTesting
   protected DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
-                      DataUpdateManager updateManager, DataReadManager readManager) {
+                      DataUpdateManager updateManager, DataReadManager readManager,
+                      IamBindingRetriever iamRetriever) {
     this.logRetriever = logRetriever;
     this.recommendationRetriever = recommendationRetriever;
     this.updateManager = updateManager;
     this.readManager = readManager;
+    this.iamRetriever = iamRetriever;
   }
 
   /**
@@ -39,9 +40,10 @@ public class DataUpdater {
    * and RecommendationRetriever.
    * @return New instance of DataUpdater
    */
-  public static DataUpdater create() throws IOException {
+  public static DataUpdater create() throws Exception {
     return new DataUpdater(LogRetriever.create(), RecommendationRetriever.create(),
-        DataUpdateManagerFactory.create(), DataReadManagerFactory.create());
+        DataUpdateManagerFactory.create(), DataReadManagerFactory.create(),
+        IamBindingRetriever.create());
   }
 
   /**

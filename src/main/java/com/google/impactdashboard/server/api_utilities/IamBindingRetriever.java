@@ -10,6 +10,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.audit.AuditLog;
 import com.google.impactdashboard.configuration.Constants;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
+import com.google.impactdashboard.data.recommendation.RecommendationAction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
@@ -27,11 +28,9 @@ import java.util.stream.Collectors;
  */
 public class IamBindingRetriever {
 
-  private final Map<String, Integer> mapRoleToNumberOfMembers;
   private final Iam iamService;
 
-  protected IamBindingRetriever( Map<String, Integer> mapRoleToNumberOfMembers, Iam iamService) {
-    this.mapRoleToNumberOfMembers = mapRoleToNumberOfMembers;
+  protected IamBindingRetriever(Iam iamService) {
     this.iamService = iamService;
   }
 
@@ -54,7 +53,7 @@ public class IamBindingRetriever {
         new HttpCredentialsAdapter(credentials))
         .setApplicationName("Recommendation Impact Dashboard")
         .build();
-    return new IamBindingRetriever(new HashMap<>(), iamService);
+    return new IamBindingRetriever(iamService);
   }
 
   /**
@@ -113,5 +112,23 @@ public class IamBindingRetriever {
     List<Role> roles = iamService.roles().list().setView("full").execute().getRoles();
     return roles.stream().filter(role -> membersForRoles.containsKey(role.getName()))
         .mapToInt(role -> role.getIncludedPermissions().size() * membersForRoles.get(role.getName())).sum();
+  }
+
+  /**
+   * Retrieves Iam roles from Iam API using the roles within the action and determines the impact
+   * on total number of bindings for the actions.
+   * @param actions The actions that the impact needs to be calculated for
+   * @return The difference in the number of bindings the two roles have.
+   */
+  public int getActionImpact(List<RecommendationAction> actions) throws IOException {
+    //Todo redo for list
+//    Role previousRole = iamService.roles().get(previousRoleString).execute();
+//    if(!newRoleString.isEmpty()) {
+//      Role newRole = iamService.roles().get(newRoleString).execute();
+//      return Math.abs(previousRole.getIncludedPermissions().size() -
+//          newRole.getIncludedPermissions().size());
+//    }
+//    return previousRole.getIncludedPermissions().size();
+    throw new UnsupportedOperationException("Not implemented");
   }
 }

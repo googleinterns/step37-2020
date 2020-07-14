@@ -7,6 +7,7 @@ import com.google.cloud.recommender.v1.stub.RecommenderStubSettings;
 import com.google.impactdashboard.configuration.Constants;
 import com.google.impactdashboard.data.recommendation.IAMRecommenderMetadata;
 import com.google.impactdashboard.data.recommendation.Recommendation;
+import com.google.impactdashboard.data.recommendation.RecommendationAction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.Value;
 
@@ -56,16 +57,17 @@ public class RecommendationRetriever {
    * @return collection of recommendations for the project specified
    */
   public List<Recommendation> listRecommendations(Collection<LogEntry> recommendationLogs,
-                                                  String projectId,
-                                                  Recommendation.RecommenderType type) {
+                                String projectId, Recommendation.RecommenderType type,
+                                IamBindingRetriever iamRetriever) {
     return recommendationLogs.stream().map(recommendationLog -> {
       Map<String, Value> recommendationDataMap = recommendationLog.getJsonPayload().getFieldsMap();
       com.google.cloud.recommender.v1.Recommendation recommendation = recommender
           .getRecommendation(recommendationDataMap.get("recommendationName").getStringValue());
+      List<RecommendationAction> actions = getRecommendationActions(recommendation);
       return Recommendation.create(projectId, recommendationDataMap.get("actor").getStringValue(),
-          createRecommendationActions(recommendation),
-          type, recommendationLog.getTimestamp().getSeconds(),
-          IAMRecommenderMetadata.create(10)); // Fix IamRecommenderMetadata being correct
+          actions, type, recommendationLog.getTimestamp().getSeconds(),
+          // todo use IamRetriever
+          IAMRecommenderMetadata.create());
     }).collect(Collectors.toList());
   }
 
@@ -74,7 +76,7 @@ public class RecommendationRetriever {
    * @param recommendation the recommendation the description is coming from
    * @return The a list of actions for the given recommendation
    */
-  private List<RecommendationAction> createRecommendationActions(
+  private List<RecommendationAction> getRecommendationActions(
       com.google.cloud.recommender.v1.Recommendation recommendation) {
     List<RecommendationAction> actions = recommendation.getContent().getOperationGroupsList()
         .stream().map(operationGroup -> {

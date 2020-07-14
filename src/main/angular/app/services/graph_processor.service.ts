@@ -6,6 +6,7 @@ import {SimpleChange} from '@angular/core';
 import {DateUtilitiesService} from './date_utilities.service';
 import {GraphProperties, Columns, Row} from '../../model/types';
 import {DataService} from './data.service';
+import {ErrorMessage} from '../../model/error_message';
 
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
@@ -47,17 +48,17 @@ export class GraphProcessorService {
   }
 
   /** Process the given changes and adjust from the graph properties as necessary. */
-  async processChanges(
+  processChanges(
     changes: SimpleChanges,
     properties: GraphProperties,
-    httpService: DataService
+    dataService: DataService
   ): Promise<void> {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
     const promises: Promise<unknown>[] = [];
 
     additionsDeletions.added.forEach(addition =>
       promises.push(
-        httpService
+        dataService
           .getProjectGraphData(addition.projectId)
           .then(data => this.addToGraph(properties, data, addition))
       )
@@ -65,10 +66,7 @@ export class GraphProcessorService {
     additionsDeletions.removed.forEach(removal =>
       this.removeFromGraph(properties, removal)
     );
-    return Promise.all(promises).then(() => {
-      properties.title = 'IAM Bindings';
-      return undefined;
-    });
+    return Promise.all(promises).then();
   }
 
   /** Adds the given project to the graph. */
@@ -76,7 +74,7 @@ export class GraphProcessorService {
     properties: GraphProperties,
     data: ProjectGraphData,
     project: Project
-  ) {
+  ): void {
     const seriesNumber: number = (properties.columns.length - 1) / 3;
     // Set the color and add the new columns
     if (properties.options.series) {

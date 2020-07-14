@@ -21,3 +21,5 @@ export const WIDTH_SCALE_FACTOR = 6 / 8;
 export const HEIGHT_SCALE_FACTOR = 1 / 2;
 /** The color of a project's bubble when it's not on the graph */
 export const PROJECT_INACTIVE_COLOR = '#b8b8b8';
+/** The relative URL of the error page */
+export const ERROR_PAGE_URL = 'error';

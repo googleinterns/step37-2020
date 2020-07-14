@@ -1,2 +1,9 @@
+<mat-date-range-input [rangePicker]="picker">
+  <input matStartDate placeholder="Start date">
+  <input matEndDate placeholder="End date">
+</mat-date-range-input>
+
+<mat-date-range-picker #picker></mat-date-range-picker>
+
 <p>start: {{ possibleRange.start.toLocaleDateString() }}</p>
 <p>end: {{ possibleRange.end.toLocaleDateString() }}</p>

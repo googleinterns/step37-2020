@@ -36,7 +36,7 @@ public interface DataReadManager {
 
   /**
    * Returns the most recent timestamp in the IAM Bindings Table. If there is
-   * nothing in the table, returns 0.
+   * nothing in the table, returns -1.
    */
   public long getMostRecentTimestamp();
 }

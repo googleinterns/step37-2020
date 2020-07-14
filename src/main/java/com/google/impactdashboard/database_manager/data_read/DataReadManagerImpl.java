@@ -115,7 +115,7 @@ public class DataReadManagerImpl implements DataReadManager {
   }
 
   /**
-   * Queries the IAM Table and returns the most recent timestamp, or 0 if there is
+   * Queries the IAM Table and returns the most recent timestamp, or -1 if there is
    * no data.
    */
   public long getMostRecentTimestamp() {
@@ -124,13 +124,13 @@ public class DataReadManagerImpl implements DataReadManager {
       .build();
     TableResult results = database.readDatabase(queryConfiguration);
 
-    long maxTimestamp = 0;
+    long maxTimestamp = -1;
     try {
       for (FieldValueList row : results.iterateAll()) {
         maxTimestamp = row.get("Max_Timestamp").getTimestampValue() / 1000;
       }
     } catch (NullPointerException np) {
-      return 0;
+      return -1;
     }
     return maxTimestamp;
   }

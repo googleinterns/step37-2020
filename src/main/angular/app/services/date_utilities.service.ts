@@ -64,4 +64,14 @@ export class DateUtilitiesService {
 
     return {start: earliestDate as Date, end: lastDate as Date};
   }
+
+  /** Checks if the given date is within the given date range */
+  contains(range: DateRange, date: Date): boolean {
+    const time = date.getTime();
+
+    if (range.start.getTime() > time || range.end.getTime() < time) {
+      return false;
+    }
+    return true;
+  }
 }

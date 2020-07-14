@@ -21,7 +21,7 @@ import {
 } from '@angular/core';
 import {Project} from '../../model/project';
 import {GraphProcessorService} from '../services/graph_processor.service';
-import {GraphProperties, DateRange} from '../../model/types';
+import {GraphProperties, DateRange, Columns} from '../../model/types';
 import {DataService} from '../services/data.service';
 import {WIDTH_SCALE_FACTOR, HEIGHT_SCALE_FACTOR} from '../../constants';
 
@@ -66,9 +66,11 @@ export class GraphComponent implements OnInit {
 
   /** Change the range on the graph */
   changeDateRange(dateRange: DateRange) {
-    console.log('change', dateRange);
-    this.properties.options.hAxis.minValue = dateRange.start;
-    this.properties.options.hAxis.maxValue = dateRange.end;
+    this.properties.options.hAxis.viewWindow.min = dateRange.start;
+    this.properties.options.hAxis.viewWindow.max = dateRange.end;
+    // Force a refresh of the chart
+    const temp: Columns = [];
+    this.properties.columns = temp.concat(this.properties.columns);
   }
 
   /** Listen for resizes of the window */

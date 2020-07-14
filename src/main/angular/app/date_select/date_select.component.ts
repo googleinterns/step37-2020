@@ -7,6 +7,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import {DateRange} from '../../model/types';
+import {DateUtilitiesService} from '../services/date_utilities.service';
 
 /** Used for selecting the dates to display on the graph */
 @Component({
@@ -29,12 +30,7 @@ export class DateSelectComponent implements OnInit {
   public currentMin: Date;
   public currentMax: Date;
 
-  constructor() {
-    this.possibleRange = {
-      start: new Date(2020, 5, 1),
-      end: new Date(2020, 5, 15),
-    };
-  }
+  constructor(private dateUtilities: DateUtilitiesService) {}
 
   ngOnInit(): void {}
 
@@ -45,16 +41,19 @@ export class DateSelectComponent implements OnInit {
     if (!this.lastSent) {
       this.lastSent = this.possibleRange;
     }
+    this.validateAndSend();
   }
 
   private validateAndSend() {
     if (
-      this.currentMin.getTime() !== this.lastSent.start.getTime() ||
-      this.currentMax.getTime() !== this.lastSent.start.getTime()
+      this.dateUtilities.contains(this.possibleRange, this.currentMin) &&
+      this.dateUtilities.contains(this.possibleRange, this.currentMax) &&
+      (this.currentMin.getTime() !== this.lastSent.start.getTime() ||
+        this.currentMax.getTime() !== this.lastSent.start.getTime())
     ) {
+      console.log(this.lastSent);
       this.lastSent.start = this.currentMin;
       this.lastSent.end = this.currentMax;
-      console.log(this.lastSent);
       this.selectedRange.emit(this.lastSent);
     }
   }

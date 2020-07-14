@@ -3,14 +3,27 @@ package com.google.impactdashboard.database_manager.data_read;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.IAMRecommenderMetadata;
 import com.google.impactdashboard.data.recommendation.Recommendation;
+import com.google.impactdashboard.configuration.*;
+import com.google.impactdashboard.database_manager.bigquery.*;
 import java.util.List;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicReference;
+import com.google.cloud.bigquery.TableResult;
+import com.google.cloud.bigquery.FieldValueList;
+import java.io.IOException;
+import com.google.cloud.bigquery.QueryJobConfiguration;
+import com.google.cloud.bigquery.QueryParameterValue;
 
 /** Class for returning data from the database. */
 public class DataReadManagerImpl implements DataReadManager {
+  DatabaseAccessor database;
+  QueryConfigurationBuilder queryConfigurationBuilder;
+
+  public DataReadManagerImpl() throws IOException {
+    database = new DatabaseAccessor(); 
+    queryConfigurationBuilder = QueryConfigurationBuilderFactory.create();
+  }
   
   /** 
    *  Returns a list containing identifying information for all projects in the 
@@ -18,25 +31,37 @@ public class DataReadManagerImpl implements DataReadManager {
    */
   @Override
   public List<ProjectIdentification> listProjects() {
-    return Arrays.asList( 
-      ProjectIdentification.create("project-1", "project-id-1", 123456789123L), 
-      ProjectIdentification.create("project-2", "project-id-2", 234567890123L));
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getProjectIdsConfiguration().build();
+    TableResult results = database.readDatabase(queryConfiguration);
+
+    List<ProjectIdentification> listOfProjects = new ArrayList<ProjectIdentification>();
+    for (FieldValueList row : results.iterateAll()) {
+      String projectId = row.get(IAMBindingsSchema.IAM_PROJECT_ID_COLUMN).getStringValue();
+      listOfProjects.add(getProjectIdentificationForProject(projectId));
+    }
+    return listOfProjects;
   }
 
   /** 
    *  Returns the average number of IAM bindings that the project with id 
    *  {@code projectId} had per day over the past 365 days (or, if there are 
    *  not 365 days of data in the IAM Bindings table, the average over however 
-   *  many days of data are in the table). 
+   *  many days of data are in the table). If the project has no data, returns 0.
    */
   @Override
   public double getAverageIAMBindingsInPastYear(String projectId) {
-    if (projectId.equals("project-id-1")) {
-      return 1545;
-    } else if (projectId.equals("project-id-2")) {
-      return 715;
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getAverageBindingsConfiguration()
+      .addNamedParameter("projectId", QueryParameterValue.string(projectId))
+      .build();
+    TableResult results = database.readDatabase(queryConfiguration);
+    
+    double avgNumberOfBindings = 0.0;
+    for (FieldValueList row : results.iterateAll()) {
+      avgNumberOfBindings = row.get("AverageBindings").getDoubleValue();
     }
-    return 0;
+    return avgNumberOfBindings; 
   }
 
   /**
@@ -45,37 +70,23 @@ public class DataReadManagerImpl implements DataReadManager {
    */
   @Override
   public Map<Long, Recommendation> getMapOfDatesToRecommendationTaken(String projectId) {
-    HashMap<Long, Recommendation> datesToRecommendations = new HashMap<Long, Recommendation>(); 
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getDatesToIAMRecommendationsConfiguration()
+      .addNamedParameter("projectId", QueryParameterValue.string(projectId))
+      .build();
+    TableResult results = database.readDatabase(queryConfiguration);
 
-    if (projectId.equals("project-id-1")) {
-      datesToRecommendations.put(1591633823000L, 
-        Recommendation.create("project-id-1", 
-          "remove unused permissions from user account test@google.com", 
-          Recommendation.RecommenderType.IAM_BINDING, 1591633823000L, 
-          IAMRecommenderMetadata.create(1000)));    
-      datesToRecommendations.put(1592486585000L, 
-        Recommendation.create("project-id-1", 
-          "remove unused permissions from user account test2@google.com", 
-          Recommendation.RecommenderType.IAM_BINDING, 1592486585000L, 
-          IAMRecommenderMetadata.create(1000)));  
-      datesToRecommendations.put(1592486705000L, 
-        Recommendation.create("project-id-1", 
-          "remove unused permissions from user account test3@google.com", 
-          Recommendation.RecommenderType.IAM_BINDING, 1592486705000L, 
-          IAMRecommenderMetadata.create(300)));      
-    } else if (projectId.equals("project-id-2")) {
-      datesToRecommendations.put(1591704613000L, 
-        Recommendation.create("project-id-2", 
-          "remove unused permissions from user account test4@google.com", 
-          Recommendation.RecommenderType.IAM_BINDING, 1591704613000L, 
-          IAMRecommenderMetadata.create(500)));    
-      datesToRecommendations.put(1593072312000L, 
-        Recommendation.create("project-id-2", 
-          "remove unused permissions from user account test5@google.com", 
-          Recommendation.RecommenderType.IAM_BINDING, 1593072312000L, 
-          IAMRecommenderMetadata.create(350)));    
-    }
+    HashMap<Long, Recommendation> datesToRecommendations = new HashMap<Long, Recommendation>();
+    for (FieldValueList row : results.iterateAll()) {
+      long acceptedTimestamp = row.get(RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN)
+        .getTimestampValue() / 1000;
+      String description = row.get(RecommendationsSchema.DESCRIPTION_COLUMN).getStringValue();
+      int iamImpact = (int) row.get(RecommendationsSchema.IAM_IMPACT_COLUMN).getLongValue();
 
+      datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
+        projectId, description, Recommendation.RecommenderType.IAM_BINDING, acceptedTimestamp, 
+        IAMRecommenderMetadata.create(iamImpact)));
+    } 
     return datesToRecommendations;
   }
 
@@ -86,27 +97,46 @@ public class DataReadManagerImpl implements DataReadManager {
    */
   @Override
   public Map<Long, Integer> getMapOfDatesToIAMBindings(String projectId) {
-    HashMap<Long, Integer> datesToBindings = new HashMap<Long, Integer>();
-    AtomicReference<Long> date = new AtomicReference<Long>(1590883200000L);
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getDatesToBindingsConfiguration()
+      .addNamedParameter("projectId", QueryParameterValue.string(projectId))
+      .build();
+    TableResult results = database.readDatabase(queryConfiguration);
 
-    if (projectId.equals("project-id-1")) {
-      Arrays.asList(1000, 1000, 1000, 2000, 2050, 2150, 2150, 2150, 2150, 
-        1150, 1150, 1150, 1150, 2000, 2000, 2500, 2500, 2300, 2300, 1000, 
-        1000, 1000, 1100, 1100, 1000, 1000, 1300, 1300, 1350, 1350)
-        .forEach(numberBindings -> {
-          datesToBindings.put(date.get(), numberBindings);
-          date.set(date.get() + 86400000);
-        });
-    } else if (projectId.equals("project-id-2")) {
-      Arrays.asList(500, 500, 750, 750, 750, 750, 750, 1000, 1000, 
-        1000, 500, 500, 500, 600, 600, 600, 600, 300, 300, 1000, 
-        1000, 1000, 1100, 1100, 1000, 1000, 500, 500, 500, 500)
-        .forEach(numberBindings -> {
-          datesToBindings.put(date.get(), numberBindings);
-          date.set(date.get() + 86400000);
-        });
+    HashMap<Long, Integer> datesToBindings = new HashMap<Long, Integer>();
+    for (FieldValueList row : results.iterateAll()) {
+      long timestamp = row.get(IAMBindingsSchema.TIMESTAMP_COLUMN)
+        .getTimestampValue() / 1000;
+      int iamBindings = (int) row.get(IAMBindingsSchema.NUMBER_BINDINGS_COLUMN).getLongValue();
+
+      datesToBindings.put(timestamp, iamBindings);
+    } 
+    return datesToBindings;
+  }
+
+  /**
+   * Queries the IAM database for information about the project with id 
+   * {@code projectId}, and returns a {@code ProjectIdentification} object 
+   * containing that information. 
+   */
+  private ProjectIdentification getProjectIdentificationForProject(String projectId) {
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getProjectIdentificationInformationConfiguration()
+      .addNamedParameter("projectId", QueryParameterValue.string(projectId))
+      .build();
+    TableResult results = database.readDatabase(queryConfiguration);
+    
+    String projectName = null;
+    String projectNumber = null;
+    for (FieldValueList row : results.iterateAll()) {
+      projectName = row.get(IAMBindingsSchema.PROJECT_NAME_COLUMN).getStringValue();
+      projectNumber = row.get(IAMBindingsSchema.PROJECT_NUMBER_COLUMN).getStringValue();
     }
 
-    return datesToBindings;
+    if (projectName == null || projectNumber == null) {
+      throw new RuntimeException("Database failed to retrieve project information.");
+    }
+
+    return ProjectIdentification.create(projectName, projectId, Long.parseLong(projectNumber));
   }
 }

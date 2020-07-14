@@ -13,7 +13,10 @@ export class DateSelectComponent implements OnInit {
   public possibleRange: DateRange;
 
   constructor() {
-    this.possibleRange = {start: new Date(), end: new Date()};
+    this.possibleRange = {
+      start: new Date(2020, 5, 1),
+      end: new Date(2020, 5, 15),
+    };
   }
 
   ngOnInit(): void {}

@@ -6,7 +6,8 @@
       "jasmine",
       "node",
       "google.visualization"
-    ]
+    ],
+    "composite": true
   },
   "files": [
     "src/main/angular/test.ts",
@@ -16,5 +17,5 @@
   "include": [
     "src/**/*.spec.ts",
     "src/**/*.d.ts"
-  ]
+  ],
 }

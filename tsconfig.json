@@ -5,13 +5,18 @@
   To learn more about this file see: https://angular.io/config/solution-tsconfig.
 */
 {
-  "files": [],
+  "files": [
+    "./src/main/angular/main.ts",
+    "./src/main/angular/polyfills.ts",
+    "./src/main/angular/test.ts"
+  ],
   "references": [
     {
-      "path": "./tsconfig.json"
-    },
-    {
-      "path": "././tsconfig.spec.json"
+      "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "target": "ES5"
+  }
 }

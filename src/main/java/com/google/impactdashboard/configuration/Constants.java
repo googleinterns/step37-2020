@@ -7,8 +7,7 @@ public class Constants {
   public static final String PROJECT_ID = "concord-intern";
 
   /** The path to the service account key. */
-  public static final String PATH_TO_SERVICE_ACCOUNT_KEY = 
-    "/usr/local/google/home/carolinelui/Downloads/concord-intern-be008358496f.json";
+  public static final String PATH_TO_SERVICE_ACCOUNT_KEY = "~/Downloads/key.json";
 
   /** The name of the table holding recommendations data. */
   public static final String RECOMMENDATIONS_TABLE = "Recommendations";

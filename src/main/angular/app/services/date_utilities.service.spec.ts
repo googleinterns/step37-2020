@@ -130,4 +130,14 @@ describe('DateUtilitiesService', () => {
       expect(actual).toEqual(expected);
     });
   });
+
+  describe('getDateRange()', () => {
+    it('Gets the proper date range from a continous block of dates', () => {});
+    it('Gets the proper range for two disparate blocks of dates', () => {});
+  });
+
+  describe('contains()', () => {
+    it('Includes data in the middle of the date range', () => {});
+    it('Includes dates at the beginning/end of date range', () => {});
+  });
 });

@@ -20,4 +20,10 @@ public class Configuration {
    * testing purposes instead of the real database.  
    */
   public static boolean useTestDatabase = true;
+
+  /**
+   * When set to true, DatabaseAccessor will access a test database where all 
+   * the tables are empty. Takes precedence over {@code useTestDatabase}.
+   */
+  public static boolean useEmptyDatabase = false;
 }

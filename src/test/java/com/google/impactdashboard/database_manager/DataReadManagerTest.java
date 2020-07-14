@@ -21,6 +21,7 @@ import java.lang.Math;
 public class DataReadManagerTest {
 
   private static DataReadManager dataReadManager;
+  private static DataReadManager dataReadManagerEmptyTables;
 
   private static final ProjectIdentification PROJECT_1_IDENTIFICATION = 
     ProjectIdentification.create("project-1", "project-id-1", 123456789123L);
@@ -43,11 +44,11 @@ public class DataReadManagerTest {
   public static void setTestingConfiguration() throws IOException {
     Configuration.useTestDatabase = true;
     dataReadManager = DataReadManagerFactory.create();
-  }
-
-  @AfterClass
-  public static void undoTestingConfiguration() {
     Configuration.useTestDatabase = false;
+
+    Configuration.useEmptyDatabase = true;
+    dataReadManagerEmptyTables = DataReadManagerFactory.create();
+    Configuration.useEmptyDatabase = false;
   }
 
   @Test
@@ -154,6 +155,14 @@ public class DataReadManagerTest {
   public void testCorrectMaxTimestamp() {
     long actual = dataReadManager.getMostRecentTimestamp();
     long expected = 1593432000000L;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testCorrectMaxTimestampWhenTableEmpty() {
+    long actual = dataReadManagerEmptyTables.getMostRecentTimestamp();
+    long expected = -1L;
 
     assertEquals(expected, actual);
   }

@@ -14,14 +14,17 @@ import java.util.concurrent.atomic.AtomicReference;
  * order to access the necessary APIs. 
  */
 public class Credentials {
+  private static AtomicReference<GoogleCredentials> credentials = 
+    new AtomicReference<GoogleCredentials>();
 
   /** 
    * Returns the proper credentials for the current environment. 
    * @throws RuntimeException if credentials fail to be assigned.
    */
   public static GoogleCredentials getCredentials() {
-
-    AtomicReference<GoogleCredentials> credentials = new AtomicReference<GoogleCredentials>();
+    if (credentials.get() != null) {
+      return credentials.get();
+    }
 
     if (assignLocalCredentials(credentials)) {
       return credentials.get();

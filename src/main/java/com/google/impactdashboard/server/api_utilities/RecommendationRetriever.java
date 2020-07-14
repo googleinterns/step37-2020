@@ -8,7 +8,6 @@ import com.google.impactdashboard.configuration.Constants;
 import com.google.impactdashboard.data.recommendation.IAMRecommenderMetadata;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.logging.v2.LogEntry;
-import com.google.cloud.recommender.v1.Impact;
 import com.google.protobuf.Value;
 
 import java.io.ByteArrayInputStream;
@@ -17,6 +16,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /** Class that calls the Recommender API to get the full information for recommendations. */
@@ -62,20 +62,38 @@ public class RecommendationRetriever {
       Map<String, Value> recommendationDataMap = recommendationLog.getJsonPayload().getFieldsMap();
       com.google.cloud.recommender.v1.Recommendation recommendation = recommender
           .getRecommendation(recommendationDataMap.get("recommendationName").getStringValue());
-      return Recommendation.create(projectId, createRecommendationDescription(recommendation,
-          recommendationDataMap.get("actor").getStringValue()),
+      return Recommendation.create(projectId, recommendationDataMap.get("actor").getStringValue(),
+          createRecommendationActions(recommendation),
           type, recommendationLog.getTimestamp().getSeconds(),
           IAMRecommenderMetadata.create(10)); // Fix IamRecommenderMetadata being correct
     }).collect(Collectors.toList());
   }
 
   /**
-   * Takes the information in a recommendation and compiles it into a full decription of the recommendation.
-   * @param recommendation the recommendation the description is commeing from
-   * @return The full description for the given recommendation
+   * Takes the information in a recommendation and compiles it into an Action list.
+   * @param recommendation the recommendation the description is coming from
+   * @return The a list of actions for the given recommendation
    */
-  private String createRecommendationDescription(
-      com.google.cloud.recommender.v1.Recommendation recommendation, String actor) {
-    throw new UnsupportedOperationException("not implemented");
+  private List<RecommendationAction> createRecommendationActions(
+      com.google.cloud.recommender.v1.Recommendation recommendation) {
+    List<RecommendationAction> actions = recommendation.getContent().getOperationGroupsList()
+        .stream().map(operationGroup -> {
+          AtomicReference<String> affectedAccount = new AtomicReference<>();
+          AtomicReference<String> previousRole = new AtomicReference<>();
+          AtomicReference<String> newRole = new AtomicReference<>("");
+          operationGroup.getOperationsList().forEach(operation -> {
+            if(operation.getAction().equals("add")) {
+              newRole.set(operation.getPathFiltersMap().get("/iamPolicy/bindings/*/role")
+                  .getStringValue());
+            } else if(operation.getAction().equals("remove")) {
+              previousRole.set(operation.getPathFiltersMap().get("/iamPolicy/bindings/*/role")
+                  .getStringValue());
+            }
+            affectedAccount.set(operation.getValue().getStringValue());
+          });
+          return RecommendationAction.create(affectedAccount.toString(), previousRole.toString(),
+              newRole.toString());
+        }).collect(Collectors.toList());
+    return actions;
   }
 }

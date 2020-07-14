@@ -1,11 +1,10 @@
 <mat-form-field appearance="fill">
   <mat-label>Enter a date range</mat-label>
-  <mat-date-range-input [min]="possibleRange.start" [max]="possibleRange.end" [rangePicker]="picker"
-    (selectedValueChange)="changeInput($event)">
+  <mat-date-range-input [min]="possibleRange.start" [max]="possibleRange.end"
+    [rangePicker]="picker">
     <input matStartDate placeholder="Start date" [value]="currentMin"
-      (dateInput)="changeInput($event)">
-    <input matEndDate placeholder="End date" [value]="currentMax"
-      (dateInput)="changeInput($event)">
+      (dateChange)="changeStart($event)">
+    <input matEndDate placeholder="End date" [value]="currentMax" (dateChange)="changeEnd($event)">
   </mat-date-range-input>
 
   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>

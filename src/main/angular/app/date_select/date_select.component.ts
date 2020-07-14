@@ -19,8 +19,12 @@ export class DateSelectComponent implements OnInit {
   @Input()
   public possibleRange: DateRange;
 
+  /** Sends the range selected by the user back out when it changes */
   @Output()
   public selectedRange = new EventEmitter<DateRange>();
+
+  /** The DataRange that was sent last */
+  public lastSent: DateRange;
 
   public currentMin: Date;
   public currentMax: Date;
@@ -38,9 +42,38 @@ export class DateSelectComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     this.currentMin = this.possibleRange.start;
     this.currentMax = this.possibleRange.end;
+    if (!this.lastSent) {
+      this.lastSent = this.possibleRange;
+    }
   }
 
-  changeInput(event) {
-    console.log(event);
+  private validateAndSend() {
+    if (
+      this.currentMin.getTime() !== this.lastSent.start.getTime() ||
+      this.currentMax.getTime() !== this.lastSent.start.getTime()
+    ) {
+      this.lastSent.start = this.currentMin;
+      this.lastSent.end = this.currentMax;
+      console.log(this.lastSent);
+      this.selectedRange.emit(this.lastSent);
+    }
+  }
+
+  changeStart(event) {
+    const value = event.value as Date;
+
+    if (value && value.getTime() !== this.currentMin.getTime()) {
+      this.currentMin = value;
+    }
+    this.validateAndSend();
+  }
+
+  changeEnd(event) {
+    const value = event.value as Date;
+
+    if (value && value.getTime() !== this.currentMax.getTime()) {
+      this.currentMax = value;
+    }
+    this.validateAndSend();
   }
 }

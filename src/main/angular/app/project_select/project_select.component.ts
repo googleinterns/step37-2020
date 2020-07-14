@@ -79,7 +79,7 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Returns the class placed on a sorting arrow, which decides whether it's grayed out or not. */
   getSortClass(field: SortBy) {
-    if (field === this.projectQueryService.sortField) {
+    if (field === this.projectQueryService.getSortField()) {
       return 'sort-active';
     }
     return 'sort-inactive';

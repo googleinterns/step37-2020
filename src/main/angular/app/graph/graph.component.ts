@@ -64,6 +64,13 @@ export class GraphComponent implements OnInit {
     this.properties.height = window.innerHeight * HEIGHT_SCALE_FACTOR;
   }
 
+  /** Change the range on the graph */
+  changeDateRange(dateRange: DateRange) {
+    console.log('change', dateRange);
+    this.properties.options.hAxis.minValue = dateRange.start;
+    this.properties.options.hAxis.maxValue = dateRange.end;
+  }
+
   /** Listen for resizes of the window */
   @HostListener('window:resize')
   onResize() {

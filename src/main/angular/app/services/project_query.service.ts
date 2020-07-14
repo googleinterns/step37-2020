@@ -9,8 +9,8 @@ import {
 /** Used to query and sort projects */
 @Injectable()
 export class ProjectQueryService {
-  private _sortBy: SortBy;
-  private _sortDirection: SortDirection;
+  private sortBy: SortBy;
+  private sortDirection: SortDirection;
 
   private query: string;
   /** All the projects accessible to the user */
@@ -19,8 +19,8 @@ export class ProjectQueryService {
   private projectsCache: Project[];
 
   constructor() {
-    this._sortBy = SortBy.IAM_BINDINGS;
-    this._sortDirection = SortDirection.DESCENDING;
+    this.sortBy = SortBy.IAM_BINDINGS;
+    this.sortDirection = SortDirection.DESCENDING;
     this.query = '';
     this.projects = [];
     this.projectsCache = [];
@@ -35,8 +35,8 @@ export class ProjectQueryService {
 
   /** Toggle the sorting direction */
   toggleDirection() {
-    this._sortDirection =
-      this._sortDirection === SortDirection.DESCENDING
+    this.sortDirection =
+      this.sortDirection === SortDirection.DESCENDING
         ? SortDirection.ASCENDING
         : SortDirection.DESCENDING;
 
@@ -45,8 +45,8 @@ export class ProjectQueryService {
 
   /** Changes the sorting field and direction of the projects */
   changeField(field: SortBy, direction: SortDirection) {
-    this._sortBy = field;
-    this._sortDirection = direction;
+    this.sortBy = field;
+    this.sortDirection = direction;
 
     // Since query hasn't changed, we can just re-sort the existing cache
     this.projectsCache.sort(ProjectComparators.getComparator(direction, field));
@@ -79,12 +79,12 @@ export class ProjectQueryService {
   }
 
   /** Returns the field being sorted by */
-  get sortField() {
-    return this._sortBy;
+  getSortField() {
+    return this.sortBy;
   }
 
   /** Returns the direction being sorted in */
-  get sortDirection() {
-    return this._sortDirection;
+  getSortDirection() {
+    return this.sortDirection;
   }
 }

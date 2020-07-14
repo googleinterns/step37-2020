@@ -54,7 +54,7 @@ describe('ProjectQueryService', () => {
       service.toggleDirection();
       const actualOrder = service.getProjects();
 
-      expect(service.sortDirection).toBe(SortDirection.ASCENDING);
+      expect(service.getSortDirection()).toBe(SortDirection.ASCENDING);
       expect(actualOrder).toEqual(expectedOrder);
     });
 
@@ -63,7 +63,7 @@ describe('ProjectQueryService', () => {
       service.toggleDirection();
       const actualOrder = service.getProjects();
 
-      expect(service.sortDirection).toBe(SortDirection.DESCENDING);
+      expect(service.getSortDirection()).toBe(SortDirection.DESCENDING);
       expect(actualOrder).toEqual(projects);
     });
   });
@@ -77,19 +77,19 @@ describe('ProjectQueryService', () => {
         service = new ProjectQueryService();
         service.init(projects);
         expectedField = SortBy.NAME;
-        currentDirection = service.sortDirection;
+        currentDirection = service.getSortDirection();
 
         service.changeField(expectedField, currentDirection);
       });
 
       it('Changes the field', () => {
-        const actual = service.sortField;
+        const actual = service.getSortField();
 
         expect(actual).toBe(expectedField);
       });
 
       it('Leaves the direction', () => {
-        const actual = service.sortDirection;
+        const actual = service.getSortDirection();
 
         expect(actual).toBe(currentDirection);
       });
@@ -118,13 +118,13 @@ describe('ProjectQueryService', () => {
       });
 
       it('Changes the field', () => {
-        const actual = service.sortField;
+        const actual = service.getSortField();
 
         expect(actual).toBe(expectedField);
       });
 
       it('Changes the sort direction', () => {
-        const actual = service.sortDirection;
+        const actual = service.getSortDirection();
 
         expect(actual).toBe(expectedDirection);
       });

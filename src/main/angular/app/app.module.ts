@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {NgModule, ErrorHandler} from '@angular/core';
 import {GoogleChartsModule} from 'angular-google-charts';
 
 import {AppRoutingModule} from './app_routing.module';
@@ -12,9 +12,20 @@ import {HttpClientModule} from '@angular/common/http';
 import {DateUtilitiesService} from './services/date_utilities.service';
 import {GraphProcessorService} from './services/graph_processor.service';
 import {dataServiceProvider} from './services/data.service.provider';
+import {ErrorPageComponent} from './error_page/error_page.component';
+import {MainPageComponent} from './main_page/main_page.component';
+import {ErrorService} from './services/error.service';
+import {RedirectService} from './services/redirect.service';
+import {DataShareService} from './services/data_share.service';
 
 @NgModule({
-  declarations: [AppComponent, GraphComponent, ProjectSelectComponent],
+  declarations: [
+    AppComponent,
+    GraphComponent,
+    ProjectSelectComponent,
+    ErrorPageComponent,
+    MainPageComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -23,7 +34,17 @@ import {dataServiceProvider} from './services/data.service.provider';
     BrowserAnimationsModule,
     HttpClientModule,
   ],
-  providers: [dataServiceProvider, DateUtilitiesService, GraphProcessorService],
+  providers: [
+    dataServiceProvider,
+    DateUtilitiesService,
+    GraphProcessorService,
+    RedirectService,
+    {
+      provide: ErrorHandler,
+      useClass: ErrorService,
+    },
+    DataShareService,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

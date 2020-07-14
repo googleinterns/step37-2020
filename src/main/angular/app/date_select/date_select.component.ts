@@ -36,14 +36,17 @@ export class DateSelectComponent implements OnInit {
 
   /** Called when an input field changes. */
   ngOnChanges(changes: SimpleChanges) {
-    this.currentMin = this.possibleRange.start;
-    this.currentMax = this.possibleRange.end;
-    if (!this.lastSent) {
-      this.lastSent = this.possibleRange;
+    if (!changes.possibleRange.isFirstChange()) {
+      this.currentMin = this.possibleRange.start;
+      this.currentMax = this.possibleRange.end;
+      if (!this.lastSent) {
+        this.lastSent = this.possibleRange;
+      }
+      this.validateAndSend();
     }
-    this.validateAndSend();
   }
 
+  /** Ensures the dates are valid and sends them to output if they are. */
   private validateAndSend() {
     if (
       this.dateUtilities.contains(this.possibleRange, this.currentMin) &&
@@ -51,13 +54,13 @@ export class DateSelectComponent implements OnInit {
       (this.currentMin.getTime() !== this.lastSent.start.getTime() ||
         this.currentMax.getTime() !== this.lastSent.start.getTime())
     ) {
-      console.log(this.lastSent);
       this.lastSent.start = this.currentMin;
       this.lastSent.end = this.currentMax;
       this.selectedRange.emit(this.lastSent);
     }
   }
 
+  /** Called when the start value of the date select changes. */
   changeStart(event) {
     const value = event.value as Date;
 
@@ -67,6 +70,7 @@ export class DateSelectComponent implements OnInit {
     this.validateAndSend();
   }
 
+  /** Called when the end value of the date select changes. */
   changeEnd(event) {
     const value = event.value as Date;
 

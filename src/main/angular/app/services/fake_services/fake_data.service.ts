@@ -5,6 +5,7 @@ import {ProjectGraphData} from '../../../model/project_graph_data';
 import {Project} from '../../../model/project';
 import {ProjectMetaData} from '../../../model/project_metadata';
 import {DataService} from '../data.service';
+import {ErrorMessage} from '../../../model/error_message';
 
 /** Contains fake data. */
 @Injectable()
@@ -32,7 +33,29 @@ export class FakeDataService implements DataService {
 
   /** Returns the data associated with the given project. */
   getProjectGraphData(id: string): Promise<ProjectGraphData> {
-    return new Promise(resolve => resolve(this.projects[id][1]));
+    if (this.projects[id]) {
+      return new Promise(resolve => resolve(this.projects[id][1]));
+    } else {
+      throw new ErrorMessage(
+        `Error retrieving project of ID ${id} from FakeDataService`,
+        {}
+      );
+    }
+  }
+
+  /** Create a project that has an incorrect mapping, so when it's pressed a redirect is sent to the error page */
+  generateErrorProject() {
+    // Now simulate an extra 'project 5' with no graph data
+    const project = new Project(
+      "Project with unequal ID's",
+      'project-with-unequal-ids',
+      5,
+      new ProjectMetaData(0)
+    );
+    const graphData = new ProjectGraphData('project-with-unequal-ids', {}, {});
+    // Make sure the keys aren't the same, so getProjectGraphData will be unable
+    // to retrieve the proper ID, to simulate an error
+    this.projects.prj5 = [project, graphData];
   }
 
   /** Generate fake data for project 1. */

@@ -20,7 +20,7 @@ public class ProjectInformationRetriever {
    * Static factory for creating a ProjectInformationRetriever with a new instance of DataReadManager.
    * @return New instance of ProjectInformationRetriever
    */
-  public static ProjectInformationRetriever create() {
+  public static ProjectInformationRetriever create() throws java.io.IOException {
     return new ProjectInformationRetriever(DataReadManagerFactory.create());
   }
 

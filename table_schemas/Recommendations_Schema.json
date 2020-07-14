@@ -1,0 +1,48 @@
+[
+  {
+    "mode": "REQUIRED",
+    "name": "ProjectId",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "Recommender",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "Actor",
+    "type": "STRING"
+  },
+  {
+    "fields": [
+      {
+        "mode": "REQUIRED",
+        "name": "AffectedAccount",
+        "type": "STRING"
+      },
+      {
+        "mode": "REQUIRED",
+        "name": "PreviousRole",
+        "type": "STRING"
+      },
+      {
+        "name": "NewRole",
+        "type": "STRING"
+      }
+    ],
+    "mode": "REPEATED",
+    "name": "Actions",
+    "type": "RECORD"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "AcceptedTimestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "IAMBindingsImpact",
+    "type": "INTEGER"
+  }
+]

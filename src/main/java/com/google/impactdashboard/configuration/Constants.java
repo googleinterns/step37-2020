@@ -8,7 +8,7 @@ public class Constants {
 
   /** The path to the service account key. */
   public static final String PATH_TO_SERVICE_ACCOUNT_KEY = 
-    "/usr/local/google/home/ionis/Downloads/key.json";
+    "/usr/local/google/home/carolinelui/Downloads/concord-intern-10ce059284ad.json";
 
   /** The name of the table holding recommendations data. */
   public static final String RECOMMENDATIONS_TABLE = "Recommendations";
@@ -17,8 +17,8 @@ public class Constants {
   public static final String IAM_BINDINGS_TABLE = "IAM_Bindings";
 
   /** The name of the database holding the test data. */
-  public static final String TEST_DATABASE = "Test_Capstone";
+  public static final String TEST_DATABASE = "Test_Impact_Dashboard";
 
   /** The name of the database holding the real data. */
-  public static final String DATABASE = "Placeholder";
+  public static final String DATABASE = "Recommendations_Impact_Dashboard";
 }

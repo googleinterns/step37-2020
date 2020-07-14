@@ -1,4 +1,11 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  SimpleChanges,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import {DateRange} from '../../model/types';
 
 /** Used for selecting the dates to display on the graph */
@@ -12,6 +19,12 @@ export class DateSelectComponent implements OnInit {
   @Input()
   public possibleRange: DateRange;
 
+  @Output()
+  public selectedRange = new EventEmitter<DateRange>();
+
+  public currentMin: Date;
+  public currentMax: Date;
+
   constructor() {
     this.possibleRange = {
       start: new Date(2020, 5, 1),
@@ -20,4 +33,14 @@ export class DateSelectComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  /** Called when an input field changes. */
+  ngOnChanges(changes: SimpleChanges) {
+    this.currentMin = this.possibleRange.start;
+    this.currentMax = this.possibleRange.end;
+  }
+
+  changeInput(event) {
+    console.log(event);
+  }
 }

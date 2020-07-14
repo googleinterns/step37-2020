@@ -18,7 +18,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "lib": [
-      "ES2015",
+      "ES2017",
       "DOM"
     ]
   },

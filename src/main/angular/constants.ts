@@ -1,6 +1,6 @@
 /** Contains several constants in use throughout the application. */
 /** Whether to use test data or not. */
-export const USE_TEST_DATA = true;
+export const USE_TEST_DATA = false;
 
 // See https://standards.google/guidelines/brand-standards/color/palette/#brand-colors
 export const GOOGLE_BLUE = '#174ea6';
@@ -21,3 +21,5 @@ export const WIDTH_SCALE_FACTOR = 6 / 8;
 export const HEIGHT_SCALE_FACTOR = 1 / 2;
 /** The color of a project's bubble when it's not on the graph */
 export const PROJECT_INACTIVE_COLOR = '#b8b8b8';
+/** The relative URL of the error page */
+export const ERROR_PAGE_URL = 'error';

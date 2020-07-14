@@ -13,7 +13,7 @@ public class DataReadManagerFactory {
    * for testing purposes, otherwise returns a real DataReadManager that actually
    * accesses the database. 
    */
-  public static DataReadManager create() {
+  public static DataReadManager create() throws java.io.IOException {
     if (Configuration.useFakeDataReadManager) {
       return new DataReadManagerFake();
     } else {

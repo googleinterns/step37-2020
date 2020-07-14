@@ -21,6 +21,7 @@ import {DataShareService} from './services/data_share.service';
 import {DateSelectComponent} from './date_select/date_select.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
+import {MatInputModule} from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import {MatNativeDateModule} from '@angular/material/core';
     HttpClientModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatInputModule,
   ],
   providers: [
     dataServiceProvider,

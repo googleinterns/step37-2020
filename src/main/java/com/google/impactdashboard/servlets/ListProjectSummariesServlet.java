@@ -2,7 +2,6 @@ package com.google.impactdashboard.servlets;
 
 import com.google.gson.Gson;
 import com.google.impactdashboard.data.project.Project;
-import com.google.impactdashboard.database_manager.data_read.DataReadManagerFactory;
 import com.google.impactdashboard.server.ProjectInformationRetriever;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

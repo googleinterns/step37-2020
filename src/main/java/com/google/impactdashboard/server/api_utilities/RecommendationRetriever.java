@@ -1,4 +1,4 @@
-package com.google.impactdashboard.api_utilities;
+package com.google.impactdashboard.server.api_utilities;
 
 import com.google.cloud.recommender.v1.Recommendation;
 import com.google.cloud.recommender.v1.RecommenderClient;

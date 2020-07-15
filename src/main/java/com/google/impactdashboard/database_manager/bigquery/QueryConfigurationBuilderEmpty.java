@@ -10,18 +10,21 @@ import java.util.stream.Collectors;
 /** 
  * A class for building query configuration builder objects and storing them, 
  * so that they only need ot be built once. The query job configuration builder 
- * objects will be configured to query the database with test project information. 
+ * objects will be configured to query the database with empty tables.
  */
-public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder {
-  private static final QueryConfigurationBuilderFake INSTANCE = new QueryConfigurationBuilderFake();
+public class QueryConfigurationBuilderEmpty implements QueryConfigurationBuilder {
+  private static final QueryConfigurationBuilderEmpty INSTANCE = 
+    new QueryConfigurationBuilderEmpty();
   
   private QueryJobConfiguration.Builder getProjectIdsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_PROJECT_IDS
-      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.IAM_BINDINGS_TABLE, Constants.EMPTY_IAM_BINDINGS_TABLE))
       .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration =  
     QueryJobConfiguration.newBuilder(Queries.GET_PROJECT_IDENTIFICATION_INFORMATION
-      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.IAM_BINDINGS_TABLE, Constants.EMPTY_IAM_BINDINGS_TABLE))
       .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getAverageBindingsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_AVERAGE_BINDINGS
@@ -29,32 +32,39 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
       .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getDatesToBindingsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_DATES_TO_BINDINGS
-      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.IAM_BINDINGS_TABLE, Constants.EMPTY_IAM_BINDINGS_TABLE))
       .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_DATES_TO_IAM_RECOMMENDATIONS
-      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.RECOMMENDATIONS_TABLE, Constants.EMPTY_RECOMMENDATIONS_TABLE))
       .setUseLegacySql(false);
   private String insertValuesIAMTableConfiguration = 
     Queries.INSERT_VALUES_INTO_IAM_TABLE
-      .replace(Constants.DATABASE, Constants.TEST_DATABASE);
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.IAM_BINDINGS_TABLE, Constants.EMPTY_IAM_BINDINGS_TABLE);
   private String insertValuesRecommendationsTableConfiguration = 
     Queries.INSERT_VALUES_INTO_RECOMMENDATIONS_TABLE
-      .replace(Constants.DATABASE, Constants.TEST_DATABASE);
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.RECOMMENDATIONS_TABLE, Constants.EMPTY_RECOMMENDATIONS_TABLE);
   private QueryJobConfiguration.Builder deleteOldDataIAMTableConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.DELETE_OLD_DATA_FROM_IAM_TABLE
-      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.IAM_BINDINGS_TABLE, Constants.EMPTY_IAM_BINDINGS_TABLE))
       .setUseLegacySql(false);
   private QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.DELETE_OLD_DATA_FROM_RECOMMENDATIONS_TABLE
-      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.RECOMMENDATIONS_TABLE, Constants.EMPTY_RECOMMENDATIONS_TABLE))
       .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getMostRecentTimestampConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_MOST_RECENT_TIMESTAMP
-      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.IAM_BINDINGS_TABLE, Constants.EMPTY_IAM_BINDINGS_TABLE))
       .setUseLegacySql(false);
 
-  private QueryConfigurationBuilderFake() { }
+  private QueryConfigurationBuilderEmpty() { }
 
   /** Returns the only instance of the class. */
   public static QueryConfigurationBuilder getInstance() {

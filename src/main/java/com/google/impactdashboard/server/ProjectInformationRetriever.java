@@ -20,7 +20,7 @@ public class ProjectInformationRetriever {
    * Static factory for creating a ProjectInformationRetriever with a new instance of DataReadManager.
    * @return New instance of ProjectInformationRetriever
    */
-  public static ProjectInformationRetriever create() throws java.io.IOException {
+  public static ProjectInformationRetriever create() {
     return new ProjectInformationRetriever(DataReadManagerFactory.create());
   }
 
@@ -36,13 +36,13 @@ public class ProjectInformationRetriever {
    */
   public List<Project> listProjectInformation() {
     List<ProjectIdentification> projectIdentificationList = readManager.listProjects();
-    return projectIdentificationList.stream().map((projectIdentification -> {
+    return projectIdentificationList.stream().map(projectIdentification -> {
       ProjectMetaData projectMetadata = ProjectMetaData.create(readManager.
           getAverageIAMBindingsInPastYear(projectIdentification.getProjectId()));
       return Project.create(projectIdentification.getName(),
           projectIdentification.getProjectId(), projectIdentification.getProjectNumber(),
           projectMetadata);
-    })).collect(Collectors.toList());
+    }).collect(Collectors.toList());
   }
 
   /**

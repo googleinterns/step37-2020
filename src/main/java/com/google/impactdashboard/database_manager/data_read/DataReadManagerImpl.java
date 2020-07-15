@@ -11,16 +11,16 @@ import java.util.Map;
 import java.util.HashMap;
 import com.google.cloud.bigquery.TableResult;
 import com.google.cloud.bigquery.FieldValueList;
-import java.io.IOException;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.QueryParameterValue;
+import com.google.common.collect.Iterables;
 
 /** Class for returning data from the database. */
 public class DataReadManagerImpl implements DataReadManager {
   DatabaseAccessor database;
   QueryConfigurationBuilder queryConfigurationBuilder;
 
-  public DataReadManagerImpl() throws IOException {
+  public DataReadManagerImpl() {
     database = new DatabaseAccessor(); 
     queryConfigurationBuilder = QueryConfigurationBuilderFactory.create();
   }
@@ -56,12 +56,13 @@ public class DataReadManagerImpl implements DataReadManager {
       .addNamedParameter("projectId", QueryParameterValue.string(projectId))
       .build();
     TableResult results = database.readDatabase(queryConfiguration);
-    
-    double avgNumberOfBindings = 0.0;
-    for (FieldValueList row : results.iterateAll()) {
-      avgNumberOfBindings = row.get("AverageBindings").getDoubleValue();
+    FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
+
+    if (row == null || row.get("AverageBindings").isNull()) {
+      return 0.0;
+    } else {
+      return row.get("AverageBindings").getDoubleValue();
     }
-    return avgNumberOfBindings; 
   }
 
   /**
@@ -115,6 +116,24 @@ public class DataReadManagerImpl implements DataReadManager {
   }
 
   /**
+   * Queries the IAM Table and returns the most recent timestamp, or -1 if there is
+   * no data.
+   */
+  public long getMostRecentTimestamp() {
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getMostRecentTimestampConfiguration()
+      .build();
+    TableResult results = database.readDatabase(queryConfiguration);
+    FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
+
+    if (row == null || row.get("Max_Timestamp").isNull()) {
+      return -1;
+    } else {
+      return row.get("Max_Timestamp").getTimestampValue() / 1000;
+    }
+  }
+
+  /**
    * Queries the IAM database for information about the project with id 
    * {@code projectId}, and returns a {@code ProjectIdentification} object 
    * containing that information. 
@@ -125,18 +144,15 @@ public class DataReadManagerImpl implements DataReadManager {
       .addNamedParameter("projectId", QueryParameterValue.string(projectId))
       .build();
     TableResult results = database.readDatabase(queryConfiguration);
-    
-    String projectName = null;
-    String projectNumber = null;
-    for (FieldValueList row : results.iterateAll()) {
-      projectName = row.get(IAMBindingsSchema.PROJECT_NAME_COLUMN).getStringValue();
-      projectNumber = row.get(IAMBindingsSchema.PROJECT_NUMBER_COLUMN).getStringValue();
-    }
+    FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
 
-    if (projectName == null || projectNumber == null) {
-      throw new RuntimeException("Database failed to retrieve project information.");
+    if (row == null) {
+      throw new RuntimeException(
+        "Database failed to retrieve project information for project " + projectId);
+    } else {
+      String projectName = row.get(IAMBindingsSchema.PROJECT_NAME_COLUMN).getStringValue();
+      String projectNumber = row.get(IAMBindingsSchema.PROJECT_NUMBER_COLUMN).getStringValue();
+      return ProjectIdentification.create(projectName, projectId, Long.parseLong(projectNumber));
     }
-
-    return ProjectIdentification.create(projectName, projectId, Long.parseLong(projectNumber));
   }
 }

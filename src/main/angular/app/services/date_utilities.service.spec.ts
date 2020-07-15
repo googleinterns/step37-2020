@@ -1,7 +1,8 @@
 import {DateUtilitiesService} from './date_utilities.service';
 import 'jasmine';
 import {ProjectGraphData} from '../../model/project_graph_data';
-import {Row, DateRange} from '../../model/types';
+import {Row} from '../../model/types';
+import {DateRange} from '../../model/date_range';
 
 describe('DateUtilitiesService', () => {
   let service: DateUtilitiesService;
@@ -148,28 +149,23 @@ describe('DateUtilitiesService', () => {
     });
 
     it('Gets the proper date range from a continous block of dates', () => {
-      const expected: DateRange = {
-        start: new Date(year, month, 1),
-        end: new Date(year, month, 5),
-      };
+      const expected = new DateRange(
+        new Date(year, month, 1),
+        new Date(year, month, 5)
+      );
       const actual = service.getDateRange(rowsEarlyJune);
 
       expect(actual).toEqual(expected);
     });
 
     it('Gets the proper range for a disparate ranges', () => {
-      const expected: DateRange = {
-        start: new Date(year, month, 1),
-        end: new Date(year, month, 29),
-      };
+      const expected = new DateRange(
+        new Date(year, month, 1),
+        new Date(year, month, 29)
+      );
       const actual = service.getDateRange(rowsEarlyLateJune);
 
       expect(actual).toEqual(expected);
     });
-  });
-
-  describe('contains()', () => {
-    it('Includes data in the middle of the date range', () => {});
-    it('Includes dates at the beginning/end of date range', () => {});
   });
 });

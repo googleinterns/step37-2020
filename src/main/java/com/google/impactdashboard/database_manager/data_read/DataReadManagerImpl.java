@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.HashMap;
 import com.google.cloud.bigquery.TableResult;
 import com.google.cloud.bigquery.FieldValueList;
-import java.io.IOException;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.QueryParameterValue;
 
@@ -20,7 +19,7 @@ public class DataReadManagerImpl implements DataReadManager {
   DatabaseAccessor database;
   QueryConfigurationBuilder queryConfigurationBuilder;
 
-  public DataReadManagerImpl() throws IOException {
+  public DataReadManagerImpl() {
     database = new DatabaseAccessor(); 
     queryConfigurationBuilder = QueryConfigurationBuilderFactory.create();
   }

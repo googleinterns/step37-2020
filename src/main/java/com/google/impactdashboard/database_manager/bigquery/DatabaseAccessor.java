@@ -10,12 +10,7 @@ import com.google.cloud.bigquery.TableResult;
 import java.util.UUID;
 import java.lang.RuntimeException;
 import java.lang.InterruptedException;
-import com.google.impactdashboard.configuration.Constants;
-import com.google.auth.oauth2.GoogleCredentials;
-import java.io.FileInputStream;
-import java.io.IOException;
-import com.google.common.io.CharSource;
-import java.io.ByteArrayInputStream;
+import com.google.impactdashboard.Credentials;
 
 /** A class that queries the database. */
 public class DatabaseAccessor {
@@ -26,19 +21,12 @@ public class DatabaseAccessor {
    * Creates a {@code DatabaseAccesor} instance that contains an instance of 
    * {@code BigQuery} as well as the correct database to be queried based on the 
    * system configuration flags. 
+   * @throws RuntimeException if the credentials to access the database cannot 
+      be established.
    */
-  public DatabaseAccessor() throws IOException {
-    GoogleCredentials credentials;
-    try {
-      credentials = GoogleCredentials
-        .fromStream(new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY));
-    } catch (IOException e) {
-      credentials = GoogleCredentials
-        .fromStream(new ByteArrayInputStream(System.getenv("SERVICE_ACCOUNT_KEY").getBytes()));
-    }
-
-    bigquery = BigQueryOptions.newBuilder()
-      .setCredentials(credentials).build().getService();
+  public DatabaseAccessor() {
+      bigquery = BigQueryOptions.newBuilder()
+      .setCredentials(Credentials.getCredentials()).build().getService();
   }
 
   /** 

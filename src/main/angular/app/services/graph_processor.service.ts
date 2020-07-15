@@ -6,6 +6,7 @@ import {SimpleChange} from '@angular/core';
 import {DateUtilitiesService} from './date_utilities.service';
 import {GraphProperties, Columns, Row} from '../../model/types';
 import {DataService} from './data.service';
+import {DateRange} from '../../model/date_range';
 
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
@@ -51,7 +52,7 @@ export class GraphProcessorService {
       type: 'LineChart',
       width: 960,
       height: 600,
-      dateRange: {start: new Date(), end: new Date()},
+      dateRange: new DateRange(new Date(), new Date()),
     };
   }
 

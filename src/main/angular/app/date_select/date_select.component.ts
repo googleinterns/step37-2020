@@ -6,8 +6,8 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import {DateRange} from '../../model/types';
 import {DateUtilitiesService} from '../services/date_utilities.service';
+import {DateRange} from '../../model/date_range';
 
 /** Used for selecting the dates to display on the graph */
 @Component({
@@ -37,8 +37,8 @@ export class DateSelectComponent implements OnInit {
   /** Called when an input field changes. */
   ngOnChanges(changes: SimpleChanges) {
     if (!changes.possibleRange.isFirstChange()) {
-      this.currentMin = this.possibleRange.start;
-      this.currentMax = this.possibleRange.end;
+      this.currentMin = this.possibleRange.getStart();
+      this.currentMax = this.possibleRange.getEnd();
       if (!this.lastSent) {
         this.lastSent = this.possibleRange;
       }
@@ -49,13 +49,12 @@ export class DateSelectComponent implements OnInit {
   /** Ensures the dates are valid and sends them to output if they are. */
   private validateAndSend() {
     if (
-      this.dateUtilities.contains(this.possibleRange, this.currentMin) &&
-      this.dateUtilities.contains(this.possibleRange, this.currentMax) &&
-      (this.currentMin.getTime() !== this.lastSent.start.getTime() ||
-        this.currentMax.getTime() !== this.lastSent.start.getTime())
+      this.possibleRange.contains(this.currentMin) &&
+      this.possibleRange.contains(this.currentMax) &&
+      (this.currentMin.getTime() !== this.lastSent.getStart().getTime() ||
+        this.currentMax.getTime() !== this.lastSent.getEnd().getTime())
     ) {
-      this.lastSent.start = this.currentMin;
-      this.lastSent.end = this.currentMax;
+      this.lastSent = new DateRange(this.currentMin, this.currentMax);
       this.selectedRange.emit(this.lastSent);
     }
   }

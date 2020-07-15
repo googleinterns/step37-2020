@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ProjectGraphData} from '../../model/project_graph_data';
-import {Row, DateRange} from '../../model/types';
+import {Row} from '../../model/types';
+import {DateRange} from '../../model/date_range';
 
 /** Contains some basic utility methods for date wrangling. */
 @Injectable()
@@ -62,16 +63,6 @@ export class DateUtilitiesService {
       }
     });
 
-    return {start: earliestDate as Date, end: lastDate as Date};
-  }
-
-  /** Checks if the given date is within the given date range */
-  contains(range: DateRange, date: Date): boolean {
-    const time = date.getTime();
-
-    if (range.start.getTime() > time || range.end.getTime() < time) {
-      return false;
-    }
-    return true;
+    return new DateRange(earliestDate as Date, lastDate as Date);
   }
 }

@@ -1,3 +1,5 @@
+import {DateRange} from './date_range';
+
 /** Contains various types used by the application. */
 
 /** Properties used by GCharts for rendering. */
@@ -24,6 +26,3 @@ export type Columns = (
   | string
   | {type: 'string'; role: 'tooltip' | 'style'; p?: {html: boolean}}
 )[];
-
-/** Represents a range of dates */
-export type DateRange = {start: Date; end: Date};

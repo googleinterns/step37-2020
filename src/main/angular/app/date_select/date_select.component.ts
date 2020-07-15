@@ -27,7 +27,9 @@ export class DateSelectComponent implements OnInit {
   /** The DataRange that was sent last. */
   public lastSent: DateRange;
 
+  /** The selected date on the lower end. */
   public currentMin: Date;
+  /** The selected date on the upper end. */
   public currentMax: Date;
 
   constructor(private dateUtilities: DateUtilitiesService) {

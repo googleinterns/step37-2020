@@ -16,6 +16,12 @@ public class Constants {
   /** The name of the table holding Iam Bindings data. */
   public static final String IAM_BINDINGS_TABLE = "IAM_Bindings";
 
+  /** The name of the empty table with the IAM Bindings schema. */
+  public static final String EMPTY_IAM_BINDINGS_TABLE = "Empty_IAM_Bindings";
+
+  /** The name of the empty table with the Recommendations schema. */
+  public static final String EMPTY_RECOMMENDATIONS_TABLE = "Empty_Recommendations";
+
   /** The name of the database holding the test data. */
   public static final String TEST_DATABASE = "Test_Capstone";
 

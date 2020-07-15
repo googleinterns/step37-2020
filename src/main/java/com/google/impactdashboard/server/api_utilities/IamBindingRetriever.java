@@ -120,15 +120,20 @@ public class IamBindingRetriever {
    * @param actions The actions that the impact needs to be calculated for
    * @return The difference in the number of bindings the two roles have.
    */
-  public int getActionImpact(List<RecommendationAction> actions) throws IOException {
-    //Todo redo for list
-//    Role previousRole = iamService.roles().get(previousRoleString).execute();
-//    if(!newRoleString.isEmpty()) {
-//      Role newRole = iamService.roles().get(newRoleString).execute();
-//      return Math.abs(previousRole.getIncludedPermissions().size() -
-//          newRole.getIncludedPermissions().size());
-//    }
-//    return previousRole.getIncludedPermissions().size();
-    throw new UnsupportedOperationException("Not implemented");
+  public int getActionImpact(List<RecommendationAction> actions){
+    return actions.stream().mapToInt(action -> {
+      try {
+        Role previousRole = iamService.roles().get(action.getPreviousRole()).execute();
+        String newRoleString = action.getNewRole();
+        if(newRoleString.isEmpty()) {
+          Role newRole = iamService.roles().get(newRoleString).execute();
+          return Math.abs(previousRole.getIncludedPermissions().size() -
+              newRole.getIncludedPermissions().size());
+        }
+        return previousRole.getIncludedPermissions().size();
+      } catch (IOException e) {
+        throw new RuntimeException("Role could not be retrieved!");
+      }
+    }).sum();
   }
 }

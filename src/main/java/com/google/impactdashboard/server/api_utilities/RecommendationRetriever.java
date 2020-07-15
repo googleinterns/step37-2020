@@ -66,8 +66,7 @@ public class RecommendationRetriever {
       List<RecommendationAction> actions = getRecommendationActions(recommendation);
       return Recommendation.create(projectId, recommendationDataMap.get("actor").getStringValue(),
           actions, type, recommendationLog.getTimestamp().getSeconds(),
-          // todo use IamRetriever
-          IAMRecommenderMetadata.create());
+          IAMRecommenderMetadata.create(iamRetriever.getActionImpact(actions)));
     }).collect(Collectors.toList());
   }
 

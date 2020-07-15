@@ -3,7 +3,6 @@ package com.google.impactdashboard.database_manager;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -21,6 +20,7 @@ import java.lang.Math;
 public class DataReadManagerTest {
 
   private static DataReadManager dataReadManager;
+  private static DataReadManager dataReadManagerEmptyTables;
 
   private static final ProjectIdentification PROJECT_1_IDENTIFICATION = 
     ProjectIdentification.create("project-1", "project-id-1", 123456789123L);
@@ -43,11 +43,11 @@ public class DataReadManagerTest {
   public static void setTestingConfiguration() throws IOException {
     Configuration.useTestDatabase = true;
     dataReadManager = DataReadManagerFactory.create();
-  }
-
-  @AfterClass
-  public static void undoTestingConfiguration() {
     Configuration.useTestDatabase = false;
+
+    Configuration.useEmptyDatabase = true;
+    dataReadManagerEmptyTables = DataReadManagerFactory.create();
+    Configuration.useEmptyDatabase = false;
   }
 
   @Test
@@ -62,6 +62,12 @@ public class DataReadManagerTest {
     // if removing all the elements in the expected list from
     // the actual list results in an empty list, then the lists
     // must be equal. 
+    assertEquals(Arrays.asList(), actual);
+  }
+
+  @Test
+  public void noProjectsReturnedFromEmptyTable() {
+    List<ProjectIdentification> actual = dataReadManagerEmptyTables.listProjects();
     assertEquals(Arrays.asList(), actual);
   }
 
@@ -84,6 +90,15 @@ public class DataReadManagerTest {
   @Test
   public void testAverageBindingsReturnsZeroForNonexistentProject() {
     int actual = (int) Math.round(dataReadManager.getAverageIAMBindingsInPastYear("does-not-exist"));
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testAverageBindingsReturnsZeroForEmptyTable() {
+    int actual = (int) Math.round(dataReadManagerEmptyTables
+      .getAverageIAMBindingsInPastYear("does-not-exist"));
     int expected = 0;
 
     assertEquals(expected, actual);
@@ -143,10 +158,43 @@ public class DataReadManagerTest {
   }
 
   @Test
+  public void testNoRecommendationsReturnedForEmptyTable() {
+    int actual = dataReadManagerEmptyTables
+      .getMapOfDatesToRecommendationTaken("does-not-exist").size();
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
   public void testNoBindingsReturnedForNonexistentProject() {
     int actual = dataReadManager.getMapOfDatesToIAMBindings("does-not-exist").size();
     int expected = 0;
 
     assertEquals(expected, actual);
   } 
+
+  @Test
+  public void testNoBindingsReturnedForEmptyTable() {
+    int actual = dataReadManagerEmptyTables.getMapOfDatesToIAMBindings("does-not-exist").size();
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  } 
+
+  @Test
+  public void testCorrectMaxTimestamp() {
+    long actual = dataReadManager.getMostRecentTimestamp();
+    long expected = 1593432000000L;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testCorrectMaxTimestampWhenTableEmpty() {
+    long actual = dataReadManagerEmptyTables.getMostRecentTimestamp();
+    long expected = -1L;
+
+    assertEquals(expected, actual);
+  }
 }

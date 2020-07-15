@@ -134,6 +134,17 @@ public class FakeDatabase {
     return averageBindings.get() / dailyBindings.size();
   }
 
+  /** Returns the newest timestamp in the IAM table, or -1 if there is no data. */
+  public static long getMaxTimestamp() {
+    return iamBindings.entrySet().stream()
+      .reduce(-1L, 
+        (accumulator, entry) -> 
+          Math.max(accumulator, 
+            entry.getValue().entrySet().stream()
+              .reduce(-1L, (maxTime, mapping) -> Math.max(maxTime, mapping.getKey()), Math::max)), 
+        Math::max);
+  }
+
   /** 
    * Returns a map of entries in the recommendations table associated with 
    * {@code projectId}. 
@@ -187,7 +198,7 @@ public class FakeDatabase {
    * 365 days older than the newest entries, if such data exists.
    */
   public static void deleteYearOldData() {
-    long newestTimestamp = getNewestTimestamp();
+    long newestTimestamp = getMaxTimestamp();
     for (ProjectIdentification project : iamBindings.keySet()) {
       iamBindings.put(project, iamBindings.get(project).entrySet().stream()
         .filter(mapElement -> 
@@ -197,20 +208,4 @@ public class FakeDatabase {
           mapElement -> mapElement.getValue())));
     }
   }
-
-  /** 
-   * Gets the timestamp of the newest bindings table entries, or 0 if there are 
-   * no table entries.
-   */
-  private static long getNewestTimestamp() {
-    long newestTimestamp = 0;
-    for (ProjectIdentification project : iamBindings.keySet()) {
-      long newestTimestampForProject = iamBindings.get(project).entrySet().stream()
-        .reduce((long) 0, (acc, mapEntry) -> 
-          Math.max(acc, (long) mapEntry.getKey()), Math::max);
-      newestTimestamp = Math.max(newestTimestamp, newestTimestampForProject);
-    }
-    return newestTimestamp;
-  }
-  
 }

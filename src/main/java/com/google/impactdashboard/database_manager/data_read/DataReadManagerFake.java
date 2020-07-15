@@ -48,4 +48,12 @@ public class DataReadManagerFake implements DataReadManager {
   public Map<Long, Integer> getMapOfDatesToIAMBindings(String projectId) {
     return FakeDatabase.getDatesToBindingsForProject(projectId);
   }
+
+ /**
+   * Returns the most recent timestamp in the IAM Bindings Table. If there is
+   * nothing in the table, returns -1.
+   */
+  public long getMostRecentTimestamp() {
+    return FakeDatabase.getMaxTimestamp();
+  }
 }

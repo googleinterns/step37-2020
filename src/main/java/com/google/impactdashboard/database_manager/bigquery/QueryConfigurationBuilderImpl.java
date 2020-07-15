@@ -39,6 +39,9 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   private QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.DELETE_OLD_DATA_FROM_RECOMMENDATIONS_TABLE)
       .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getMostRecentTimestampConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_MOST_RECENT_TIMESTAMP)
+      .setUseLegacySql(false);
 
   private QueryConfigurationBuilderImpl() { }
 
@@ -141,5 +144,13 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
    */
   public QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration() {
     return deleteOldDataRecommendationsTableConfiguration;
+  }
+
+  /**
+   * Retrieves query job configuration that gets the most recent timestamp from 
+   * the IAM Bindings Table.
+   */
+  public QueryJobConfiguration.Builder getMostRecentTimestampConfiguration() {
+    return getMostRecentTimestampConfiguration;
   }
 }

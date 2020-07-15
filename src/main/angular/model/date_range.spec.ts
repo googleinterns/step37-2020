@@ -15,10 +15,36 @@ describe('DateRange', () => {
 
       expect(included).toBeTrue();
     });
-    it('Includes dates at the beginning/end of date range', () => {});
+
+    describe('Includes dates at the extreminites of date range', () => {
+      it('Includes dates at the beginning', () => {
+        const date = new Date(2020, 5, 1);
+        const included = range.contains(date);
+
+        expect(included).toBeTrue();
+      });
+
+      it('Includes dates at the end', () => {
+        const date = new Date(2020, 5, 25);
+        const included = range.contains(date);
+
+        expect(included).toBeTrue();
+      });
+    });
+
     describe('Excludes dates outside of the date range', () => {
-      it('Excludes dates before', () => {});
-      it('Excludes dates after', () => {});
+      it('Excludes dates before', () => {
+        const date = new Date(2020, 4, 25);
+        const included = range.contains(date);
+
+        expect(included).toBeFalse();
+      });
+      it('Excludes dates after', () => {
+        const date = new Date(2020, 5, 26);
+        const included = range.contains(date);
+
+        expect(included).toBeFalse();
+      });
     });
   });
 });

@@ -1,7 +1,6 @@
 <mat-form-field appearance="fill">
   <mat-label>Enter a date range</mat-label>
-  <mat-date-range-input [min]="possibleRange.getStart()" [max]="possibleRange.getEnd()"
-    [rangePicker]="picker">
+  <mat-date-range-input [min]="currentMin" [max]="currentMax" [rangePicker]="picker">
     <input matStartDate placeholder="Start date" [value]="currentMin"
       (dateChange)="changeStart($event)">
     <input matEndDate placeholder="End date" [value]="currentMax" (dateChange)="changeEnd($event)">

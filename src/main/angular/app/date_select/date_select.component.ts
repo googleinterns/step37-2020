@@ -39,6 +39,14 @@ export class DateSelectComponent implements OnInit {
     if (!changes.possibleRange.isFirstChange()) {
       this.currentMin = this.possibleRange.getStart();
       this.currentMax = this.possibleRange.getEnd();
+
+      // A timeout needs to happen, as the range on the mat-date-range-input tag needs to update before,
+      // with time to update, so the values of the date selects can be updated.
+      setTimeout(() => {
+        this.currentMin = this.possibleRange.getStart();
+        this.currentMax = this.possibleRange.getEnd();
+      }, 50);
+      console.log(this.currentMin, this.currentMax);
       if (!this.lastSent) {
         this.lastSent = this.possibleRange;
       }

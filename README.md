@@ -11,18 +11,30 @@ mvn install
 ```
 Which will install all the required dependencies
 
-## Database Setup
-First, choose a project that will hold recommendations and bindings data collected by this web app, and ensure that the [Bigquery API is enabled](https://console.cloud.google.com/flows/enableapi?apiid=bigquery&_ga=2.243629059.74597765.1594049459-1491521344.1590087040&_gac=1.207882662.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) for this project.
+## API Setup
+First, choose a project to deploy the Recommendations Impact Dashboard. Before deploying, you must ensure that the following APIs are enabled on your deploying project:
+* [Bigquery](https://console.cloud.google.com/flows/enableapi?apiid=bigquery&_ga=2.243629059.74597765.1594049459-1491521344.1590087040&_gac=1.207882662.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE)
 
-You will also need a service account key to be able to access the data tables you'll be creating:
-* Go to [this](https://console.cloud.google.com/apis/credentials/serviceaccountkey?_ga=2.219380767.74597765.1594049459-1491521344.1590087040&_gac=1.241888694.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) page.
+## Service Account Setup
+First, navigate to the [IAM page](https://console.cloud.google.com/iam-admin/iam?_ga=2.165735869.248724417.1594646215-1491521344.1590087040&_gac=1.48940818.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) and ensure that your **deploying project** is selected at the top left. Identify the service account with the name **App Engine default service account**, and add the role **Bigquery Admin** to the service account. 
+
+Next, In order to allow the Impact Dashboard to access the projects for which you want to view data, for each project of interest (with the exception of the deploying project): 
+* Navigate to the [IAM page](https://console.cloud.google.com/iam-admin/iam?_ga=2.165735869.248724417.1594646215-1491521344.1590087040&_gac=1.48940818.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) of that project.
+* Click **Add** at the top of the page
+* In the **New members** box, paste the member name of the App Engine default service account of your **deploying project** (it should look something like deploying-project-id@appspot.gserviceaccount.com).
+* Select the role **Project > Viewer**
+
+**(Optional)** If you would like to be able to test the Dashboard on a local server before deploying, you must create a service account to use locally: 
+* Go to the [service account page](https://console.cloud.google.com/apis/credentials/serviceaccountkey?_ga=2.219380767.74597765.1594049459-1491521344.1590087040&_gac=1.241888694.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE).
 * From the service account list, select **New service account**. 
 * From the **Role** list, select **Project > Owner**. 
 * Click **Create**. A JSON file containing your service account key will automatically download. Store this file locally in a secure place. 
-* Navigate to `src/main/java/com/google/impactdashboard/configuration/Constants.java` in the project repo, and set `PATH_TO_SERVICE_ACCOUNT_KEY` to the path to your service account key. 
+* Navigate to `src/main/java/com/google/impactdashboard/configuration/Constants.java` in the project repo, and set `PATH_TO_SERVICE_ACCOUNT_KEY` to the path to where you have stored the key locally.
+* Repeat the steps above to add this service account to all of your projects of interest. 
 
-Next, you have to create data tables to store recommendations and bindings data:
-* [Go to the Bigquery web UI](https://console.cloud.google.com/bigquery?_ga=2.253514767.74597765.1594049459-1491521344.1590087040&_gac=1.183307666.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) for your project. 
+## Database Setup
+On your deploying project, you must create data tables to store recommendations and bindings data:
+* [Go to the Bigquery web UI](https://console.cloud.google.com/bigquery?_ga=2.253514767.74597765.1594049459-1491521344.1590087040&_gac=1.183307666.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) for your **deploying project**. 
 
 * Click **Create dataset**.
   * For **Dataset ID**, enter `Recommendations_Impact_Dashboard`.

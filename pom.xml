@@ -97,6 +97,21 @@
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-bigquery</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.auth</groupId>
+      <artifactId>google-auth-library-appengine</artifactId>
+      <version>0.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>3.12.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.api.grpc</groupId>
+      <artifactId>proto-google-common-protos</artifactId>
+      <version>1.18.0</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -112,6 +127,29 @@
           <deploy.version>1</deploy.version>
           <port>8080</port>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.github.os72</groupId>
+        <artifactId>protoc-jar-maven-plugin</artifactId>
+        <version>3.11.4</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <protocVersion>3.12.3</protocVersion>
+              <inputDirectories>
+                <include>src/main/protobuf/</include>
+              </inputDirectories>
+              <includeStdTypes>true</includeStdTypes>
+              <includeDirectories>
+                <include>src/main/protoimports</include>
+              </includeDirectories>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

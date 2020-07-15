@@ -6,16 +6,16 @@ import {
   ProjectComparators,
 } from '../../model/project_sort';
 
-/** Used to query and sort projects */
+/** Used to query and sort projects. */
 @Injectable()
 export class ProjectQueryService {
   private sortBy: SortBy;
   private sortDirection: SortDirection;
 
   private query: string;
-  /** All the projects accessible to the user */
+  /** All the projects accessible to the user. */
   private projects: Project[];
-  /** Cached version of the projects, sorted and filtered */
+  /** Cached version of the projects, sorted and filtered. */
   private projectsCache: Project[];
 
   constructor() {
@@ -26,14 +26,14 @@ export class ProjectQueryService {
     this.projectsCache = [];
   }
 
-  /** Initialize the query service with the given projects */
+  /** Initialize the query service with the given projects. */
   init(projects: Project[]) {
     this.projects = projects;
     this.projectsCache = projects;
     this.changeField(SortBy.IAM_BINDINGS, SortDirection.DESCENDING);
   }
 
-  /** Toggle the sorting direction */
+  /** Toggle the sorting direction. */
   toggleDirection() {
     this.sortDirection =
       this.sortDirection === SortDirection.DESCENDING
@@ -43,7 +43,7 @@ export class ProjectQueryService {
     this.projectsCache = this.projectsCache.reverse();
   }
 
-  /** Changes the sorting field and direction of the projects */
+  /** Changes the sorting field and direction of the projects. */
   changeField(field: SortBy, direction: SortDirection) {
     this.sortBy = field;
     this.sortDirection = direction;
@@ -52,7 +52,7 @@ export class ProjectQueryService {
     this.projectsCache.sort(ProjectComparators.getComparator(direction, field));
   }
 
-  /** Changes the query string of the projects search */
+  /** Changes the query string of the projects search. */
   changeQuery(query: string) {
     if (this.query === query) {
       // Don't change anything
@@ -71,19 +71,19 @@ export class ProjectQueryService {
     this.query = query;
   }
 
-  /** Get the sorted and queried projects */
+  /** Get the sorted and queried projects. */
   getProjects(): Project[] {
     // Return a clone
     const temp: Project[] = [];
     return temp.concat(this.projectsCache);
   }
 
-  /** Returns the field being sorted by */
+  /** Returns the field being sorted by. */
   getSortField() {
     return this.sortBy;
   }
 
-  /** Returns the direction being sorted in */
+  /** Returns the direction being sorted in. */
   getSortDirection() {
     return this.sortDirection;
   }

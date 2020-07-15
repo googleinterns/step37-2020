@@ -5,7 +5,6 @@ export class DateRange {
   /** Checks if the given date is within this date range. */
   public contains(date: Date): boolean {
     const time = date.getTime();
-
     if (this.start.getTime() > time || this.end.getTime() < time) {
       return false;
     }

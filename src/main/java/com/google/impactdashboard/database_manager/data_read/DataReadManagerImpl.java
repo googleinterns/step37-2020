@@ -57,12 +57,13 @@ public class DataReadManagerImpl implements DataReadManager {
       .addNamedParameter("projectId", QueryParameterValue.string(projectId))
       .build();
     TableResult results = database.readDatabase(queryConfiguration);
-    
-    double avgNumberOfBindings = 0.0;
-    for (FieldValueList row : results.iterateAll()) {
-      avgNumberOfBindings = row.get("AverageBindings").getDoubleValue();
+    FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
+
+    if (row == null || row.get("AverageBindings").isNull()) {
+      return 0.0;
+    } else {
+      return row.get("AverageBindings").getDoubleValue();
     }
-    return avgNumberOfBindings; 
   }
 
   /**
@@ -124,9 +125,9 @@ public class DataReadManagerImpl implements DataReadManager {
       .getMostRecentTimestampConfiguration()
       .build();
     TableResult results = database.readDatabase(queryConfiguration);
-    FieldValueList row = Iterables.getOnlyElement(results.iterateAll());
+    FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
 
-    if (row.get("Max_Timestamp").isNull()) {
+    if (row == null || row.get("Max_Timestamp").isNull()) {
       return -1;
     } else {
       return row.get("Max_Timestamp").getTimestampValue() / 1000;
@@ -144,18 +145,15 @@ public class DataReadManagerImpl implements DataReadManager {
       .addNamedParameter("projectId", QueryParameterValue.string(projectId))
       .build();
     TableResult results = database.readDatabase(queryConfiguration);
-    
-    String projectName = null;
-    String projectNumber = null;
-    for (FieldValueList row : results.iterateAll()) {
-      projectName = row.get(IAMBindingsSchema.PROJECT_NAME_COLUMN).getStringValue();
-      projectNumber = row.get(IAMBindingsSchema.PROJECT_NUMBER_COLUMN).getStringValue();
-    }
+    FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
 
-    if (projectName == null || projectNumber == null) {
-      throw new RuntimeException("Database failed to retrieve project information.");
+    if (row == null) {
+      throw new RuntimeException(
+        "Database failed to retrieve project information for project " + projectId);
+    } else {
+      String projectName = row.get(IAMBindingsSchema.PROJECT_NAME_COLUMN).getStringValue();
+      String projectNumber = row.get(IAMBindingsSchema.PROJECT_NUMBER_COLUMN).getStringValue();
+      return ProjectIdentification.create(projectName, projectId, Long.parseLong(projectNumber));
     }
-
-    return ProjectIdentification.create(projectName, projectId, Long.parseLong(projectNumber));
   }
 }

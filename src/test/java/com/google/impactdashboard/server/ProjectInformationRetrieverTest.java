@@ -96,7 +96,7 @@ public class ProjectInformationRetrieverTest extends Mockito {
     PROJECT_IAM_DATA.put(234L, 3456);
     PROJECT_IAM_DATA.put(23645543L, 78654);
     PROJECT_RECOMMENDATION_DATA.put(234L, Recommendation.create(PROJECT_ID_1,
-        RECOMMENDATION_DESCRIPTION, Recommendation.RecommenderType.IAM_BINDING, 234L,
+        "", Arrays.asList(), Recommendation.RecommenderType.IAM_BINDING, 234L,
         IAMRecommenderMetadata.create(-100)));
 
     when(readManager.getMapOfDatesToIAMBindings(PROJECT_ID_1)).thenReturn(PROJECT_IAM_DATA);

@@ -16,15 +16,15 @@ import {DateRange} from '../../model/date_range';
   styleUrls: ['./date_select.component.css'],
 })
 export class DateSelectComponent implements OnInit {
-  /** The possible range for the date select */
+  /** The possible range for the date select. */
   @Input()
   public possibleRange: DateRange;
 
-  /** Sends the range selected by the user back out when it changes */
+  /** Sends the range selected by the user back out when it changes. */
   @Output()
   public selectedRange = new EventEmitter<DateRange>();
 
-  /** The DataRange that was sent last */
+  /** The DataRange that was sent last. */
   public lastSent: DateRange;
 
   public currentMin: Date;
@@ -40,8 +40,9 @@ export class DateSelectComponent implements OnInit {
       this.currentMin = this.possibleRange.getStart();
       this.currentMax = this.possibleRange.getEnd();
 
-      // A timeout needs to happen, as the range on the mat-date-range-input tag needs to update before,
-      // with time to update, so the values of the date selects can be updated.
+      // A timeout is necessary, as there is a delay before the range on the mat-date-range-input tag is updated,
+      // so if the new DateRange is broader than the old one,
+      // the date select will reject the change and be out-of-sync with the graph.
       setTimeout(() => {
         this.currentMin = this.possibleRange.getStart();
         this.currentMax = this.possibleRange.getEnd();

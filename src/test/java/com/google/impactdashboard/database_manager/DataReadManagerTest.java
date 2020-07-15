@@ -3,7 +3,6 @@ package com.google.impactdashboard.database_manager;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -67,6 +66,12 @@ public class DataReadManagerTest {
   }
 
   @Test
+  public void noProjectsReturnedFromEmptyTable() {
+    List<ProjectIdentification> actual = dataReadManagerEmptyTables.listProjects();
+    assertEquals(Arrays.asList(), actual);
+  }
+
+  @Test
   public void testAverageBindingsOnProject1() {
     int actual = (int) Math.round(dataReadManager.getAverageIAMBindingsInPastYear(PROJECT_ID_1));
     int expected = 1545;
@@ -85,6 +90,15 @@ public class DataReadManagerTest {
   @Test
   public void testAverageBindingsReturnsZeroForNonexistentProject() {
     int actual = (int) Math.round(dataReadManager.getAverageIAMBindingsInPastYear("does-not-exist"));
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testAverageBindingsReturnsZeroForEmptyTable() {
+    int actual = (int) Math.round(dataReadManagerEmptyTables
+      .getAverageIAMBindingsInPastYear("does-not-exist"));
     int expected = 0;
 
     assertEquals(expected, actual);
@@ -144,8 +158,25 @@ public class DataReadManagerTest {
   }
 
   @Test
+  public void testNoRecommendationsReturnedForEmptyTable() {
+    int actual = dataReadManagerEmptyTables
+      .getMapOfDatesToRecommendationTaken("does-not-exist").size();
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
   public void testNoBindingsReturnedForNonexistentProject() {
     int actual = dataReadManager.getMapOfDatesToIAMBindings("does-not-exist").size();
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  } 
+
+  @Test
+  public void testNoBindingsReturnedForEmptyTable() {
+    int actual = dataReadManagerEmptyTables.getMapOfDatesToIAMBindings("does-not-exist").size();
     int expected = 0;
 
     assertEquals(expected, actual);

@@ -23,7 +23,7 @@ public abstract class ProjectGraphData {
   public static ProjectGraphData create(String projectId, 
     Map<Long, Integer> numberIAMBindingsOnDate, 
     Map<Long, Recommendation> recommendationsAppliedOnDate) {
-    return new AutoValue_ProjectGraphData(projectId, numberIAMBindingsOnDate, 
+    return new AutoValue_ProjectGraphData(projectId, numberIAMBindingsOnDate,
       recommendationsAppliedOnDate);
   }
 

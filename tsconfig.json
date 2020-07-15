@@ -17,6 +17,7 @@
   ],
   "compilerOptions": {
     "experimentalDecorators": true,
+    "outDir": "build",
     "lib": [
       "ES2017",
       "DOM"

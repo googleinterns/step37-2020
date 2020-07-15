@@ -8,6 +8,11 @@ export class RecommendationAction {
 
   /** Converts the given action to a string that is visible to the user. */
   public toString(): string {
-    return '';
+    if (this.newRole.length > 0) {
+      // Role was replaced
+      return `${this.affectedAccount} had the role ${this.previousRole} changed to ${this.newRole}.`;
+    }
+    // Role was removed
+    return `${this.affectedAccount} had the role ${this.previousRole} removed.`;
   }
 }

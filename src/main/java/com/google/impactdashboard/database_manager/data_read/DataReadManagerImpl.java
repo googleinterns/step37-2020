@@ -14,6 +14,7 @@ import com.google.cloud.bigquery.FieldValueList;
 import java.io.IOException;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.QueryParameterValue;
+import com.google.common.collect.Iterables;
 
 /** Class for returning data from the database. */
 public class DataReadManagerImpl implements DataReadManager {
@@ -123,16 +124,13 @@ public class DataReadManagerImpl implements DataReadManager {
       .getMostRecentTimestampConfiguration()
       .build();
     TableResult results = database.readDatabase(queryConfiguration);
+    FieldValueList row = Iterables.getOnlyElement(results.iterateAll());
 
-    long maxTimestamp = -1;
-    try {
-      for (FieldValueList row : results.iterateAll()) {
-        maxTimestamp = row.get("Max_Timestamp").getTimestampValue() / 1000;
-      }
-    } catch (NullPointerException np) {
+    if (row.get("Max_Timestamp").isNull()) {
       return -1;
+    } else {
+      return row.get("Max_Timestamp").getTimestampValue() / 1000;
     }
-    return maxTimestamp;
   }
 
   /**

@@ -107,6 +107,7 @@ public class FakeDatabase {
   public static Map<Long, Integer> getDatesToBindingsForProject(String projectId) {
     AtomicReference<Map<Long, Integer>> dailyBindings = 
       new AtomicReference<Map<Long, Integer>>();
+    dailyBindings.set(new HashMap<>());
     iamBindings.forEach((project, data) -> {
       if (project.getProjectId().equals(projectId)) {
         dailyBindings.set(data);
@@ -128,6 +129,7 @@ public class FakeDatabase {
     }
 
     AtomicReference<Double> averageBindings = new AtomicReference<Double>();
+    averageBindings.set(0);
     dailyBindings.forEach((date, bindings) -> {
       averageBindings.set(averageBindings.get() + bindings);
     });

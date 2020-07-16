@@ -80,7 +80,7 @@ export class FakeDataService implements DataService {
       [Date.parse('3 Jun 2020 UTC')]: 84,
       [Date.parse('4 Jun 2020 UTC')]: 101,
       [Date.parse('5 Jun 2020 UTC')]: 100,
-      [Date.parse('6 Jun 2020 UTC')]: 90,
+      [Date.parse('6 Jun 2020 UTC')]: 50,
       [Date.parse('7 Jun 2020 UTC')]: 66,
       [Date.parse('8 Jun 2020 UTC')]: 136,
       [Date.parse('9 Jun 2020 UTC')]: 108,
@@ -92,7 +92,7 @@ export class FakeDataService implements DataService {
       [Date.parse('15 Jun 2020 UTC')]: 141,
       [Date.parse('16 Jun 2020 UTC')]: 64,
       [Date.parse('17 Jun 2020 UTC')]: 102,
-      [Date.parse('18 Jun 2020 UTC')]: 139,
+      [Date.parse('18 Jun 2020 UTC')]: 40,
       [Date.parse('19 Jun 2020 UTC')]: 87,
       [Date.parse('20 Jun 2020 UTC')]: 57,
     };
@@ -159,7 +159,7 @@ export class FakeDataService implements DataService {
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Jun 2020 UTC')]: 28,
-      [Date.parse('2 Jun 2020 UTC')]: 36,
+      [Date.parse('2 Jun 2020 UTC')]: 11,
       [Date.parse('3 Jun 2020 UTC')]: 22,
       [Date.parse('4 Jun 2020 UTC')]: 62,
       [Date.parse('5 Jun 2020 UTC')]: 60,

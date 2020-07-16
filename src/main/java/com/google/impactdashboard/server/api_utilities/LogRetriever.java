@@ -53,10 +53,10 @@ public class LogRetriever {
   /**
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant audit logs.
    * @param projectId ID of the project that the audit logs will be retrieved for.
-   * @param timeTO Latest time to retrieve logs for.
+   * @param timeTo Latest time to retrieve logs for.
    * @return A list of all the relevant audit log entries that are stored by the logging API
    */
-  public Collection<LogEntry> listAuditLogs(String projectId, long timeTO) {
+  public Collection<LogEntry> listAuditLogs(String projectId, long timeTo) {
     String project_id = "projects/" + projectId;
     String filter = "resource.type = project AND severity = NOTICE AND " +
         "protoPayload.methodName:SetIamPolicy";
@@ -70,9 +70,10 @@ public class LogRetriever {
   /**
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant Recommendation logs.
    * @param projectId ID of the project that the recommendation logs will be retrieved for.
+   * @param timeTo Latest time to retrieve logs for.
    * @return A list of all the relevant recommendation log entries that are stored by the logging API.
    */
-  public Collection<LogEntry> listRecommendationLogs(String projectId) {
+  public Collection<LogEntry> listRecommendationLogs(String projectId, long timeTo) {
     String project_id = "projects/" + projectId;
     // May need tweaking once tested
     String filter = "resource.type = recommender";

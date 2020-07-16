@@ -1,16 +1,18 @@
 package com.google.impactdashboard.database_manager.data_read;
 
 import com.google.impactdashboard.data.project.ProjectIdentification;
-import com.google.impactdashboard.data.recommendation.IAMRecommenderMetadata;
-import com.google.impactdashboard.data.recommendation.Recommendation;
+import com.google.impactdashboard.data.recommendation.*;
 import com.google.impactdashboard.configuration.*;
 import com.google.impactdashboard.database_manager.bigquery.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 import com.google.cloud.bigquery.TableResult;
 import com.google.cloud.bigquery.FieldValueList;
+import com.google.cloud.bigquery.FieldValue;
+import com.google.cloud.bigquery.FieldList;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.QueryParameterValue;
 import com.google.common.collect.Iterables;
@@ -81,12 +83,17 @@ public class DataReadManagerImpl implements DataReadManager {
     for (FieldValueList row : results.iterateAll()) {
       long acceptedTimestamp = row.get(RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN)
         .getTimestampValue() / 1000;
-      String description = row.get(RecommendationsSchema.DESCRIPTION_COLUMN).getStringValue();
+      String actor = row.get(RecommendationsSchema.ACTOR_COLUMN).getStringValue();
       int iamImpact = (int) row.get(RecommendationsSchema.IAM_IMPACT_COLUMN).getLongValue();
 
+      FieldList structSchema = results.getSchema().getFields()
+        .get(RecommendationsSchema.ACTIONS_COLUMN).getSubFields();
+      List<RecommendationAction> actions = structActionsToRecommendationActions(
+        row.get(RecommendationsSchema.ACTIONS_COLUMN).getRepeatedValue(), structSchema);
+
       datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
-        projectId, description, Recommendation.RecommenderType.IAM_BINDING, acceptedTimestamp, 
-        IAMRecommenderMetadata.create(iamImpact)));
+        projectId, actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
+        acceptedTimestamp, IAMRecommenderMetadata.create(iamImpact)));
     } 
     return datesToRecommendations;
   }
@@ -154,5 +161,23 @@ public class DataReadManagerImpl implements DataReadManager {
       String projectNumber = row.get(IAMBindingsSchema.PROJECT_NUMBER_COLUMN).getStringValue();
       return ProjectIdentification.create(projectName, projectId, Long.parseLong(projectNumber));
     }
+  }
+
+  /** 
+   * Converts a list of SQL structs representing recommendation actions to a 
+   * list of RecommendationAction objects. 
+   */
+  private List<RecommendationAction> structActionsToRecommendationActions(
+    List<FieldValue> actions, FieldList structSchema) {
+    return actions.stream().map(action -> {
+      FieldValueList structAction = FieldValueList.of(action.getRecordValue(), structSchema);
+      String affectedAccount = structAction
+        .get(RecommendationsSchema.ACCOUNT_AFFECTED_FIELD).getStringValue();
+      String previousRole = structAction
+        .get(RecommendationsSchema.PREVIOUS_ROLE_FIELD).getStringValue();
+      String newRole = structAction
+        .get(RecommendationsSchema.NEW_ROLE_FIELD).getStringValue();
+      return RecommendationAction.create(affectedAccount, previousRole, newRole);
+    }).collect(Collectors.toList());
   }
 }

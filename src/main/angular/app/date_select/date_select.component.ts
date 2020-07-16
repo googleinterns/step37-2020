@@ -34,6 +34,8 @@ export class DateSelectComponent implements OnInit {
 
   constructor(private dateUtilities: DateUtilitiesService) {
     this.possibleRange = new DateRange(new Date(), new Date());
+    this.currentMin = new Date();
+    this.currentMax = new Date();
   }
 
   ngOnInit(): void {}
@@ -41,16 +43,15 @@ export class DateSelectComponent implements OnInit {
   /** Called when an input field changes. */
   ngOnChanges(changes: SimpleChanges) {
     if (!changes.possibleRange.isFirstChange()) {
+      this.currentMin = this.possibleRange.getStart();
       // A timeout is necessary, as there is a delay before the range on the mat-date-range-input tag is updated,
       // so if the new DateRange is broader than the old one,
       // the date select will reject the change and be out-of-sync with the graph.
       setTimeout(() => {
-        this.currentMin = this.possibleRange.getStart();
         this.currentMax = this.possibleRange.getEnd();
         if (!this.lastSent) {
           this.lastSent = this.possibleRange;
         }
-        this.validateAndSend();
       }, 50);
     }
   }

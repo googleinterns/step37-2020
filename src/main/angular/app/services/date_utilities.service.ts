@@ -1,5 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ProjectGraphData} from '../../model/project_graph_data';
+import {Row} from '../../model/types';
+import {DateRange} from '../../model/date_range';
 
 /** Contains some basic utility methods for date wrangling. */
 @Injectable()
@@ -43,5 +45,22 @@ export class DateUtilitiesService {
 
     out.sort((a, b) => a.getTime() - b.getTime());
     return out;
+  }
+
+  /** Returns the date range present in the given rows */
+  getDateRange(rows: Row[]): DateRange {
+    let earliestDate: Date | undefined;
+    let lastDate: Date | undefined;
+
+    rows.forEach(row => {
+      const currentDate: Date = row[0] as Date;
+      if (!earliestDate || earliestDate.getTime() > currentDate.getTime()) {
+        earliestDate = currentDate;
+      }
+      if (!lastDate || lastDate.getTime() < currentDate.getTime()) {
+        lastDate = currentDate;
+      }
+    });
+    return new DateRange(earliestDate as Date, lastDate as Date);
   }
 }

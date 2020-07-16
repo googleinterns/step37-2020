@@ -13,6 +13,19 @@ export const DEFAULT_COLORS: string[] = [
   GOOGLE_RED,
   GOOGLE_YELLOW,
   GOOGLE_GREEN,
+  // The remaining are lighter versions of the colors above, also from the link above
+  '#1A73E8',
+  '#D93025',
+  '#F9AB00',
+  '#1E8E3E',
+  '#8AB4F8',
+  '#F28B82',
+  '#FDD663',
+  '#81C995',
+  '#E8F0FE',
+  '#FCE8E6',
+  '#FEF7E0',
+  '#E6F4EA',
 ];
 
 /** How much of the horizontal space on the page is taken up by the graph */

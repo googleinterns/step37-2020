@@ -6,7 +6,7 @@ import {SimpleChange} from '@angular/core';
 import {DateUtilitiesService} from './date_utilities.service';
 import {GraphProperties, Columns, Row} from '../../model/types';
 import {DataService} from './data.service';
-import {ErrorMessage} from '../../model/error_message';
+import {DateRange} from '../../model/date_range';
 
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
@@ -28,11 +28,20 @@ export class GraphProcessorService {
         },
         format: 'M/d',
         minTextSpacing: 100,
+        viewWindow: {},
       },
       vAxis: {
         minorGridlines: {
           color: 'white',
         },
+        title: 'IAM Bindings',
+        titleTextStyle: {
+          italic: false,
+          bold: true,
+        },
+      },
+      tooltip: {
+        isHtml: true,
       },
       series: {},
     };
@@ -41,9 +50,9 @@ export class GraphProcessorService {
       graphData: [],
       columns: ['Time'],
       type: 'LineChart',
-      title: 'Empty Graph',
       width: 960,
       height: 600,
+      dateRange: new DateRange(new Date(), new Date()),
     };
   }
 
@@ -83,6 +92,10 @@ export class GraphProcessorService {
     this.addIamColumns(properties.columns, data);
     // Add the new rows
     this.addIamRows(properties.graphData, data, project, seriesNumber);
+    // Modify the date range as appropriate
+    properties.dateRange = this.dateUtilities.getDateRange(
+      properties.graphData
+    );
 
     // Force a refresh of the chart
     const temp: Columns = [];
@@ -105,6 +118,15 @@ export class GraphProcessorService {
 
     properties.columns.splice(seriesNumber * 3 + 1, 3);
     properties.graphData.forEach(row => row.splice(seriesNumber * 3 + 1, 3));
+    // Look for rows with empty data and remove them
+    properties.graphData = properties.graphData.filter(row =>
+      row.some((value, index) => value && index !== 0)
+    );
+
+    // Modify the date range as appropriate
+    properties.dateRange = this.dateUtilities.getDateRange(
+      properties.graphData
+    );
 
     // Force a refresh of the chart
     const temp: Columns = [];
@@ -151,7 +173,7 @@ export class GraphProcessorService {
         +key,
         data.dateToRecommendationTaken
       );
-      const tooltip = this.getTooltip(value, recommendations);
+      const tooltip = this.getTooltip(date, value, recommendations, project);
       const point = this.getPoint(recommendations, project.color);
 
       if (row) {
@@ -175,7 +197,7 @@ export class GraphProcessorService {
     // Populate the header row, which contains the column purposes
     columns.push(
       data.projectId,
-      {type: 'string', role: 'tooltip'},
+      {type: 'string', role: 'tooltip', p: {html: true}},
       {type: 'string', role: 'style'}
     );
   }
@@ -206,24 +228,33 @@ export class GraphProcessorService {
 
   /** Returns the tooltip associated with the given IAM Bindings time */
   private getTooltip(
+    date: Date,
     numberBindings: number,
-    matchingRecommendations: Recommendation[]
+    matchingRecommendations: Recommendation[],
+    project: Project
   ): string {
+    // Add the date to tooltip
+    let tooltip = `<table style="border: 1px solid ${project.color}">`;
+    tooltip += `<tr><th><b style="color: ${project.color}">${project.projectId}</b><br/>`;
+    tooltip += `<b>${date.toLocaleDateString()}</b></th></tr>`;
+
     // The list of recommendations on the same day
     if (matchingRecommendations.length === 0) {
-      return `IAM Bindings: ${numberBindings}`;
+      tooltip += `<tr><td style="border-top: 1px solid ${project.color};">IAM Bindings: ${numberBindings}</td></tr>`;
     }
 
-    let tooltip = '';
-    matchingRecommendations.forEach((recommendation, index) => {
-      tooltip += `${recommendation.actor} accepted a recommendation:`;
+    matchingRecommendations.forEach(recommendation => {
+      tooltip += `<tr class="tooltip-row"><td style="border-top: 1px solid ${project.color};">`;
+
+      tooltip += `${recommendation.actor} accepted:<br/>`;
       recommendation.actions.forEach(
-        action => (tooltip += '\n' + action.toString())
+        action => (tooltip += `${action.toString()}<br/>`)
       );
-      if (index < matchingRecommendations.length - 1) {
-        tooltip += '\n';
-      }
+      tooltip += `Removing ${recommendation.metadata.impactInIAMBindings} IAM Bindings`;
+      tooltip += '</td></tr>';
     });
+
+    tooltip += '</table>';
     return tooltip;
   }
 

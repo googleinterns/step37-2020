@@ -1,6 +1,8 @@
 import {DateUtilitiesService} from './date_utilities.service';
 import 'jasmine';
 import {ProjectGraphData} from '../../model/project_graph_data';
+import {Row} from '../../model/types';
+import {DateRange} from '../../model/date_range';
 
 describe('DateUtilitiesService', () => {
   let service: DateUtilitiesService;
@@ -126,6 +128,42 @@ describe('DateUtilitiesService', () => {
 
       const actual = service.uniqueDays([data1, data2]);
       const expected = [1, 2, 3, 4, 5, 6, 7, 8].map(i => new Date(2020, 5, i));
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('getDateRange()', () => {
+    let year: number;
+    let month: number;
+    let rowsEarlyJune: Row[];
+    let rowsEarlyLateJune: Row[];
+
+    beforeAll(() => {
+      year = 2020;
+      month = 5;
+      rowsEarlyJune = [1, 2, 3, 4, 5].map(day => [new Date(year, month, day)]);
+      rowsEarlyLateJune = [1, 2, 3, 4, 5, 25, 26, 27, 28, 29].map(day => [
+        new Date(year, month, day),
+      ]);
+    });
+
+    it('Gets the proper date range from a continous block of dates', () => {
+      const expected = new DateRange(
+        new Date(year, month, 1),
+        new Date(year, month, 5)
+      );
+      const actual = service.getDateRange(rowsEarlyJune);
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('Gets the proper range for a disparate ranges', () => {
+      const expected = new DateRange(
+        new Date(year, month, 1),
+        new Date(year, month, 29)
+      );
+      const actual = service.getDateRange(rowsEarlyLateJune);
 
       expect(actual).toEqual(expected);
     });

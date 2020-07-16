@@ -14,9 +14,17 @@
 
 /** Represents misc data for a project for extensibility purposes. */
 export class ProjectMetaData {
-  averageIAMBindingsInPastYear: number;
+  constructor(private averageIAMBindingsInPastYear: number) {}
 
-  constructor(avgIAMBindingsInPastYear: number) {
-    this.averageIAMBindingsInPastYear = avgIAMBindingsInPastYear;
+  public getAverageIAMBindingsInPastYear(): number {
+    return this.averageIAMBindingsInPastYear;
+  }
+
+  /** Returns the average number of IAM Bindings. If the number is 0, sends a '-' instead. */
+  public toString(): string {
+    if (this.averageIAMBindingsInPastYear === 0) {
+      return '-';
+    }
+    return this.averageIAMBindingsInPastYear + '';
   }
 }

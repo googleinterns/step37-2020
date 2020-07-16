@@ -14,30 +14,16 @@
 
 import {RecommenderType} from './recommender_type';
 import {RecommenderMetadata} from './recommender_metadata';
+import {RecommendationAction} from './recommendation_action';
 
 /** Represents a single accepted recommendation. */
 export class Recommendation {
-  projectId: string;
-  description: string;
-  recommender: RecommenderType;
-  acceptedTimestamp: number;
-  metadata: RecommenderMetadata;
-
   constructor(
-    projectId: string,
-    description: string,
-    recommender: RecommenderType,
-    acceptedTimestamp: number,
-    metadata?: RecommenderMetadata
-  ) {
-    this.projectId = projectId;
-    this.description = description;
-    this.recommender = recommender;
-    this.acceptedTimestamp = acceptedTimestamp;
-    if (metadata) {
-      this.metadata = metadata;
-    } else {
-      this.metadata = new RecommenderMetadata(50);
-    }
-  }
+    public projectId: string,
+    public actor: string,
+    public actions: RecommendationAction[],
+    public recommender: RecommenderType,
+    public acceptedTimestamp: number,
+    public metadata: RecommenderMetadata
+  ) {}
 }

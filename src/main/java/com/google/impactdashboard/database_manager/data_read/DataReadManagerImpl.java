@@ -21,7 +21,7 @@ public class DataReadManagerImpl implements DataReadManager {
   QueryConfigurationBuilder queryConfigurationBuilder;
 
   public DataReadManagerImpl() {
-    database = new DatabaseAccessor(); 
+    database = DatabaseAccessor.getInstance(); 
     queryConfigurationBuilder = QueryConfigurationBuilderFactory.create();
   }
   

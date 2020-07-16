@@ -41,7 +41,7 @@
           <fa-icon [icon]="circle" [ngStyle]="{'color': getColor(project)}"
             class="project-color-icon"></fa-icon>{{ project.name }}
         </td>
-        <td>{{ project.metaData.averageIAMBindingsInPastYear }}</td>
+        <td>{{ project.metaData.toString() }}</td>
         <td>{{ project.projectNumber }}</td>
         <td>{{ project.projectId }}</td>
       </tr>

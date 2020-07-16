@@ -216,7 +216,10 @@ export class GraphProcessorService {
 
     let tooltip = '';
     matchingRecommendations.forEach((recommendation, index) => {
-      tooltip += recommendation.description;
+      tooltip += `${recommendation.actor} accepted a recommendation:`;
+      recommendation.actions.forEach(
+        action => (tooltip += '\n' + action.toString())
+      );
       if (index < matchingRecommendations.length - 1) {
         tooltip += '\n';
       }

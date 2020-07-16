@@ -6,12 +6,18 @@ import {Project} from '../../../model/project';
 import {ProjectMetaData} from '../../../model/project_metadata';
 import {DataService} from '../data.service';
 import {ErrorMessage} from '../../../model/error_message';
+import {RecommendationAction} from '../../../model/recommendation_action';
+import {RecommenderMetadata} from '../../../model/recommender_metadata';
 
 /** Contains fake data. */
 @Injectable()
 export class FakeDataService implements DataService {
   /** Contains the projects that are faked. */
   private projects: {[projectId: string]: [Project, ProjectGraphData]};
+  private static actions = [
+    new RecommendationAction('test@', 'owner', 'manager'),
+    new RecommendationAction('test@', 'observer', ''),
+  ];
 
   constructor() {
     this.projects = {};
@@ -87,28 +93,36 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('5 Jun 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 1',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('5 Jun 2020 UTC')
+        Date.parse('5 Jun 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
       [Date.parse('9 Jun 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 2',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('9 Jun 2020 UTC')
+        Date.parse('9 Jun 2020 UTC'),
+        new RecommenderMetadata(26)
       ),
       [Date.parse('17 Jun 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 3',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('17 Jun 2020 UTC')
+        Date.parse('17 Jun 2020 UTC'),
+        new RecommenderMetadata(11)
       ),
       // Simulate two recommendations on one day
       [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation(
         projectId,
-        'Rec 4',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('17 Jun 2020 UTC') + 1
+        Date.parse('7 Jun 2020 UTC') + 1,
+        new RecommenderMetadata(36)
       ),
     };
     return [
@@ -146,28 +160,36 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('1 Jun 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 1',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('1 Jun 2020 UTC')
+        Date.parse('1 Jun 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
       [Date.parse('9 Jun 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 2',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('9 Jun 2020 UTC')
+        Date.parse('9 Jun 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
       [Date.parse('20 Jun 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 3',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('20 Jun 2020 UTC')
+        Date.parse('20 Jun 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
       // Simulate two recommendations on one day
       [Date.parse('20 Jun 2020 UTC') + 1]: new Recommendation(
         projectId,
-        'Rec 4',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('20 Jun 2020 UTC') + 1
+        Date.parse('20 Jun 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
     };
 
@@ -206,28 +228,36 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('7 Jun 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 1',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('7 Jun 2020 UTC')
+        Date.parse('7 Jun 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
       [Date.parse('9 Jun 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 2',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('9 Jun 2020 UTC')
+        Date.parse('9 Jun 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
       [Date.parse('22 Jun 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 3',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('22 Jun 2020 UTC')
+        Date.parse('22 Jun 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
       // Simulate two recommendations on one day
-      [Date.parse('122 Jun 2020 UTC') + 1]: new Recommendation(
+      [Date.parse('22 Jun 2020 UTC') + 1]: new Recommendation(
         projectId,
-        'Rec 4',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('22 Jun 2020 UTC') + 1
+        Date.parse('22 Jun 2020 UTC') + 1,
+        new RecommenderMetadata(20)
       ),
     };
 
@@ -271,28 +301,36 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('1 Jul 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 1',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('1 Jul 2020 UTC')
+        Date.parse('1 Jul 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
       [Date.parse('9 Jul 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 2',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('9 Jul 2020 UTC')
+        Date.parse('9 Jul 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
       [Date.parse('20 Jul 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 3',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('20 Jul 2020 UTC')
+        Date.parse('20 Jul 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
       // Simulate two recommendations on one day
       [Date.parse('20 Jul 2020 UTC') + 1]: new Recommendation(
         projectId,
-        'Rec 4',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('20 Jul 2020 UTC') + 1
+        Date.parse('20 Jul 2020 UTC') + 1,
+        new RecommenderMetadata(20)
       ),
     };
 

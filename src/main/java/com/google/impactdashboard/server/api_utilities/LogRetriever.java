@@ -50,7 +50,7 @@ public class LogRetriever {
   public Collection<LogEntry> listAuditLogs(String projectId, long timeTo) {
     String project_id = "projects/" + projectId;
     String filter = "resource.type = project AND severity = NOTICE AND " +
-        "protoPayload.methodName:SetIamPolicy";
+        "protoPayload.methodName:SetIamPolicy AND timestamp > " + timeTo;
     ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder().setFilter(filter)
         .setOrderBy("timestamp desc").addResourceNames(project_id).build();
     ListLogEntriesPagedResponse response = logger.listLogEntries(request);
@@ -67,7 +67,7 @@ public class LogRetriever {
   public Collection<LogEntry> listRecommendationLogs(String projectId, long timeTo) {
     String project_id = "projects/" + projectId;
     // May need tweaking once tested
-    String filter = "resource.type = recommender";
+    String filter = "resource.type = recommender AND timestamp > " + timeTo;
     ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder().setFilter(filter)
         .setOrderBy("timestamp desc").addResourceNames(project_id).build();
     ListLogEntriesPagedResponse response = logger.listLogEntries(request);

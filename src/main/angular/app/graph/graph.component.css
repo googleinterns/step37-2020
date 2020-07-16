@@ -11,3 +11,8 @@
 #project-prompt h1 {
   font-size: 50px;
 }
+
+#date-container app-date-select {
+  float: right;
+  margin-top: 8px;
+}

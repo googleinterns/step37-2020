@@ -35,4 +35,9 @@ export class Project {
     this.metaData = metaData;
     this.color = '';
   }
+
+  /** Whether the query string is included in the name or ID of the project */
+  includes(query: string): boolean {
+    return this.projectId.includes(query) || this.name.includes(query);
+  }
 }

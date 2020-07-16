@@ -31,16 +31,16 @@ export class ProjectComparators {
   /** Comparator for sorting projects in descending order by IAM Bindings. */
   private static iamDescending(a: Project, b: Project): number {
     return (
-      b.metaData.averageIAMBindingsInPastYear -
-      a.metaData.averageIAMBindingsInPastYear
+      b.metaData.getAverageIAMBindingsInPastYear() -
+      a.metaData.getAverageIAMBindingsInPastYear()
     );
   }
 
   /** Comparator for sorting projects in ascending order by IAM Bindings. */
   private static iamAscending(a: Project, b: Project): number {
     return (
-      a.metaData.averageIAMBindingsInPastYear -
-      b.metaData.averageIAMBindingsInPastYear
+      a.metaData.getAverageIAMBindingsInPastYear() -
+      b.metaData.getAverageIAMBindingsInPastYear()
     );
   }
 

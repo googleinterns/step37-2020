@@ -7,12 +7,9 @@ import {
   faFilter,
 } from '@fortawesome/free-solid-svg-icons';
 import {trigger, state, style, transition, animate} from '@angular/animations';
-import {
-  SortDirection,
-  SortBy,
-  ProjectComparators,
-} from '../../model/project_sort';
+import {SortDirection, SortBy} from '../../model/project_sort';
 import {DataService} from '../services/data.service';
+import {ProjectQueryService} from '../services/project_query.service';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({
@@ -29,16 +26,8 @@ import {DataService} from '../services/data.service';
   ],
 })
 export class ProjectSelectComponent implements OnInit {
-  /** All projects we have access to. */
-  public projects: Project[];
   /** All projects that are currently selected. */
   public activeProjects: Set<Project>;
-  /** The sort direction. */
-  public currentSortDirection: SortDirection;
-  /** The field sorting by. */
-  public currentSortField: SortBy;
-  /** The value to filter by. */
-  public query: string;
 
   // #region DOM interraction variables
   /** Whether a particular arrow is rotated or not. */
@@ -63,13 +52,11 @@ export class ProjectSelectComponent implements OnInit {
   @Output()
   public changeProjects = new EventEmitter<Project[]>();
 
-  constructor(private dataService: DataService) {
-    this.query = '';
-    this.projects = [];
+  constructor(
+    private dataService: DataService,
+    private projectQueryService: ProjectQueryService
+  ) {
     this.activeProjects = new Set();
-
-    this.currentSortDirection = SortDirection.DESCENDING;
-    this.currentSortField = SortBy.IAM_BINDINGS;
   }
 
   /** Returns the color associated with the given project. */
@@ -92,7 +79,7 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Returns the class placed on a sorting arrow, which decides whether it's grayed out or not. */
   getSortClass(field: SortBy) {
-    if (field === this.currentSortField) {
+    if (field === this.projectQueryService.getSortField()) {
       return 'sort-active';
     }
     return 'sort-inactive';
@@ -136,11 +123,10 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Change the sort field/direction, adjusts styling and sorts projects. */
   changeSort(field: SortBy) {
-    this.currentSortField = field;
     if (this.getAnimationStatus(field) === 'down') {
-      this.currentSortDirection = SortDirection.ASCENDING;
+      this.projectQueryService.changeField(field, SortDirection.ASCENDING);
     } else {
-      this.currentSortDirection = SortDirection.DESCENDING;
+      this.projectQueryService.changeField(field, SortDirection.DESCENDING);
     }
     // Animate the selected field
     this.swapAnimationProperty(field);
@@ -148,50 +134,27 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Returns a sorted and filtered view of the projects. */
   getProjects(): Project[] {
-    // TODO: Rebuild projects only when sort or filter changes.
-    if (this.projects === undefined) {
-      return [];
-    }
-    const display: Project[] = [];
-
-    const regex = new RegExp(this.query, 'i');
-    this.projects
-      .filter(
-        project => project.name.match(regex) || project.projectId.match(regex)
-      )
-      .forEach(project => display.push(project));
-
-    display.sort(
-      ProjectComparators.getComparator(
-        this.currentSortDirection,
-        this.currentSortField
-      )
-    );
-    return display;
+    return this.projectQueryService.getProjects();
   }
 
   /** Changes the query string. */
   search(query: string) {
-    this.query = query;
+    this.projectQueryService.changeQuery(query);
   }
 
   /** Called when the component is ready to be displayed. */
   ngOnInit() {
     this.dataService.listProjects().then(projects => {
       if (projects instanceof Array) {
-        // Sort by the selected fields
-        projects.sort(
-          ProjectComparators.getComparator(
-            this.currentSortDirection,
-            this.currentSortField
-          )
-        );
-        // Assign colors based on initial IAM Bindings order
-        projects.forEach(
-          (project, index) =>
-            (project.color = DEFAULT_COLORS[index % DEFAULT_COLORS.length])
-        );
-        this.projects = projects;
+        this.projectQueryService.init(projects);
+        // Assign colors based on initial ordering
+        this.projectQueryService
+          .getProjects()
+          .forEach(
+            (project, index) =>
+              (project.color = DEFAULT_COLORS[index % DEFAULT_COLORS.length])
+          );
+
         // Add the highest IAM Bindings project by default
         if (projects.length > 0) {
           this.toggleProject(projects[0]);

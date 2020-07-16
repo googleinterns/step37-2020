@@ -132,15 +132,19 @@ export class FakeDataService implements DataService {
       ),
       [Date.parse('17 Jun 2020 UTC') + 2]: new Recommendation(
         projectId,
-        'Rec 5',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('17 Jun 2020 UTC') + 2
+        Date.parse('17 Jun 2020 UTC') + 2,
+        new RecommenderMetadata(27)
       ),
       [Date.parse('17 Jun 2020 UTC') + 3]: new Recommendation(
         projectId,
-        'Rec 6',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('17 Jun 2020 UTC') + 3
+        Date.parse('17 Jun 2020 UTC') + 3,
+        new RecommenderMetadata(31)
       ),
     };
     return [
@@ -402,9 +406,11 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('9 Jul 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 1',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('9 Jul 2020 UTC')
+        Date.parse('9 Jul 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
     };
 
@@ -458,9 +464,11 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('9 Jul 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 1',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('9 Jul 2020 UTC')
+        Date.parse('9 Jul 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
     };
 
@@ -514,9 +522,11 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('9 Aug 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 1',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('9 Aug 2020 UTC')
+        Date.parse('9 Aug 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
     };
 
@@ -556,9 +566,11 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('17 Aug 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 1',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('17 Aug 2020 UTC')
+        Date.parse('17 Aug 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
     };
 
@@ -590,9 +602,11 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('17 Aug 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 1',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('17 Aug 2020 UTC')
+        Date.parse('17 Aug 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
     };
 
@@ -641,9 +655,11 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('9 Aug 2020 UTC')]: new Recommendation(
         projectId,
-        'Rec 1',
+        'user@',
+        FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('9 Aug 2020 UTC')
+        Date.parse('9 Aug 2020 UTC'),
+        new RecommenderMetadata(20)
       ),
     };
 

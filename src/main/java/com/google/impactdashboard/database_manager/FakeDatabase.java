@@ -129,7 +129,7 @@ public class FakeDatabase {
     }
 
     AtomicReference<Double> averageBindings = new AtomicReference<Double>();
-    averageBindings.set(0);
+    averageBindings.set(0.0);
     dailyBindings.forEach((date, bindings) -> {
       averageBindings.set(averageBindings.get() + bindings);
     });

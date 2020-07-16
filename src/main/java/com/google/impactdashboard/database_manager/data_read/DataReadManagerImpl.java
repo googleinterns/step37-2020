@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import com.google.cloud.bigquery.TableResult;
 import com.google.cloud.bigquery.FieldValueList;
 import com.google.cloud.bigquery.FieldValue;
+import com.google.cloud.bigquery.FieldList;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.QueryParameterValue;
 import com.google.common.collect.Iterables;
@@ -84,8 +85,11 @@ public class DataReadManagerImpl implements DataReadManager {
         .getTimestampValue() / 1000;
       String actor = row.get(RecommendationsSchema.ACTOR_COLUMN).getStringValue();
       int iamImpact = (int) row.get(RecommendationsSchema.IAM_IMPACT_COLUMN).getLongValue();
+
+      FieldList structSchema = results.getSchema().getFields()
+        .get(RecommendationsSchema.ACTIONS_COLUMN).getSubFields();
       List<RecommendationAction> actions = structActionsToRecommendationActions(
-        row.get(RecommendationsSchema.ACTIONS_COLUMN).getRepeatedValue());
+        row.get(RecommendationsSchema.ACTIONS_COLUMN).getRepeatedValue(), structSchema);
 
       datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
         projectId, actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
@@ -164,9 +168,9 @@ public class DataReadManagerImpl implements DataReadManager {
    * list of RecommendationAction objects. 
    */
   private List<RecommendationAction> structActionsToRecommendationActions(
-    List<FieldValue> actions) {
+    List<FieldValue> actions, FieldList structSchema) {
     return actions.stream().map(action -> {
-      FieldValueList structAction = action.getRecordValue();
+      FieldValueList structAction = FieldValueList.of(action.getRecordValue(), structSchema);
       String affectedAccount = structAction
         .get(RecommendationsSchema.ACCOUNT_AFFECTED_FIELD).getStringValue();
       String previousRole = structAction

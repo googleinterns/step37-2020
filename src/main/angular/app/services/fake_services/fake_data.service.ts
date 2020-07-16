@@ -47,7 +47,7 @@ export class FakeDataService implements DataService {
   getProjectGraphData(id: string): Promise<ProjectGraphData> {
     if (this.projects[id]) {
       return new Promise(resolve => {
-        setTimeout(() => resolve(this.projects[id][1]), 200);
+        resolve(this.projects[id][1]);
       });
     } else {
       throw new ErrorMessage(

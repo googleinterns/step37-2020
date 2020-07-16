@@ -246,8 +246,11 @@ export class GraphProcessorService {
     matchingRecommendations.forEach(recommendation => {
       tooltip += `<tr class="tooltip-row"><td style="border-top: 1px solid ${project.color};">`;
 
-      tooltip += `${recommendation.description}<br/>`;
-      tooltip += `Impact: ${recommendation.metadata?.impactInIAMBindings} IAM Bindings`;
+      tooltip += `${recommendation.actor} accepted:<br/>`;
+      recommendation.actions.forEach(
+        action => (tooltip += `${action.toString()}<br/>`)
+      );
+      tooltip += `Removing ${recommendation.metadata.impactInIAMBindings} IAM Bindings`;
       tooltip += '</td></tr>';
     });
 

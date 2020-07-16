@@ -41,7 +41,7 @@
     "type": "TIMESTAMP"
   },
   {
-    "mode": "REQUIRED",
+    "mode": "NULLABLE",
     "name": "IAMBindingsImpact",
     "type": "INTEGER"
   }

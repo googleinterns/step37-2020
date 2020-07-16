@@ -5,6 +5,7 @@ import com.google.cloud.logging.v2.LoggingClient;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingSettings;
 import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
+import com.google.impactdashboard.Credentials;
 import com.google.impactdashboard.configuration.Constants;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.logging.v2.ListLogEntriesRequest;
@@ -31,17 +32,7 @@ public class LogRetriever {
    */
   public static LogRetriever create() throws IOException{
     LoggingServiceV2StubSettings stub = LoggingServiceV2StubSettings.newBuilder()
-        .setCredentialsProvider(() -> {
-          GoogleCredentials credentials;
-          try {
-            credentials = GoogleCredentials
-                .fromStream(new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY));
-          } catch (IOException e) {
-            credentials = GoogleCredentials
-                .fromStream(new ByteArrayInputStream(System.getenv("SERVICE_ACCOUNT_KEY").getBytes()));
-          }
-        return credentials;
-        })
+        .setCredentialsProvider(Credentials::getCredentials)
         .build();
     return new LogRetriever(LoggingClient.create(LoggingSettings.create(stub)));
   }

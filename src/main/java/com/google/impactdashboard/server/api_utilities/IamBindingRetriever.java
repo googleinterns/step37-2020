@@ -8,6 +8,7 @@ import com.google.api.services.iam.v1.model.Role;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.audit.AuditLog;
+import com.google.impactdashboard.Credentials;
 import com.google.impactdashboard.configuration.Constants;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.recommendation.RecommendationAction;
@@ -39,18 +40,9 @@ public class IamBindingRetriever {
    * @return new Instance of IamBindingRetriever
    */
   public static IamBindingRetriever create() throws Exception {
-    GoogleCredentials credentials;
-    try {
-      credentials = GoogleCredentials
-          .fromStream(new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY))
-          .createScoped(Collections.singleton(IamScopes.CLOUD_PLATFORM));
-    } catch (IOException e) {
-      credentials = GoogleCredentials
-          .fromStream(new ByteArrayInputStream(System.getenv("SERVICE_ACCOUNT_KEY").getBytes()));
-    }
     Iam iamService = new Iam.Builder(GoogleNetHttpTransport.newTrustedTransport(),
         JacksonFactory.getDefaultInstance(),
-        new HttpCredentialsAdapter(credentials))
+        new HttpCredentialsAdapter(Credentials.getCredentials()))
         .setApplicationName("Recommendation Impact Dashboard")
         .build();
     return new IamBindingRetriever(iamService);

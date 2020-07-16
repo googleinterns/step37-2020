@@ -4,6 +4,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.recommender.v1.RecommenderClient;
 import com.google.cloud.recommender.v1.RecommenderSettings;
 import com.google.cloud.recommender.v1.stub.RecommenderStubSettings;
+import com.google.impactdashboard.Credentials;
 import com.google.impactdashboard.configuration.Constants;
 import com.google.impactdashboard.data.recommendation.IAMRecommenderMetadata;
 import com.google.impactdashboard.data.recommendation.Recommendation;
@@ -36,18 +37,7 @@ public class RecommendationRetriever {
    */
   public static RecommendationRetriever create() throws IOException {
     RecommenderStubSettings stub = RecommenderStubSettings.newBuilder()
-        .setCredentialsProvider(() -> {
-      GoogleCredentials credentials;
-      try {
-        credentials = GoogleCredentials
-            .fromStream(new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY));
-      } catch (IOException e) {
-        credentials = GoogleCredentials
-            .fromStream(new ByteArrayInputStream(System.getenv("SERVICE_ACCOUNT_KEY").getBytes()));
-      }
-      return credentials;
-    })
-        .build();
+        .setCredentialsProvider(Credentials::getCredentials).build();
     return new RecommendationRetriever(RecommenderClient.create(RecommenderSettings.create(stub)));
   }
 

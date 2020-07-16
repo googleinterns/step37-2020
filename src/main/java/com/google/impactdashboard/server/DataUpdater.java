@@ -11,9 +11,12 @@ import com.google.impactdashboard.database_manager.data_update.DataUpdateManager
 import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
+import com.google.logging.v2.LogEntry;
 
-import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /** Class for updating the information in the database from the API. */
 public class DataUpdater {
@@ -80,7 +83,17 @@ public class DataUpdater {
     // retrieve IAMBinding information from cloud logging and IAM API
     // add non duplicates to database
     List<ProjectIdentification> projects = readManager.listProjects();
-    throw new UnsupportedOperationException("Not Implemented");
+    AtomicReference<String> timeStamp = new AtomicReference<>("");
+    long epochSeconds = readManager.getMostRecentTimestamp();
+    if(epochSeconds != -1) {
+      timeStamp.set(Instant.ofEpochSecond(epochSeconds).toString());
+    }
+    return projects.parallelStream().map(project -> {
+      List<LogEntry> auditLogs = (List<LogEntry>) logRetriever.listAuditLogs(project.getProjectId(), timeStamp
+          .toString());
+      return iamRetriever.listIAMBindingData(auditLogs, project.getProjectId(), project.getName(),
+          String.valueOf(project.getProjectNumber()));
+    }).flatMap(List::stream).collect(Collectors.toList());
   }
 
 }

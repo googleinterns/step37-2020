@@ -47,10 +47,10 @@ public class LogRetriever {
    * @param timeTo Latest time to retrieve logs for.
    * @return A list of all the relevant audit log entries that are stored by the logging API
    */
-  public Collection<LogEntry> listAuditLogs(String projectId, long timeTo) {
+  public Collection<LogEntry> listAuditLogs(String projectId, String timeTo) {
     String project_id = "projects/" + projectId;
     String filter = "resource.type = project AND severity = NOTICE AND " +
-        "protoPayload.methodName:SetIamPolicy AND timestamp > " + timeTo;
+        "protoPayload.methodName:SetIamPolicy";
     ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder().setFilter(filter)
         .setOrderBy("timestamp desc").addResourceNames(project_id).build();
     ListLogEntriesPagedResponse response = logger.listLogEntries(request);
@@ -64,10 +64,10 @@ public class LogRetriever {
    * @param timeTo Latest time to retrieve logs for.
    * @return A list of all the relevant recommendation log entries that are stored by the logging API.
    */
-  public Collection<LogEntry> listRecommendationLogs(String projectId, long timeTo) {
+  public Collection<LogEntry> listRecommendationLogs(String projectId, String timeTo) {
     String project_id = "projects/" + projectId;
     // May need tweaking once tested
-    String filter = "resource.type = recommender AND timestamp > " + timeTo;
+    String filter = "resource.type = recommender";
     ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder().setFilter(filter)
         .setOrderBy("timestamp desc").addResourceNames(project_id).build();
     ListLogEntriesPagedResponse response = logger.listLogEntries(request);

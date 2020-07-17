@@ -29,15 +29,21 @@ public class DataReadManagerTest {
   private static final String PROJECT_ID_1 = "project-id-1";
   private static final String PROJECT_ID_2 = "project-id-2";
   private static final Recommendation PROJECT_2_RECOMMENDATION_ON_25TH = 
-    Recommendation.create(
-      PROJECT_ID_2, "Remove unused permissions from user test5@example.com", 
+    Recommendation.create("project-id-2", "test5@example.com", 
+      Arrays.asList(
+        RecommendationAction.create(
+          "affected5@example.com", "roles/editor", "", 
+          RecommendationAction.ActionType.REMOVE_ROLE)), 
       Recommendation.RecommenderType.IAM_BINDING, 1593115512000L, 
       IAMRecommenderMetadata.create(350));
   private static final Recommendation PROJECT_2_RECOMMENDATION_ON_9TH = 
-    Recommendation.create(
-      PROJECT_ID_2, "Remove unused permissions from user test4@example.com", 
+    Recommendation.create("project-id-2", "test4@example.com", 
+      Arrays.asList(
+        RecommendationAction.create(
+          "affected4@example.com", "roles/owner", "roles/viewer",
+          RecommendationAction.ActionType.REPLACE_ROLE)),  
       Recommendation.RecommenderType.IAM_BINDING, 1591704613000L, 
-      IAMRecommenderMetadata.create(500));
+      IAMRecommenderMetadata.create(500)); 
 
   @BeforeClass
   public static void setTestingConfiguration() throws IOException {

@@ -64,7 +64,8 @@ public class Queries {
   public static final String GET_DATES_TO_IAM_RECOMMENDATIONS = 
     "SELECT " + 
       RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN + ", " +
-      RecommendationsSchema.DESCRIPTION_COLUMN + ", " +
+      RecommendationsSchema.ACTOR_COLUMN + ", " +
+      RecommendationsSchema.ACTIONS_COLUMN + ", " +
       RecommendationsSchema.IAM_IMPACT_COLUMN +
       " FROM " + RECOMMENDATIONS_TABLE +
       " WHERE " + RecommendationsSchema.RECOMMENDATIONS_PROJECT_ID_COLUMN + " = @projectId" +

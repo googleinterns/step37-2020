@@ -32,12 +32,23 @@ public class DataUpdateManagerTest {
   private static final String PROJECT_ID_2 = "project-id-2";
   private static final Recommendation PROJECT_1_RECOMMENDATION_ON_20190628 = 
     Recommendation.create(
-      PROJECT_ID_1, "Remove unused permissions", 
+      PROJECT_ID_1, "test@example.com",
+      Arrays.asList(
+        RecommendationAction.create(
+          "affected@example.com", "roles/owner", "roles/viewer",
+          RecommendationAction.ActionType.REPLACE_ROLE),
+        RecommendationAction.create(
+          "affected@example.com", "roles/BigqueryAdmin", "",
+          RecommendationAction.ActionType.REMOVE_ROLE)), 
       Recommendation.RecommenderType.IAM_BINDING, 1561723200000L, 
       IAMRecommenderMetadata.create(100));
   private static final Recommendation PROJECT_1_RECOMMENDATION_ON_20190625 = 
     Recommendation.create(
-      PROJECT_ID_1, "Remove unused permissions", 
+      PROJECT_ID_1, "test@example.com",
+      Arrays.asList(
+          RecommendationAction.create(
+            "affected@example.com", "roles/owner", "",
+            RecommendationAction.ActionType.REMOVE_ROLE)),
       Recommendation.RecommenderType.IAM_BINDING, 1561464000000L, 
       IAMRecommenderMetadata.create(500));
   private static final IAMBindingDatabaseEntry PROJECT_2_BINDINGS_DATA_ON_20190523 = 

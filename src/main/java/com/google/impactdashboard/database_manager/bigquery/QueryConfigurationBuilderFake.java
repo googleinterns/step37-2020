@@ -130,9 +130,11 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
     insertValuesRecommendationsTableConfiguration(List<Recommendation> values) {
     String sqlFormattedValues = values.stream()
       .map(recommendation -> String.format(
-        "('%s', '%s', '%s', TIMESTAMP_ADD('1970-01-01 00:00:00 UTC', INTERVAL %s SECOND), %s)", 
+        "('%s', '%s', '%s', [%s], " + 
+          "TIMESTAMP_ADD('1970-01-01 00:00:00 UTC', INTERVAL %s SECOND), %s)",
         recommendation.getProjectId(), recommendation.getRecommender(), 
-        recommendation.getDescription(), recommendation.getAcceptedTimestamp() / 1000, 
+        recommendation.getActor(), getFormattedActionsList(recommendation.getActions()), 
+        recommendation.getAcceptedTimestamp() / 1000, 
         ((IAMRecommenderMetadata) recommendation.getMetadata()).getImpactInIAMBindings()))
       .collect(Collectors.joining(", "));
 
@@ -163,5 +165,14 @@ public class QueryConfigurationBuilderFake implements QueryConfigurationBuilder 
    */
   public QueryJobConfiguration.Builder getMostRecentTimestampConfiguration() {
     return getMostRecentTimestampConfiguration;
+  }
+
+  /** Returns {@code actions} formatted as a list of SQL structs. */
+  private String getFormattedActionsList(List<RecommendationAction> actions) {
+    return actions.stream()
+      .map(action -> 
+        String.format("STRUCT('%s', '%s', '%s')", 
+          action.getAffectedAccount(), action.getPreviousRole(), action.getNewRole()))
+      .collect(Collectors.joining(", "));
   }
 }

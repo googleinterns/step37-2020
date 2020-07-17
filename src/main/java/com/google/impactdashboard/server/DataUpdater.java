@@ -10,6 +10,7 @@ import com.google.impactdashboard.database_manager.data_update.DataUpdateManager
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManagerFactory;
 import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
+import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.logging.v2.LogEntry;
 
@@ -26,16 +27,18 @@ public class DataUpdater {
   private final IamBindingRetriever iamRetriever;
   private final DataUpdateManager updateManager;
   private final DataReadManager readManager;
+  private final boolean manualUpdate;
 
   @VisibleForTesting
   protected DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
                       DataUpdateManager updateManager, DataReadManager readManager,
-                      IamBindingRetriever iamRetriever) {
+                      IamBindingRetriever iamRetriever, boolean manualUpdate) {
     this.logRetriever = logRetriever;
     this.recommendationRetriever = recommendationRetriever;
     this.updateManager = updateManager;
     this.readManager = readManager;
     this.iamRetriever = iamRetriever;
+    this.manualUpdate = manualUpdate;
   }
 
   /**
@@ -43,10 +46,10 @@ public class DataUpdater {
    * and RecommendationRetriever.
    * @return New instance of DataUpdater
    */
-  public static DataUpdater create() throws Exception {
+  public static DataUpdater create(boolean manualUpdate) throws Exception {
     return new DataUpdater(LogRetriever.create(), RecommendationRetriever.create(),
         DataUpdateManagerFactory.create(), DataReadManagerFactory.create(),
-        IamBindingRetriever.create());
+        IamBindingRetriever.create(), manualUpdate);
   }
 
   /**
@@ -63,12 +66,42 @@ public class DataUpdater {
    * @return a List of Recommendations
    */
   private List<Recommendation> listUpdatedRecommendations() {
-    // Steps for implementing this function (may require more methods for single responsibility)
-    // retrieve recommendations from cloud logging and recommender
-    // retrieve current recommendations stored by database
-    // filter out any duplicate recommendations
-    // add non duplicate recommendation to the database
-    throw new UnsupportedOperationException("Not Implemented");
+    List<ProjectIdentification> knownProjects = readManager.listProjects();
+    List<ProjectIdentification> newProjects = ProjectListRetriever.listResourceManagerProjects();
+    newProjects.removeAll(knownProjects);
+
+    if (manualUpdate) {
+      return listAllRecommendationsExcludingCurrentDay(newProjects);
+    } else {
+      return listAllNewRecommendations(knownProjects, newProjects);
+    }
+  }
+
+  /**
+   * For {@code knownProjects}, gets any recommendations that occured in the 
+   * past 24 hours. For {@code newProjects}, gets all known recommendations. 
+   * @param knownProjects The projects that the database already knows about.
+   * @param newProjects The projects that have no data in the database currently.
+   * @return A list containing all new recommendations to be stored.
+   */
+  private List<Recommendation> listAllNewRecommendations(
+    List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
+    String timestamp = Instant.ofEpochSecond(System.currentTimeMillis()).toString();
+
+    List<Recommendation> newProjectRecommendations = newProjects.parallelStream()
+      .map(project -> {
+        List<LogEntry> recommendationLogs = (List<LogEntry>) logRetriever
+          .listRecommendationLogs(project.getProjectId(), "", "");
+        return logEntriesToRecommendations(recommendationLogs);
+      }).flatMap(List::stream).collect(Collectors.toList());
+
+    return newProjectRecommendations;
+
+    //knownProjects.parallel
+  }
+
+  private List<Recommendation> logEntriesToRecommendations(List<LogEntry> recommendationLogs) {
+    throw new RuntimeException("Unimplemented");
   }
 
   /**
@@ -95,5 +128,4 @@ public class DataUpdater {
           String.valueOf(project.getProjectNumber()));
     }).flatMap(List::stream).collect(Collectors.toList());
   }
-
 }

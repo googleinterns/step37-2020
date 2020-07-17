@@ -34,7 +34,8 @@ public class ProjectInformationRetrieverTest extends Mockito {
   public static final double PROJECT_AVERAGEIAMBINDINGS_2 = 2000.87;
 
   public static final List<RecommendationAction> ACTIONS = Collections.singletonList(RecommendationAction
-      .create("test@example.com", "role/owner", "role/objectAdmin"));
+      .create("test@example.com", "role/owner", "role/objectAdmin",
+          RecommendationAction.ActionType.REPLACE_ROLE));
 
   public static final String RECOMMENDATION_DESCRIPTION = "This is a recommendation";
 

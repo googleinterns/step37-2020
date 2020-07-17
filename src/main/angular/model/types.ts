@@ -1,3 +1,5 @@
+import {DateRange} from './date_range';
+
 /** Contains various types used by the application. */
 
 /** Properties used by GCharts for rendering. */
@@ -6,9 +8,9 @@ export type GraphProperties = {
   graphData: Row[];
   columns: Columns;
   type: 'LineChart';
-  title: string;
   width: number;
   height: number;
+  dateRange: DateRange;
 };
 
 /** The different types of data permitted in a row for Google Charts. */
@@ -20,4 +22,7 @@ export type RowData = Date | string | number | undefined;
 export type Row = RowData[];
 
 /** The format for columns used by Google Charts. */
-export type Columns = (string | {type: 'string'; role: 'tooltip' | 'style'})[];
+export type Columns = (
+  | string
+  | {type: 'string'; role: 'tooltip' | 'style'; p?: {html: boolean}}
+)[];

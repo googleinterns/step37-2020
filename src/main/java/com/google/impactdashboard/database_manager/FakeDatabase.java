@@ -30,38 +30,48 @@ public class FakeDatabase {
           Recommendation.create("project-id-1", 
             "test1@example.com", 
             Arrays.asList(
-              RecommendationAction.create("affected1@example.com", "roles/owner", "roles/viewer")),
+              RecommendationAction.create(
+                "affected1@example.com", "roles/owner", "roles/viewer", 
+                RecommendationAction.ActionType.REPLACE_ROLE)),
             Recommendation.RecommenderType.IAM_BINDING, 1592486705000L, 
             IAMRecommenderMetadata.create(300)));
         put(1592486585000L, 
           Recommendation.create("project-id-1", 
             "test2@example.com", 
             Arrays.asList(
-              RecommendationAction.create("affected2@example.com", "roles/owner", "")), 
+              RecommendationAction.create(
+                "affected2@example.com", "roles/owner", "", 
+                RecommendationAction.ActionType.REMOVE_ROLE)), 
             Recommendation.RecommenderType.IAM_BINDING, 1592486585000L, 
             IAMRecommenderMetadata.create(1000))); 
         put(1591633823000L, 
           Recommendation.create("project-id-1", 
             "test3@example.com", 
             Arrays.asList(
-              RecommendationAction.create("affected3@example.com", "roles/editor", 
-                "roles/storage.objectAdmin"), 
-              RecommendationAction.create("affected3@example.com", "roles/viewer", "")), 
+              RecommendationAction.create(
+                "affected3@example.com", "roles/editor", "roles/storage.objectAdmin",
+                RecommendationAction.ActionType.REPLACE_ROLE), 
+              RecommendationAction.create(
+                "affected3@example.com", "roles/viewer", "",
+                RecommendationAction.ActionType.REMOVE_ROLE)), 
             Recommendation.RecommenderType.IAM_BINDING, 1591633823000L, 
             IAMRecommenderMetadata.create(1000))); 
         put(1591704613000L, 
           Recommendation.create("project-id-2", 
             "test4@example.com", 
             Arrays.asList(
-              RecommendationAction.create("affected4@example.com", "roles/owner", 
-                "roles/viewer")),  
+              RecommendationAction.create(
+                "affected4@example.com", "roles/owner", "roles/viewer",
+                RecommendationAction.ActionType.REPLACE_ROLE)),  
             Recommendation.RecommenderType.IAM_BINDING, 1591704613000L, 
             IAMRecommenderMetadata.create(500)));  
         put(1593072312000L, 
           Recommendation.create("project-id-2", 
             "test5@example.com", 
             Arrays.asList(
-              RecommendationAction.create("affected5@example.com", "roles/editor", "")), 
+              RecommendationAction.create(
+                "affected5@example.com", "roles/editor", "",
+                RecommendationAction.ActionType.REMOVE_ROLE)), 
             Recommendation.RecommenderType.IAM_BINDING, 1593072312000L, 
             IAMRecommenderMetadata.create(350)));    
       }

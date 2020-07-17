@@ -12,3 +12,35 @@
   margin: 0 auto;
   text-align: center;
 }
+
+/* Customization for GCharts tooltips */
+.google-visualization-tooltip {
+  border: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+.google-visualization-tooltip table {
+  margin: 5px;
+  font-size: 16px;
+  /* Border set programatically */
+  border-radius: 3px;
+}
+
+.google-visualization-tooltip b {
+  font-size: 16px;
+}
+
+.google-visualization-tooltip th {
+  background-color: #E8EAED;
+  width: 100%;
+  padding: 0;
+}
+
+.google-visualization-tooltip td {
+  padding: 0;
+}
+
+.tooltip-row:nth-child(odd) {
+  background-color: #F1F3F4;
+}

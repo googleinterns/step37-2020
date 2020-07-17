@@ -10,9 +10,9 @@ export class RecommendationAction {
   public toString(): string {
     if (this.newRole.length > 0) {
       // Role was replaced
-      return `${this.affectedAccount} had the role ${this.previousRole} changed to ${this.newRole}.`;
+      return `Replace ${this.previousRole} with ${this.newRole} on ${this.affectedAccount}.`;
     }
     // Role was removed
-    return `${this.affectedAccount} had the role ${this.previousRole} removed.`;
+    return `Remove ${this.previousRole} from ${this.affectedAccount}.`;
   }
 }

@@ -16,7 +16,12 @@ import {ErrorPageComponent} from './error_page/error_page.component';
 import {MainPageComponent} from './main_page/main_page.component';
 import {ErrorService} from './services/error.service';
 import {RedirectService} from './services/redirect.service';
+import {ProjectQueryService} from './services/project_query.service';
 import {DataShareService} from './services/data_share.service';
+import {DateSelectComponent} from './date_select/date_select.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatInputModule} from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -25,6 +30,7 @@ import {DataShareService} from './services/data_share.service';
     ProjectSelectComponent,
     ErrorPageComponent,
     MainPageComponent,
+    DateSelectComponent,
   ],
   imports: [
     BrowserModule,
@@ -33,6 +39,9 @@ import {DataShareService} from './services/data_share.service';
     FontAwesomeModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
   ],
   providers: [
     dataServiceProvider,
@@ -43,6 +52,7 @@ import {DataShareService} from './services/data_share.service';
       provide: ErrorHandler,
       useClass: ErrorService,
     },
+    ProjectQueryService,
     DataShareService,
   ],
   bootstrap: [AppComponent],

@@ -51,8 +51,15 @@ public class LogRetriever {
     String project_id = "projects/" + projectId;
     String filter = "resource.type = project AND severity = NOTICE AND " +
         "protoPayload.methodName:SetIamPolicy";
-    ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder().setFilter(filter)
-        .setOrderBy("timestamp desc").addResourceNames(project_id).build();
+    ListLogEntriesRequest request;
+    if(timeTo.equals("")) {
+       request = ListLogEntriesRequest.newBuilder().setFilter(filter)
+          .setOrderBy("timestamp desc").addResourceNames(project_id).build();
+    } else {
+      filter += " AND timestamp > " + timeTo;
+      request = ListLogEntriesRequest.newBuilder().setFilter(filter).setOrderBy("timestamp desc")
+          .setPageSize(1).addResourceNames(project_id).build();
+    }
     ListLogEntriesPagedResponse response = logger.listLogEntries(request);
     return StreamSupport.stream(response.iterateAll().spliterator(), false)
         .collect(Collectors.toList());

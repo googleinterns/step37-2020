@@ -67,6 +67,12 @@ public class RecommendationRetriever {
    */
   private List<RecommendationAction> getRecommendationActions(
       com.google.cloud.recommender.v1.Recommendation recommendation) {
+    RecommendationAction.ActionType type;
+    if(recommendation.getRecommenderSubtype().equals("REMOVE_ROLE")) {
+      type = RecommendationAction.ActionType.REMOVE_ROLE;
+    } else {
+      type = RecommendationAction.ActionType.REPLACE_ROLE;
+    }
     List<RecommendationAction> actions = recommendation.getContent().getOperationGroupsList()
         .stream().map(operationGroup -> {
           AtomicReference<String> affectedAccount = new AtomicReference<>();
@@ -83,7 +89,7 @@ public class RecommendationRetriever {
             affectedAccount.set(operation.getValue().getStringValue());
           });
           return RecommendationAction.create(affectedAccount.toString(), previousRole.toString(),
-              newRole.toString());
+              newRole.toString(), type);
         }).collect(Collectors.toList());
     return actions;
   }

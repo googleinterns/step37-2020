@@ -7,53 +7,78 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.api.services.cloudresourcemanager.model.ListProjectsResponse;
 import com.google.api.services.cloudresourcemanager.model.Project;
+import com.google.appengine.api.datastore.Query.GeoRegion;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.impactdashboard.Credentials;
+import java.util.List;
+import java.util.ArrayList;
+import  com.google.impactdashboard.data.project.ProjectIdentification;
 
 public class ProjectListRetriever {
 
-  /**
-   * Need: function that will get list project identification objects 
+  private static CloudResourceManager cloudResourceManagerService = null;
+
+  /** 
+   * Returns the list of projects that the credentials in use have 
+   * resourcemanager.projects.get permissions for.  
    */
+  public static List<ProjectIdentification> listResourceManagerProjects() {
+    if (cloudResourceManagerService == null) {
+      cloudResourceManagerService = createCloudResourceManagerService();
+    }
 
-   public static void main(String[] args) throws Exception {
-    CloudResourceManager cloudResourceManagerService = createCloudResourceManagerService();
-    CloudResourceManager.Projects.List request = cloudResourceManagerService.projects().list();
-
-    ListProjectsResponse response;
-    do {
-      response = request.execute();
-      if (response.getProjects() == null) {
-        continue;
-      }
-      for (Project project : response.getProjects()) {
-        System.out.println(project);
-      }
-      request.setPageToken(response.getNextPageToken());
-    } while (response.getNextPageToken() != null);
+    List<ProjectIdentification> projects = new ArrayList<ProjectIdentification>();
+    try {
+      CloudResourceManager.Projects.List request = cloudResourceManagerService.projects().list();
+      ListProjectsResponse response;
+      do {
+        response = request.execute();
+        if (response.getProjects() != null) {
+          for (Project project : response.getProjects()) {
+            projects.add(ProjectIdentification.create(
+                project.getName(), project.getProjectId(), project.getProjectNumber()));
+          }
+          // response.getProjects().stream().forEach(project -> {
+          //   projects.add(
+          //       ProjectIdentification.create(project.getName(), project.getProjectId(), 
+          //         project.getProjectNumber()));
+         //});
+        }
+        request.setPageToken(response.getNextPageToken());
+      } while (response.getNextPageToken() != null);
+    } catch (IOException io) {
+      throw new RuntimeException("Failed to list projects: " + io.getMessage());
+    }
+    return projects;
   }
 
-
-  public static CloudResourceManager createCloudResourceManagerService()
-      throws IOException, GeneralSecurityException {
-    HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+  /**
+   * Returns a CloudResourceManager with the proper credentials to retrieve the 
+   * list of projects that the dashboard has access to.
+   */
+  private static CloudResourceManager createCloudResourceManagerService() {
+    HttpTransport httpTransport = null;
+    try {
+      httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+    } catch (IOException io) {
+      throw new RuntimeException(
+        "Failed to access Resource Manager: could not create HttpTransport.");
+    } catch (GeneralSecurityException ge) {
+      throw new RuntimeException(
+        "Failed to access Resource Manager: could not create HttpTransport.");
+    }
     JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 
-    HttpCredentialsAdapter credentials = new HttpCredentialsAdapter(Credentials.getCredentials().createScoped(Arrays.asList("https://www.googleapis.com/auth/cloud-platform")));
-
-    // GoogleCredential credential = GoogleCredential.getApplicationDefault();
-    // if (credential.createScopedRequired()) {
-    //   credential =
-    //       credential.createScoped(Arrays.asList("https://www.googleapis.com/auth/cloud-platform"));
-    // }
+    HttpCredentialsAdapter credentials = new HttpCredentialsAdapter(
+      Credentials.getCredentials()
+        .createScoped(Arrays.asList("https://www.googleapis.com/auth/cloud-platform")));
 
     return new CloudResourceManager.Builder(httpTransport, jsonFactory, credentials)
-       // .setApplicationName("Google-CloudResourceManagerSample/0.1")
+        //.setApplicationName("Google-CloudResourceManagerSample/0.1")
         .build();
   }
-   
-  
 }

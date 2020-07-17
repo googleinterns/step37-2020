@@ -12,6 +12,9 @@ import {RecommenderMetadata} from '../../../model/recommender_metadata';
 /** Contains fake data. */
 @Injectable()
 export class FakeDataService implements DataService {
+  /** The URLs of all active requests. */
+  private activeRequests: Set<string>;
+
   /** Contains the projects that are faked. */
   private projects: {[projectId: string]: [Project, ProjectGraphData]};
   private static actions = [
@@ -34,23 +37,30 @@ export class FakeDataService implements DataService {
       FakeDataService.fakeProject10(),
     ];
     fakes.forEach(tuple => (this.projects[tuple[0].projectId] = tuple));
+    this.activeRequests = new Set();
   }
 
   /** Returns all the fake projects. */
   listProjects(): Promise<Project[]> {
+    const url = '/list-project-summaries';
+    this.activeRequests.add(url);
     return new Promise(resolve =>
-      setTimeout(
-        () => resolve(Object.values(this.projects).map(tuple => tuple[0])),
-        1000
-      )
+      setTimeout(() => {
+        this.activeRequests.delete(url);
+        resolve(Object.values(this.projects).map(tuple => tuple[0]));
+      }, 300)
     );
   }
 
   /** Returns the data associated with the given project. */
   getProjectGraphData(id: string): Promise<ProjectGraphData> {
     if (this.projects[id]) {
+      this.activeRequests.add(id);
       return new Promise(resolve => {
-        setTimeout(() => resolve(this.projects[id][1]), 1000);
+        setTimeout(() => {
+          this.activeRequests.delete(id);
+          resolve(this.projects[id][1]);
+        }, 1000);
       });
     } else {
       throw new ErrorMessage(
@@ -58,6 +68,10 @@ export class FakeDataService implements DataService {
         {}
       );
     }
+  }
+
+  hasPendingRequest(): boolean {
+    return this.activeRequests.size > 0;
   }
 
   /** Create a project that has an incorrect mapping, so when it's pressed a redirect is sent to the error page */

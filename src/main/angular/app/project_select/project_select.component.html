@@ -1,6 +1,6 @@
 <div id="root">
   <div id="content">
-    <mat-progress-bar *ngIf="hasActiveRequest" mode="query"></mat-progress-bar>
+    <mat-progress-bar *ngIf="showLoadingBar()" mode="query"></mat-progress-bar>
     <div id="filter-container">
       <fa-icon [icon]="filter" id="filter-icon"></fa-icon><input type="text"
         (input)="search($event.target.value)" placeholder="Search by Name or ID"

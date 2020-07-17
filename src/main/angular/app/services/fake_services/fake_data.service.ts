@@ -44,12 +44,10 @@ export class FakeDataService implements DataService {
   listProjects(): Promise<Project[]> {
     const url = '/list-project-summaries';
     this.activeRequests.add(url);
-    return new Promise(resolve =>
-      setTimeout(() => {
-        this.activeRequests.delete(url);
-        resolve(Object.values(this.projects).map(tuple => tuple[0]));
-      }, 300)
-    );
+    return new Promise(resolve => {
+      this.activeRequests.delete(url);
+      resolve(Object.values(this.projects).map(tuple => tuple[0]));
+    });
   }
 
   /** Returns the data associated with the given project. */
@@ -57,10 +55,8 @@ export class FakeDataService implements DataService {
     if (this.projects[id]) {
       this.activeRequests.add(id);
       return new Promise(resolve => {
-        setTimeout(() => {
-          this.activeRequests.delete(id);
-          resolve(this.projects[id][1]);
-        }, 1000);
+        this.activeRequests.delete(id);
+        resolve(this.projects[id][1]);
       });
     } else {
       throw new ErrorMessage(

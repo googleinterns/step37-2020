@@ -1,14 +1,10 @@
 package com.google.impactdashboard.server.api_utilities;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.api.services.cloudresourcemanager.model.ListProjectsResponse;
-import com.google.api.services.cloudresourcemanager.model.Project;
-import com.google.appengine.api.datastore.Query.GeoRegion;
-
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
@@ -30,29 +26,31 @@ public class ProjectListRetriever {
     if (cloudResourceManagerService == null) {
       cloudResourceManagerService = createCloudResourceManagerService();
     }
-
-    List<ProjectIdentification> projects = new ArrayList<ProjectIdentification>();
     try {
       CloudResourceManager.Projects.List request = cloudResourceManagerService.projects().list();
-      ListProjectsResponse response;
-      do {
-        response = request.execute();
-        if (response.getProjects() != null) {
-          for (Project project : response.getProjects()) {
-            projects.add(ProjectIdentification.create(
-                project.getName(), project.getProjectId(), project.getProjectNumber()));
-          }
-          // response.getProjects().stream().forEach(project -> {
-          //   projects.add(
-          //       ProjectIdentification.create(project.getName(), project.getProjectId(), 
-          //         project.getProjectNumber()));
-         //});
-        }
-        request.setPageToken(response.getNextPageToken());
-      } while (response.getNextPageToken() != null);
+      return getListOfProjects(request);
     } catch (IOException io) {
       throw new RuntimeException("Failed to list projects: " + io.getMessage());
     }
+  }
+
+  /** Returns the list of projects resulting from executing {@code request}. */
+  private static List<ProjectIdentification> getListOfProjects(
+    CloudResourceManager.Projects.List request) throws IOException {
+    List<ProjectIdentification> projects = new ArrayList<ProjectIdentification>();
+
+    ListProjectsResponse response;
+    do {
+      response = request.execute();
+      if (response.getProjects() != null) {
+        response.getProjects().stream().forEach(project -> 
+          projects.add(
+            ProjectIdentification.create(
+              project.getName(), project.getProjectId(), project.getProjectNumber())));
+      }
+      request.setPageToken(response.getNextPageToken());
+    } while (response.getNextPageToken() != null);
+
     return projects;
   }
 
@@ -66,10 +64,10 @@ public class ProjectListRetriever {
       httpTransport = GoogleNetHttpTransport.newTrustedTransport();
     } catch (IOException io) {
       throw new RuntimeException(
-        "Failed to access Resource Manager: could not create HttpTransport.");
+        "Failed to access Resource Manager: could not create HttpTransport, " + io.getMessage());
     } catch (GeneralSecurityException ge) {
       throw new RuntimeException(
-        "Failed to access Resource Manager: could not create HttpTransport.");
+        "Failed to access Resource Manager: could not create HttpTransport, " + ge.getMessage());
     }
     JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 
@@ -78,7 +76,6 @@ public class ProjectListRetriever {
         .createScoped(Arrays.asList("https://www.googleapis.com/auth/cloud-platform")));
 
     return new CloudResourceManager.Builder(httpTransport, jsonFactory, credentials)
-        //.setApplicationName("Google-CloudResourceManagerSample/0.1")
         .build();
   }
 }

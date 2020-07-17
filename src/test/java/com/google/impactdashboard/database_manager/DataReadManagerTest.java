@@ -31,14 +31,17 @@ public class DataReadManagerTest {
   private static final Recommendation PROJECT_2_RECOMMENDATION_ON_25TH = 
     Recommendation.create("project-id-2", "test5@example.com", 
       Arrays.asList(
-        RecommendationAction.create("affected5@example.com", "roles/editor", "")), 
+        RecommendationAction.create(
+          "affected5@example.com", "roles/editor", "", 
+          RecommendationAction.ActionType.REMOVE_ROLE)), 
       Recommendation.RecommenderType.IAM_BINDING, 1593115512000L, 
       IAMRecommenderMetadata.create(350));
   private static final Recommendation PROJECT_2_RECOMMENDATION_ON_9TH = 
     Recommendation.create("project-id-2", "test4@example.com", 
       Arrays.asList(
-        RecommendationAction.create("affected4@example.com", "roles/owner", 
-          "roles/viewer")),  
+        RecommendationAction.create(
+          "affected4@example.com", "roles/owner", "roles/viewer",
+          RecommendationAction.ActionType.REPLACE_ROLE)),  
       Recommendation.RecommenderType.IAM_BINDING, 1591704613000L, 
       IAMRecommenderMetadata.create(500)); 
 

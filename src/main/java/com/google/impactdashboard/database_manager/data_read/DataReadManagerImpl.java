@@ -177,7 +177,11 @@ public class DataReadManagerImpl implements DataReadManager {
         .get(RecommendationsSchema.PREVIOUS_ROLE_FIELD).getStringValue();
       String newRole = structAction
         .get(RecommendationsSchema.NEW_ROLE_FIELD).getStringValue();
-      return RecommendationAction.create(affectedAccount, previousRole, newRole);
+      RecommendationAction.ActionType actionType = 
+        newRole.length() == 0 ? 
+          RecommendationAction.ActionType.REMOVE_ROLE : 
+          RecommendationAction.ActionType.REPLACE_ROLE;
+      return RecommendationAction.create(affectedAccount, previousRole, newRole, actionType);
     }).collect(Collectors.toList());
   }
 }

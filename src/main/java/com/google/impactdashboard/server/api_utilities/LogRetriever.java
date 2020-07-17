@@ -39,9 +39,10 @@ public class LogRetriever {
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant audit logs.
    * @param projectId ID of the project that the audit logs will be retrieved for.
    * @param timeTo Latest time to retrieve logs for.
-   * @return A list of all the relevant audit log entries that are stored by the logging API
+   * @return A response that contains all the relevant audit log entries that are stored by the logging API
    */
-  public Collection<LogEntry> listAuditLogs(String projectId, String timeTo) {
+  public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeTo, int pageSize,
+                                            String pageToken) {
     String project_id = "projects/" + projectId;
     String filter = "resource.type = project AND severity = NOTICE AND " +
         "protoPayload.methodName:SetIamPolicy";
@@ -50,14 +51,14 @@ public class LogRetriever {
         .setOrderBy("timestamp desc").addResourceNames(project_id);
 
     if(!timeTo.equals("")) {
-      builder.setPageSize(1);
       filter += " AND timestamp > " + timeTo;
     }
 
     ListLogEntriesRequest request = builder.setFilter(filter).build();
-    ListLogEntriesPagedResponse response = logger.listLogEntries(request);
-    return StreamSupport.stream(response.iterateAll().spliterator(), false)
-        .collect(Collectors.toList());
+    return logger.listLogEntries(request);
+
+//    return StreamSupport.stream(response.iterateAll().spliterator(), false)
+//        .collect(Collectors.toList());
   }
 
   /**

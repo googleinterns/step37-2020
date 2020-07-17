@@ -1,5 +1,6 @@
 package com.google.impactdashboard.server;
 
+import com.google.cloud.logging.v2.LoggingClient;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.project.ProjectIdentification;
@@ -12,11 +13,13 @@ import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.logging.v2.LogEntry;
+import sun.util.resources.cldr.rm.CalendarData_rm_CH;
 
-import java.time.Instant;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /** Class for updating the information in the database from the API. */
 public class DataUpdater {
@@ -76,24 +79,34 @@ public class DataUpdater {
    * @return A List of IAMBindingDatabaseEntry
    */
   private List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
-    // Steps for implementing this function (may require more methods for single responsibility)
-    // retrieve IAMBinding from database
-    // (TODO determine whether to retrieve all info or info for a certain time range)
-    // filter out any duplicate IAM Information
-    // retrieve IAMBinding information from cloud logging and IAM API
-    // add non duplicates to database
-    List<ProjectIdentification> projects = readManager.listProjects();
     AtomicReference<String> timeStamp = new AtomicReference<>("");
     long epochSeconds = readManager.getMostRecentTimestamp();
-    if(epochSeconds != -1) {
-      timeStamp.set(Instant.ofEpochSecond(epochSeconds).toString());
+
+    if(epochSeconds == -1) {
+
     }
-    return projects.parallelStream().map(project -> {
-      List<LogEntry> auditLogs = (List<LogEntry>) logRetriever.listAuditLogs(project.getProjectId(), timeStamp
-          .toString());
-      return iamRetriever.listIAMBindingData(auditLogs, project.getProjectId(), project.getName(),
-          String.valueOf(project.getProjectNumber()));
-    }).flatMap(List::stream).collect(Collectors.toList());
+    throw new UnsupportedOperationException("Not implemented");
   }
 
+  /**
+   * Helper method for getting the newest info for projects that are not new. Retrieves only the
+   * last log for the Iam data since we only needed the latest IAM data. Even if the Iam data is
+   * old this creates a new Database entry for the day.
+   * @param project the project that needs the last days of data
+   * @return the most recent IamBindingData
+   */
+  private List<IAMBindingDatabaseEntry> getLastIamEntry(ProjectIdentification project) {
+    LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
+        project.getProjectId(), "", 1, null);
+    List<LogEntry> entry = StreamSupport.stream(response.iterateAll().spliterator(), false)
+        .collect(Collectors.toList());
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.DATE, 0);
+    calendar.set(Calendar.HOUR_OF_DAY, 23);
+    calendar.set(Calendar.MINUTE, 59);
+    calendar.set(Calendar.SECOND, 59);
+    calendar.set(Calendar.MILLISECOND, 0);
+    return iamRetriever.listIAMBindingData(entry, project.getProjectId(), project.getName(),
+        String.valueOf(project.getProjectNumber()));
+  }
 }

@@ -6,7 +6,7 @@ import {DateRange} from '../../model/date_range';
 /** Contains some basic utility methods for date wrangling. */
 @Injectable()
 export class DateUtilitiesService {
-  constructor() {}
+  constructor(private dateProvider = () => new Date()) {}
 
   /** Checks if the two timestamps (millis since epoch) fall on the same day. Returns true if they do. */
   fallOnSameDay(time1: number, time2: number): boolean {
@@ -47,7 +47,7 @@ export class DateUtilitiesService {
     return out;
   }
 
-  /** Returns the date range present in the given rows */
+  /** Returns the date range present in the given rows. */
   getDateRange(rows: Row[]): DateRange {
     let earliestDate: Date | undefined;
     let lastDate: Date | undefined;
@@ -62,5 +62,19 @@ export class DateUtilitiesService {
       }
     });
     return new DateRange(earliestDate as Date, lastDate as Date);
+  }
+
+  /** Creates a new date using the given provider. By default, just uses the Date constructor. */
+  newDate(): Date {
+    return this.dateProvider();
+  }
+
+  /** Returns the time difference, in hours between the two dates. */
+  getDifferenceHours(date1: Date, date2: Date): number {
+    let diff = date1.getTime() - date2.getTime();
+    if (diff < 0) {
+      diff *= -1;
+    }
+    return diff / 1000 / 60 / 60;
   }
 }

@@ -6,23 +6,21 @@ import {Project} from '../../../model/project';
 import {DataService} from '../data.service';
 import {ErrorMessage} from '../../../model/error_message';
 import {ProjectMetaData} from '../../../model/project_metadata';
+import {GraphDataCacheService} from '../graph_data_cache.service';
 
 /** Service which actually retrieves data from the server. Will cache graph data. */
 @Injectable()
 export class DataServiceImpl implements DataService {
-  /** Used for caching graph data during a page's lifecycle. Used so removing a project
-   * from the graph and adding it back will not fire off an unnecessary GET request */
-  private cache: {[id: string]: ProjectGraphData};
-
-  constructor(private http: HttpClient) {
-    this.cache = {};
-  }
+  constructor(
+    private http: HttpClient,
+    private cacheService: GraphDataCacheService
+  ) {}
 
   /** Gets the graph data for the given project ID. */
   async getProjectGraphData(id: string): Promise<ProjectGraphData> {
     // Return cached data, if available
-    if (this.cache[id]) {
-      return new Promise(resolve => resolve(this.cache[id]));
+    if (this.cacheService.hasEntry(id)) {
+      return new Promise(resolve => resolve(this.cacheService.getEntry(id)));
     }
 
     const response: any = await this.http
@@ -37,7 +35,7 @@ export class DataServiceImpl implements DataService {
           response.dateToNumberIAMBindings,
           response.dateToRecommendationTaken
         );
-        this.cache[id] = graphData;
+        this.cacheService.addEntry(id, graphData);
         resolve(graphData);
       });
     }

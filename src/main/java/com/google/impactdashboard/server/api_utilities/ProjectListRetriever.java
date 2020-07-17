@@ -79,7 +79,6 @@ public class ProjectListRetriever {
       Credentials.getCredentials()
         .createScoped(Arrays.asList("https://www.googleapis.com/auth/cloud-platform")));
 
-    return new CloudResourceManager.Builder(httpTransport, jsonFactory, credentials)
-        .build();
+    return new CloudResourceManager.Builder(httpTransport, jsonFactory, credentials).build();
   }
 }

@@ -1,21 +1,15 @@
 package com.google.impactdashboard.server.api_utilities;
 
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.logging.v2.LoggingClient;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingSettings;
 import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
 import com.google.impactdashboard.Credentials;
-import com.google.impactdashboard.configuration.Constants;
-import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.logging.v2.ListLogEntriesRequest;
 import com.google.logging.v2.LogEntry;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -51,15 +45,16 @@ public class LogRetriever {
     String project_id = "projects/" + projectId;
     String filter = "resource.type = project AND severity = NOTICE AND " +
         "protoPayload.methodName:SetIamPolicy";
-    ListLogEntriesRequest request;
-    if(timeTo.equals("")) {
-       request = ListLogEntriesRequest.newBuilder().setFilter(filter)
-          .setOrderBy("timestamp desc").addResourceNames(project_id).build();
-    } else {
+
+    ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()
+        .setOrderBy("timestamp desc").addResourceNames(project_id);
+
+    if(!timeTo.equals("")) {
+      builder.setPageSize(1);
       filter += " AND timestamp > " + timeTo;
-      request = ListLogEntriesRequest.newBuilder().setFilter(filter).setOrderBy("timestamp desc")
-          .setPageSize(1).addResourceNames(project_id).build();
     }
+
+    ListLogEntriesRequest request = builder.setFilter(filter).build();
     ListLogEntriesPagedResponse response = logger.listLogEntries(request);
     return StreamSupport.stream(response.iterateAll().spliterator(), false)
         .collect(Collectors.toList());

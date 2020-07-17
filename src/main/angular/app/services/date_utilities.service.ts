@@ -6,7 +6,10 @@ import {DateRange} from '../../model/date_range';
 /** Contains some basic utility methods for date wrangling. */
 @Injectable()
 export class DateUtilitiesService {
-  constructor(private dateProvider = () => new Date()) {}
+  private dateProvider: () => Date;
+  constructor() {
+    this.dateProvider = () => new Date();
+  }
 
   /** Checks if the two timestamps (millis since epoch) fall on the same day. Returns true if they do. */
   fallOnSameDay(time1: number, time2: number): boolean {
@@ -62,6 +65,11 @@ export class DateUtilitiesService {
       }
     });
     return new DateRange(earliestDate as Date, lastDate as Date);
+  }
+
+  /** Sets the date provider to the given provider. */
+  setDateProvider(provider: () => Date) {
+    this.dateProvider = provider;
   }
 
   /** Creates a new date using the given provider. By default, just uses the Date constructor. */

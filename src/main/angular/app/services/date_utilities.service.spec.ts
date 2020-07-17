@@ -172,7 +172,7 @@ describe('DateUtilitiesService', () => {
   describe('newDate()', () => {
     it('Provides a new date based on the given provider', () => {
       const expected = new Date(2020, 6, 1);
-      service = new DateUtilitiesService(() => expected);
+      service.setDateProvider(() => expected);
       const actual = service.newDate();
 
       expect(actual).toEqual(expected);

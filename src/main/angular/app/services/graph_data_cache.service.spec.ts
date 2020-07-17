@@ -1,10 +1,53 @@
 import {GraphDataCacheService} from './graph_data_cache.service';
+import {DateUtilitiesService} from './date_utilities.service';
+import {ProjectGraphData} from '../../model/project_graph_data';
 
 describe('GraphDataCacheService', () => {
+  let service: GraphDataCacheService;
+  let dateUtilities: DateUtilitiesService;
+  let id: string;
+  let data: ProjectGraphData;
+
+  beforeAll(() => {
+    id = 'id-1';
+    data = new ProjectGraphData(id, {}, {});
+  });
+
   describe('hasEntry()', () => {
-    it('Fails if there is no entry', () => {});
-    it('Fails if entry is out-of-date', () => {});
-    it('Works for an in-date entry', () => {});
+    beforeEach(() => {
+      dateUtilities = new DateUtilitiesService();
+      service = new GraphDataCacheService(dateUtilities);
+    });
+
+    it('Returns false if there is no entry', () => {
+      const present = service.hasEntry(id);
+
+      expect(present).toBeFalse();
+    });
+    
+    it('Returns false if entry is out-of-date', () => {
+      const placementDate = new Date(2020, 6, 1, 0);
+      const readDate = new Date(2020, 6, 1, 6, 1);
+      dateUtilities.setDateProvider(() => placementDate);
+      service.addEntry(id, data);
+
+      dateUtilities.setDateProvider(() => readDate);
+      const present = service.hasEntry(id);
+
+      expect(present).toBeFalse();
+    });
+
+    it('Works for an in-date entry', () => {
+      const placementDate = new Date(2020, 6, 1, 0);
+      const readDate = new Date(2020, 6, 1, 3);
+      dateUtilities.setDateProvider(() => placementDate);
+      service.addEntry(id, data);
+
+      dateUtilities.setDateProvider(() => readDate);
+      const present = service.hasEntry(id);
+
+      expect(present).toBeTrue();
+    });
   });
 
   describe('getEntry()', () => {

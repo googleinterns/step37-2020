@@ -12,13 +12,16 @@ export class GraphDataCacheService {
 
   /** Checks whether there is an up-to-date cache entry with the given key. */
   hasEntry(id: string): boolean {
-    return (
+    if (
       this.cache[id] &&
       this.dateUtilities.getDifferenceHours(
         this.cache[id].time,
         this.dateUtilities.newDate()
       ) < 6
-    );
+    ) {
+      return true;
+    }
+    return false;
   }
 
   /** Returns the given entry, or undefined if it doesn't exist or is out-of-date. */

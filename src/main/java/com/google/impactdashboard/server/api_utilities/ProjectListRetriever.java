@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.ArrayList;
 import  com.google.impactdashboard.data.project.ProjectIdentification;
 
+/** 
+ * A class for using the Cloud Resource Manager API to retrieve the projects 
+ * that the credentials in use have resourcemanager.projects.get permission for. 
+ */
 public class ProjectListRetriever {
 
   private static CloudResourceManager cloudResourceManagerService = null;

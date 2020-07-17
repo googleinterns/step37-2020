@@ -1,13 +1,15 @@
 package com.google.impactdashboard.data.recommendation;
 
 import com.google.auto.value.AutoValue;
+import java.util.List;
 
 /** Represents a GCP Recommendation. */
 @AutoValue
 public abstract class Recommendation {
 
   public abstract String getProjectId();
-  public abstract String getDescription();
+  public abstract String getActor();
+  public abstract List<RecommendationAction> getActions();
   public abstract RecommenderType getRecommender();
   public abstract long getAcceptedTimestamp();
   public abstract RecommenderMetadata getMetadata();
@@ -22,9 +24,10 @@ public abstract class Recommendation {
    * and accepted by the user at time {@code timestamp}, with description 
    * {@code description} and additional metadata {@code metadata}.
    */
-  public static Recommendation create(String projectId, String description, 
-    RecommenderType recommender, long acceptedTimestamp, RecommenderMetadata metadata)  {
-    return new AutoValue_Recommendation(projectId, description, recommender, 
+  public static Recommendation create(String projectId, String actor, 
+    List<RecommendationAction> actions, RecommenderType recommender, 
+    long acceptedTimestamp, RecommenderMetadata metadata)  {
+    return new AutoValue_Recommendation(projectId, actor, actions, recommender, 
       acceptedTimestamp, metadata);
   }
 }

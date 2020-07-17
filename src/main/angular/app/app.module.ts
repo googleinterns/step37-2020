@@ -22,7 +22,6 @@ import {DateSelectComponent} from './date_select/date_select.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 @NgModule({
@@ -44,7 +43,6 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
-    MatProgressSpinnerModule,
     MatProgressBarModule,
   ],
   providers: [

@@ -20,9 +20,3 @@
   float: right;
   margin-top: 8px;
 }
-
-#top-container mat-spinner {
-  float: left;
-  margin-top: 8px;
-  z-index: 1;
-}

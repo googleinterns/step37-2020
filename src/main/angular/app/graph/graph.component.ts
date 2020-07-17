@@ -42,27 +42,22 @@ export class GraphComponent implements OnInit {
   /** Whether to show the chart. When it's not selected, prompt the user to select a project. */
   public shouldShowChart: boolean;
 
-  /** Whether there's an active web request. */
-  public hasActiveRequest: boolean;
-
   constructor(
     private dataService: DataService,
     private graphProcessor: GraphProcessorService
   ) {
     this.shouldShowChart = false;
     this.projects = [];
-    this.hasActiveRequest = false;
   }
 
   /** Called when an input field changes. */
   ngOnChanges(changes: SimpleChanges) {
     this.shouldShowChart = this.projects.length > 0;
-    this.hasActiveRequest = true;
-    this.graphProcessor
-      .processChanges(changes, this.properties, this.dataService)
-      .then(() => {
-        this.hasActiveRequest = false;
-      });
+    this.graphProcessor.processChanges(
+      changes,
+      this.properties,
+      this.dataService
+    );
   }
 
   ngOnInit() {

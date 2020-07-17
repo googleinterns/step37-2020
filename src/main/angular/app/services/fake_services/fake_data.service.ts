@@ -39,7 +39,10 @@ export class FakeDataService implements DataService {
   /** Returns all the fake projects. */
   listProjects(): Promise<Project[]> {
     return new Promise(resolve =>
-      resolve(Object.values(this.projects).map(tuple => tuple[0]))
+      setTimeout(
+        () => resolve(Object.values(this.projects).map(tuple => tuple[0])),
+        1000
+      )
     );
   }
 
@@ -47,7 +50,7 @@ export class FakeDataService implements DataService {
   getProjectGraphData(id: string): Promise<ProjectGraphData> {
     if (this.projects[id]) {
       return new Promise(resolve => {
-        resolve(this.projects[id][1]);
+        setTimeout(() => resolve(this.projects[id][1]), 1000);
       });
     } else {
       throw new ErrorMessage(

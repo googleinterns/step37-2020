@@ -43,7 +43,7 @@ export class GraphComponent implements OnInit {
   public shouldShowChart: boolean;
 
   /** Whether there's an active web request. */
-  public activeRequest: boolean;
+  public hasActiveRequest: boolean;
 
   constructor(
     private dataService: DataService,
@@ -51,17 +51,17 @@ export class GraphComponent implements OnInit {
   ) {
     this.shouldShowChart = false;
     this.projects = [];
-    this.activeRequest = false;
+    this.hasActiveRequest = false;
   }
 
   /** Called when an input field changes. */
   ngOnChanges(changes: SimpleChanges) {
     this.shouldShowChart = this.projects.length > 0;
-    this.activeRequest = true;
+    this.hasActiveRequest = true;
     this.graphProcessor
       .processChanges(changes, this.properties, this.dataService)
       .then(() => {
-        this.activeRequest = false;
+        this.hasActiveRequest = false;
       });
   }
 

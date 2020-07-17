@@ -23,7 +23,7 @@ limitations under the License.
 
 <div id="show-chart" *ngIf="shouldShowChart">
   <div id="top-container" [style.width.px]="properties.width * 3 / 4">
-    <mat-spinner *ngIf="activeRequest" diameter="40"></mat-spinner>
+    <mat-spinner *ngIf="hasActiveRequest" diameter="40"></mat-spinner>
 
     <app-date-select [possibleRange]="properties.dateRange"
       (selectedRange)="changeDateRange($event)"></app-date-select>

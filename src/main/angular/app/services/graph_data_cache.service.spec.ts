@@ -13,20 +13,20 @@ describe('GraphDataCacheService', () => {
     data = new ProjectGraphData(id, {}, {});
   });
 
-  describe('hasEntry()', () => {
-    beforeEach(() => {
-      dateUtilities = new DateUtilitiesService();
-      service = new GraphDataCacheService(dateUtilities);
-    });
+  beforeEach(() => {
+    dateUtilities = new DateUtilitiesService();
+    service = new GraphDataCacheService(dateUtilities);
+  });
 
+  describe('hasEntry()', () => {
     it('Returns false if there is no entry', () => {
       const present = service.hasEntry(id);
 
       expect(present).toBeFalse();
     });
-    
+
     it('Returns false if entry is out-of-date', () => {
-      const placementDate = new Date(2020, 6, 1, 0);
+      const placementDate = new Date(2020, 6, 1, 0, 0);
       const readDate = new Date(2020, 6, 1, 6, 1);
       dateUtilities.setDateProvider(() => placementDate);
       service.addEntry(id, data);
@@ -51,12 +51,43 @@ describe('GraphDataCacheService', () => {
   });
 
   describe('getEntry()', () => {
-    it('Returns undefined for an empty entry', () => {});
-    it('Returns undefined for an out-of-date entry', () => {});
-    it('Returns a valid cache entry', () => {});
+    it('Returns undefined for an empty entry', () => {
+      const value = service.getEntry(id);
+
+      expect(value).toBeUndefined();
+    });
+
+    it('Returns undefined for an out-of-date entry', () => {
+      const placementDate = new Date(2020, 6, 1, 0);
+      const readDate = new Date(2020, 6, 1, 6, 1);
+      dateUtilities.setDateProvider(() => placementDate);
+      service.addEntry(id, data);
+
+      dateUtilities.setDateProvider(() => readDate);
+      const value = service.getEntry(id);
+
+      expect(value).toBeUndefined();
+    });
+
+    it('Returns a valid cache entry', () => {
+      const placementDate = new Date(2020, 6, 1, 0);
+      const readDate = new Date(2020, 6, 1, 3);
+      dateUtilities.setDateProvider(() => placementDate);
+      service.addEntry(id, data);
+
+      dateUtilities.setDateProvider(() => readDate);
+      const present = service.getEntry(id);
+
+      expect(present).toEqual(data);
+    });
   });
 
   describe('addEntry()', () => {
-    it('Adds a new entry successfully', () => {});
+    it('Adds a new entry successfully', () => {
+      service.addEntry(id, data);
+      const result = service.getEntry(id);
+
+      expect(result).toEqual(data);
+    });
   });
 });

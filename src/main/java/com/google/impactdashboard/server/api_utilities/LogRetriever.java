@@ -38,26 +38,25 @@ public class LogRetriever {
   /**
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant audit logs.
    * @param projectId ID of the project that the audit logs will be retrieved for.
-   * @param timeTo Latest time to retrieve logs for.
-   * @return A list of all the relevant audit log entries that are stored by the logging API
+   * @param timeFrom Latest time to retrieve logs for.
+   * @return A response that contains all the relevant audit log entries that are stored by the logging API
    */
-  public Collection<LogEntry> listAuditLogs(String projectId, String timeTo) {
+  public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom, int pageSize) {
     String project_id = "projects/" + projectId;
-    String filter = "resource.type = project AND severity = NOTICE AND " +
-        "protoPayload.methodName:SetIamPolicy";
+    String filter = "resource.type = project AND severity = NOTICE";
+    if(!timeFrom.equals("")) {
+      filter += " AND timestamp > \"" + timeFrom + "\"";
+    }
 
     ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()
         .setOrderBy("timestamp desc").addResourceNames(project_id);
 
-    if(!timeTo.equals("")) {
-      builder.setPageSize(1);
-      filter += " AND timestamp > " + timeTo;
-    }
+    filter += " AND protoPayload.methodName:SetIamPolicy";
+    ListLogEntriesRequest request = builder.setFilter(filter).setPageSize(pageSize).build();
+    return logger.listLogEntries(request);
 
-    ListLogEntriesRequest request = builder.setFilter(filter).build();
-    ListLogEntriesPagedResponse response = logger.listLogEntries(request);
-    return StreamSupport.stream(response.iterateAll().spliterator(), false)
-        .collect(Collectors.toList());
+//    return StreamSupport.stream(response.iterateAll().spliterator(), false)
+//        .collect(Collectors.toList());
   }
 
   /**
@@ -88,4 +87,5 @@ public class LogRetriever {
     
     return logger.listLogEntries(request);
   }
+
 }

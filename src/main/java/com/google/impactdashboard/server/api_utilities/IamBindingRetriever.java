@@ -4,12 +4,12 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.iam.v1.Iam;
 import com.google.api.services.iam.v1.IamScopes;
+import com.google.api.services.iam.v1.model.ListRolesResponse;
 import com.google.api.services.iam.v1.model.Role;
 import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.audit.AuditLog;
+import com.google.cloud.recommender.v1.Impact;
 import com.google.impactdashboard.Credentials;
-import com.google.impactdashboard.configuration.Constants;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.recommendation.RecommendationAction;
 import com.google.logging.v2.LogEntry;
@@ -18,10 +18,9 @@ import com.google.protobuf.Timestamp;
 import com.google.protobuf.Value;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -30,9 +29,23 @@ import java.util.stream.Collectors;
 public class IamBindingRetriever {
 
   private final Iam iamService;
+  private final List<Role> roles;
 
-  protected IamBindingRetriever(Iam iamService) {
+  protected IamBindingRetriever(Iam iamService) throws IOException {
     this.iamService = iamService;
+
+    roles = new ArrayList<>();
+    String pageToken = null;
+    do {
+      ListRolesResponse rolesResponse;
+      if(pageToken == null) {
+        rolesResponse = iamService.roles().list().setView("full").execute();
+      } else {
+        rolesResponse = iamService.roles().list().setView("full").setPageToken(pageToken).execute();
+      }
+      roles.addAll(rolesResponse.getRoles());
+      pageToken = rolesResponse.getNextPageToken();
+    } while(pageToken != null);
   }
 
   /**
@@ -42,9 +55,11 @@ public class IamBindingRetriever {
   public static IamBindingRetriever create() throws Exception {
     Iam iamService = new Iam.Builder(GoogleNetHttpTransport.newTrustedTransport(),
         JacksonFactory.getDefaultInstance(),
-        new HttpCredentialsAdapter(Credentials.getCredentials().createScoped(Collections.singleton(IamScopes.CLOUD_PLATFORM))))
+        new HttpCredentialsAdapter(Credentials.getCredentials().createScoped(Collections
+            .singleton(IamScopes.CLOUD_PLATFORM))))
         .setApplicationName("Recommendation Impact Dashboard")
         .build();
+
     return new IamBindingRetriever(iamService);
   }
 
@@ -56,7 +71,7 @@ public class IamBindingRetriever {
    */
   public List<IAMBindingDatabaseEntry> listIAMBindingData(Collection<LogEntry> logEntries,
                                       String projectId, String projectName,
-                                      String projectNumber){
+                                      String projectNumber, Long timeStamp){
     Map<Timestamp, AuditLog> timeToAuditLogMap = logEntries.stream().map(log -> {
           AuditLog auditLog;
           try {
@@ -67,16 +82,16 @@ public class IamBindingRetriever {
           return new SimpleImmutableEntry<>(log.getTimestamp(), auditLog);
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-
     return timeToAuditLogMap.entrySet().stream().map(entry -> {
+      AtomicReference<Long> secondsFromEpoch = new AtomicReference<>();
+      secondsFromEpoch.set(timeStamp);
       Map<String, Integer> membersForRoles = getMembersForRoles(entry.getValue().getResponse()
           .getFieldsMap().get("bindings").getListValue().getValuesList());
-      try {
-        return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, entry.getKey().getSeconds(),
-            getIamBindings(membersForRoles));
-      } catch (IOException e) {
-        throw new RuntimeException("Error in getting IAM Roles");
+      if(secondsFromEpoch.get() == null){
+        secondsFromEpoch.set(entry.getKey().getSeconds());
       }
+      return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, secondsFromEpoch.get(),
+          getIamBindings(membersForRoles));
     }).collect(Collectors.toList());
   }
 
@@ -100,10 +115,15 @@ public class IamBindingRetriever {
    * @param membersForRoles map of membersPerRole to calculate the number of total bindings.
    * @return Total number of IAMBindings for the given map
    */
-  private int getIamBindings(Map<String, Integer> membersForRoles) throws IOException {
-    List<Role> roles = iamService.roles().list().setView("full").execute().getRoles();
+  private int getIamBindings(Map<String, Integer> membersForRoles) {
     return roles.stream().filter(role -> membersForRoles.containsKey(role.getName()))
-        .mapToInt(role -> role.getIncludedPermissions().size() * membersForRoles.get(role.getName())).sum();
+        .mapToInt(role -> {
+          if(role.getIncludedPermissions() != null) {
+            return role.getIncludedPermissions().size() * membersForRoles.get(role.getName());
+          } else {
+            return 0;
+          }
+        }).sum();
   }
 
   /**
@@ -127,5 +147,10 @@ public class IamBindingRetriever {
         throw new RuntimeException("Role could not be retrieved!");
       }
     }).sum();
+  }
+
+  public static void main(String[] args) throws Exception {
+    IamBindingRetriever retriever = IamBindingRetriever.create();
+    retriever.getIamBindings(new HashMap<>());
   }
 }

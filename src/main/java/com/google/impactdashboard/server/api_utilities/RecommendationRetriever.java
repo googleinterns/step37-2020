@@ -1,19 +1,16 @@
 package com.google.impactdashboard.server.api_utilities;
 
-import com.google.auth.oauth2.GoogleCredentials;
+
 import com.google.cloud.recommender.v1.RecommenderClient;
 import com.google.cloud.recommender.v1.RecommenderSettings;
 import com.google.cloud.recommender.v1.stub.RecommenderStubSettings;
 import com.google.impactdashboard.Credentials;
-import com.google.impactdashboard.configuration.Constants;
 import com.google.impactdashboard.data.recommendation.IAMRecommenderMetadata;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.impactdashboard.data.recommendation.RecommendationAction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.Value;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -94,4 +91,6 @@ public class RecommendationRetriever {
         }).collect(Collectors.toList());
     return actions;
   }
+
+
 }

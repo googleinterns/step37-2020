@@ -14,6 +14,7 @@ Which will install all the required dependencies
 ## API Setup
 First, choose a project to deploy the Recommendations Impact Dashboard. Before deploying, you must ensure that the following APIs are enabled on your deploying project:
 * [Bigquery](https://console.cloud.google.com/flows/enableapi?apiid=bigquery&_ga=2.243629059.74597765.1594049459-1491521344.1590087040&_gac=1.207882662.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE)
+* [Cloud Resource Manager](https://pantheon.corp.google.com/apis/library/cloudresourcemanager.googleapis.com?q=resource&id=16f5d23e-c895-4b9d-88e4-864c1766636f)
 
 ## Service Account Setup
 First, navigate to the [IAM page](https://console.cloud.google.com/iam-admin/iam?_ga=2.165735869.248724417.1594646215-1491521344.1590087040&_gac=1.48940818.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) and ensure that your **deploying project** is selected at the top left. Identify the service account with the name **App Engine default service account**, and add the role **Bigquery Admin** to the service account. 

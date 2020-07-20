@@ -42,6 +42,7 @@ export class DateSelectComponent implements OnInit {
 
   /** Called when an input field changes. */
   ngOnChanges(changes: SimpleChanges) {
+    console.log(changes.possibleRange);
     if (!changes.possibleRange.isFirstChange()) {
       this.currentMin = this.possibleRange.getStart();
       // A timeout is necessary, as there is a delay before the range on the mat-date-range-input tag is updated,

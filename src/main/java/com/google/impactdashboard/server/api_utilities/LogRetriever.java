@@ -10,7 +10,6 @@ import com.google.logging.v2.LogEntry;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -42,17 +41,15 @@ public class LogRetriever {
    * @param timeFrom Latest time to retrieve logs for.
    * @return A response that contains all the relevant audit log entries that are stored by the logging API
    */
-  public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom, int pageSize,
-                                            String pageToken) {
+  public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom, int pageSize) {
     String project_id = "projects/" + projectId;
-    String filter = "resource.type = project AND severity = NOTICE AND timestamp > " + "\"" + timeFrom + "\"";
+    String filter = "resource.type = project AND severity = NOTICE";
+    if(!timeFrom.equals("")) {
+      filter += " AND timestamp > \"" + timeFrom + "\"";
+    }
 
     ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()
         .setOrderBy("timestamp desc").addResourceNames(project_id);
-
-    if(pageToken != null) {
-      builder.setPageToken(pageToken);
-    }
 
     filter += " AND protoPayload.methodName:SetIamPolicy";
     ListLogEntriesRequest request = builder.setFilter(filter).setPageSize(pageSize).build();

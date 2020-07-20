@@ -14,14 +14,12 @@ import com.google.impactdashboard.server.api_utilities.LogRetriever;
 import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.logging.v2.LogEntry;
-import org.checkerframework.checker.units.qual.A;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -97,19 +95,13 @@ public class DataUpdater {
           .toString();
 
       List<IAMBindingDatabaseEntry> iamBindingDatabaseEntries = new ArrayList<>();
-      LoggingClient.ListLogEntriesPagedResponse response;
-      String pageToken = null;
-      do {
-        response = logRetriever.
-            listAuditLogsResponse(project.getProjectId(), midnight30DaysAgo, 50,
-                pageToken);
-        List<LogEntry> entry = StreamSupport.stream(response.iterateAll().spliterator(), false)
+        LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(project.getProjectId(), midnight30DaysAgo,
+            50);
+        List<LogEntry> entriesLog = StreamSupport.stream(response.iterateAll().spliterator(), false)
             .collect(Collectors.toList());
-        iamBindingDatabaseEntries.addAll(iamRetriever.listIAMBindingData(entry,
+        iamBindingDatabaseEntries.addAll(iamRetriever.listIAMBindingData(entriesLog,
             project.getProjectId(), project.getName(), String.valueOf(project.getProjectNumber()),
             null));
-        pageToken = response.getNextPageToken();
-      } while(!pageToken.equals(""));
       return iamBindingDatabaseEntries.stream();
     }).collect(Collectors.toList()));
 
@@ -124,18 +116,16 @@ public class DataUpdater {
    * @return the most recent IamBindingData
    */
   private List<IAMBindingDatabaseEntry> getLastIamEntry(ProjectIdentification project) {
+    long yesterdayMidnight = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+        .truncatedTo(ChronoUnit.DAYS)
+        .minus(1L, ChronoUnit.DAYS).getEpochSecond();
+
     LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
-        project.getProjectId(), "", 1, null);
-    List<LogEntry> entry = StreamSupport.stream(response.iterateAll().spliterator(), false)
-        .collect(Collectors.toList());
-    Calendar calendar = Calendar.getInstance();
-    calendar.add(Calendar.DATE, 0);
-    calendar.set(Calendar.HOUR_OF_DAY, 23);
-    calendar.set(Calendar.MINUTE, 59);
-    calendar.set(Calendar.SECOND, 59);
-    calendar.set(Calendar.MILLISECOND, 0);
+        project.getProjectId(), "", 1);
+    List<LogEntry> entry = response.getPage().getResponse().getEntriesList();
+
     return iamRetriever.listIAMBindingData(entry, project.getProjectId(), project.getName(),
-        String.valueOf(project.getProjectNumber()), calendar.toInstant().getEpochSecond());
+        String.valueOf(project.getProjectNumber()), yesterdayMidnight * 1000);
   }
 
   public static void main(String[] args) throws Exception {

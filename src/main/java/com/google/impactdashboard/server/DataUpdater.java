@@ -31,6 +31,7 @@ public class DataUpdater {
   private final IamBindingRetriever iamRetriever;
   private final DataUpdateManager updateManager;
   private final DataReadManager readManager;
+  private final boolean manualUpdate;
 
   @VisibleForTesting
   protected DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
@@ -41,6 +42,7 @@ public class DataUpdater {
     this.updateManager = updateManager;
     this.readManager = readManager;
     this.iamRetriever = iamRetriever;
+    this.manualUpdate = manualUpdate;
   }
 
   /**
@@ -48,10 +50,10 @@ public class DataUpdater {
    * and RecommendationRetriever.
    * @return New instance of DataUpdater
    */
-  public static DataUpdater create() throws Exception {
+  public static DataUpdater create(boolean manualUpdate) throws Exception {
     return new DataUpdater(LogRetriever.create(), RecommendationRetriever.create(),
         DataUpdateManagerFactory.create(), DataReadManagerFactory.create(),
-        IamBindingRetriever.create());
+        IamBindingRetriever.create(), manualUpdate);
   }
 
   /**
@@ -68,12 +70,73 @@ public class DataUpdater {
    * @return a List of Recommendations
    */
   private List<Recommendation> listUpdatedRecommendations() {
-    // Steps for implementing this function (may require more methods for single responsibility)
-    // retrieve recommendations from cloud logging and recommender
-    // retrieve current recommendations stored by database
-    // filter out any duplicate recommendations
-    // add non duplicate recommendation to the database
-    throw new UnsupportedOperationException("Not Implemented");
+    List<ProjectIdentification> knownProjects = readManager.listProjects();
+    List<ProjectIdentification> newProjects = ProjectListRetriever.listResourceManagerProjects();
+    newProjects.removeAll(knownProjects);
+
+    if (manualUpdate) {
+      return listAllRecommendationsExcludingCurrentDay(newProjects);
+    } else {
+      return listAllNewRecommendations(knownProjects, newProjects);
+    }
+  }
+
+  /**
+   * For all new projects, gets all recommendations that ocurred in the past 30
+   * days, excluding any recommendations that occurred after midnight, today.
+   * @param newProjects The projects that have no data in the database.
+   * @return A list containing all new recommendations to be stored.
+   */
+  private List<Recommendation> listAllRecommendationsExcludingCurrentDay(
+    List<ProjectIdentification> newProjects) {
+    String todayAtMidnight = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+      .truncatedTo(ChronoUnit.DAYS).toString();
+
+    List<Recommendation> newProjectRecommendations = getRecommendationsForProjects(
+      newProjects, "", todayAtMidnight);
+
+    return newProjectRecommendations;
+  }
+
+  /**
+   * For {@code knownProjects}, gets any recommendations that occured in the
+   * past 24 hours. For {@code newProjects}, gets all known recommendations.
+   * @param knownProjects The projects that the database already knows about.
+   * @param newProjects The projects that have no data in the database currently.
+   * @return A list containing all new recommendations to be stored.
+   */
+  private List<Recommendation> listAllNewRecommendations(
+    List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
+    String yesterdayAtMidnight = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+      .truncatedTo(ChronoUnit.DAYS)
+      .minus(1L, ChronoUnit.DAYS)
+      .toString();
+
+    List<Recommendation> newProjectRecommendations = getRecommendationsForProjects(
+      newProjects, "", "");
+    List<Recommendation> knownProjectRecommendations = getRecommendationsForProjects(
+      knownProjects, yesterdayAtMidnight, "");
+
+    newProjectRecommendations.addAll(knownProjectRecommendations);
+    return newProjectRecommendations;
+  }
+
+  /**
+   * Returns the list of recommendations for the projects in {@code projects}
+   * within the time window specified.
+   */
+  private List<Recommendation> getRecommendationsForProjects(List<ProjectIdentification> projects,
+    String timeFrom, String timeTo) {
+    return projects.parallelStream()
+      .map(project -> {
+        LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listRecommendationLogs(
+          project.getProjectId(), timeFrom, timeTo);
+        List<LogEntry> entries = StreamSupport.stream(response.iterateAll().spliterator(), false)
+          .collect(Collectors.toList());
+        return recommendationRetriever.listRecommendations(
+          entries, project.getProjectId(),
+          Recommendation.RecommenderType.IAM_BINDING, iamRetriever);
+      }).flatMap(List::stream).collect(Collectors.toList());
   }
 
   /**

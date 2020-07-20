@@ -62,18 +62,30 @@ public class LogRetriever {
   /**
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant Recommendation logs.
    * @param projectId ID of the project that the recommendation logs will be retrieved for.
+   * @param timeFrom Earliest time to retrieve logs for
    * @param timeTo Latest time to retrieve logs for.
    * @return A list of all the relevant recommendation log entries that are stored by the logging API.
    */
-  public Collection<LogEntry> listRecommendationLogs(String projectId, String timeTo) {
+  public ListLogEntriesPagedResponse listRecommendationLogs(String projectId, 
+    String timeFrom, String timeTo) {
     String project_id = "projects/" + projectId;
-    // May need tweaking once tested
-    String filter = "resource.type = recommender";
-    ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder().setFilter(filter)
-        .setOrderBy("timestamp desc").addResourceNames(project_id).build();
-    ListLogEntriesPagedResponse response = logger.listLogEntries(request);
-    return StreamSupport.stream(response.iterateAll().spliterator(), false)
-        .collect(Collectors.toList());
+    String filter = "resource.type = recommender AND " + 
+      "resource.labels.recommender_id= google.iam.policy.Recommender AND " +
+      "jsonPayload.state = SUCCEEDED";
+
+    if (!timeFrom.equals("")) {
+      filter += " AND timestamp >= \"" + timeFrom + "\"";
+    }
+
+    if (!timeTo.equals("")) {
+      filter += " AND timestamp < \"" + timeTo + "\"";
+    }
+
+    ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder()
+      .setFilter(filter).setOrderBy("timestamp desc")
+      .addResourceNames(project_id).build();
+    
+    return logger.listLogEntries(request);
   }
 
 }

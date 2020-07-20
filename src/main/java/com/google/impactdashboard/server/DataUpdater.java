@@ -15,6 +15,7 @@ import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.logging.v2.LogEntry;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -78,6 +79,27 @@ public class DataUpdater {
   }
 
   /**
+   * For all new projects, gets all recommendations that ocurred in the past 30 
+   * days, excluding any recommendations that occurred after midnight, today.
+   * @param newProjects The projects that have no data in the database.
+   * @return A list containing all new recommendations to be stored.
+   */
+  private List<Recommendation> listAllRecommendationsExcludingCurrentDay(
+    List<ProjectIdentification> newProjects) {
+    String todayAtMidnight = Instant.ofEpochSecond(System.currentTimeMillis())
+      .truncatedTo(ChronoUnit.DAYS).toString();
+
+    List<Recommendation> newProjectRecommendations = newProjects.parallelStream()
+      .map(project -> {
+        List<LogEntry> recommendationLogs = (List<LogEntry>) logRetriever
+          .listRecommendationLogs(project.getProjectId(), "", todayAtMidnight);
+        return recommendationRetriever.listRecommendations(recommendationLogs, project.getProjectId(), Recommendation.RecommenderType.IAM_BINDING, iamRetriever);
+      }).flatMap(List::stream).collect(Collectors.toList());
+
+    return newProjectRecommendations;
+  }
+
+  /**
    * For {@code knownProjects}, gets any recommendations that occured in the 
    * past 24 hours. For {@code newProjects}, gets all known recommendations. 
    * @param knownProjects The projects that the database already knows about.
@@ -86,18 +108,27 @@ public class DataUpdater {
    */
   private List<Recommendation> listAllNewRecommendations(
     List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
-    String timestamp = Instant.ofEpochSecond(System.currentTimeMillis()).toString();
+    String yesterdayAtMidnight = Instant.ofEpochSecond(System.currentTimeMillis())
+      .truncatedTo(ChronoUnit.DAYS)
+      .minus(1L, ChronoUnit.DAYS)
+      .toString();
 
     List<Recommendation> newProjectRecommendations = newProjects.parallelStream()
       .map(project -> {
         List<LogEntry> recommendationLogs = (List<LogEntry>) logRetriever
           .listRecommendationLogs(project.getProjectId(), "", "");
-        return logEntriesToRecommendations(recommendationLogs);
+        return recommendationRetriever.listRecommendations(recommendationLogs, project.getProjectId(), Recommendation.RecommenderType.IAM_BINDING, iamRetriever);
       }).flatMap(List::stream).collect(Collectors.toList());
 
-    return newProjectRecommendations;
+    List<Recommendation> knownProjectRecommendations = knownProjects.parallelStream()
+    .map(project -> {
+      List<LogEntry> recommendationLogs = (List<LogEntry>) logRetriever
+        .listRecommendationLogs(project.getProjectId(), yesterdayAtMidnight, "");
+      return recommendationRetriever.listRecommendations(recommendationLogs, project.getProjectId(), Recommendation.RecommenderType.IAM_BINDING, iamRetriever);
+    }).flatMap(List::stream).collect(Collectors.toList());
 
-    //knownProjects.parallel
+    newProjectRecommendations.addAll(knownProjectRecommendations);
+    return newProjectRecommendations;
   }
 
   private List<Recommendation> logEntriesToRecommendations(List<LogEntry> recommendationLogs) {

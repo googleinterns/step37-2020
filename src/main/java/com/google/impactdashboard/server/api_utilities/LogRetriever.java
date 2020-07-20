@@ -74,7 +74,7 @@ public class LogRetriever {
       "jsonPayload.state = SUCCEEDED";
 
     if (!timeFrom.equals("")) {
-      filter += " AND timestamp > " + timeFrom;
+      filter += " AND timestamp >= " + timeFrom;
     }
 
     if (!timeTo.equals("")) {

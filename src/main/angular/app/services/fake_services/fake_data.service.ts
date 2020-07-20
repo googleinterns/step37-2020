@@ -317,7 +317,7 @@ export class FakeDataService implements DataService {
 
   /** Generate fake data for project 4. */
   private static fakeProject4(): [Project, ProjectGraphData] {
-    const projectId = 'quite-the-long-project-4';
+    const projectId = 'quite-the-long-project-id-for-google-project-number-4';
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Jul 2020 UTC')]: 14,
@@ -379,7 +379,7 @@ export class FakeDataService implements DataService {
 
     return [
       new Project(
-        'Quite the Long Project 4',
+        'Quite the Long Project ID for Google Project Number 4',
         projectId,
         4,
         new ProjectMetaData(33)

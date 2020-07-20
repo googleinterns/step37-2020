@@ -33,6 +33,11 @@ import {DateRange} from '../../model/date_range';
   styleUrls: ['./graph.component.css'],
 })
 export class GraphComponent implements OnInit {
+  /** Informs the user to select a project. Displayed when none are shown. */
+  private static SELECT_PROJECT_MESSAGE =
+    'Please select a project below to generate a graph.';
+  private static PROJECT_LOADING_MESSAGE = 'Waiting on server, please wait.';
+
   /** The projects to display on the graph. */
   @Input()
   public projects: Project[];
@@ -41,6 +46,8 @@ export class GraphComponent implements OnInit {
 
   /** Whether to show the chart. When it's not selected, prompt the user to select a project. */
   public shouldShowChart: boolean;
+  /** The text that's shown when the chart isn't. */
+  public noChartMessage: string;
 
   constructor(
     private dataService: DataService,
@@ -48,6 +55,7 @@ export class GraphComponent implements OnInit {
   ) {
     this.shouldShowChart = false;
     this.projects = [];
+    this.noChartMessage = GraphComponent.SELECT_PROJECT_MESSAGE;
   }
 
   /** Called when an input field changes. */
@@ -55,6 +63,13 @@ export class GraphComponent implements OnInit {
     // If this is the first project we're adding, don't show the chart until it's ready
     if (!this.projects || this.projects.length === 0) {
       this.shouldShowChart = false;
+      this.noChartMessage = GraphComponent.SELECT_PROJECT_MESSAGE;
+    } else if (
+      this.projects.length === 1 &&
+      changes.projects.previousValue.length === 0
+    ) {
+      this.shouldShowChart = false;
+      this.noChartMessage = GraphComponent.PROJECT_LOADING_MESSAGE;
     } else {
       this.shouldShowChart = true;
     }

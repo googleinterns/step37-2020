@@ -16,9 +16,7 @@ limitations under the License.
 
 <div *ngIf="!shouldShowChart" [style.width.px]="properties.width"
   [style.height.px]="properties.height" class="center" id="project-prompt">
-  <h1>Nothing to display! <br />
-    Please select a project below to
-    generate a graph.</h1>
+  <h1>Nothing to display yet!<br/>{{ noChartMessage }}</h1>
 </div>
 
 <div id="show-chart" *ngIf="shouldShowChart">

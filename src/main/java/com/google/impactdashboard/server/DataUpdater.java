@@ -21,6 +21,8 @@ import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import java.util.stream.Collectors;
@@ -190,7 +192,11 @@ public class DataUpdater {
         .toString();
     String midnightToday = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
       .truncatedTo(ChronoUnit.DAYS).toString();
-    return getIAMBindingsDataEntries(newProjects, midnight30DaysAgo, midnightToday);
+    List<IAMBindingDatabaseEntry> entries =  
+        getIAMBindingsDataEntries(newProjects, midnight30DaysAgo, midnightToday);
+    entries.addAll(newProjects.parallelStream().flatMap(project -> 
+        getLastIamEntry(project, midnight30DaysAgo).stream()).collect(Collectors.toList()));
+    return entries;
   }
 
   /**
@@ -205,8 +211,10 @@ public class DataUpdater {
         .toString();
     List<IAMBindingDatabaseEntry> entries = getIAMBindingsDataEntries(
         newProjects, midnight30DaysAgo, "");
+    entries.addAll(newProjects.parallelStream().flatMap(project -> 
+        getLastIamEntry(project, midnight30DaysAgo).stream()).collect(Collectors.toList()));
     entries.addAll(knownProjects.parallelStream().flatMap(project -> 
-        getLastIamEntry(project).stream()).collect(Collectors.toList()));
+        getLastIamEntry(project, "").stream()).collect(Collectors.toList()));
     return entries;
   }
 
@@ -215,18 +223,74 @@ public class DataUpdater {
    * last log for the Iam data since we only needed the latest IAM data. Even if the Iam data is
    * old this creates a new Database entry for the day.
    * @param project the project that needs the last days of data
+   * @param timeTo the earliest day to look for an entry.
    * @return the most recent IamBindingData
    */
-  private List<IAMBindingDatabaseEntry> getLastIamEntry(ProjectIdentification project) {
+  private List<IAMBindingDatabaseEntry> getLastIamEntry(
+      ProjectIdentification project, String timeTo) {
     long yesterdayMidnight = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
         .truncatedTo(ChronoUnit.DAYS)
         .minus(1L, ChronoUnit.DAYS).getEpochSecond();
 
     LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
-        project.getProjectId(), "", "", 1);
+        project.getProjectId(), "", timeTo, 1);
     List<LogEntry> entry = response.getPage().getResponse().getEntriesList();
 
     return iamRetriever.listIAMBindingData(entry, project.getProjectId(), project.getName(),
         String.valueOf(project.getProjectNumber()), yesterdayMidnight * 1000);
+  }
+
+  /**
+   * Returns the data contains in {@code bindingsData}, such taht there is one 
+   * entry for each day in the range from {@code timeFrom} to {@code timeTo}, 
+   * and the entry on each day is the most recent IAM Bindings count. 
+   * @param bindingsData All logs entry bindings data for one project.
+   * @param timeFrom A date (at midnight) to start the time range.
+   * @param timeTo A date (at midnight) to end the time range.
+   * @return The data collapsed so that there is exactly one entry per day.
+   */
+  private List<IAMBindingDatabaseEntry> createListWithOneEntryPerDay(
+      List<IAMBindingDatabaseEntry> bindingsData, Instant timeFrom, Instant timeTo) {
+    if (bindingsData.size() == 0) {
+      return bindingsData;
+    }
+
+    List<IAMBindingDatabaseEntry> sortedBindings = bindingsData.stream()
+        .sorted(IAMBindingDatabaseEntry.ORDER_BY_TIMESTAMP)
+        .collect(Collectors.toCollection(ArrayList::new));
+    List<IAMBindingDatabaseEntry> oneEntryPerDay = new ArrayList<IAMBindingDatabaseEntry>();
+
+    int sortedBindingsIndex = 0;
+    while (timeFrom.toEpochMilli() <= timeTo.toEpochMilli()) {
+      Instant nextDay = timeFrom.plus(1L, ChronoUnit.DAYS);
+      if (sortedBindings.get(sortedBindingsIndex).getTimestamp() > nextDay.toEpochMilli() && 
+          sortedBindingsIndex != 0) {
+        oneEntryPerDay.add(getEntryWithNewTimestamp(
+            sortedBindings.get(sortedBindingsIndex - 1), timeFrom.toEpochMilli()));
+        timeFrom = nextDay;
+      } else if (sortedBindingsIndex == sortedBindings.size() - 1 &&
+          nextDay.toEpochMilli() > sortedBindings.get(sortedBindingsIndex).getTimestamp()) {
+        oneEntryPerDay.add(getEntryWithNewTimestamp(
+            sortedBindings.get(sortedBindingsIndex), timeFrom.toEpochMilli()));
+        timeFrom = nextDay;
+      }
+      if (sortedBindingsIndex < sortedBindings.size() - 1) {
+        sortedBindingsIndex += 1;
+      }
+    }
+    return oneEntryPerDay;
+  }
+
+  /** Returns a copy of {@code entry} with timestamp {@code timestamp}. */
+  private IAMBindingDatabaseEntry getEntryWithNewTimestamp(IAMBindingDatabaseEntry entry, 
+      long timestamp) {
+    return IAMBindingDatabaseEntry.create(entry.getProjectId(), 
+        entry.getProjectName(), entry.getProjectNumber(), 
+        timestamp, entry.getBindingsNumber());
+  }
+
+  public static void main(String[] args) throws Exception {
+    DataUpdater dataUpdater = DataUpdater.create(false);
+    dataUpdater.updateDatabase();
   }
 }

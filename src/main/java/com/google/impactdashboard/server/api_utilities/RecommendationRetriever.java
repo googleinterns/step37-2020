@@ -91,6 +91,4 @@ public class RecommendationRetriever {
         }).collect(Collectors.toList());
     return actions;
   }
-
-
 }

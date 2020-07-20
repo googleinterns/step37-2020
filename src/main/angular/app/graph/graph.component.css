@@ -15,5 +15,5 @@
 #bottom-container {
   display: flex;
   justify-content: center;
-  margin-top: -4em;
+  margin: 0 auto;
 }

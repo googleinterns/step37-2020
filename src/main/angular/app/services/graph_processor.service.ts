@@ -43,6 +43,7 @@ export class GraphProcessorService {
       tooltip: {
         isHtml: true,
       },
+      chartArea: {width: '90%', height: '80%'},
       series: {},
     };
     return {

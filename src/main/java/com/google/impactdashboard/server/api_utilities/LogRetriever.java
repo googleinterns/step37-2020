@@ -38,10 +38,11 @@ public class LogRetriever {
   /**
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant audit logs.
    * @param projectId ID of the project that the audit logs will be retrieved for.
-   * @param timeFrom Latest time to retrieve logs for.
+   * @param timeFrom The earliest time to retrieve logs for.
+   * @param timeTo The latest time to retrieve logs for.
    * @return A response that contains all the relevant audit log entries that are stored by the logging API
    */
-  public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom, int pageSize) {
+  public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom, String timeTo, int pageSize) {
     String project_id = "projects/" + projectId;
     String filter = "resource.type = project AND severity = NOTICE";
     if(!timeFrom.equals("")) {

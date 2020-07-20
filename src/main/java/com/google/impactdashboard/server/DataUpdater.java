@@ -61,9 +61,9 @@ public class DataUpdater {
    * Updates the database with any new information about recommendations and IAMBinding logging.
    */
   public void updateDatabase() {
-//    updateManager.updateRecommendations(listUpdatedRecommendations());
+    updateManager.updateRecommendations(listUpdatedRecommendations());
     updateManager.updateIAMBindings(listUpdatedIAMBindingData());
-//    updateManager.deleteYearOldData();
+    updateManager.deleteYearOldData();
   }
 
   /**
@@ -145,30 +145,65 @@ public class DataUpdater {
    * @return A List of IAMBindingDatabaseEntry
    */
   private List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
-    long epochSeconds = readManager.getMostRecentTimestamp();
-    List<IAMBindingDatabaseEntry> entries = new ArrayList<>();
-    if(epochSeconds != -1) {
-      entries = readManager.listProjects().parallelStream().flatMap(project -> getLastIamEntry(project)
-          .stream()).collect(Collectors.toList());
+    List<ProjectIdentification> knownProjects = readManager.listProjects();
+    List<ProjectIdentification> newProjects = ProjectListRetriever.listResourceManagerProjects();
+    newProjects.removeAll(knownProjects);
+
+    if (manualUpdate) {
+      return newIAMBindingsDataExcludingToday(newProjects);
+    } else {
+      return newIAMBindingsData(newProjects, knownProjects);
     }
-    // Getting the last 30 days of data from new projects
-    entries.addAll(ProjectListRetriever.listResourceManagerProjects().parallelStream().flatMap(project -> {
-      String midnight30DaysAgo = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
-          .truncatedTo(ChronoUnit.DAYS)
-          .minus(30L, ChronoUnit.DAYS)
-          .toString();
+  }
 
+  /** Returns all IAM Bindings data for {@code projects} in the time range given. */
+  private List<IAMBindingDatabaseEntry> getIAMBindingsDataEntries(
+      List<ProjectIdentification> projects, String timeFrom, String timeTo) {
+    return projects.parallelStream().flatMap(project -> {
       List<IAMBindingDatabaseEntry> iamBindingDatabaseEntries = new ArrayList<>();
-        LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(project.getProjectId(), midnight30DaysAgo,
-            50);
-        List<LogEntry> entriesLog = StreamSupport.stream(response.iterateAll().spliterator(), false)
-            .collect(Collectors.toList());
-        iamBindingDatabaseEntries.addAll(iamRetriever.listIAMBindingData(entriesLog,
-            project.getProjectId(), project.getName(), String.valueOf(project.getProjectNumber()),
-            null));
-      return iamBindingDatabaseEntries.stream();
-    }).collect(Collectors.toList()));
 
+      LoggingClient.ListLogEntriesPagedResponse response = logRetriever
+          .listAuditLogsResponse(project.getProjectId(), timeFrom, timeTo, 50);
+      List<LogEntry> iamBindingsLogs = StreamSupport
+          .stream(response.iterateAll().spliterator(), false).collect(Collectors.toList());
+
+      iamBindingDatabaseEntries.addAll(iamRetriever.listIAMBindingData(iamBindingsLogs,
+          project.getProjectId(), project.getName(), 
+          String.valueOf(project.getProjectNumber()),
+          null));
+      return iamBindingDatabaseEntries.stream();
+    }).collect(Collectors.toList());
+  }
+
+  /**
+   * For all new projects, gets the past 30 days of IAM Bindings information, 
+   * except the current day.
+   */
+  private List<IAMBindingDatabaseEntry> newIAMBindingsDataExcludingToday(
+      List<ProjectIdentification> newProjects) {
+    String midnight30DaysAgo = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+        .truncatedTo(ChronoUnit.DAYS)
+        .minus(30L, ChronoUnit.DAYS)
+        .toString();
+    String midnightToday = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+      .truncatedTo(ChronoUnit.DAYS).toString();
+    return getIAMBindingsDataEntries(newProjects, midnight30DaysAgo, midnightToday);
+  }
+
+  /**
+   * For new projects, gets the past 30 days of IAM Bindings; for old projects, 
+   * gets the IAM Bindings for the previous day.
+   */
+  private List<IAMBindingDatabaseEntry> newIAMBindingsData(
+      List<ProjectIdentification> newProjects, List<ProjectIdentification> knownProjects) {
+    String midnight30DaysAgo = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+        .truncatedTo(ChronoUnit.DAYS)
+        .minus(30L, ChronoUnit.DAYS)
+        .toString();
+    List<IAMBindingDatabaseEntry> entries = getIAMBindingsDataEntries(
+        newProjects, midnight30DaysAgo, "");
+    entries.addAll(knownProjects.parallelStream().flatMap(project -> 
+        getLastIamEntry(project).stream()).collect(Collectors.toList()));
     return entries;
   }
 

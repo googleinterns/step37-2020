@@ -23,6 +23,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {GraphDataCacheService} from './services/graph_data_cache.service';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     },
     ProjectQueryService,
     DataShareService,
+    GraphDataCacheService,
   ],
   bootstrap: [AppComponent],
 })

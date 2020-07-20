@@ -22,14 +22,13 @@ limitations under the License.
 </div>
 
 <div id="show-chart" *ngIf="shouldShowChart">
-  <div id="top-container" [style.width.px]="properties.width * 3 / 4">
-
-    <app-date-select [possibleRange]="properties.dateRange"
-      (selectedRange)="changeDateRange($event)"></app-date-select>
-  </div>
-
   <google-chart #chart id="chart" class="center" [type]="properties.type"
     [columns]="properties.columns" [data]="properties.graphData" [options]="properties.options"
     [width]="properties.width" [height]="properties.height">
   </google-chart>
+
+  <div id="bottom-container">
+    <app-date-select [possibleRange]="properties.dateRange"
+      (selectedRange)="changeDateRange($event)"></app-date-select>
+  </div>
 </div>

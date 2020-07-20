@@ -12,11 +12,8 @@
   font-size: 50px;
 }
 
-#top-container {
-  margin: 0 auto;
-}
-
-#top-container app-date-select {
-  float: right;
-  margin-top: 8px;
+#bottom-container {
+  display: flex;
+  justify-content: center;
+  margin-top: -4em;
 }

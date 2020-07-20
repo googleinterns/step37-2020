@@ -4,6 +4,7 @@
 
 #root {
   display: flex;
+  margin-top: -13px;
 }
 
 #content {

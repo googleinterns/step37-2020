@@ -126,8 +126,8 @@ export class ProjectSelectComponent implements OnInit {
     }
   }
 
-  /** Change the sort field/direction, adjusts styling and sorts projects. */
-  changeSort(field: SortBy) {
+  /** When the user clicks the sorting arrow, changes the sort field/direction. */
+  toggleSort(field: SortBy) {
     if (this.getAnimationStatus(field) === 'down') {
       this.projectQueryService.changeField(field, SortDirection.ASCENDING);
     } else {
@@ -135,6 +135,15 @@ export class ProjectSelectComponent implements OnInit {
     }
     // Animate the selected field
     this.swapAnimationProperty(field);
+  }
+
+  /** When the user clicks the field name, just change the sort field */
+  changeField(field: SortBy) {
+    if (this.getAnimationStatus(field) === 'down') {
+      this.projectQueryService.changeField(field, SortDirection.DESCENDING);
+    } else {
+      this.projectQueryService.changeField(field, SortDirection.ASCENDING);
+    }
   }
 
   /** Returns a sorted and filtered view of the projects. */

@@ -36,7 +36,7 @@ export class GraphComponent implements OnInit {
   /** Informs the user to select a project. Displayed when none are shown. */
   private static SELECT_PROJECT_MESSAGE =
     'Please select a project below to generate a graph.';
-  private static PROJECT_LOADING_MESSAGE = 'Waiting on server, please wait.';
+  private static LOADING_MESSAGE = 'Waiting on server, please wait.';
 
   /** The projects to display on the graph. */
   @Input()
@@ -55,22 +55,28 @@ export class GraphComponent implements OnInit {
   ) {
     this.shouldShowChart = false;
     this.projects = [];
-    this.noChartMessage = GraphComponent.SELECT_PROJECT_MESSAGE;
+    this.noChartMessage = GraphComponent.LOADING_MESSAGE;
   }
 
   /** Called when an input field changes. */
   async ngOnChanges(changes: SimpleChanges) {
-    // If this is the first project we're adding, don't show the chart until it's ready
-    if (!this.projects || this.projects.length === 0) {
+    if (changes.projects.isFirstChange()) {
+      // We're still retrieving the list of projects
+      this.shouldShowChart = false;
+      this.noChartMessage = GraphComponent.LOADING_MESSAGE;
+    } else if (!this.projects || this.projects.length === 0) {
+      // The user hasn't selected a project
       this.shouldShowChart = false;
       this.noChartMessage = GraphComponent.SELECT_PROJECT_MESSAGE;
     } else if (
       this.projects.length === 1 &&
       changes.projects.previousValue.length === 0
     ) {
+      // We're adding the first project on the graph
       this.shouldShowChart = false;
-      this.noChartMessage = GraphComponent.PROJECT_LOADING_MESSAGE;
+      this.noChartMessage = GraphComponent.LOADING_MESSAGE;
     } else {
+      // The data will be added to the live graph
       this.shouldShowChart = true;
     }
 

@@ -129,21 +129,13 @@ public class DataUpdater {
     String timeFrom, String timeTo) {
     return projects.parallelStream()
       .map(project -> {
-        List<Recommendation> recommendationLogs = new ArrayList<Recommendation>();
-        ListLogEntriesPagedResponse response;
-        String pageToken = null;
-
-        do {
-          response = logRetriever.listRecommendationLogs(project.getProjectId(), timeFrom, timeTo, pageToken);
-          List<LogEntry> entries = StreamSupport.stream(response.iterateAll().spliterator(), false)
-            .collect(Collectors.toList());
-          recommendationLogs.addAll(recommendationRetriever.listRecommendations(
-            entries, project.getProjectId(), 
-            Recommendation.RecommenderType.IAM_BINDING, iamRetriever));
-          pageToken = response.getNextPageToken();
-        } while (!pageToken.equals(""));
-
-        return recommendationLogs;
+        ListLogEntriesPagedResponse response = logRetriever.listRecommendationLogs(
+          project.getProjectId(), timeFrom, timeTo);
+        List<LogEntry> entries = StreamSupport.stream(response.iterateAll().spliterator(), false)
+          .collect(Collectors.toList());
+        return recommendationRetriever.listRecommendations(
+          entries, project.getProjectId(), 
+          Recommendation.RecommenderType.IAM_BINDING, iamRetriever);
       }).flatMap(List::stream).collect(Collectors.toList());
   }
 

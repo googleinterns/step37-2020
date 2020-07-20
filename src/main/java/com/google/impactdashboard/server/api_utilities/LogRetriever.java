@@ -68,7 +68,7 @@ public class LogRetriever {
    * @return A list of all the relevant recommendation log entries that are stored by the logging API.
    */
   public ListLogEntriesPagedResponse listRecommendationLogs(String projectId, 
-    String timeFrom, String timeTo, String pageToken) {
+    String timeFrom, String timeTo) {
     String project_id = "projects/" + projectId;
     String filter = "resource.type = recommender AND " + 
       "resource.labels.recommender_id= google.iam.policy.Recommender AND " +
@@ -82,14 +82,10 @@ public class LogRetriever {
       filter += " AND timestamp < \"" + timeTo + "\"";
     }
 
-    ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()
+    ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder()
       .setFilter(filter).setOrderBy("timestamp desc")
-      .addResourceNames(project_id);
-    if (pageToken != null) {
-      builder.setPageToken(pageToken);
-    }
+      .addResourceNames(project_id).build();
     
-    ListLogEntriesRequest request = builder.build();
     return logger.listLogEntries(request);
   }
 }

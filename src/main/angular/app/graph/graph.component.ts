@@ -53,7 +53,7 @@ export class GraphComponent implements OnInit {
   /** Called when an input field changes. */
   async ngOnChanges(changes: SimpleChanges) {
     // If this is the first project we're adding, don't show the chart until it's ready
-    if (this.projects.length === 1) {
+    if (!this.projects || this.projects.length === 0) {
       this.shouldShowChart = false;
     } else {
       this.shouldShowChart = true;
@@ -64,9 +64,7 @@ export class GraphComponent implements OnInit {
       this.properties,
       this.dataService
     );
-    if (!this.shouldShowChart) {
-      this.shouldShowChart = true;
-    }
+    this.shouldShowChart = this.projects.length > 0;
   }
 
   ngOnInit() {

@@ -11,10 +11,12 @@ import com.google.impactdashboard.database_manager.data_update.DataUpdateManager
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManagerFactory;
 import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
+import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.logging.v2.LogEntry;
-import sun.util.resources.cldr.rm.CalendarData_rm_CH;
+import org.checkerframework.checker.units.qual.A;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,8 +34,8 @@ public class DataUpdater {
 
   @VisibleForTesting
   protected DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
-                      DataUpdateManager updateManager, DataReadManager readManager,
-                      IamBindingRetriever iamRetriever) {
+                        DataUpdateManager updateManager, DataReadManager readManager,
+                        IamBindingRetriever iamRetriever) {
     this.logRetriever = logRetriever;
     this.recommendationRetriever = recommendationRetriever;
     this.updateManager = updateManager;
@@ -79,13 +81,36 @@ public class DataUpdater {
    * @return A List of IAMBindingDatabaseEntry
    */
   private List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
-    AtomicReference<String> timeStamp = new AtomicReference<>("");
     long epochSeconds = readManager.getMostRecentTimestamp();
-
-    if(epochSeconds == -1) {
-
+    List<IAMBindingDatabaseEntry> entries = new ArrayList<>();
+    if(epochSeconds != -1) {
+      entries = readManager.listProjects().parallelStream().flatMap(project -> getLastIamEntry(project)
+          .stream()).collect(Collectors.toList());
     }
-    throw new UnsupportedOperationException("Not implemented");
+    // Getting the last 30 days of data from new projects
+    entries.addAll(ProjectListRetriever.listResourceManagerProjects().parallelStream().flatMap(project -> {
+      Calendar calendar = Calendar.getInstance();
+      calendar.add(Calendar.DATE, -30);
+      calendar.set(Calendar.HOUR_OF_DAY, 0);
+      calendar.set(Calendar.MINUTE, 0);
+      calendar.set(Calendar.SECOND, 0);
+      calendar.set(Calendar.MILLISECOND, 0);
+      List<IAMBindingDatabaseEntry> iamBindingDatabaseEntries = new ArrayList<>();
+      LoggingClient.ListLogEntriesPagedResponse response;
+      do {
+        response = logRetriever.
+            listAuditLogsResponse(project.getProjectId(), calendar.toInstant().toString(), 50,
+                null);
+        List<LogEntry> entry = StreamSupport.stream(response.iterateAll().spliterator(), false)
+            .collect(Collectors.toList());
+        iamBindingDatabaseEntries.addAll(iamRetriever.listIAMBindingData(entry,
+            project.getProjectId(), project.getName(), String.valueOf(project.getProjectNumber()),
+            null));
+      } while(response.getNextPageToken() != null);
+      return iamBindingDatabaseEntries.stream();
+    }).collect(Collectors.toList()));
+
+    return entries;
   }
 
   /**
@@ -107,6 +132,6 @@ public class DataUpdater {
     calendar.set(Calendar.SECOND, 59);
     calendar.set(Calendar.MILLISECOND, 0);
     return iamRetriever.listIAMBindingData(entry, project.getProjectId(), project.getName(),
-        String.valueOf(project.getProjectNumber()));
+        String.valueOf(project.getProjectNumber()), calendar.toInstant().getEpochSecond());
   }
 }

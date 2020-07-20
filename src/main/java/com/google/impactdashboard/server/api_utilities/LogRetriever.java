@@ -54,7 +54,11 @@ public class LogRetriever {
       filter += " AND timestamp > " + timeTo;
     }
 
-    ListLogEntriesRequest request = builder.setFilter(filter).build();
+    if(pageToken != null) {
+      builder.setPageToken(pageToken);
+    }
+
+    ListLogEntriesRequest request = builder.setFilter(filter).setPageSize(pageSize).build();
     return logger.listLogEntries(request);
 
 //    return StreamSupport.stream(response.iterateAll().spliterator(), false)

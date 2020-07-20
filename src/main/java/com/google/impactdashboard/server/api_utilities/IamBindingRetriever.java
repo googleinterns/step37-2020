@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -56,7 +57,7 @@ public class IamBindingRetriever {
    */
   public List<IAMBindingDatabaseEntry> listIAMBindingData(Collection<LogEntry> logEntries,
                                       String projectId, String projectName,
-                                      String projectNumber){
+                                      String projectNumber, Long timeStamp){
     Map<Timestamp, AuditLog> timeToAuditLogMap = logEntries.stream().map(log -> {
           AuditLog auditLog;
           try {
@@ -67,12 +68,16 @@ public class IamBindingRetriever {
           return new SimpleImmutableEntry<>(log.getTimestamp(), auditLog);
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
+    AtomicReference<Long> secondsFromEpoch = new AtomicReference<>(timeStamp);
 
     return timeToAuditLogMap.entrySet().stream().map(entry -> {
       Map<String, Integer> membersForRoles = getMembersForRoles(entry.getValue().getResponse()
           .getFieldsMap().get("bindings").getListValue().getValuesList());
       try {
-        return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, entry.getKey().getSeconds(),
+        if(secondsFromEpoch.get() == null){
+          secondsFromEpoch.set(entry.getKey().getSeconds());
+        }
+        return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, secondsFromEpoch.get(),
             getIamBindings(membersForRoles));
       } catch (IOException e) {
         throw new RuntimeException("Error in getting IAM Roles");

@@ -1,5 +1,6 @@
 package com.google.impactdashboard.server;
 
+import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.project.ProjectIdentification;
@@ -16,9 +17,11 @@ import com.google.logging.v2.LogEntry;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /** Class for updating the information in the database from the API. */
 public class DataUpdater {
@@ -89,12 +92,8 @@ public class DataUpdater {
     String todayAtMidnight = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
       .truncatedTo(ChronoUnit.DAYS).toString();
 
-    List<Recommendation> newProjectRecommendations = newProjects.parallelStream()
-      .map(project -> {
-        List<LogEntry> recommendationLogs = (List<LogEntry>) logRetriever
-          .listRecommendationLogs(project.getProjectId(), "", todayAtMidnight);
-        return recommendationRetriever.listRecommendations(recommendationLogs, project.getProjectId(), Recommendation.RecommenderType.IAM_BINDING, iamRetriever);
-      }).flatMap(List::stream).collect(Collectors.toList());
+    List<Recommendation> newProjectRecommendations = getRecommendationsForProjects(
+      newProjects, "", todayAtMidnight);
 
     return newProjectRecommendations;
   }
@@ -113,26 +112,39 @@ public class DataUpdater {
       .minus(1L, ChronoUnit.DAYS)
       .toString();
 
-    List<Recommendation> newProjectRecommendations = newProjects.parallelStream()
-      .map(project -> {
-        List<LogEntry> recommendationLogs = (List<LogEntry>) logRetriever
-          .listRecommendationLogs(project.getProjectId(), "", "");
-        return recommendationRetriever.listRecommendations(recommendationLogs, project.getProjectId(), Recommendation.RecommenderType.IAM_BINDING, iamRetriever);
-      }).flatMap(List::stream).collect(Collectors.toList());
-
-    List<Recommendation> knownProjectRecommendations = knownProjects.parallelStream()
-    .map(project -> {
-      List<LogEntry> recommendationLogs = (List<LogEntry>) logRetriever
-        .listRecommendationLogs(project.getProjectId(), yesterdayAtMidnight, "");
-      return recommendationRetriever.listRecommendations(recommendationLogs, project.getProjectId(), Recommendation.RecommenderType.IAM_BINDING, iamRetriever);
-    }).flatMap(List::stream).collect(Collectors.toList());
+    List<Recommendation> newProjectRecommendations = getRecommendationsForProjects(
+      newProjects, "", "");
+    List<Recommendation> knownProjectRecommendations = getRecommendationsForProjects(
+      knownProjects, yesterdayAtMidnight, "");
 
     newProjectRecommendations.addAll(knownProjectRecommendations);
     return newProjectRecommendations;
   }
 
-  private List<Recommendation> logEntriesToRecommendations(List<LogEntry> recommendationLogs) {
-    throw new RuntimeException("Unimplemented");
+  /**
+   * Returns the list of recommendations for the projects in {@code projects} 
+   * within the time window specified.
+   */
+  private List<Recommendation> getRecommendationsForProjects(List<ProjectIdentification> projects, 
+    String timeFrom, String timeTo) {
+    return projects.parallelStream()
+      .map(project -> {
+        List<Recommendation> recommendationLogs = new ArrayList<Recommendation>();
+        ListLogEntriesPagedResponse response;
+        String pageToken = null;
+
+        do {
+          response = logRetriever.listRecommendationLogs(project.getProjectId(), timeFrom, timeTo, pageToken);
+          List<LogEntry> entries = StreamSupport.stream(response.iterateAll().spliterator(), false)
+            .collect(Collectors.toList());
+          recommendationLogs.addAll(recommendationRetriever.listRecommendations(
+            entries, project.getProjectId(), 
+            Recommendation.RecommenderType.IAM_BINDING, iamRetriever));
+          pageToken = response.getNextPageToken();
+        } while (!pageToken.equals(""));
+
+        return recommendationLogs;
+      }).flatMap(List::stream).collect(Collectors.toList());
   }
 
   /**
@@ -161,7 +173,7 @@ public class DataUpdater {
   }
 
   public static void main(String[] args) throws Exception {
-    DataUpdater updater = DataUpdater.create(false);
+    DataUpdater updater = DataUpdater.create(true);
     List<Recommendation> newRecs = updater.listUpdatedRecommendations();
   }
 }

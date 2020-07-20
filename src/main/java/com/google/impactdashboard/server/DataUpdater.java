@@ -171,9 +171,4 @@ public class DataUpdater {
           String.valueOf(project.getProjectNumber()));
     }).flatMap(List::stream).collect(Collectors.toList());
   }
-
-  public static void main(String[] args) throws Exception {
-    DataUpdater updater = DataUpdater.create(true);
-    List<Recommendation> newRecs = updater.listUpdatedRecommendations();
-  }
 }

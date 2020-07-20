@@ -6,10 +6,9 @@ import com.google.api.services.iam.v1.Iam;
 import com.google.api.services.iam.v1.IamScopes;
 import com.google.api.services.iam.v1.model.Role;
 import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.audit.AuditLog;
+import com.google.cloud.recommender.v1.Impact;
 import com.google.impactdashboard.Credentials;
-import com.google.impactdashboard.configuration.Constants;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.recommendation.RecommendationAction;
 import com.google.logging.v2.LogEntry;
@@ -18,8 +17,6 @@ import com.google.protobuf.Timestamp;
 import com.google.protobuf.Value;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -43,7 +40,8 @@ public class IamBindingRetriever {
   public static IamBindingRetriever create() throws Exception {
     Iam iamService = new Iam.Builder(GoogleNetHttpTransport.newTrustedTransport(),
         JacksonFactory.getDefaultInstance(),
-        new HttpCredentialsAdapter(Credentials.getCredentials()))
+        new HttpCredentialsAdapter(Credentials.getCredentials().createScoped(Collections
+            .singleton(IamScopes.CLOUD_PLATFORM))))
         .setApplicationName("Recommendation Impact Dashboard")
         .build();
     return new IamBindingRetriever(iamService);
@@ -108,7 +106,13 @@ public class IamBindingRetriever {
   private int getIamBindings(Map<String, Integer> membersForRoles) throws IOException {
     List<Role> roles = iamService.roles().list().setView("full").execute().getRoles();
     return roles.stream().filter(role -> membersForRoles.containsKey(role.getName()))
-        .mapToInt(role -> role.getIncludedPermissions().size() * membersForRoles.get(role.getName())).sum();
+        .mapToInt(role -> {
+          if(role.getIncludedPermissions() != null) {
+            return role.getIncludedPermissions().size() * membersForRoles.get(role.getName());
+          } else {
+            return 0;
+          }
+        }).sum();
   }
 
   /**
@@ -122,7 +126,7 @@ public class IamBindingRetriever {
       try {
         Role previousRole = iamService.roles().get(action.getPreviousRole()).execute();
         String newRoleString = action.getNewRole();
-        if(newRoleString.isEmpty()) {
+        if(!newRoleString.isEmpty()) {
           Role newRole = iamService.roles().get(newRoleString).execute();
           return Math.abs(previousRole.getIncludedPermissions().size() -
               newRole.getIncludedPermissions().size());
@@ -132,5 +136,10 @@ public class IamBindingRetriever {
         throw new RuntimeException("Role could not be retrieved!");
       }
     }).sum();
+  }
+
+  public static void main(String[] args) throws Exception {
+    IamBindingRetriever retriever = IamBindingRetriever.create();
+    retriever.getIamBindings(new HashMap<>());
   }
 }

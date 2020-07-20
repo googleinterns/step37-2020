@@ -10,6 +10,7 @@ import com.google.logging.v2.LogEntry;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -38,26 +39,22 @@ public class LogRetriever {
   /**
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant audit logs.
    * @param projectId ID of the project that the audit logs will be retrieved for.
-   * @param timeTo Latest time to retrieve logs for.
+   * @param timeFrom Latest time to retrieve logs for.
    * @return A response that contains all the relevant audit log entries that are stored by the logging API
    */
-  public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeTo, int pageSize,
+  public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom, int pageSize,
                                             String pageToken) {
     String project_id = "projects/" + projectId;
-    String filter = "resource.type = project AND severity = NOTICE AND " +
-        "protoPayload.methodName:SetIamPolicy";
+    String filter = "resource.type = project AND severity = NOTICE AND timestamp > " + "\"" + timeFrom + "\"";
 
     ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()
         .setOrderBy("timestamp desc").addResourceNames(project_id);
-
-    if(!timeTo.equals("")) {
-      filter += " AND timestamp > " + timeTo;
-    }
 
     if(pageToken != null) {
       builder.setPageToken(pageToken);
     }
 
+    filter += " AND protoPayload.methodName:SetIamPolicy";
     ListLogEntriesRequest request = builder.setFilter(filter).setPageSize(pageSize).build();
     return logger.listLogEntries(request);
 
@@ -81,4 +78,5 @@ public class LogRetriever {
     return StreamSupport.stream(response.iterateAll().spliterator(), false)
         .collect(Collectors.toList());
   }
+
 }

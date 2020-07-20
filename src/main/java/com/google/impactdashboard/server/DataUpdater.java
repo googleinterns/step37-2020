@@ -16,6 +16,8 @@ import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.logging.v2.LogEntry;
 import org.checkerframework.checker.units.qual.A;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -58,9 +60,9 @@ public class DataUpdater {
    * Updates the database with any new information about recommendations and IAMBinding logging.
    */
   public void updateDatabase() {
-    updateManager.updateRecommendations(listUpdatedRecommendations());
+//    updateManager.updateRecommendations(listUpdatedRecommendations());
     updateManager.updateIAMBindings(listUpdatedIAMBindingData());
-    updateManager.deleteYearOldData();
+//    updateManager.deleteYearOldData();
   }
 
   /**
@@ -89,24 +91,25 @@ public class DataUpdater {
     }
     // Getting the last 30 days of data from new projects
     entries.addAll(ProjectListRetriever.listResourceManagerProjects().parallelStream().flatMap(project -> {
-      Calendar calendar = Calendar.getInstance();
-      calendar.add(Calendar.DATE, -30);
-      calendar.set(Calendar.HOUR_OF_DAY, 0);
-      calendar.set(Calendar.MINUTE, 0);
-      calendar.set(Calendar.SECOND, 0);
-      calendar.set(Calendar.MILLISECOND, 0);
+      String midnight30DaysAgo = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+          .truncatedTo(ChronoUnit.DAYS)
+          .minus(30L, ChronoUnit.DAYS)
+          .toString();
+
       List<IAMBindingDatabaseEntry> iamBindingDatabaseEntries = new ArrayList<>();
       LoggingClient.ListLogEntriesPagedResponse response;
+      String pageToken = null;
       do {
         response = logRetriever.
-            listAuditLogsResponse(project.getProjectId(), calendar.toInstant().toString(), 50,
-                null);
+            listAuditLogsResponse(project.getProjectId(), midnight30DaysAgo, 50,
+                pageToken);
         List<LogEntry> entry = StreamSupport.stream(response.iterateAll().spliterator(), false)
             .collect(Collectors.toList());
         iamBindingDatabaseEntries.addAll(iamRetriever.listIAMBindingData(entry,
             project.getProjectId(), project.getName(), String.valueOf(project.getProjectNumber()),
             null));
-      } while(response.getNextPageToken() != null);
+        pageToken = response.getNextPageToken();
+      } while(!pageToken.equals(""));
       return iamBindingDatabaseEntries.stream();
     }).collect(Collectors.toList()));
 
@@ -133,5 +136,10 @@ public class DataUpdater {
     calendar.set(Calendar.MILLISECOND, 0);
     return iamRetriever.listIAMBindingData(entry, project.getProjectId(), project.getName(),
         String.valueOf(project.getProjectNumber()), calendar.toInstant().getEpochSecond());
+  }
+
+  public static void main(String[] args) throws Exception {
+    DataUpdater dataUpdater = DataUpdater.create();
+    List<IAMBindingDatabaseEntry> entries = dataUpdater.listUpdatedIAMBindingData();
   }
 }

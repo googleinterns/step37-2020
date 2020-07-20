@@ -220,7 +220,7 @@ public class DataUpdater {
         .minus(1L, ChronoUnit.DAYS).getEpochSecond();
 
     LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
-        project.getProjectId(), "", 1);
+        project.getProjectId(), "", "", 1);
     List<LogEntry> entry = response.getPage().getResponse().getEntriesList();
 
     return iamRetriever.listIAMBindingData(entry, project.getProjectId(), project.getName(),

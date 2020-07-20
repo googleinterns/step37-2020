@@ -22,7 +22,7 @@ export class FakeDataService implements DataService {
     new RecommendationAction('test@', 'observer', ''),
   ];
   /** The time to artificially wait on a request. */
-  private static requestTime = 1500;
+  private static requestTime = 0;
 
   constructor() {
     this.projects = {};

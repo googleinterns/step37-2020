@@ -6,12 +6,7 @@ import com.google.cloud.logging.v2.LoggingSettings;
 import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
 import com.google.impactdashboard.Credentials;
 import com.google.logging.v2.ListLogEntriesRequest;
-import com.google.logging.v2.LogEntry;
-
 import java.io.IOException;
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 /** Class that handles all the retrieval of logs stored on the cloud logging API. */

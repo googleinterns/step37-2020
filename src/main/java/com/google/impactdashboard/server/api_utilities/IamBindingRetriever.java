@@ -8,7 +8,6 @@ import com.google.api.services.iam.v1.model.ListRolesResponse;
 import com.google.api.services.iam.v1.model.Role;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.cloud.audit.AuditLog;
-import com.google.cloud.recommender.v1.Impact;
 import com.google.impactdashboard.Credentials;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.recommendation.RecommendationAction;
@@ -19,6 +18,7 @@ import com.google.protobuf.Value;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -52,7 +52,7 @@ public class IamBindingRetriever {
    * Static factory for creating a new instance of IamBindingRetriever.
    * @return new Instance of IamBindingRetriever
    */
-  public static IamBindingRetriever create() throws Exception {
+  public static IamBindingRetriever create() throws IOException, GeneralSecurityException {
     Iam iamService = new Iam.Builder(GoogleNetHttpTransport.newTrustedTransport(),
         JacksonFactory.getDefaultInstance(),
         new HttpCredentialsAdapter(Credentials.getCredentials().createScoped(Collections

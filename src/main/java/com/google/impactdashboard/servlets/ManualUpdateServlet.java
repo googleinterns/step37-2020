@@ -13,15 +13,15 @@ import java.io.IOException;
  * Servlet for handling the scheduled daily update of the database
  * with new IAM data and Recommendation data.
  */
-@WebServlet("/update-data")
-public class UpdateDataServlet extends HttpServlet {
+@WebServlet("/manual-update")
+public class ManualUpdateServlet extends HttpServlet {
 
   private DataUpdater dataUpdater;
 
   @Override
   public void init() {
     try {
-      dataUpdater = DataUpdater.create(false);
+      dataUpdater = DataUpdater.create(true);
     } catch (Exception e) {
       throw new RuntimeException("Could not create data updater: " + e.getMessage());
     }

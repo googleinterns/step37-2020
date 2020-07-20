@@ -16,15 +16,19 @@ import com.google.impactdashboard.Credentials;
 public class DatabaseAccessor {
 
   private BigQuery bigquery;
+  private static final DatabaseAccessor INSTANCE = new DatabaseAccessor();
+
+  public static DatabaseAccessor getInstance() {
+    return INSTANCE;
+  }
 
   /** 
    * Creates a {@code DatabaseAccesor} instance that contains an instance of 
-   * {@code BigQuery} as well as the correct database to be queried based on the 
-   * system configuration flags. 
+   * {@code BigQuery}.
    * @throws RuntimeException if the credentials to access the database cannot 
       be established.
    */
-  public DatabaseAccessor() {
+  private DatabaseAccessor() {
       bigquery = BigQueryOptions.newBuilder()
       .setCredentials(Credentials.getCredentials()).build().getService();
   }

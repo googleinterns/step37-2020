@@ -6,14 +6,23 @@ import {Project} from '../../../model/project';
 import {DataService} from '../data.service';
 import {ErrorMessage} from '../../../model/error_message';
 import {ProjectMetaData} from '../../../model/project_metadata';
+import {GraphDataCacheService} from '../graph_data_cache.service';
 
-/** Service which actually retrieves data from the server. */
+/** Service which actually retrieves data from the server. Will cache graph data. */
 @Injectable()
 export class DataServiceImpl implements DataService {
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private cacheService: GraphDataCacheService
+  ) {}
 
   /** Gets the graph data for the given project ID. */
   async getProjectGraphData(id: string): Promise<ProjectGraphData> {
+    // Return cached data, if available
+    if (this.cacheService.hasEntry(id)) {
+      return new Promise(resolve => resolve(this.cacheService.getEntry(id)));
+    }
+
     const response: any = await this.http
       .get<any>(`/get-project-data?id=${id}`)
       .toPromise();
@@ -21,13 +30,13 @@ export class DataServiceImpl implements DataService {
     // eslint-disable-next-line no-prototype-builtins
     if (response.hasOwnProperty('projectId')) {
       return new Promise(resolve => {
-        resolve(
-          new ProjectGraphData(
-            response.projectId,
-            response.dateToNumberIAMBindings,
-            response.dateToRecommendationTaken
-          )
+        const graphData = new ProjectGraphData(
+          response.projectId,
+          response.dateToNumberIAMBindings,
+          response.dateToRecommendationTaken
         );
+        this.cacheService.addEntry(id, graphData);
+        resolve(graphData);
       });
     }
 

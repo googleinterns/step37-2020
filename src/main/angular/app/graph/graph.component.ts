@@ -53,13 +53,20 @@ export class GraphComponent implements OnInit {
   /** Called when an input field changes. */
   async ngOnChanges(changes: SimpleChanges) {
     // If this is the first project we're adding, don't show the chart until it's ready
-    this.shouldShowChart = this.projects.length > 1;
+    if (this.projects.length === 1) {
+      this.shouldShowChart = false;
+    } else {
+      this.shouldShowChart = true;
+    }
+
     await this.graphProcessor.processChanges(
       changes,
       this.properties,
       this.dataService
     );
-    this.shouldShowChart = true;
+    if (!this.shouldShowChart) {
+      this.shouldShowChart = true;
+    }
   }
 
   ngOnInit() {

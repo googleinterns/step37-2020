@@ -56,7 +56,7 @@ export class DateUtilitiesService {
     let lastDate: Date | undefined;
 
     if (rows.length === 0) {
-      return new DateRange(new Date(), new Date(0));
+      return new DateRange(new Date(), new Date());
     }
 
     rows.forEach(row => {

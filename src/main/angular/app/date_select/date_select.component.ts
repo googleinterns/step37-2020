@@ -42,27 +42,23 @@ export class DateSelectComponent implements OnInit {
 
   /** Called when an input field changes. */
   ngOnChanges(changes: SimpleChanges) {
-    if (!this.lastSent) {
-      this.lastSent = this.possibleRange;
-    }
-    if (!changes.possibleRange.isFirstChange()) {
-      this.currentMin = this.possibleRange.getStart();
-      // A timeout is necessary, as there is a delay before the range on the mat-date-range-input tag is updated,
-      // so if the new DateRange is broader than the old one,
-      // the date select will reject the change and be out-of-sync with the graph.
-      setTimeout(() => {
-        this.currentMax = this.possibleRange.getEnd();
-      }, 50);
-    }
+    this.currentMin = this.possibleRange.getStart();
+    // A timeout is necessary, as there is a delay before the range on the mat-date-range-input tag is updated,
+    // so if the new DateRange is broader than the old one,
+    // the date select will reject the change and be out-of-sync with the graph.
+    setTimeout(() => {
+      this.currentMax = this.possibleRange.getEnd();
+    }, 50);
   }
 
   /** Ensures the dates are valid and sends them to output if they are. */
   private validateAndSend() {
     if (
-      this.possibleRange.contains(this.currentMin) &&
-      this.possibleRange.contains(this.currentMax) &&
-      (this.currentMin.getTime() !== this.lastSent.getStart().getTime() ||
-        this.currentMax.getTime() !== this.lastSent.getEnd().getTime())
+      !this.lastSent ||
+      (this.possibleRange.contains(this.currentMin) &&
+        this.possibleRange.contains(this.currentMax) &&
+        (this.currentMin.getTime() !== this.lastSent.getStart().getTime() ||
+          this.currentMax.getTime() !== this.lastSent.getEnd().getTime()))
     ) {
       this.lastSent = new DateRange(this.currentMin, this.currentMax);
       this.selectedRange.emit(this.lastSent);

@@ -42,7 +42,7 @@ public class IamBindingRetriever {
   public static IamBindingRetriever create() throws Exception {
     Iam iamService = new Iam.Builder(GoogleNetHttpTransport.newTrustedTransport(),
         JacksonFactory.getDefaultInstance(),
-        new HttpCredentialsAdapter(Credentials.getCredentials()))
+        new HttpCredentialsAdapter(Credentials.getCredentials().createScoped(Collections.singleton(IamScopes.CLOUD_PLATFORM))))
         .setApplicationName("Recommendation Impact Dashboard")
         .build();
     return new IamBindingRetriever(iamService);
@@ -117,7 +117,7 @@ public class IamBindingRetriever {
       try {
         Role previousRole = iamService.roles().get(action.getPreviousRole()).execute();
         String newRoleString = action.getNewRole();
-        if(newRoleString.isEmpty()) {
+        if (!newRoleString.isEmpty()) {
           Role newRole = iamService.roles().get(newRoleString).execute();
           return Math.abs(previousRole.getIncludedPermissions().size() -
               newRole.getIncludedPermissions().size());

@@ -85,8 +85,9 @@ public class RecommendationRetriever {
             } else if(operation.getAction().equals("remove")) {
               previousRole.set(operation.getPathFiltersMap().get("/iamPolicy/bindings/*/role")
                   .getStringValue());
+              affectedAccount.set(operation.getPathFiltersMap()
+                  .get("/iamPolicy/bindings/*/members/*").getStringValue());
             }
-            affectedAccount.set(operation.getValue().getStringValue());
           });
           return RecommendationAction.create(affectedAccount.toString(), previousRole.toString(),
               newRole.toString(), type);

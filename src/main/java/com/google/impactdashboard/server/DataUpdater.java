@@ -86,7 +86,7 @@ public class DataUpdater {
    */
   private List<Recommendation> listAllRecommendationsExcludingCurrentDay(
     List<ProjectIdentification> newProjects) {
-    String todayAtMidnight = Instant.ofEpochSecond(System.currentTimeMillis())
+    String todayAtMidnight = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
       .truncatedTo(ChronoUnit.DAYS).toString();
 
     List<Recommendation> newProjectRecommendations = newProjects.parallelStream()
@@ -108,7 +108,7 @@ public class DataUpdater {
    */
   private List<Recommendation> listAllNewRecommendations(
     List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
-    String yesterdayAtMidnight = Instant.ofEpochSecond(System.currentTimeMillis())
+    String yesterdayAtMidnight = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
       .truncatedTo(ChronoUnit.DAYS)
       .minus(1L, ChronoUnit.DAYS)
       .toString();
@@ -158,5 +158,10 @@ public class DataUpdater {
       return iamRetriever.listIAMBindingData(auditLogs, project.getProjectId(), project.getName(),
           String.valueOf(project.getProjectNumber()));
     }).flatMap(List::stream).collect(Collectors.toList());
+  }
+
+  public static void main(String[] args) throws Exception {
+    DataUpdater updater = DataUpdater.create(false);
+    List<Recommendation> newRecs = updater.listUpdatedRecommendations();
   }
 }

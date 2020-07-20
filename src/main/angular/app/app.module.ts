@@ -22,6 +22,7 @@ import {DateSelectComponent} from './date_select/date_select.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {GraphDataCacheService} from './services/graph_data_cache.service';
 
 @NgModule({
@@ -43,6 +44,7 @@ import {GraphDataCacheService} from './services/graph_data_cache.service';
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
+    MatProgressBarModule,
   ],
   providers: [
     dataServiceProvider,

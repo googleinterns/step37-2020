@@ -11,25 +11,29 @@ import {GraphDataCacheService} from '../graph_data_cache.service';
 /** Service which actually retrieves data from the server. Will cache graph data. */
 @Injectable()
 export class DataServiceImpl implements DataService {
-  constructor(
-    private http: HttpClient,
-    private cacheService: GraphDataCacheService
-  ) {}
+  /** The URLs of all active requests. */
+  private activeRequests: Set<string>;
+
+  constructor(private http: HttpClient,
+             private cacheService: GraphDataCacheService) {
+    this.activeRequests = new Set();
+  }
 
   /** Gets the graph data for the given project ID. */
   async getProjectGraphData(id: string): Promise<ProjectGraphData> {
+    const url = `/get-project-data?id=${id}`;
+    this.activeRequests.add(url);
+    const response: any = await this.http.get<any>(url).toPromise();
+
     // Return cached data, if available
     if (this.cacheService.hasEntry(id)) {
       return new Promise(resolve => resolve(this.cacheService.getEntry(id)));
     }
 
-    const response: any = await this.http
-      .get<any>(`/get-project-data?id=${id}`)
-      .toPromise();
-
     // eslint-disable-next-line no-prototype-builtins
     if (response.hasOwnProperty('projectId')) {
       return new Promise(resolve => {
+        this.activeRequests.delete(url);
         const graphData = new ProjectGraphData(
           response.projectId,
           response.dateToNumberIAMBindings,
@@ -45,9 +49,9 @@ export class DataServiceImpl implements DataService {
 
   /** Gets the project information. */
   async listProjects(): Promise<Project[]> {
-    const response: any = await this.http
-      .get<any>('/list-project-summaries')
-      .toPromise();
+    const url = '/list-project-summaries';
+    this.activeRequests.add(url);
+    const response: any = await this.http.get<any>(url).toPromise();
 
     // eslint-disable-next-line no-prototype-builtins
     if (response.hasOwnProperty('message')) {
@@ -66,7 +70,13 @@ export class DataServiceImpl implements DataService {
             new ProjectMetaData(project.metaData.averageIAMBindingsInPastYear)
           )
       );
+      this.activeRequests.delete(url);
       resolve(projects);
     });
+  }
+
+  /** Whether there is at least one pending web request. */
+  hasPendingRequest(): boolean {
+    return this.activeRequests.size > 0;
   }
 }

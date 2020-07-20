@@ -88,7 +88,7 @@ public class IamBindingRetriever {
       Map<String, Integer> membersForRoles = getMembersForRoles(entry.getValue().getResponse()
           .getFieldsMap().get("bindings").getListValue().getValuesList());
       if(secondsFromEpoch.get() == null){
-        secondsFromEpoch.set(entry.getKey().getSeconds());
+        secondsFromEpoch.set(entry.getKey().getSeconds() * 1000);
       }
       return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, secondsFromEpoch.get(),
           getIamBindings(membersForRoles));

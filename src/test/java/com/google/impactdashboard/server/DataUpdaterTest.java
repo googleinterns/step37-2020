@@ -1,7 +1,9 @@
 package com.google.impactdashboard.server;
 
 import com.google.apphosting.api.logservice.LogServicePb.LogReadRequest;
+import com.google.cloud.logging.v2.LoggingClient;
 import com.google.impactdashboard.configuration.Configuration;
+import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.project.Project;
 import com.google.impactdashboard.data.project.ProjectGraphData;
 import com.google.impactdashboard.data.project.ProjectIdentification;
@@ -25,8 +27,20 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mockito;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 @RunWith(JUnit4.class)
 public class DataUpdaterTest extends Mockito {
+
+  public static final List<IAMBindingDatabaseEntry> IAM_BINDING_SINGLE_ENTRY_WITHIN_30_DAYS =
+      Collections.singletonList(IAMBindingDatabaseEntry.create("project-1",
+          "project-1", "10",1594958400000L, 100000));
+  public static final List<IAMBindingDatabaseEntry> IAM_BINDING_SINGLE_ENTRY_OUTSIDE_30_DAYS =
+      Collections.singletonList(IAMBindingDatabaseEntry.create("project-1",
+          "project-1", "10",1591675200000L, 1000));
 
   private LogRetriever mockLogRetriever;
   private RecommendationRetriever mockRecommendationRetriever;
@@ -60,8 +74,16 @@ public class DataUpdaterTest extends Mockito {
   }
 
   @Test
-  public void manualUpdateAllProjectsNeedUpdate() {
-
+  public void manualIAMUpdateAllProjectsNeedUpdate() {
+    LoggingClient.ListLogEntriesPagedResponse mockResponse =
+        mock(LoggingClient.ListLogEntriesPagedResponse.class);
+    when(StreamSupport.stream(mockResponse.iterateAll().spliterator(), false)
+        .collect(Collectors.toList())).thenReturn(Collections.emptyList());
+    when(mockIamBindingRetriever.listIAMBindingData(eq(Collections.emptyList()), any(), any(), any(), isNull()))
+        .thenReturn(IAM_BINDING_SINGLE_ENTRY_WITHIN_30_DAYS);
+    when(mockIamBindingRetriever.listIAMBindingData(any(), any(), any(), any(), eq(1595304000000L)))
+        .thenReturn(IAM_BINDING_SINGLE_ENTRY_OUTSIDE_30_DAYS);
+    List<IAMBindingDatabaseEntry> actual = manualDataUpdater.listUpdatedIAMBindingData();
   }
 
 }

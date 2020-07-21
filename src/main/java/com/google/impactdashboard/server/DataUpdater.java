@@ -150,7 +150,8 @@ public class DataUpdater {
    * Lists the new IAM Binding data from the cloud logging API
    * @return A List of IAMBindingDatabaseEntry
    */
-  private List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
+  @VisibleForTesting
+  protected List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
     List<ProjectIdentification> knownProjects = readManager.listProjects();
     List<ProjectIdentification> newProjects = projectRetriever.listResourceManagerProjects();
     newProjects.removeAll(knownProjects);

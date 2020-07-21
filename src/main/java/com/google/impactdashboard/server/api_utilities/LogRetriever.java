@@ -40,8 +40,11 @@ public class LogRetriever {
   public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom, String timeTo, int pageSize) {
     String project_id = "projects/" + projectId;
     String filter = "resource.type = project AND severity = NOTICE";
-    if(!timeFrom.equals("")) {
+    if (!timeFrom.equals("")) {
       filter += " AND timestamp > \"" + timeFrom + "\"";
+    }
+    if (!timeTo.equals("")) {
+      filter += " AND timestamp < \"" + timeTo + "\"";
     }
 
     ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()

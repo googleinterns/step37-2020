@@ -95,7 +95,7 @@ public class DataUpdater {
    */
   private List<Recommendation> listAllRecommendationsExcludingCurrentDay(
     List<ProjectIdentification> newProjects) {
-    String todayAtMidnight = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+    String todayAtMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
       .truncatedTo(ChronoUnit.DAYS).toString();
 
     List<Recommendation> newProjectRecommendations = getRecommendationsForProjects(
@@ -113,7 +113,7 @@ public class DataUpdater {
    */
   private List<Recommendation> listAllNewRecommendations(
     List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
-    String yesterdayAtMidnight = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+    String yesterdayAtMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
       .truncatedTo(ChronoUnit.DAYS)
       .minus(1L, ChronoUnit.DAYS)
       .toString();
@@ -163,12 +163,13 @@ public class DataUpdater {
 
   /** Returns all IAM Bindings data for {@code projects} in the time range given. */
   private List<IAMBindingDatabaseEntry> getIAMBindingsDataEntries(
-      List<ProjectIdentification> projects, String timeFrom, String timeTo) {
+      List<ProjectIdentification> projects, Instant timeFrom, Instant timeTo) {
     return projects.parallelStream().flatMap(project -> {
       List<IAMBindingDatabaseEntry> iamBindingDatabaseEntries = new ArrayList<>();
 
       LoggingClient.ListLogEntriesPagedResponse response = logRetriever
-          .listAuditLogsResponse(project.getProjectId(), timeFrom, timeTo, 50);
+          .listAuditLogsResponse(project.getProjectId(), timeFrom.toString(), 
+              timeTo == null ? "" : timeTo.toString(), 50);
       List<LogEntry> iamBindingsLogs = StreamSupport
           .stream(response.iterateAll().spliterator(), false).collect(Collectors.toList());
 
@@ -176,7 +177,14 @@ public class DataUpdater {
           project.getProjectId(), project.getName(), 
           String.valueOf(project.getProjectNumber()),
           null));
-      return iamBindingDatabaseEntries.stream();
+      iamBindingDatabaseEntries.addAll(getLastIamEntry(project, timeFrom.toString()));
+
+      return createListWithOneEntryPerDay(iamBindingDatabaseEntries, timeFrom, 
+          timeTo == null ? 
+              Instant.ofEpochMilli(System.currentTimeMillis())
+                  .truncatedTo(ChronoUnit.DAYS).plus(1L, ChronoUnit.DAYS) : 
+              timeTo)
+          .stream();
     }).collect(Collectors.toList());
   }
 
@@ -186,16 +194,13 @@ public class DataUpdater {
    */
   private List<IAMBindingDatabaseEntry> newIAMBindingsDataExcludingToday(
       List<ProjectIdentification> newProjects) {
-    String midnight30DaysAgo = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+    Instant midnight30DaysAgo = Instant.ofEpochMilli(System.currentTimeMillis())
         .truncatedTo(ChronoUnit.DAYS)
-        .minus(30L, ChronoUnit.DAYS)
-        .toString();
-    String midnightToday = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
-      .truncatedTo(ChronoUnit.DAYS).toString();
+        .minus(30L, ChronoUnit.DAYS);
+    Instant midnightToday = Instant.ofEpochMilli(System.currentTimeMillis())
+      .truncatedTo(ChronoUnit.DAYS);
     List<IAMBindingDatabaseEntry> entries =  
         getIAMBindingsDataEntries(newProjects, midnight30DaysAgo, midnightToday);
-    entries.addAll(newProjects.parallelStream().flatMap(project -> 
-        getLastIamEntry(project, midnight30DaysAgo).stream()).collect(Collectors.toList()));
     return entries;
   }
 
@@ -205,14 +210,11 @@ public class DataUpdater {
    */
   private List<IAMBindingDatabaseEntry> newIAMBindingsData(
       List<ProjectIdentification> newProjects, List<ProjectIdentification> knownProjects) {
-    String midnight30DaysAgo = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+    Instant midnight30DaysAgo = Instant.ofEpochMilli(System.currentTimeMillis())
         .truncatedTo(ChronoUnit.DAYS)
-        .minus(30L, ChronoUnit.DAYS)
-        .toString();
+        .minus(30L, ChronoUnit.DAYS);
     List<IAMBindingDatabaseEntry> entries = getIAMBindingsDataEntries(
-        newProjects, midnight30DaysAgo, "");
-    entries.addAll(newProjects.parallelStream().flatMap(project -> 
-        getLastIamEntry(project, midnight30DaysAgo).stream()).collect(Collectors.toList()));
+        newProjects, midnight30DaysAgo, null);
     entries.addAll(knownProjects.parallelStream().flatMap(project -> 
         getLastIamEntry(project, "").stream()).collect(Collectors.toList()));
     return entries;
@@ -228,16 +230,19 @@ public class DataUpdater {
    */
   private List<IAMBindingDatabaseEntry> getLastIamEntry(
       ProjectIdentification project, String timeTo) {
-    long yesterdayMidnight = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+    long yesterdayMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
         .truncatedTo(ChronoUnit.DAYS)
-        .minus(1L, ChronoUnit.DAYS).getEpochSecond();
+        .minus(1L, ChronoUnit.DAYS).toEpochMilli();
 
     LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
         project.getProjectId(), "", timeTo, 1);
     List<LogEntry> entry = response.getPage().getResponse().getEntriesList();
 
-    return iamRetriever.listIAMBindingData(entry, project.getProjectId(), project.getName(),
-        String.valueOf(project.getProjectNumber()), yesterdayMidnight * 1000);
+    List<IAMBindingDatabaseEntry> lastEntry =  iamRetriever
+        .listIAMBindingData(entry, project.getProjectId(), project.getName(),
+            String.valueOf(project.getProjectNumber()), 
+            timeTo.equals("") ? yesterdayMidnight : null);
+    return lastEntry;
   }
 
   /**
@@ -262,17 +267,17 @@ public class DataUpdater {
     List<IAMBindingDatabaseEntry> oneEntryPerDay = new ArrayList<IAMBindingDatabaseEntry>();
 
     int sortedBindingsIndex = 0;
-    while (timeFrom.toEpochMilli() <= timeTo.toEpochMilli()) {
+    while (timeFrom.toEpochMilli() < timeTo.toEpochMilli()) {
       Instant nextDay = timeFrom.plus(1L, ChronoUnit.DAYS);
       if (sortedBindings.get(sortedBindingsIndex).getTimestamp() >= nextDay.toEpochMilli()) {
         if (sortedBindingsIndex != 0) {
-          oneEntryPerDay.add(getEntryWithNewTimestamp(
+          oneEntryPerDay.add(copyWithNewTimestamp(
               sortedBindings.get(sortedBindingsIndex - 1), timeFrom.toEpochMilli()));
         }
         timeFrom = nextDay;
       } else if (sortedBindingsIndex == sortedBindings.size() - 1 &&
           nextDay.toEpochMilli() > sortedBindings.get(sortedBindingsIndex).getTimestamp()) {
-        oneEntryPerDay.add(getEntryWithNewTimestamp(
+        oneEntryPerDay.add(copyWithNewTimestamp(
             sortedBindings.get(sortedBindingsIndex), timeFrom.toEpochMilli()));
         timeFrom = nextDay;
       } else if (sortedBindingsIndex < sortedBindings.size() - 1) {
@@ -283,15 +288,10 @@ public class DataUpdater {
   }
 
   /** Returns a copy of {@code entry} with timestamp {@code timestamp}. */
-  private IAMBindingDatabaseEntry getEntryWithNewTimestamp(IAMBindingDatabaseEntry entry, 
+  private IAMBindingDatabaseEntry copyWithNewTimestamp(IAMBindingDatabaseEntry entry, 
       long timestamp) {
     return IAMBindingDatabaseEntry.create(entry.getProjectId(), 
         entry.getProjectName(), entry.getProjectNumber(), 
         timestamp, entry.getBindingsNumber());
-  }
-
-  public static void main(String[] args) throws Exception {
-    DataUpdater dataUpdater = DataUpdater.create(false);
-    dataUpdater.updateDatabase();
   }
 }

@@ -168,4 +168,31 @@ describe('DateUtilitiesService', () => {
       expect(actual).toEqual(expected);
     });
   });
+
+  describe('newDate()', () => {
+    it('Provides a new date based on the given provider', () => {
+      const expected = new Date(2020, 6, 1);
+      service.setDateProvider(() => expected);
+      const actual = service.newDate();
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('getDifferenceHours()', () => {
+    it('Returns 0 for identical dates', () => {
+      const date1 = new Date(2020, 6, 1);
+      const date2 = new Date(2020, 6, 1);
+      const hours = service.getDifferenceHours(date1, date2);
+
+      expect(hours).toEqual(0);
+    });
+    it('Returns the difference in hours for different dates', () => {
+      const date1 = new Date(2020, 6, 1);
+      const date2 = new Date(2020, 6, 2);
+      const hours = service.getDifferenceHours(date1, date2);
+
+      expect(hours).toEqual(24);
+    });
+  });
 });

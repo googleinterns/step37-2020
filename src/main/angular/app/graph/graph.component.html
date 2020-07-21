@@ -22,7 +22,8 @@ limitations under the License.
 </div>
 
 <div id="show-chart" *ngIf="shouldShowChart">
-  <div id="date-container" [style.width.px]="properties.width">
+  <div id="top-container" [style.width.px]="properties.width * 3 / 4">
+
     <app-date-select [possibleRange]="properties.dateRange"
       (selectedRange)="changeDateRange($event)"></app-date-select>
   </div>

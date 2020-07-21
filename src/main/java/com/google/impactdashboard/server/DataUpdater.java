@@ -34,17 +34,20 @@ public class DataUpdater {
   private final IamBindingRetriever iamRetriever;
   private final DataUpdateManager updateManager;
   private final DataReadManager readManager;
+  private final ProjectListRetriever projectRetriever;
   private final boolean manualUpdate;
 
   @VisibleForTesting
   protected DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
                       DataUpdateManager updateManager, DataReadManager readManager,
-                      IamBindingRetriever iamRetriever, boolean manualUpdate) {
+                      IamBindingRetriever iamRetriever, ProjectListRetriever projectRetriever,
+                      boolean manualUpdate) {
     this.logRetriever = logRetriever;
     this.recommendationRetriever = recommendationRetriever;
     this.updateManager = updateManager;
     this.readManager = readManager;
     this.iamRetriever = iamRetriever;
+    this.projectRetriever = projectRetriever;
     this.manualUpdate = manualUpdate;
   }
 
@@ -57,7 +60,7 @@ public class DataUpdater {
       throws IOException, GeneralSecurityException {
     return new DataUpdater(LogRetriever.create(), RecommendationRetriever.create(),
         DataUpdateManagerFactory.create(), DataReadManagerFactory.create(),
-        IamBindingRetriever.create(), manualUpdate);
+        IamBindingRetriever.create(), ProjectListRetriever.getInstance(), manualUpdate);
   }
 
   /**
@@ -75,7 +78,7 @@ public class DataUpdater {
    */
   private List<Recommendation> listUpdatedRecommendations() {
     List<ProjectIdentification> knownProjects = readManager.listProjects();
-    List<ProjectIdentification> newProjects = ProjectListRetriever.listResourceManagerProjects();
+    List<ProjectIdentification> newProjects = projectRetriever.listResourceManagerProjects();
     newProjects.removeAll(knownProjects);
 
     if (manualUpdate) {
@@ -149,7 +152,7 @@ public class DataUpdater {
    */
   private List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
     List<ProjectIdentification> knownProjects = readManager.listProjects();
-    List<ProjectIdentification> newProjects = ProjectListRetriever.listResourceManagerProjects();
+    List<ProjectIdentification> newProjects = projectRetriever.listResourceManagerProjects();
     newProjects.removeAll(knownProjects);
 
     if (manualUpdate) {

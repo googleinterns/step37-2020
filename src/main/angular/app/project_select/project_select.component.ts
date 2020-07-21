@@ -59,6 +59,11 @@ export class ProjectSelectComponent implements OnInit {
     this.activeProjects = new Set();
   }
 
+  /** Checks whether to show the loading bar based on whether there is an active web request or not. */
+  showLoadingBar(): boolean {
+    return this.dataService.hasPendingRequest();
+  }
+
   /** Returns the color associated with the given project. */
   getColor(project: Project): string {
     if (this.activeProjects.has(project)) {

@@ -15,6 +15,7 @@ import com.google.impactdashboard.database_manager.data_update.DataUpdateManager
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManagerFactory;
 import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
+import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 
 import org.junit.Assert;
@@ -32,6 +33,7 @@ public class DataUpdaterTest extends Mockito {
   private DataUpdateManager fakeDataUpdateManager;
   private DataReadManager fakeDataReadManager;
   private IamBindingRetriever mockIamBindingRetriever;
+  private ProjectListRetriever mockProjectListRetriever;
   private DataUpdater manualDataUpdater;
   private DataUpdater automaticDataUpdater;
 
@@ -47,13 +49,14 @@ public class DataUpdaterTest extends Mockito {
     mockLogRetriever = mock(LogRetriever.class);
     mockRecommendationRetriever = mock(RecommendationRetriever.class);
     mockIamBindingRetriever = mock(IamBindingRetriever.class);
+    mockProjectListRetriever = mock(ProjectListRetriever.class);
 
     manualDataUpdater = new DataUpdater(
         mockLogRetriever, mockRecommendationRetriever, fakeDataUpdateManager, 
-        fakeDataReadManager, mockIamBindingRetriever, true);
+        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever, true);
     automaticDataUpdater = new DataUpdater(
         mockLogRetriever, mockRecommendationRetriever, fakeDataUpdateManager, 
-        fakeDataReadManager, mockIamBindingRetriever, false);
+        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever, false);
   }
 
   @Test

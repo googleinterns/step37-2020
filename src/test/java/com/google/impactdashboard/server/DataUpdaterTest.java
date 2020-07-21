@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 
 @RunWith(JUnit4.class)
 public class DataUpdaterTest extends Mockito {
+
   private LogRetriever mockLogRetriever;
   private RecommendationRetriever mockRecommendationRetriever;
   private DataUpdateManager fakeDataUpdateManager;
@@ -55,6 +56,9 @@ public class DataUpdaterTest extends Mockito {
         fakeDataReadManager, mockIamBindingRetriever, false);
   }
 
-  // @Test
-  // public void 
+  @Test
+  public void manualUpdateAllProjectsNeedUpdate() {
+
+  }
+
 }

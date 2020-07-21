@@ -22,16 +22,25 @@ import com.google.common.annotations.VisibleForTesting;
  */
 public class ProjectListRetriever {
 
-  private static CloudResourceManager cloudResourceManagerService = null;
+  private CloudResourceManager cloudResourceManagerService = null;
+  private static ProjectListRetriever INSTANCE = null;
+
+  public static ProjectListRetriever getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new ProjectListRetriever(createCloudResourceManagerService());
+    }
+    return INSTANCE;
+  }
+
+  protected ProjectListRetriever(CloudResourceManager cloudResourceManagerService) {
+    this.cloudResourceManagerService = cloudResourceManagerService;
+  }
 
   /** 
    * Returns the list of projects that the credentials in use have 
    * resourcemanager.projects.get permissions for.  
    */
-  public static List<ProjectIdentification> listResourceManagerProjects() {
-    if (cloudResourceManagerService == null) {
-      cloudResourceManagerService = createCloudResourceManagerService();
-    }
+  public List<ProjectIdentification> listResourceManagerProjects() {
     try {
       CloudResourceManager.Projects.List request = cloudResourceManagerService.projects().list();
       return getListOfProjects(request);
@@ -42,7 +51,7 @@ public class ProjectListRetriever {
 
   @VisibleForTesting
   /** Returns the list of projects resulting from executing {@code request}. */
-  protected static List<ProjectIdentification> getListOfProjects(
+  protected  static List<ProjectIdentification> getListOfProjects(
     CloudResourceManager.Projects.List request) throws IOException {
     List<ProjectIdentification> projects = new ArrayList<ProjectIdentification>();
 

@@ -52,7 +52,7 @@ public class RecommendationRetriever {
           .getRecommendation(recommendationDataMap.get("recommendationName").getStringValue());
       List<RecommendationAction> actions = getRecommendationActions(recommendation);
       return Recommendation.create(projectId, recommendationDataMap.get("actor").getStringValue(),
-          actions, type, recommendationLog.getTimestamp().getSeconds(),
+          actions, type, recommendationLog.getTimestamp().getSeconds() * 1000,
           IAMRecommenderMetadata.create(iamRetriever.getActionImpact(actions)));
     }).collect(Collectors.toList());
   }
@@ -91,6 +91,4 @@ public class RecommendationRetriever {
         }).collect(Collectors.toList());
     return actions;
   }
-
-
 }

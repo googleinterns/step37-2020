@@ -17,9 +17,9 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
 import com.google.protobuf.Value;
 
-import java.security.GeneralSecurityException;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -89,7 +89,7 @@ public class IamBindingRetriever {
       Map<String, Integer> membersForRoles = getMembersForRoles(entry.getValue().getResponse()
           .getFieldsMap().get("bindings").getListValue().getValuesList());
       if(secondsFromEpoch.get() == null){
-        secondsFromEpoch.set(entry.getKey().getSeconds());
+        secondsFromEpoch.set(entry.getKey().getSeconds() * 1000);
       }
       return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, secondsFromEpoch.get(),
           getIamBindings(membersForRoles));
@@ -138,7 +138,7 @@ public class IamBindingRetriever {
       try {
         Role previousRole = iamService.roles().get(action.getPreviousRole()).execute();
         String newRoleString = action.getNewRole();
-        if(!newRoleString.isEmpty()) {
+        if (!newRoleString.isEmpty()) {
           Role newRole = iamService.roles().get(newRoleString).execute();
           return Math.abs(previousRole.getIncludedPermissions().size() -
               newRole.getIncludedPermissions().size());

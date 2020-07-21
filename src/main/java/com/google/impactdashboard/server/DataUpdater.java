@@ -1,6 +1,10 @@
 package com.google.impactdashboard.server;
 
+<<<<<<<<< Temporary merge branch 1
+import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
+=========
 import com.google.cloud.logging.v2.LoggingClient;
+>>>>>>>>> Temporary merge branch 2
 import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.project.ProjectIdentification;
@@ -37,9 +41,8 @@ public class DataUpdater {
 
   @VisibleForTesting
   protected DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
-                        DataUpdateManager updateManager, DataReadManager readManager,
-                        IamBindingRetriever iamRetriever,
-                        boolean manualUpdate) {
+                      DataUpdateManager updateManager, DataReadManager readManager,
+                      IamBindingRetriever iamRetriever, boolean manualUpdate) {
     this.logRetriever = logRetriever;
     this.recommendationRetriever = recommendationRetriever;
     this.updateManager = updateManager;
@@ -53,7 +56,8 @@ public class DataUpdater {
    * and RecommendationRetriever.
    * @return New instance of DataUpdater
    */
-  public static DataUpdater create(boolean manualUpdate) throws IOException, GeneralSecurityException {
+  public static DataUpdater create(boolean manualUpdate)
+      throws IOException, GeneralSecurityException {
     return new DataUpdater(LogRetriever.create(), RecommendationRetriever.create(),
         DataUpdateManagerFactory.create(), DataReadManagerFactory.create(),
         IamBindingRetriever.create(), manualUpdate);
@@ -63,9 +67,9 @@ public class DataUpdater {
    * Updates the database with any new information about recommendations and IAMBinding logging.
    */
   public void updateDatabase() {
-//    updateManager.updateRecommendations(listUpdatedRecommendations());
+    updateManager.updateRecommendations(listUpdatedRecommendations());
     updateManager.updateIAMBindings(listUpdatedIAMBindingData());
-//    updateManager.deleteYearOldData();
+    updateManager.deleteYearOldData();
   }
 
   /**
@@ -85,7 +89,7 @@ public class DataUpdater {
   }
 
   /**
-   * For all new projects, gets all recommendations that ocurred in the past 30
+   * For all new projects, gets all recommendations that ocurred in the past 30 
    * days, excluding any recommendations that occurred after midnight, today.
    * @param newProjects The projects that have no data in the database.
    * @return A list containing all new recommendations to be stored.
@@ -102,8 +106,8 @@ public class DataUpdater {
   }
 
   /**
-   * For {@code knownProjects}, gets any recommendations that occured in the
-   * past 24 hours. For {@code newProjects}, gets all known recommendations.
+   * For {@code knownProjects}, gets any recommendations that occured in the 
+   * past 24 hours. For {@code newProjects}, gets all known recommendations. 
    * @param knownProjects The projects that the database already knows about.
    * @param newProjects The projects that have no data in the database currently.
    * @return A list containing all new recommendations to be stored.
@@ -128,11 +132,11 @@ public class DataUpdater {
    * Returns the list of recommendations for the projects in {@code projects}
    * within the time window specified.
    */
-  private List<Recommendation> getRecommendationsForProjects(List<ProjectIdentification> projects,
+  private List<Recommendation> getRecommendationsForProjects(List<ProjectIdentification> projects, 
     String timeFrom, String timeTo) {
     return projects.parallelStream()
       .map(project -> {
-        LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listRecommendationLogs(
+        ListLogEntriesPagedResponse response = logRetriever.listRecommendationLogs(
           project.getProjectId(), timeFrom, timeTo);
         List<LogEntry> entries = StreamSupport.stream(response.iterateAll().spliterator(), false)
           .collect(Collectors.toList());
@@ -147,30 +151,73 @@ public class DataUpdater {
    * @return A List of IAMBindingDatabaseEntry
    */
   private List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
-    long epochSeconds = readManager.getMostRecentTimestamp();
-    List<IAMBindingDatabaseEntry> entries = new ArrayList<>();
-    if(epochSeconds != -1) {
-      entries = readManager.listProjects().parallelStream().flatMap(project -> getLastIamEntry(project)
-          .stream()).collect(Collectors.toList());
+    List<ProjectIdentification> knownProjects = readManager.listProjects();
+    List<ProjectIdentification> newProjects = ProjectListRetriever.listResourceManagerProjects();
+    newProjects.removeAll(knownProjects);
+
+    if (manualUpdate) {
+      return newIAMBindingsDataExcludingToday(newProjects);
+    } else {
+      return newIAMBindingsData(newProjects, knownProjects);
     }
-    // Getting the last 30 days of data from new projects
-    entries.addAll(ProjectListRetriever.listResourceManagerProjects().parallelStream().flatMap(project -> {
-      String midnight30DaysAgo = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
-          .truncatedTo(ChronoUnit.DAYS)
-          .minus(30L, ChronoUnit.DAYS)
-          .toString();
+  }
 
+  /** Returns all IAM Bindings data for {@code projects} in the time range given. */
+  private List<IAMBindingDatabaseEntry> getIAMBindingsDataEntries(
+      List<ProjectIdentification> projects, Instant timeFrom, Instant timeTo) {
+    return projects.parallelStream().flatMap(project -> {
       List<IAMBindingDatabaseEntry> iamBindingDatabaseEntries = new ArrayList<>();
-        LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(project.getProjectId(), midnight30DaysAgo,
-            50);
-        List<LogEntry> entriesLog = StreamSupport.stream(response.iterateAll().spliterator(), false)
-            .collect(Collectors.toList());
-        iamBindingDatabaseEntries.addAll(iamRetriever.listIAMBindingData(entriesLog,
-            project.getProjectId(), project.getName(), String.valueOf(project.getProjectNumber()),
-            null));
-      return iamBindingDatabaseEntries.stream();
-    }).collect(Collectors.toList()));
 
+      LoggingClient.ListLogEntriesPagedResponse response = logRetriever
+          .listAuditLogsResponse(project.getProjectId(), timeFrom.toString(),
+              timeTo == null ? "" : timeTo.toString(), 50);
+      List<LogEntry> iamBindingsLogs = StreamSupport
+          .stream(response.iterateAll().spliterator(), false).collect(Collectors.toList());
+
+      iamBindingDatabaseEntries.addAll(iamRetriever.listIAMBindingData(iamBindingsLogs,
+          project.getProjectId(), project.getName(),
+          String.valueOf(project.getProjectNumber()),
+          null));
+      iamBindingDatabaseEntries.addAll(getLastIamEntry(project, timeFrom.toString()));
+
+      return createListWithOneEntryPerDay(iamBindingDatabaseEntries, timeFrom,
+          timeTo == null ?
+              Instant.ofEpochMilli(System.currentTimeMillis())
+                  .truncatedTo(ChronoUnit.DAYS).plus(1L, ChronoUnit.DAYS) :
+              timeTo)
+          .stream();
+    }).collect(Collectors.toList());
+  }
+
+  /**
+   * For all new projects, gets the past 30 days of IAM Bindings information,
+   * except the current day.
+   */
+  private List<IAMBindingDatabaseEntry> newIAMBindingsDataExcludingToday(
+      List<ProjectIdentification> newProjects) {
+    Instant midnight30DaysAgo = Instant.ofEpochMilli(System.currentTimeMillis())
+        .truncatedTo(ChronoUnit.DAYS)
+        .minus(30L, ChronoUnit.DAYS);
+    Instant midnightToday = Instant.ofEpochMilli(System.currentTimeMillis())
+      .truncatedTo(ChronoUnit.DAYS);
+    List<IAMBindingDatabaseEntry> entries =
+        getIAMBindingsDataEntries(newProjects, midnight30DaysAgo, midnightToday);
+    return entries;
+  }
+
+  /**
+   * For new projects, gets the past 30 days of IAM Bindings; for old projects,
+   * gets the IAM Bindings for the previous day.
+   */
+  private List<IAMBindingDatabaseEntry> newIAMBindingsData(
+      List<ProjectIdentification> newProjects, List<ProjectIdentification> knownProjects) {
+    Instant midnight30DaysAgo = Instant.ofEpochMilli(System.currentTimeMillis())
+        .truncatedTo(ChronoUnit.DAYS)
+        .minus(30L, ChronoUnit.DAYS);
+    List<IAMBindingDatabaseEntry> entries = getIAMBindingsDataEntries(
+        newProjects, midnight30DaysAgo, null);
+    entries.addAll(knownProjects.parallelStream().flatMap(project ->
+        getLastIamEntry(project, "").stream()).collect(Collectors.toList()));
     return entries;
   }
 
@@ -179,23 +226,73 @@ public class DataUpdater {
    * last log for the Iam data since we only needed the latest IAM data. Even if the Iam data is
    * old this creates a new Database entry for the day.
    * @param project the project that needs the last days of data
+   * @param timeTo the earliest day to look for an entry.
    * @return the most recent IamBindingData
    */
-  private List<IAMBindingDatabaseEntry> getLastIamEntry(ProjectIdentification project) {
-    long yesterdayMidnight = Instant.ofEpochSecond(System.currentTimeMillis() / 1000)
+  private List<IAMBindingDatabaseEntry> getLastIamEntry(
+      ProjectIdentification project, String timeTo) {
+    long yesterdayMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
         .truncatedTo(ChronoUnit.DAYS)
-        .minus(1L, ChronoUnit.DAYS).getEpochSecond();
+        .minus(1L, ChronoUnit.DAYS).toEpochMilli();
 
     LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
-        project.getProjectId(), "", 1);
+        project.getProjectId(), "", timeTo, 1);
     List<LogEntry> entry = response.getPage().getResponse().getEntriesList();
 
-    return iamRetriever.listIAMBindingData(entry, project.getProjectId(), project.getName(),
-        String.valueOf(project.getProjectNumber()), yesterdayMidnight * 1000);
+    List<IAMBindingDatabaseEntry> lastEntry =  iamRetriever
+        .listIAMBindingData(entry, project.getProjectId(), project.getName(),
+            String.valueOf(project.getProjectNumber()),
+            timeTo.equals("") ? yesterdayMidnight : null);
+    return lastEntry;
   }
 
-  public static void main(String[] args) throws Exception {
-    DataUpdater dataUpdater = DataUpdater.create(false);
-    List<IAMBindingDatabaseEntry> entries = dataUpdater.listUpdatedIAMBindingData();
+  /**
+   * Returns the data contained in {@code bindingsData}, such that there is
+   * exactly one entry for each day in the range from {@code timeFrom} to
+   * {@code timeTo}. If there are multiple entries for a single day in
+   * {@code bindingsData}, the latest entry will be recorded in the output.
+   * @param bindingsData All logs entry bindings data for one project.
+   * @param timeFrom A date (at midnight) to start the time range.
+   * @param timeTo A date (at midnight) to end the time range.
+   * @return The data collapsed so that there is exactly one entry per day.
+   */
+  private List<IAMBindingDatabaseEntry> createListWithOneEntryPerDay(
+      List<IAMBindingDatabaseEntry> bindingsData, Instant timeFrom, Instant timeTo) {
+    if (bindingsData.size() == 0) {
+      return bindingsData;
+    }
+
+    List<IAMBindingDatabaseEntry> sortedBindings = bindingsData.stream()
+        .sorted(IAMBindingDatabaseEntry.ORDER_BY_TIMESTAMP)
+        .collect(Collectors.toCollection(ArrayList::new));
+    List<IAMBindingDatabaseEntry> oneEntryPerDay = new ArrayList<IAMBindingDatabaseEntry>();
+
+    int sortedBindingsIndex = 0;
+    while (timeFrom.toEpochMilli() < timeTo.toEpochMilli()) {
+      Instant nextDay = timeFrom.plus(1L, ChronoUnit.DAYS);
+      if (sortedBindings.get(sortedBindingsIndex).getTimestamp() >= nextDay.toEpochMilli()) {
+        if (sortedBindingsIndex != 0) {
+          oneEntryPerDay.add(copyWithNewTimestamp(
+              sortedBindings.get(sortedBindingsIndex - 1), timeFrom.toEpochMilli()));
+        }
+        timeFrom = nextDay;
+      } else if (sortedBindingsIndex == sortedBindings.size() - 1 &&
+          nextDay.toEpochMilli() > sortedBindings.get(sortedBindingsIndex).getTimestamp()) {
+        oneEntryPerDay.add(copyWithNewTimestamp(
+            sortedBindings.get(sortedBindingsIndex), timeFrom.toEpochMilli()));
+        timeFrom = nextDay;
+      } else if (sortedBindingsIndex < sortedBindings.size() - 1) {
+        sortedBindingsIndex += 1;
+      }
+    }
+    return oneEntryPerDay;
+  }
+
+  /** Returns a copy of {@code entry} with timestamp {@code timestamp}. */
+  private IAMBindingDatabaseEntry copyWithNewTimestamp(IAMBindingDatabaseEntry entry,
+      long timestamp) {
+    return IAMBindingDatabaseEntry.create(entry.getProjectId(),
+        entry.getProjectName(), entry.getProjectNumber(),
+        timestamp, entry.getBindingsNumber());
   }
 }

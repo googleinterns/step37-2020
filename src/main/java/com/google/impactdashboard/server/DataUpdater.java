@@ -241,9 +241,10 @@ public class DataUpdater {
   }
 
   /**
-   * Returns the data contains in {@code bindingsData}, such taht there is one 
-   * entry for each day in the range from {@code timeFrom} to {@code timeTo}, 
-   * and the entry on each day is the most recent IAM Bindings count. 
+   * Returns the data contained in {@code bindingsData}, such that there is 
+   * exactly one entry for each day in the range from {@code timeFrom} to 
+   * {@code timeTo}. If there are multiple entries for a single day in 
+   * {@code bindingsData}, the latest entry will be recorded in the output.
    * @param bindingsData All logs entry bindings data for one project.
    * @param timeFrom A date (at midnight) to start the time range.
    * @param timeTo A date (at midnight) to end the time range.
@@ -263,18 +264,18 @@ public class DataUpdater {
     int sortedBindingsIndex = 0;
     while (timeFrom.toEpochMilli() <= timeTo.toEpochMilli()) {
       Instant nextDay = timeFrom.plus(1L, ChronoUnit.DAYS);
-      if (sortedBindings.get(sortedBindingsIndex).getTimestamp() > nextDay.toEpochMilli() && 
-          sortedBindingsIndex != 0) {
-        oneEntryPerDay.add(getEntryWithNewTimestamp(
-            sortedBindings.get(sortedBindingsIndex - 1), timeFrom.toEpochMilli()));
+      if (sortedBindings.get(sortedBindingsIndex).getTimestamp() >= nextDay.toEpochMilli()) {
+        if (sortedBindingsIndex != 0) {
+          oneEntryPerDay.add(getEntryWithNewTimestamp(
+              sortedBindings.get(sortedBindingsIndex - 1), timeFrom.toEpochMilli()));
+        }
         timeFrom = nextDay;
       } else if (sortedBindingsIndex == sortedBindings.size() - 1 &&
           nextDay.toEpochMilli() > sortedBindings.get(sortedBindingsIndex).getTimestamp()) {
         oneEntryPerDay.add(getEntryWithNewTimestamp(
             sortedBindings.get(sortedBindingsIndex), timeFrom.toEpochMilli()));
         timeFrom = nextDay;
-      }
-      if (sortedBindingsIndex < sortedBindings.size() - 1) {
+      } else if (sortedBindingsIndex < sortedBindings.size() - 1) {
         sortedBindingsIndex += 1;
       }
     }

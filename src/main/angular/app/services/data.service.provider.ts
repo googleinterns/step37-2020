@@ -3,12 +3,13 @@ import {FakeDataService} from './fake_services/fake_data.service';
 import {DataServiceImpl} from './real_services/data_service_impl.service';
 import {HttpClient} from '@angular/common/http';
 import {DataService} from './data.service';
+import {GraphDataCacheService} from './graph_data_cache.service';
 
-const dataServiceFactory = (http: HttpClient) => {
+const dataServiceFactory = (http: HttpClient, cache: GraphDataCacheService) => {
   if (USE_TEST_DATA) {
     return new FakeDataService();
   } else {
-    return new DataServiceImpl(http);
+    return new DataServiceImpl(http, cache);
   }
 };
 
@@ -16,5 +17,5 @@ const dataServiceFactory = (http: HttpClient) => {
 export const dataServiceProvider = {
   provide: DataService,
   useFactory: dataServiceFactory,
-  deps: [HttpClient],
+  deps: [HttpClient, GraphDataCacheService],
 };

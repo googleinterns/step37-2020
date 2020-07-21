@@ -9,4 +9,6 @@ export abstract class DataService {
   abstract async listProjects(): Promise<Project[]>;
   /** Returns the graph information for a particular user. */
   abstract async getProjectGraphData(id: string): Promise<ProjectGraphData>;
+  /** Returns whether there is at least one pending web request. */
+  abstract hasPendingRequest(): boolean;
 }

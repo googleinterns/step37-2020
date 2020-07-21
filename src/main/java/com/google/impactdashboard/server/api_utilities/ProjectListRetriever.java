@@ -1,4 +1,5 @@
 package com.google.impactdashboard.server.api_utilities;
+
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -13,6 +14,7 @@ import com.google.impactdashboard.Credentials;
 import java.util.List;
 import java.util.ArrayList;
 import  com.google.impactdashboard.data.project.ProjectIdentification;
+import com.google.common.annotations.VisibleForTesting;
 
 /** 
  * A class for using the Cloud Resource Manager API to retrieve the projects 
@@ -38,8 +40,9 @@ public class ProjectListRetriever {
     }
   }
 
+  @VisibleForTesting
   /** Returns the list of projects resulting from executing {@code request}. */
-  private static List<ProjectIdentification> getListOfProjects(
+  protected static List<ProjectIdentification> getListOfProjects(
     CloudResourceManager.Projects.List request) throws IOException {
     List<ProjectIdentification> projects = new ArrayList<ProjectIdentification>();
 

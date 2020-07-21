@@ -12,7 +12,7 @@ public class DataUpdateManagerImpl implements DataUpdateManager {
   QueryConfigurationBuilder queryConfigurationBuilder;
 
   public DataUpdateManagerImpl() {
-    database = new DatabaseAccessor(); 
+    database = DatabaseAccessor.getInstance(); 
     queryConfigurationBuilder = QueryConfigurationBuilderFactory.create();
   }
 

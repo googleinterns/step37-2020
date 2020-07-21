@@ -12,7 +12,11 @@
   font-size: 50px;
 }
 
-#date-container app-date-select {
+#top-container {
+  margin: 0 auto;
+}
+
+#top-container app-date-select {
   float: right;
   margin-top: 8px;
 }

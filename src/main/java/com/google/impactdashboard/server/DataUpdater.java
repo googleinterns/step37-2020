@@ -1,10 +1,7 @@
 package com.google.impactdashboard.server;
 
-<<<<<<<<< Temporary merge branch 1
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
-=========
 import com.google.cloud.logging.v2.LoggingClient;
->>>>>>>>> Temporary merge branch 2
 import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.project.ProjectIdentification;

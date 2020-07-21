@@ -2,20 +2,14 @@ package com.google.impactdashboard.server;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import com.google.apphosting.api.logservice.LogServicePb.LogReadRequest;
 import com.google.cloud.logging.v2.LoggingClient;
 import com.google.impactdashboard.configuration.Configuration;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
-import com.google.impactdashboard.data.project.Project;
-import com.google.impactdashboard.data.project.ProjectGraphData;
 import com.google.impactdashboard.data.project.ProjectIdentification;
-import com.google.impactdashboard.data.project.ProjectMetaData;
 import com.google.impactdashboard.data.recommendation.IAMRecommenderMetadata;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.impactdashboard.data.recommendation.RecommendationAction;
-import com.google.impactdashboard.data.recommendation.Recommendation.RecommenderType;
 import com.google.impactdashboard.database_manager.data_read.DataReadManager;
 import com.google.impactdashboard.database_manager.data_read.DataReadManagerFactory;
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManager;
@@ -25,6 +19,7 @@ import com.google.impactdashboard.server.api_utilities.LogRetriever;
 import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 
+import com.google.logging.v2.LogEntry;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,18 +29,19 @@ import org.mockito.Mockito;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RunWith(JUnit4.class)
 public class DataUpdaterTest extends Mockito {
 
-  public static final List<IAMBindingDatabaseEntry> IAM_BINDING_SINGLE_ENTRY_WITHIN_30_DAYS =
-      Collections.singletonList(IAMBindingDatabaseEntry.create("project-1",
-          "project-1", "10",1594958400000L, 100000));
-  public static final List<IAMBindingDatabaseEntry> IAM_BINDING_SINGLE_ENTRY_OUTSIDE_30_DAYS =
-      Collections.singletonList(IAMBindingDatabaseEntry.create("project-1",
-          "project-1", "10",1591675200000L, 1000));
+  public static final List<IAMBindingDatabaseEntry> PROJECT_3_IAM_BINDING_SINGLE_ENTRY =
+      Collections.singletonList(IAMBindingDatabaseEntry.create("project-id-3",
+          "project-id-3", "345678901234",0L, 1000));
+  public static final List<IAMBindingDatabaseEntry> PROJECT_1_IAM_BINDING_SINGLE_ENTRY =
+      Collections.singletonList(IAMBindingDatabaseEntry.create("project-id-1",
+          "project-id-1", "123456789123",1595131200000L, 13456));
+  public static final List<IAMBindingDatabaseEntry> PROJECT_2_IAM_BINDING_SINGLE_ENTRY =
+      Collections.singletonList(IAMBindingDatabaseEntry.create("project-id-2",
+          "project-id-2", "234567890123",1595131200000L, 23454));
 
   private LogRetriever mockLogRetriever;
   private RecommendationRetriever mockRecommendationRetriever;
@@ -109,15 +105,15 @@ public class DataUpdaterTest extends Mockito {
         fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever, false);
   }
 
-  private void initializeRecommendationFakes() {
-
-  }
 
   @Test
   public void testAutomaticUpdateRecommendationsWith1NewProject2Old() {
-    ListLogEntriesPagedResponse project3Response = mock(ListLogEntriesPagedResponse.class);
-    ListLogEntriesPagedResponse project2Response = mock(ListLogEntriesPagedResponse.class);
-    ListLogEntriesPagedResponse project1Response = mock(ListLogEntriesPagedResponse.class);
+    LoggingClient.ListLogEntriesPagedResponse project3Response =
+        mock(LoggingClient.ListLogEntriesPagedResponse.class);
+    LoggingClient.ListLogEntriesPagedResponse project2Response =
+        mock(LoggingClient.ListLogEntriesPagedResponse.class);
+    LoggingClient.ListLogEntriesPagedResponse project1Response =
+        mock(LoggingClient.ListLogEntriesPagedResponse.class);
     List<LogEntry> project3RecommendationLogs =
         Arrays.asList(mock(LogEntry.class), mock(LogEntry.class));
     List<LogEntry> project1RecommendationLogs =
@@ -166,17 +162,125 @@ public class DataUpdaterTest extends Mockito {
     actual.removeAll(expected); // if actual is now empty, the lists were equal
     Assert.assertEquals("Lists are equal", Arrays.asList(), actual);
   }
+
   @Test
-  public void manualIAMUpdateAllProjectsNeedUpdate() {
-    LoggingClient.ListLogEntriesPagedResponse mockResponse =
-        mock(LoggingClient.ListLogEntriesPagedResponse.class);
-    when(StreamSupport.stream(mockResponse.iterateAll().spliterator(), false)
-        .collect(Collectors.toList())).thenReturn(Collections.emptyList());
-    when(mockIamBindingRetriever.listIAMBindingData(eq(Collections.emptyList()), any(), any(), any(), isNull()))
-        .thenReturn(IAM_BINDING_SINGLE_ENTRY_WITHIN_30_DAYS);
-    when(mockIamBindingRetriever.listIAMBindingData(any(), any(), any(), any(), eq(1595304000000L)))
-        .thenReturn(IAM_BINDING_SINGLE_ENTRY_OUTSIDE_30_DAYS);
+  public void manualIAMUpdate1NewProject1OldProject() {
+    // Testing the functionality for manually updating a new project,
+    // Old projects are ignored in this case so nothing should be changed
+    // for them.
+
+    LoggingClient.ListLogEntriesPagedResponse project3Response =
+        mock(LoggingClient.ListLogEntriesPagedResponse.class, Mockito.RETURNS_DEEP_STUBS);
+
+    List<LogEntry> project3AuditLogs =
+        Collections.singletonList(mock(LogEntry.class));
+
+    when(mockProjectListRetriever.listResourceManagerProjects())
+        .thenReturn(new ArrayList<>(Arrays.asList(PROJECT_1, PROJECT_3)));
+
+    when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_3.getProjectId()), anyString(),
+        anyString(), anyInt())).thenReturn(project3Response);
+
+    when(project3Response.iterateAll()).thenReturn(project3AuditLogs);
+
+    when(project3Response.getPage().getResponse().getEntriesList())
+        .thenReturn(project3AuditLogs);
+
+    when(mockIamBindingRetriever.listIAMBindingData(any(), any(), any(),
+        any(), any())).thenReturn(PROJECT_3_IAM_BINDING_SINGLE_ENTRY);
+
     List<IAMBindingDatabaseEntry> actual = manualDataUpdater.listUpdatedIAMBindingData();
+    // Testing size because should always return 30 long List and creating the expected list would be too large
+    int expectedSize = 30;
+    Assert.assertEquals(expectedSize, actual.size());
+
+    // Testing to see if the bindings are the correct ammount
+    IAMBindingDatabaseEntry actualEntry = actual.get(15);
+    int expectedBindingsNumber = 1000;
+    Assert.assertEquals(expectedBindingsNumber, actualEntry.getBindingsNumber());
+  }
+
+  @Test
+  public void automaticIAMUpdate1NewProject2OldProject() {
+    // Testing the automatic updating for both new and old projects.
+    // 31 logs for New projects, 1 log for old projects
+
+    LoggingClient.ListLogEntriesPagedResponse project3Response =
+        mock(LoggingClient.ListLogEntriesPagedResponse.class, Mockito.RETURNS_DEEP_STUBS);
+    LoggingClient.ListLogEntriesPagedResponse project2Response =
+        mock(LoggingClient.ListLogEntriesPagedResponse.class, Mockito.RETURNS_DEEP_STUBS);
+    LoggingClient.ListLogEntriesPagedResponse project1Response =
+        mock(LoggingClient.ListLogEntriesPagedResponse.class, Mockito.RETURNS_DEEP_STUBS);
+    List<LogEntry> project3AuditLogs =
+        Collections.singletonList(mock(LogEntry.class));
+    List<LogEntry> project2AuditLogs =
+        Collections.singletonList(mock(LogEntry.class));
+    List<LogEntry> project1AuditLogs =
+        Collections.singletonList(mock(LogEntry.class));
+
+    when(mockProjectListRetriever.listResourceManagerProjects())
+        .thenReturn(new ArrayList<>(Arrays.asList(PROJECT_1, PROJECT_2, PROJECT_3)));
+
+    when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_3.getProjectId()), anyString(),
+        anyString(), anyInt())).thenReturn(project3Response);
+
+    when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_2.getProjectId()), anyString(),
+        anyString(), anyInt())).thenReturn(project2Response);
+
+    when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_1.getProjectId()), anyString(),
+        anyString(), anyInt())).thenReturn(project1Response);
+
+    when(project3Response.iterateAll()).thenReturn(project3AuditLogs);
+
+    when(project3Response.getPage().getResponse().getEntriesList())
+        .thenReturn(project3AuditLogs);
+
+    when(project2Response.iterateAll()).thenReturn(project2AuditLogs);
+
+    when(project2Response.getPage().getResponse().getEntriesList())
+        .thenReturn(project2AuditLogs);
+
+    when(project1Response.iterateAll()).thenReturn(project1AuditLogs);
+
+    when(project1Response.getPage().getResponse().getEntriesList())
+        .thenReturn(project1AuditLogs);
+
+    when(mockIamBindingRetriever.listIAMBindingData(any(), eq(PROJECT_3.getProjectId()), any(),
+        any(), any())).thenReturn(PROJECT_3_IAM_BINDING_SINGLE_ENTRY);
+
+    when(mockIamBindingRetriever.listIAMBindingData(any(), eq(PROJECT_2.getProjectId()), any(),
+        any(), any())).thenReturn(PROJECT_2_IAM_BINDING_SINGLE_ENTRY);
+
+    when(mockIamBindingRetriever.listIAMBindingData(any(), eq(PROJECT_1.getProjectId()), any(),
+        any(), any())).thenReturn(PROJECT_1_IAM_BINDING_SINGLE_ENTRY);
+
+    List<IAMBindingDatabaseEntry> actual = automaticDataUpdater.listUpdatedIAMBindingData();
+    // Testing size because should always return 30 long List and creating the expected list would be too large
+    int expectedSize = 33;
+    Assert.assertEquals(expectedSize, actual.size());
+
+    // Testing to see if the bindings are the correct amount for the new project
+    IAMBindingDatabaseEntry actualEntryProject3 = actual.get(0);
+    int expectedBindingsNumberNewProject = 1000;
+    String expectedProjectId = PROJECT_3.getProjectId();
+    Assert.assertEquals(expectedBindingsNumberNewProject, actualEntryProject3.getBindingsNumber());
+    Assert.assertEquals(expectedProjectId, actualEntryProject3.getProjectId());
+
+    // Testing if the entry is correct for first old project
+    IAMBindingDatabaseEntry actualEntryOldProject1 = actual.get(31);
+    int expectedBindingsNumberOldProject1 = 13456;
+    expectedProjectId = PROJECT_1.getProjectId();
+    Assert.assertEquals(expectedBindingsNumberOldProject1, actualEntryOldProject1
+        .getBindingsNumber());
+    Assert.assertEquals(expectedProjectId, actualEntryOldProject1.getProjectId());
+
+    // Testing if the entry is correct for the second  old project
+    IAMBindingDatabaseEntry actualEntryOldProject2 = actual.get(32);
+    int expectedBindingsNumberOldProject2 = 23454;
+    expectedProjectId = PROJECT_2.getProjectId();
+    Assert.assertEquals(expectedBindingsNumberOldProject2, actualEntryOldProject2
+        .getBindingsNumber());
+    Assert.assertEquals(expectedProjectId, actualEntryOldProject2.getProjectId());
   }
 
 }

@@ -148,9 +148,4 @@ public class IamBindingRetriever {
       }
     }).sum();
   }
-
-  public static void main(String[] args) throws Exception {
-    IamBindingRetriever retriever = IamBindingRetriever.create();
-    retriever.getIamBindings(new HashMap<>());
-  }
 }

@@ -320,5 +320,4 @@ public class DataUpdaterTest extends Mockito {
         .getBindingsNumber());
     Assert.assertEquals(expectedProjectId, actualEntryOldProject2.getProjectId());
   }
-
 }

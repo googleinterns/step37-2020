@@ -76,7 +76,8 @@ public class DataUpdater {
    * Gets the new Recommendation data from the Recommender API.
    * @return a List of Recommendations
    */
-  private List<Recommendation> listUpdatedRecommendations() {
+  @VisibleForTesting
+  protected List<Recommendation> listUpdatedRecommendations() {
     List<ProjectIdentification> knownProjects = readManager.listProjects();
     List<ProjectIdentification> newProjects = projectRetriever.listResourceManagerProjects();
     newProjects.removeAll(knownProjects);

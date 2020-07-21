@@ -21,7 +21,6 @@ import com.google.impactdashboard.server.api_utilities.LogRetriever;
 import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 
-import com.google.logging.v2.LogEntry;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +53,6 @@ public class DataUpdaterTest extends Mockito {
   private DataUpdater manualDataUpdater;
   private DataUpdater automaticDataUpdater;
 
-  private static final ProjectIdentification PROJECT_1 =
   private ListLogEntriesPagedResponse project3RecommendationResponse;
   private ListLogEntriesPagedResponse project3RecommendationResponseManual;
   private ListLogEntriesPagedResponse project2RecommendationResponse;
@@ -115,16 +113,6 @@ public class DataUpdaterTest extends Mockito {
     initializeRecommendationFakes();
   }
 
-
-  @Test
-  public void testAutomaticUpdateRecommendationsWith1NewProject2Old() {
-    LoggingClient.ListLogEntriesPagedResponse project3Response =
-        mock(LoggingClient.ListLogEntriesPagedResponse.class);
-    LoggingClient.ListLogEntriesPagedResponse project2Response =
-        mock(LoggingClient.ListLogEntriesPagedResponse.class);
-    LoggingClient.ListLogEntriesPagedResponse project1Response =
-        mock(LoggingClient.ListLogEntriesPagedResponse.class);
-    List<LogEntry> project3RecommendationLogs =
   /** Sets up all mock object behavior necessary for Recommendations tests. */
   private void initializeRecommendationFakes() {
     project3RecommendationResponse = mock(ListLogEntriesPagedResponse.class);
@@ -136,9 +124,7 @@ public class DataUpdaterTest extends Mockito {
         Arrays.asList(mock(LogEntry.class), mock(LogEntry.class));
     List<LogEntry> project1RecommendationLogs =
         Arrays.asList(mock(LogEntry.class));
-    List<Recommendation> project3Recommendations =
     List<LogEntry> project3RecommendationLogsManual = Arrays.asList(mock(LogEntry.class));
-    List<LogEntry> project1RecommendationLogs = Arrays.asList(mock(LogEntry.class));
     List<Recommendation> project3Recommendations =
         Arrays.asList(PROJECT_3_RECOMMENDATION_1, PROJECT_3_RECOMMENDATION_2);
     List<Recommendation> project1Recommendations =
@@ -148,8 +134,6 @@ public class DataUpdaterTest extends Mockito {
         .thenReturn(new ArrayList<>(Arrays.asList(PROJECT_1, PROJECT_2, PROJECT_3)));
     List<Recommendation> project3RecommendationsManual =
         Arrays.asList(PROJECT_3_RECOMMENDATION_1);
-    List<Recommendation> project1Recommendations =
-        Arrays.asList(PROJECT_1_RECOMMENDATION);
 
     when(mockLogRetriever.listRecommendationLogs(PROJECT_3.getProjectId(), "", ""))
         .thenReturn(project3RecommendationResponse);
@@ -177,7 +161,6 @@ public class DataUpdaterTest extends Mockito {
         .thenReturn(project3Recommendations);
     when(
         mockRecommendationRetriever.listRecommendations(
-            project1RecommendationLogs, PROJECT_1.getProjectId(),
             project3RecommendationLogsManual, PROJECT_3.getProjectId(),
             Recommendation.RecommenderType.IAM_BINDING, mockIamBindingRetriever))
         .thenReturn(project3RecommendationsManual);

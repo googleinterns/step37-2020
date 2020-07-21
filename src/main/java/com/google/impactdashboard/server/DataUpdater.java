@@ -15,6 +15,8 @@ import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.logging.v2.LogEntry;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -36,7 +38,8 @@ public class DataUpdater {
   @VisibleForTesting
   protected DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
                         DataUpdateManager updateManager, DataReadManager readManager,
-                        IamBindingRetriever iamRetriever) {
+                        IamBindingRetriever iamRetriever,
+                        boolean manualUpdate) {
     this.logRetriever = logRetriever;
     this.recommendationRetriever = recommendationRetriever;
     this.updateManager = updateManager;
@@ -50,7 +53,7 @@ public class DataUpdater {
    * and RecommendationRetriever.
    * @return New instance of DataUpdater
    */
-  public static DataUpdater create(boolean manualUpdate) throws Exception {
+  public static DataUpdater create(boolean manualUpdate) throws IOException, GeneralSecurityException {
     return new DataUpdater(LogRetriever.create(), RecommendationRetriever.create(),
         DataUpdateManagerFactory.create(), DataReadManagerFactory.create(),
         IamBindingRetriever.create(), manualUpdate);
@@ -192,7 +195,7 @@ public class DataUpdater {
   }
 
   public static void main(String[] args) throws Exception {
-    DataUpdater dataUpdater = DataUpdater.create();
+    DataUpdater dataUpdater = DataUpdater.create(false);
     List<IAMBindingDatabaseEntry> entries = dataUpdater.listUpdatedIAMBindingData();
   }
 }

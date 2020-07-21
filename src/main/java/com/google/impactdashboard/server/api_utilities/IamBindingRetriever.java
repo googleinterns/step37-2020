@@ -17,6 +17,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
 import com.google.protobuf.Value;
 
+import java.security.GeneralSecurityException;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.io.IOException;
 import java.util.*;
@@ -52,7 +53,7 @@ public class IamBindingRetriever {
    * Static factory for creating a new instance of IamBindingRetriever.
    * @return new Instance of IamBindingRetriever
    */
-  public static IamBindingRetriever create() throws Exception {
+  public static IamBindingRetriever create() throws IOException, GeneralSecurityException {
     Iam iamService = new Iam.Builder(GoogleNetHttpTransport.newTrustedTransport(),
         JacksonFactory.getDefaultInstance(),
         new HttpCredentialsAdapter(Credentials.getCredentials().createScoped(Collections

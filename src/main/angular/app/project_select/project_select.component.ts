@@ -137,7 +137,7 @@ export class ProjectSelectComponent implements OnInit {
     this.swapAnimationProperty(field);
   }
 
-  /** When the user clicks the field name, just change the sort field */
+  /** When the user clicks the field name, just change the sort field. */
   changeField(field: SortBy) {
     if (this.getAnimationStatus(field) === 'down') {
       this.projectQueryService.changeField(field, SortDirection.DESCENDING);

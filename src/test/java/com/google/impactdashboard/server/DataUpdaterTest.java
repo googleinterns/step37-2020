@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.apphosting.api.logservice.LogServicePb.LogReadRequest;
 import com.google.logging.v2.LogEntry;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.impactdashboard.configuration.Configuration;
@@ -99,6 +98,7 @@ public class DataUpdaterTest extends Mockito {
     initializeRecommendationFakes();
   }
 
+  /** Sets up all mock object behavior necessary for Recommendations tests. */
   private void initializeRecommendationFakes() {
     project3RecommendationResponse = mock(ListLogEntriesPagedResponse.class);
     project3RecommendationResponseManual = mock(ListLogEntriesPagedResponse.class);

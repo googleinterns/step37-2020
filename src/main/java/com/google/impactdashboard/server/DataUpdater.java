@@ -297,4 +297,9 @@ public class DataUpdater {
         entry.getProjectName(), entry.getProjectNumber(), 
         timestamp, entry.getBindingsNumber());
   }
+
+  public static void main(String[] args) throws Exception {
+    DataUpdater updater = DataUpdater.create(false);
+    updater.updateDatabase();
+  }
 }

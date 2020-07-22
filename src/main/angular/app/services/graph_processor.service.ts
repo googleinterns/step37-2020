@@ -11,7 +11,12 @@ import {DateRange} from '../../model/date_range';
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
 export class GraphProcessorService {
-  constructor(private dateUtilities: DateUtilitiesService) {}
+  /** List of projects with active GET requests to be added to the graph. */
+  activeProjects: string[];
+
+  constructor(private dateUtilities: DateUtilitiesService) {
+    this.activeProjects = [];
+  }
 
   /** Initialize the chart properties with empty data. */
   initProperties(): GraphProperties {
@@ -66,16 +71,28 @@ export class GraphProcessorService {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
     const promises: Promise<unknown>[] = [];
 
-    additionsDeletions.added.forEach(addition =>
+    additionsDeletions.added.forEach(addition => {
+      this.activeProjects.push(addition.projectId);
       promises.push(
-        dataService
-          .getProjectGraphData(addition.projectId)
-          .then(data => this.addToGraph(properties, data, addition))
-      )
-    );
-    additionsDeletions.removed.forEach(removal =>
-      this.removeFromGraph(properties, removal)
-    );
+        dataService.getProjectGraphData(addition.projectId).then(data => {
+          if (this.activeProjects.includes(data.projectId)) {
+            this.addToGraph(properties, data, addition);
+            this.activeProjects.splice(
+              this.activeProjects.indexOf(data.projectId),
+              1
+            );
+          }
+        })
+      );
+    });
+    additionsDeletions.removed.forEach(removal => {
+      const index = this.activeProjects.indexOf(removal.projectId);
+      if (index !== -1) {
+        this.activeProjects.splice(index, 1);
+      } else {
+        this.removeFromGraph(properties, removal);
+      }
+    });
     return Promise.all(promises).then();
   }
 
@@ -248,9 +265,19 @@ export class GraphProcessorService {
       tooltip += `<tr class="tooltip-row"><td style="border-top: 1px solid ${project.color};">`;
 
       tooltip += `${recommendation.actor} accepted:<br/>`;
-      recommendation.actions.forEach(
-        action => (tooltip += `${action.toString()}<br/>`)
-      );
+      recommendation.actions.forEach(action => {
+        let actionText: string;
+
+        if (action.newRole.length > 0) {
+          // Role was replaced
+          actionText = `Replace ${action.previousRole} with ${action.newRole} on ${action.affectedAccount}.`;
+        } else {
+          // Role was removed
+          actionText = `Remove ${action.previousRole} from ${action.affectedAccount}.`;
+        }
+
+        tooltip += `${actionText}<br/>`;
+      });
       tooltip += `Removing ${recommendation.metadata.impactInIAMBindings} IAM Bindings`;
       tooltip += '</td></tr>';
     });

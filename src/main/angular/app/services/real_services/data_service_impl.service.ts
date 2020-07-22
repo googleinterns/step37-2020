@@ -14,8 +14,10 @@ export class DataServiceImpl implements DataService {
   /** The URLs of all active requests. */
   private activeRequests: Set<string>;
 
-  constructor(private http: HttpClient,
-             private cacheService: GraphDataCacheService) {
+  constructor(
+    private http: HttpClient,
+    private cacheService: GraphDataCacheService
+  ) {
     this.activeRequests = new Set();
   }
 

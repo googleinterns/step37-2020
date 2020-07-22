@@ -13,7 +13,7 @@ import java.io.IOException;
  * Servlet for handling the scheduled daily update of the database
  * with new IAM data and Recommendation data.
  */
-@WebServlet("/admin")
+@WebServlet("/manual-update")
 public class ManualUpdateServlet extends HttpServlet {
 
   private DataUpdater dataUpdater;

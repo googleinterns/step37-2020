@@ -1,4 +1,5 @@
-runtime: java8
+runtime: java
+env: flex
 threadsafe: false
 
 - url: /
@@ -16,7 +17,7 @@ threadsafe: false
   static_files: webapp/\1
   mime_type: text/css
   upload: webapp/.*\.css
-- url: /.*
+- url: /main
   secure: always
   static_files: webapp/index.html
   upload: webapp/.*

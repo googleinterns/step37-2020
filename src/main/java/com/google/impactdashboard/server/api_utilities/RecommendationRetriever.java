@@ -11,7 +11,10 @@ import com.google.impactdashboard.data.recommendation.RecommendationAction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.Value;
 
+import java.time.Instant;
+
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +55,9 @@ public class RecommendationRetriever {
           .getRecommendation(recommendationDataMap.get("recommendationName").getStringValue());
       List<RecommendationAction> actions = getRecommendationActions(recommendation);
       return Recommendation.create(projectId, recommendationDataMap.get("actor").getStringValue(),
-          actions, type, recommendationLog.getTimestamp().getSeconds() * 1000,
+          actions, type, Instant.ofEpochSecond(
+              recommendationLog.getTimestamp().getSeconds())
+                  .truncatedTo(ChronoUnit.DAYS).toEpochMilli(),
           IAMRecommenderMetadata.create(iamRetriever.getActionImpact(actions)));
     }).collect(Collectors.toList());
   }

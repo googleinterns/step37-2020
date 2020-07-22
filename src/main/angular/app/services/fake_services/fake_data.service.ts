@@ -18,8 +18,8 @@ export class FakeDataService implements DataService {
   private projects: {[projectId: string]: [Project, ProjectGraphData]};
 
   private static actions = [
-    new RecommendationAction('test@', 'owner', 'manager'),
-    new RecommendationAction('test@', 'observer', ''),
+    new RecommendationAction('test@', 'owner', 'manager', ''),
+    new RecommendationAction('test@', 'observer', '', ''),
   ];
   /** The time to artificially wait on a request. */
   private static requestTime = 0;

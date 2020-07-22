@@ -68,7 +68,7 @@ public class DataUpdater {
    */
   public void updateDatabase() {
     updateManager.updateRecommendations(listUpdatedRecommendations());
-    updateManager.updateIAMBindings(listUpdatedIAMBindingData());
+    //updateManager.updateIAMBindings(listUpdatedIAMBindingData());
     updateManager.deleteYearOldData();
   }
 
@@ -233,9 +233,8 @@ public class DataUpdater {
    */
   private List<IAMBindingDatabaseEntry> getLastIamEntry(
       ProjectIdentification project, String timeTo) {
-    long yesterdayMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
-        .truncatedTo(ChronoUnit.DAYS)
-        .minus(1L, ChronoUnit.DAYS).toEpochMilli();
+    long todayMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
+        .truncatedTo(ChronoUnit.DAYS).toEpochMilli();
 
     LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
         project.getProjectId(), "", timeTo, 1);
@@ -244,7 +243,7 @@ public class DataUpdater {
     List<IAMBindingDatabaseEntry> lastEntry =  iamRetriever
         .listIAMBindingData(entry, project.getProjectId(), project.getName(),
             String.valueOf(project.getProjectNumber()), 
-            timeTo.equals("") ? yesterdayMidnight : null);
+            timeTo.equals("") ? todayMidnight : null);
     return lastEntry;
   }
 
@@ -275,13 +274,13 @@ public class DataUpdater {
       if (sortedBindings.get(sortedBindingsIndex).getTimestamp() >= nextDay.toEpochMilli()) {
         if (sortedBindingsIndex != 0) {
           oneEntryPerDay.add(copyWithNewTimestamp(
-              sortedBindings.get(sortedBindingsIndex - 1), timeFrom.toEpochMilli()));
+              sortedBindings.get(sortedBindingsIndex - 1), nextDay.toEpochMilli()));
         }
         timeFrom = nextDay;
       } else if (sortedBindingsIndex == sortedBindings.size() - 1 &&
           nextDay.toEpochMilli() > sortedBindings.get(sortedBindingsIndex).getTimestamp()) {
         oneEntryPerDay.add(copyWithNewTimestamp(
-            sortedBindings.get(sortedBindingsIndex), timeFrom.toEpochMilli()));
+            sortedBindings.get(sortedBindingsIndex), nextDay.toEpochMilli()));
         timeFrom = nextDay;
       } else if (sortedBindingsIndex < sortedBindings.size() - 1) {
         sortedBindingsIndex += 1;

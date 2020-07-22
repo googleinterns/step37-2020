@@ -36,3 +36,9 @@ export const HEIGHT_SCALE_FACTOR = 1 / 2;
 export const PROJECT_INACTIVE_COLOR = '#b8b8b8';
 /** The relative URL of the error page */
 export const ERROR_PAGE_URL = 'error';
+
+/** Informs the user to select a project. Displayed when none are shown. */
+export const SELECT_PROJECT_MESSAGE =
+  'Please select a project below to generate a graph.';
+/** Informs the user that web requests are active. */
+export const LOADING_MESSAGE = 'Waiting on server, please wait.';

@@ -23,7 +23,12 @@ import {Project} from '../../model/project';
 import {GraphProcessorService} from '../services/graph_processor.service';
 import {GraphProperties, Columns} from '../../model/types';
 import {DataService} from '../services/data.service';
-import {WIDTH_SCALE_FACTOR, HEIGHT_SCALE_FACTOR} from '../../constants';
+import {
+  WIDTH_SCALE_FACTOR,
+  HEIGHT_SCALE_FACTOR,
+  LOADING_MESSAGE,
+  SELECT_PROJECT_MESSAGE,
+} from '../../constants';
 import {DateRange} from '../../model/date_range';
 
 /** The angular component that contains the graph and associated logic. */
@@ -33,11 +38,6 @@ import {DateRange} from '../../model/date_range';
   styleUrls: ['./graph.component.css'],
 })
 export class GraphComponent implements OnInit {
-  /** Informs the user to select a project. Displayed when none are shown. */
-  private static SELECT_PROJECT_MESSAGE =
-    'Please select a project below to generate a graph.';
-  private static LOADING_MESSAGE = 'Waiting on server, please wait.';
-
   /** The projects to display on the graph. */
   @Input()
   public projects: Project[];
@@ -55,7 +55,7 @@ export class GraphComponent implements OnInit {
   ) {
     this.shouldShowChart = false;
     this.projects = [];
-    this.noChartMessage = GraphComponent.LOADING_MESSAGE;
+    this.noChartMessage = LOADING_MESSAGE;
   }
 
   /** Called when an input field changes. */
@@ -63,18 +63,18 @@ export class GraphComponent implements OnInit {
     if (changes.projects.isFirstChange()) {
       // We're still retrieving the list of projects
       this.shouldShowChart = false;
-      this.noChartMessage = GraphComponent.LOADING_MESSAGE;
-    } else if (!this.projects || this.projects.length === 0) {
+      this.noChartMessage = LOADING_MESSAGE;
+    } else if (this.projects.length === 0) {
       // The user hasn't selected a project
       this.shouldShowChart = false;
-      this.noChartMessage = GraphComponent.SELECT_PROJECT_MESSAGE;
+      this.noChartMessage = SELECT_PROJECT_MESSAGE;
     } else if (
       this.projects.length === 1 &&
       changes.projects.previousValue.length === 0
     ) {
       // We're adding the first project on the graph
       this.shouldShowChart = false;
-      this.noChartMessage = GraphComponent.LOADING_MESSAGE;
+      this.noChartMessage = LOADING_MESSAGE;
     } else {
       // The data will be added to the live graph
       this.shouldShowChart = true;

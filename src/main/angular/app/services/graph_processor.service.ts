@@ -248,9 +248,19 @@ export class GraphProcessorService {
       tooltip += `<tr class="tooltip-row"><td style="border-top: 1px solid ${project.color};">`;
 
       tooltip += `${recommendation.actor} accepted:<br/>`;
-      recommendation.actions.forEach(
-        action => (tooltip += `${action.toString()}<br/>`)
-      );
+      recommendation.actions.forEach(action => {
+        let actionText: string;
+
+        if (action.newRole.length > 0) {
+          // Role was replaced
+          actionText = `Replace ${action.previousRole} with ${action.newRole} on ${action.affectedAccount}.`;
+        } else {
+          // Role was removed
+          actionText = `Remove ${action.previousRole} from ${action.affectedAccount}.`;
+        }
+
+        tooltip += `${actionText}<br/>`;
+      });
       tooltip += `Removing ${recommendation.metadata.impactInIAMBindings} IAM Bindings`;
       tooltip += '</td></tr>';
     });

@@ -55,9 +55,7 @@ public class RecommendationRetriever {
           .getRecommendation(recommendationDataMap.get("recommendationName").getStringValue());
       List<RecommendationAction> actions = getRecommendationActions(recommendation);
       return Recommendation.create(projectId, recommendationDataMap.get("actor").getStringValue(),
-          actions, type, Instant.ofEpochSecond(
-              recommendationLog.getTimestamp().getSeconds())
-                  .truncatedTo(ChronoUnit.DAYS).toEpochMilli(),
+          actions, type, recommendationLog.getTimestamp().getSeconds() * 1000,
           IAMRecommenderMetadata.create(iamRetriever.getActionImpact(actions)));
     }).collect(Collectors.toList());
   }

@@ -68,7 +68,7 @@ public class DataUpdater {
    */
   public void updateDatabase() {
     updateManager.updateRecommendations(listUpdatedRecommendations());
-    //updateManager.updateIAMBindings(listUpdatedIAMBindingData());
+    updateManager.updateIAMBindings(listUpdatedIAMBindingData());
     updateManager.deleteYearOldData();
   }
 

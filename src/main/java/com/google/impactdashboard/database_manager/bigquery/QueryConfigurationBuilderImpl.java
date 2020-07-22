@@ -134,7 +134,6 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
         recommendation.getAcceptedTimestamp() / 1000, 
         ((IAMRecommenderMetadata) recommendation.getMetadata()).getImpactInIAMBindings()))
       .collect(Collectors.joining(", "));
-    System.out.println(insertValuesRecommendationsTableConfiguration + sqlFormattedValues);
 
     return QueryJobConfiguration
       .newBuilder(insertValuesRecommendationsTableConfiguration + sqlFormattedValues)

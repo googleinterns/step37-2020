@@ -22,7 +22,7 @@ export class FakeDataService implements DataService {
     new RecommendationAction('test@', 'observer', '', ''),
   ];
   /** The time to artificially wait on a request. */
-  private static requestTime = 0;
+  private static requestTime = 1500;
 
   constructor() {
     this.projects = {};
@@ -74,6 +74,18 @@ export class FakeDataService implements DataService {
 
   hasPendingRequest(): boolean {
     return this.activeRequests.size > 0;
+  }
+
+  /** Sends a POST to /manual-update. */
+  postManualUpdate(): Promise<void> {
+    const url = '/manual-update';
+    this.activeRequests.add(url);
+    return new Promise(resolve => {
+      setTimeout(() => {
+        this.activeRequests.delete(url);
+        resolve(undefined);
+      }, FakeDataService.requestTime);
+    });
   }
 
   /** Create a project that has an incorrect mapping, so when it's pressed a redirect is sent to the error page */

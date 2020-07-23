@@ -81,4 +81,17 @@ export class DataServiceImpl implements DataService {
   hasPendingRequest(): boolean {
     return this.activeRequests.size > 0;
   }
+
+  /** Sends a POST to /manual-update. */
+  postManualUpdate(): Promise<void> {
+    const url = '/manual-update';
+    this.activeRequests.add(url);
+    return this.http
+      .post(url, {})
+      .toPromise()
+      .then(() => {
+        this.activeRequests.delete(url);
+        return undefined;
+      });
+  }
 }

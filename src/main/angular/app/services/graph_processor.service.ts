@@ -14,7 +14,10 @@ export class GraphProcessorService {
   /** List of projects with active GET requests to be added to the graph. */
   activeProjects: string[];
 
-  constructor(private dateUtilities: DateUtilitiesService) {
+  constructor(
+    private dateUtilities: DateUtilitiesService,
+    private dataService: DataService
+  ) {
     this.activeProjects = [];
   }
 
@@ -65,8 +68,7 @@ export class GraphProcessorService {
   /** Process the given changes and adjust from the graph properties as necessary. */
   processChanges(
     changes: SimpleChanges,
-    properties: GraphProperties,
-    dataService: DataService
+    properties: GraphProperties
   ): Promise<void> {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
     const promises: Promise<unknown>[] = [];
@@ -74,7 +76,7 @@ export class GraphProcessorService {
     additionsDeletions.added.forEach(addition => {
       this.activeProjects.push(addition.projectId);
       promises.push(
-        dataService.getProjectGraphData(addition.projectId).then(data => {
+        this.dataService.getProjectGraphData(addition.projectId).then(data => {
           if (this.activeProjects.includes(data.projectId)) {
             this.addToGraph(properties, data, addition);
             this.activeProjects.splice(
@@ -94,6 +96,65 @@ export class GraphProcessorService {
       }
     });
     return Promise.all(promises).then();
+  }
+
+  /** Adds an extra line with the IAM Bindings as they would be with no recommendations. */
+  addNoRecommendationsSeries(
+    properties: GraphProperties,
+    projects: Project[]
+  ): void {
+    projects.forEach(async project => {
+      const seriesNumber = (properties.columns.length - 1) / 3;
+      properties.options.series[seriesNumber] = {
+        color: project.color,
+        lineDashStyle: [10, 2],
+      };
+
+      properties.columns.push(
+        'IAM Bindings',
+        {
+          type: 'string',
+          role: 'tooltip',
+          p: {html: true},
+        },
+        {
+          type: 'string',
+          role: 'style',
+        }
+      );
+      // No harm in doing this since the graph data has been cached
+      const data = await this.dataService.getProjectGraphData(
+        project.projectId
+      );
+
+      let cumulativeImpact = 0;
+      Object.keys(data.dateToNumberIAMBindings).forEach(time => {
+        const date = this.dateUtilities.startOfDay(+time);
+        const recommendations = this.getRecommendationsOnSameDay(
+          +time,
+          data.dateToRecommendationTaken
+        );
+        // Add the cumulative impact of the recommendation
+        recommendations.forEach(
+          recommendation =>
+            (cumulativeImpact += recommendation.metadata.impactInIAMBindings)
+        );
+
+        const row = this.getRow(properties.graphData, date);
+        const adjustedBindings =
+          data.dateToNumberIAMBindings[time] + cumulativeImpact;
+
+        row.push(
+          adjustedBindings,
+          this.getTooltip(date, adjustedBindings, [], project),
+          undefined
+        );
+      });
+    });
+
+    // Force a refresh of the chart
+    const temp: Columns = [];
+    properties.columns = temp.concat(properties.columns);
   }
 
   /** Adds the given project to the graph. */

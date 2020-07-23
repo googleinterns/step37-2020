@@ -80,12 +80,13 @@ export class GraphComponent implements OnInit {
       this.shouldShowChart = true;
     }
 
-    await this.graphProcessor.processChanges(
-      changes,
-      this.properties,
-      this.dataService
-    );
+    await this.graphProcessor.processChanges(changes, this.properties);
     this.shouldShowChart = this.projects.length > 0;
+
+    this.graphProcessor.addNoRecommendationsSeries(
+      this.properties,
+      this.projects
+    );
   }
 
   ngOnInit() {

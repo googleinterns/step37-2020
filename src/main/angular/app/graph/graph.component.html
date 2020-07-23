@@ -25,6 +25,8 @@ limitations under the License.
     [width]="properties.width" [height]="properties.height">
   </google-chart>
 
+  <button (click)="toggleCumulativeDifference()">Activate</button>
+
   <div id="bottom-container" [style.width.px]="properties.width">
     <app-date-select [possibleRange]="properties.dateRange"
       (selectedRange)="changeDateRange($event)"></app-date-select>

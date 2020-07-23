@@ -99,62 +99,93 @@ export class GraphProcessorService {
   }
 
   /** Adds an extra line with the IAM Bindings as they would be with no recommendations. */
-  addNoRecommendationsSeries(
-    properties: GraphProperties,
-    projects: Project[]
-  ): void {
-    projects.forEach(async project => {
-      const seriesNumber = (properties.columns.length - 1) / 3;
-      properties.options.series[seriesNumber] = {
-        color: project.color,
-        lineDashStyle: [10, 2],
-      };
+  async addCumulativeDifference(properties: GraphProperties, project: Project) {
+    const seriesNumber = (properties.columns.length - 1) / 3;
+    properties.options.series[seriesNumber] = {
+      color: project.color,
+      lineDashStyle: [10, 2],
+    };
 
-      properties.columns.push(
-        'IAM Bindings',
-        {
-          type: 'string',
-          role: 'tooltip',
-          p: {html: true},
-        },
-        {
-          type: 'string',
-          role: 'style',
-        }
+    properties.columns.push(
+      `${project.projectId}-bindings-trajectory`,
+      {
+        type: 'string',
+        role: 'tooltip',
+        p: {html: true},
+      },
+      {
+        type: 'string',
+        role: 'style',
+      }
+    );
+    // No harm in doing this since the graph data has been cached
+    const data = await this.dataService.getProjectGraphData(project.projectId);
+
+    let cumulativeImpact = 0;
+    Object.keys(data.dateToNumberIAMBindings).forEach(time => {
+      const date = this.dateUtilities.startOfDay(+time);
+      const recommendations = this.getRecommendationsOnSameDay(
+        +time,
+        data.dateToRecommendationTaken
       );
-      // No harm in doing this since the graph data has been cached
-      const data = await this.dataService.getProjectGraphData(
-        project.projectId
+
+      const row = this.getRow(properties.graphData, date);
+      const adjustedBindings =
+        data.dateToNumberIAMBindings[time] + cumulativeImpact;
+
+      // Add the cumulative impact of the recommendation
+      recommendations.forEach(
+        recommendation =>
+          (cumulativeImpact += recommendation.metadata.impactInIAMBindings)
       );
 
-      let cumulativeImpact = 0;
-      Object.keys(data.dateToNumberIAMBindings).forEach(time => {
-        const date = this.dateUtilities.startOfDay(+time);
-        const recommendations = this.getRecommendationsOnSameDay(
-          +time,
-          data.dateToRecommendationTaken
-        );
-        // Add the cumulative impact of the recommendation
-        recommendations.forEach(
-          recommendation =>
-            (cumulativeImpact += recommendation.metadata.impactInIAMBindings)
-        );
+      row.push(
+        adjustedBindings,
+        this.getTooltip(date, adjustedBindings, [], project),
+        undefined
+      );
+    });
 
-        const row = this.getRow(properties.graphData, date);
-        const adjustedBindings =
-          data.dateToNumberIAMBindings[time] + cumulativeImpact;
-
-        row.push(
-          adjustedBindings,
-          this.getTooltip(date, adjustedBindings, [], project),
-          undefined
-        );
-      });
+    // Now add empty data for rows that weren't touched
+    properties.graphData.forEach(row => {
+      if (row.length < (seriesNumber + 1) * 3 + 1) {
+        row.push(undefined, undefined, undefined);
+      }
     });
 
     // Force a refresh of the chart
     const temp: Columns = [];
     properties.columns = temp.concat(properties.columns);
+  }
+
+  /** Remove all of the cumualtive differences from the graph data. */
+  removeCumulativeDifferences(properties: GraphProperties) {
+    console.log(properties);
+    this.getCumulativeDifferenceSeriesNumbers(properties).forEach(
+      (seriesNumber, index) => {
+        console.log(seriesNumber);
+        const adjustedSeriesNumber = seriesNumber - index;
+        this.removeSeriesOptions(properties, adjustedSeriesNumber);
+        properties.columns.splice(adjustedSeriesNumber * 3 + 1, 3);
+        properties.graphData.forEach(row =>
+          row.splice(adjustedSeriesNumber * 3 + 1, 3)
+        );
+      }
+    );
+
+    // Force a refresh of the chart
+    const temp: Columns = [];
+    properties.columns = temp.concat(properties.columns);
+  }
+
+  /** Get the series numbers of all the binding cumulative differences. */
+  private getCumulativeDifferenceSeriesNumbers(
+    properties: GraphProperties
+  ): number[] {
+    // If this series has a dash style, then it's a cumulative difference curve
+    return Object.entries(properties.options.series)
+      .filter(value => value[1].lineDashStyle)
+      .map(value => +value[0]);
   }
 
   /** Adds the given project to the graph. */
@@ -181,11 +212,11 @@ export class GraphProcessorService {
     properties.columns = temp.concat(properties.columns);
   }
 
-  /** Removes the given project from the graph. */
-  private removeFromGraph(properties: GraphProperties, project: Project) {
-    const seriesNumber: number =
-      (properties.columns.indexOf(project.projectId) - 1) / 3;
-
+  /** Remove the series from options. */
+  private removeSeriesOptions(
+    properties: GraphProperties,
+    seriesNumber: number
+  ) {
     if (properties.options.series) {
       for (const [key] of Object.entries(properties.options.series)) {
         if (+key >= seriesNumber && properties.options.series) {
@@ -194,6 +225,13 @@ export class GraphProcessorService {
         }
       }
     }
+  }
+
+  /** Removes the given project from the graph. */
+  private removeFromGraph(properties: GraphProperties, project: Project) {
+    const seriesNumber: number =
+      (properties.columns.indexOf(project.projectId) - 1) / 3;
+    this.removeSeriesOptions(properties, seriesNumber);
 
     properties.columns.splice(seriesNumber * 3 + 1, 3);
     properties.graphData.forEach(row => row.splice(seriesNumber * 3 + 1, 3));

@@ -48,6 +48,8 @@ export class GraphComponent implements OnInit {
   public shouldShowChart: boolean;
   /** The text that's shown when the chart isn't. */
   public noChartMessage: string;
+  /** Whether to show the graph without accepted recommendations. */
+  private showCumulativeDifference: boolean;
 
   constructor(
     private dataService: DataService,
@@ -56,6 +58,7 @@ export class GraphComponent implements OnInit {
     this.shouldShowChart = false;
     this.projects = [];
     this.noChartMessage = LOADING_MESSAGE;
+    this.showCumulativeDifference = false;
   }
 
   /** Called when an input field changes. */
@@ -82,11 +85,17 @@ export class GraphComponent implements OnInit {
 
     await this.graphProcessor.processChanges(changes, this.properties);
     this.shouldShowChart = this.projects.length > 0;
+  }
 
-    this.graphProcessor.addNoRecommendationsSeries(
-      this.properties,
-      this.projects
-    );
+  toggleCumulativeDifference() {
+    if (this.showCumulativeDifference) {
+      this.graphProcessor.removeCumulativeDifferences(this.properties);
+    } else {
+      this.projects.forEach(project => {
+        this.graphProcessor.addCumulativeDifference(this.properties, project);
+      });
+    }
+    this.showCumulativeDifference = !this.showCumulativeDifference;
   }
 
   ngOnInit() {

@@ -91,9 +91,12 @@ export class GraphComponent implements OnInit {
     if (this.showCumulativeDifference) {
       this.graphProcessor.removeCumulativeDifferences(this.properties);
     } else {
-      this.projects.forEach(project => {
-        this.graphProcessor.addCumulativeDifference(this.properties, project);
-      });
+      this.graphProcessor.addCumulativeDifferences(
+        this.properties,
+        this.projects
+      );
+
+      console.log(this.properties);
     }
     this.showCumulativeDifference = !this.showCumulativeDifference;
   }

@@ -99,7 +99,54 @@ export class GraphProcessorService {
   }
 
   /** Adds an extra line with the IAM Bindings as they would be with no recommendations. */
-  async addCumulativeDifference(properties: GraphProperties, project: Project) {
+  async addCumulativeDifferences(
+    properties: GraphProperties,
+    projects: Project[]
+  ) {
+    await Promise.all(
+      projects.map(project => this.addCumulativeDifference(properties, project))
+    );
+
+    // Force a refresh of the chart
+    const temp: Columns = [];
+    properties.columns = temp.concat(properties.columns);
+  }
+
+  /** Remove all of the cumualtive differences from the graph data. */
+  removeCumulativeDifferences(properties: GraphProperties) {
+    console.log(properties);
+    this.getCumulativeDifferenceSeriesNumbers(properties).forEach(
+      (seriesNumber, index) => {
+        console.log(seriesNumber);
+        const adjustedSeriesNumber = seriesNumber - index;
+        this.removeSeriesOptions(properties, adjustedSeriesNumber);
+        properties.columns.splice(adjustedSeriesNumber * 3 + 1, 3);
+        properties.graphData.forEach(row =>
+          row.splice(adjustedSeriesNumber * 3 + 1, 3)
+        );
+      }
+    );
+
+    // Force a refresh of the chart
+    const temp: Columns = [];
+    properties.columns = temp.concat(properties.columns);
+  }
+
+  /** Get the series numbers of all the binding cumulative differences. */
+  private getCumulativeDifferenceSeriesNumbers(
+    properties: GraphProperties
+  ): number[] {
+    // If this series has a dash style, then it's a cumulative difference curve
+    return Object.entries(properties.options.series)
+      .filter(value => value[1].lineDashStyle)
+      .map(value => +value[0]);
+  }
+
+  /** Adds the cumulative difference curve for the given curve. */
+  private async addCumulativeDifference(
+    properties: GraphProperties,
+    project: Project
+  ): Promise<void> {
     const seriesNumber = (properties.columns.length - 1) / 3;
     properties.options.series[seriesNumber] = {
       color: project.color,
@@ -152,40 +199,6 @@ export class GraphProcessorService {
         row.push(undefined, undefined, undefined);
       }
     });
-
-    // Force a refresh of the chart
-    const temp: Columns = [];
-    properties.columns = temp.concat(properties.columns);
-  }
-
-  /** Remove all of the cumualtive differences from the graph data. */
-  removeCumulativeDifferences(properties: GraphProperties) {
-    console.log(properties);
-    this.getCumulativeDifferenceSeriesNumbers(properties).forEach(
-      (seriesNumber, index) => {
-        console.log(seriesNumber);
-        const adjustedSeriesNumber = seriesNumber - index;
-        this.removeSeriesOptions(properties, adjustedSeriesNumber);
-        properties.columns.splice(adjustedSeriesNumber * 3 + 1, 3);
-        properties.graphData.forEach(row =>
-          row.splice(adjustedSeriesNumber * 3 + 1, 3)
-        );
-      }
-    );
-
-    // Force a refresh of the chart
-    const temp: Columns = [];
-    properties.columns = temp.concat(properties.columns);
-  }
-
-  /** Get the series numbers of all the binding cumulative differences. */
-  private getCumulativeDifferenceSeriesNumbers(
-    properties: GraphProperties
-  ): number[] {
-    // If this series has a dash style, then it's a cumulative difference curve
-    return Object.entries(properties.options.series)
-      .filter(value => value[1].lineDashStyle)
-      .map(value => +value[0]);
   }
 
   /** Adds the given project to the graph. */

@@ -179,70 +179,7 @@ public class DataUpdaterTest extends Mockito {
         .thenReturn(new ArrayList<>(Arrays.asList(PROJECT_1, PROJECT_2, PROJECT_3)));
   }
 
-  @Test
-  public void testAutomaticUpdateRecommendationsWith1NewProject2Old() {
-    List<Recommendation> actual = automaticDataUpdater.listUpdatedRecommendations();
-    List<Recommendation> expected = Arrays.asList(
-        PROJECT_1_RECOMMENDATION, PROJECT_3_RECOMMENDATION_1, PROJECT_3_RECOMMENDATION_2);
-
-
-    Assert.assertEquals("Returned lists have the same size", expected.size(), actual.size());
-    actual.removeAll(expected); // if actual is now empty, the lists were equal
-    Assert.assertEquals("Lists are equal", Arrays.asList(), actual);
-  }
-
-  @Test
-  public void testManualUpdateRecommendations() {
-    List<Recommendation> actual = manualDataUpdater.listUpdatedRecommendations();
-    List<Recommendation> expected = Arrays.asList(PROJECT_3_RECOMMENDATION_1);
-
-    Assert.assertEquals("Returned lists have the same size", expected.size(), actual.size());
-    actual.removeAll(expected); // if actual is now empty, the lists were equal
-    Assert.assertEquals("Lists are equal", Arrays.asList(), actual);
-  }
-
-  @Test
-  public void manualIAMUpdate1NewProject1OldProject() {
-    // Testing the functionality for manually updating a new project,
-    // Old projects are ignored in this case so nothing should be changed
-    // for them.
-
-    LoggingClient.ListLogEntriesPagedResponse project3Response =
-        mock(LoggingClient.ListLogEntriesPagedResponse.class, Mockito.RETURNS_DEEP_STUBS);
-
-    List<LogEntry> project3AuditLogs =
-        Collections.singletonList(mock(LogEntry.class));
-
-    when(mockProjectListRetriever.listResourceManagerProjects())
-        .thenReturn(new ArrayList<>(Arrays.asList(PROJECT_1, PROJECT_3)));
-
-    when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_3.getProjectId()), anyString(),
-        anyString(), anyInt())).thenReturn(project3Response);
-
-    when(project3Response.iterateAll()).thenReturn(project3AuditLogs);
-
-    when(project3Response.getPage().getResponse().getEntriesList())
-        .thenReturn(project3AuditLogs);
-
-    when(mockIamBindingRetriever.listIAMBindingData(any(), any(), any(),
-        any(), any())).thenReturn(PROJECT_3_IAM_BINDING_SINGLE_ENTRY);
-
-    List<IAMBindingDatabaseEntry> actual = manualDataUpdater.listUpdatedIAMBindingData();
-    // Testing size because should always return 30 long List and creating the expected list would be too large
-    int expectedSize = 30;
-    Assert.assertEquals(expectedSize, actual.size());
-
-    // Testing to see if the bindings are the correct ammount
-    IAMBindingDatabaseEntry actualEntry = actual.get(15);
-    int expectedBindingsNumber = 1000;
-    Assert.assertEquals(expectedBindingsNumber, actualEntry.getBindingsNumber());
-  }
-
-  @Test
-  public void automaticIAMUpdate1NewProject2OldProject() {
-    // Testing the automatic updating for both new and old projects.
-    // 31 logs for New projects, 1 log for old projects
-
+  private void initializeIamFakes() {
     LoggingClient.ListLogEntriesPagedResponse project3Response =
         mock(LoggingClient.ListLogEntriesPagedResponse.class, Mockito.RETURNS_DEEP_STUBS);
     LoggingClient.ListLogEntriesPagedResponse project2Response =
@@ -291,6 +228,78 @@ public class DataUpdaterTest extends Mockito {
 
     when(mockIamBindingRetriever.listIAMBindingData(any(), eq(PROJECT_1.getProjectId()), any(),
         any(), any())).thenReturn(PROJECT_1_IAM_BINDING_SINGLE_ENTRY);
+  }
+
+  @Test
+  public void testAutomaticUpdateRecommendationsWith1NewProject2Old() {
+    List<Recommendation> actual = automaticDataUpdater.listUpdatedRecommendations();
+    List<Recommendation> expected = Arrays.asList(
+        PROJECT_1_RECOMMENDATION, PROJECT_3_RECOMMENDATION_1, PROJECT_3_RECOMMENDATION_2);
+
+
+    Assert.assertEquals("Returned lists have the same size", expected.size(), actual.size());
+    actual.removeAll(expected); // if actual is now empty, the lists were equal
+    Assert.assertEquals("Lists are equal", Arrays.asList(), actual);
+  }
+
+  @Test
+  public void testManualUpdateRecommendations() {
+    List<Recommendation> actual = manualDataUpdater.listUpdatedRecommendations();
+    List<Recommendation> expected = Arrays.asList(PROJECT_3_RECOMMENDATION_1);
+
+    Assert.assertEquals("Returned lists have the same size", expected.size(), actual.size());
+    actual.removeAll(expected); // if actual is now empty, the lists were equal
+    Assert.assertEquals("Lists are equal", Arrays.asList(), actual);
+  }
+
+  @Test
+  public void manualIAMUpdate1NewProject1OldProject() {
+    // Testing the functionality for manually updating a new project,
+    // Old projects are ignored in this case so nothing should be changed
+    // for them.
+
+//    LoggingClient.ListLogEntriesPagedResponse project3Response =
+//        mock(LoggingClient.ListLogEntriesPagedResponse.class, Mockito.RETURNS_DEEP_STUBS);
+//
+//    List<LogEntry> project3AuditLogs =
+//        Collections.singletonList(mock(LogEntry.class));
+//
+//    when(mockProjectListRetriever.listResourceManagerProjects())
+//        .thenReturn(new ArrayList<>(Arrays.asList(PROJECT_1, PROJECT_3)));
+//
+//    when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_3.getProjectId()), anyString(),
+//        anyString(), anyInt())).thenReturn(project3Response);
+//
+//    when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_1.getProjectId()), anyString(),
+//        anyString(), anyInt())).thenReturn()
+//
+//    when(project3Response.iterateAll()).thenReturn(project3AuditLogs);
+//
+//    when(project3Response.getPage().getResponse().getEntriesList())
+//        .thenReturn(project3AuditLogs);
+//
+//    when(mockIamBindingRetriever.listIAMBindingData(any(), any(), any(),
+//        any(), any())).thenReturn(PROJECT_3_IAM_BINDING_SINGLE_ENTRY);
+
+    initializeIamFakes();
+
+    List<IAMBindingDatabaseEntry> actual = manualDataUpdater.listUpdatedIAMBindingData();
+    // Testing size because should always return 30 long List and creating the expected list would be too large
+    int expectedSize = 30;
+    Assert.assertEquals(expectedSize, actual.size());
+
+    // Testing to see if the bindings are the correct ammount
+    IAMBindingDatabaseEntry actualEntry = actual.get(15);
+    int expectedBindingsNumber = 1000;
+    Assert.assertEquals(expectedBindingsNumber, actualEntry.getBindingsNumber());
+  }
+
+  @Test
+  public void automaticIAMUpdate1NewProject2OldProject() {
+    // Testing the automatic updating for both new and old projects.
+    // 31 logs for New projects, 1 log for old projects
+
+    initializeIamFakes();
 
     List<IAMBindingDatabaseEntry> actual = automaticDataUpdater.listUpdatedIAMBindingData();
     // Testing size because should always return 30 long List and creating the expected list would be too large

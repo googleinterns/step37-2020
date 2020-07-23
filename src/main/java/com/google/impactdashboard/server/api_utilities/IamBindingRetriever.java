@@ -83,14 +83,13 @@ public class IamBindingRetriever {
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
     return timeToAuditLogMap.entrySet().stream().map(entry -> {
-      AtomicReference<Long> secondsFromEpoch = new AtomicReference<>();
-      secondsFromEpoch.set(timeStamp);
+      Long secondsFromEpoch = timeStamp;
       Map<String, Integer> membersForRoles = getMembersForRoles(entry.getValue().getResponse()
           .getFieldsMap().get("bindings").getListValue().getValuesList());
-      if(secondsFromEpoch.get() == null){
-        secondsFromEpoch.set(entry.getKey().getSeconds() * 1000);
+      if(secondsFromEpoch == null){
+        secondsFromEpoch = entry.getKey().getSeconds() * 1000;
       }
-      return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, secondsFromEpoch.get(),
+      return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, secondsFromEpoch,
           getIamBindings(membersForRoles));
     }).collect(Collectors.toList());
   }

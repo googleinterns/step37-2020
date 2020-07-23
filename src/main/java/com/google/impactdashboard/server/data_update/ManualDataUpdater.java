@@ -1,7 +1,5 @@
 package com.google.impactdashboard.server.data_update;
 
-import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
-import com.google.cloud.logging.v2.LoggingClient;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.project.ProjectIdentification;
@@ -14,17 +12,12 @@ import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
 import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
-import com.google.logging.v2.LogEntry;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
-
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public class ManualDataUpdater extends DataUpdater {
 

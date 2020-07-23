@@ -53,9 +53,18 @@ public class LogRetriever {
     filter += " AND protoPayload.methodName:SetIamPolicy";
     ListLogEntriesRequest request = builder.setFilter(filter).setPageSize(pageSize).build();
     return logger.listLogEntries(request);
+  }
 
-//    return StreamSupport.stream(response.iterateAll().spliterator(), false)
-//        .collect(Collectors.toList());
+  public static void main(String[] args) throws Exception {
+    LogRetriever retriever = LogRetriever.create();
+    try {
+      ListLogEntriesPagedResponse response = retriever.listAuditLogsResponse("eargaflhavlbaflgbjalkjgrbalekurbg", "", "", 1);
+    } catch (com.google.api.gax.rpc.PermissionDeniedException pde) {
+      System.out.println(pde.getMessage());
+    } catch (com.google.api.gax.rpc.NotFoundException nfe) {
+      System.out.println(nfe.getMessage());
+    }
+    int x = 0;
   }
 
   /**

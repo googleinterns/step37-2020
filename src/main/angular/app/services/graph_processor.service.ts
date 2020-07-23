@@ -147,6 +147,7 @@ export class GraphProcessorService {
     days
       .filter(day => !this.includesDay(rows, day))
       .forEach(day => {
+        this.dateUtilities.addTimezoneOffset(day);
         const row: Row = [day];
         // Fill in columns for all existing projects with empty data
         for (let i = 0; i < seriesNumber * 3; i++) {
@@ -288,7 +289,10 @@ export class GraphProcessorService {
     return (
       rows.findIndex(row => {
         if (row[0] instanceof Date) {
-          return row[0].getTime() === day.getTime();
+          return this.dateUtilities.fallOnSameDay(
+            row[0].getTime(),
+            day.getTime()
+          );
         }
         return false;
       }) !== -1
@@ -299,7 +303,10 @@ export class GraphProcessorService {
   private getRow(rows: Row[], day: Date): Row | undefined {
     return rows.find(row => {
       if (row[0] instanceof Date) {
-        return row[0].getTime() === day.getTime();
+        return this.dateUtilities.fallOnSameDay(
+          row[0].getTime(),
+          day.getTime()
+        );
       }
       return false;
     });

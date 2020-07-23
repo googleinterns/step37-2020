@@ -85,4 +85,12 @@ export class DateUtilitiesService {
     }
     return diff / 1000 / 60 / 60;
   }
+
+  /** Add the timezone offset back to the date. */
+  addTimezoneOffset(date: Date) {
+    // Note that offset is NOT specific to the date object, it's just the user's timezone
+    // JavaScript dates aren't very bright -- I don't make the rules ;)
+    const offset = date.getTimezoneOffset();
+    date.setTime(date.getTime() + offset * 60 * 1000);
+  }
 }

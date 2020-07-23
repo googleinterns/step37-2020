@@ -16,20 +16,17 @@ limitations under the License.
 
 <div *ngIf="!shouldShowChart" [style.width.px]="properties.width"
   [style.height.px]="properties.height" class="center" id="project-prompt">
-  <h1>Nothing to display! <br />
-    Please select a project below to
-    generate a graph.</h1>
+  <h1>Nothing to display yet!<br/>{{ noChartMessage }}</h1>
 </div>
 
 <div id="show-chart" *ngIf="shouldShowChart">
-  <div id="top-container" [style.width.px]="properties.width * 3 / 4">
-
-    <app-date-select [possibleRange]="properties.dateRange"
-      (selectedRange)="changeDateRange($event)"></app-date-select>
-  </div>
-
   <google-chart #chart id="chart" class="center" [type]="properties.type"
     [columns]="properties.columns" [data]="properties.graphData" [options]="properties.options"
     [width]="properties.width" [height]="properties.height">
   </google-chart>
+
+  <div id="bottom-container" [style.width.px]="properties.width">
+    <app-date-select [possibleRange]="properties.dateRange"
+      (selectedRange)="changeDateRange($event)"></app-date-select>
+  </div>
 </div>

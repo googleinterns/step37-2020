@@ -14,21 +14,23 @@ export class DataServiceImpl implements DataService {
   /** The URLs of all active requests. */
   private activeRequests: Set<string>;
 
-  constructor(private http: HttpClient,
-             private cacheService: GraphDataCacheService) {
+  constructor(
+    private http: HttpClient,
+    private cacheService: GraphDataCacheService
+  ) {
     this.activeRequests = new Set();
   }
 
   /** Gets the graph data for the given project ID. */
   async getProjectGraphData(id: string): Promise<ProjectGraphData> {
-    const url = `/get-project-data?id=${id}`;
-    this.activeRequests.add(url);
-    const response: any = await this.http.get<any>(url).toPromise();
-
     // Return cached data, if available
     if (this.cacheService.hasEntry(id)) {
       return new Promise(resolve => resolve(this.cacheService.getEntry(id)));
     }
+
+    const url = `/get-project-data?id=${id}`;
+    this.activeRequests.add(url);
+    const response: any = await this.http.get<any>(url).toPromise();
 
     // eslint-disable-next-line no-prototype-builtins
     if (response.hasOwnProperty('projectId')) {

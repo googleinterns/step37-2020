@@ -14,13 +14,15 @@ import {RecommenderMetadata} from '../../../model/recommender_metadata';
 export class FakeDataService implements DataService {
   /** The URLs of all active requests. */
   private activeRequests: Set<string>;
-
   /** Contains the projects that are faked. */
   private projects: {[projectId: string]: [Project, ProjectGraphData]};
+
   private static actions = [
-    new RecommendationAction('test@', 'owner', 'manager'),
-    new RecommendationAction('test@', 'observer', ''),
+    new RecommendationAction('test@', 'owner', 'manager', ''),
+    new RecommendationAction('test@', 'observer', '', ''),
   ];
+  /** The time to artificially wait on a request. */
+  private static requestTime = 0;
 
   constructor() {
     this.projects = {};
@@ -45,8 +47,10 @@ export class FakeDataService implements DataService {
     const url = '/list-project-summaries';
     this.activeRequests.add(url);
     return new Promise(resolve => {
-      this.activeRequests.delete(url);
-      resolve(Object.values(this.projects).map(tuple => tuple[0]));
+      setTimeout(() => {
+        this.activeRequests.delete(url);
+        resolve(Object.values(this.projects).map(tuple => tuple[0]));
+      }, FakeDataService.requestTime);
     });
   }
 
@@ -55,8 +59,10 @@ export class FakeDataService implements DataService {
     if (this.projects[id]) {
       this.activeRequests.add(id);
       return new Promise(resolve => {
-        this.activeRequests.delete(id);
-        resolve(this.projects[id][1]);
+        setTimeout(() => {
+          this.activeRequests.delete(id);
+          resolve(this.projects[id][1]);
+        }, FakeDataService.requestTime);
       });
     } else {
       throw new ErrorMessage(

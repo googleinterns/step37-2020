@@ -4,6 +4,7 @@
 
 #root {
   display: flex;
+  margin-top: -13px;
 }
 
 #content {
@@ -15,7 +16,7 @@
 }
 
 #projects-table {
-  padding: 0 5px 5px 5px;
+  padding: 0 3px;
   border-collapse: collapse;
   text-align: left;
   display: inline-block;
@@ -82,8 +83,7 @@ th div {
 }
 
 #filter-container {
-  margin: 5px 5px 0 5px;
-  margin-left: 5px;
+  margin: 3px 3px 0 3px;
   display: flex;
   background-color: #E8EAED;
 }

@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule, ErrorHandler} from '@angular/core';
+import {NgModule, ErrorHandler, enableProdMode} from '@angular/core';
 import {GoogleChartsModule} from 'angular-google-charts';
 
 import {AppRoutingModule} from './app_routing.module';
@@ -24,6 +24,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {GraphDataCacheService} from './services/graph_data_cache.service';
+import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,10 @@ import {GraphDataCacheService} from './services/graph_data_cache.service';
     ProjectQueryService,
     DataShareService,
     GraphDataCacheService,
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy,
+    },
   ],
   bootstrap: [AppComponent],
 })

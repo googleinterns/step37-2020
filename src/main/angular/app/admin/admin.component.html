@@ -6,7 +6,7 @@
     <div class="option-group">
       <mat-divider></mat-divider>
       <p>Initiate a manual update of the database. Please note that this will take a couple minutes to complete.</p>
-      <button id="manual-update-button" mat-flat-button color="warn" (click)="manualUpdate()">Manual Update</button>
+      <button id="manual-update-button" mat-flat-button color="warn" (click)="manualUpdate()" [disabled]="enableUpdateData()">Manual Update</button>
     </div>
   </div>
 </div>

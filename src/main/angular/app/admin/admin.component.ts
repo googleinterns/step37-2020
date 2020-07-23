@@ -29,4 +29,9 @@ export class AdminComponent implements OnInit {
   showLoadingBar(): boolean {
     return this.dataService.hasPendingRequest();
   }
+
+  /** Whether the update data button should be enabled. */
+  enableUpdateData() {
+    return this.sentManualUpdate;
+  }
 }

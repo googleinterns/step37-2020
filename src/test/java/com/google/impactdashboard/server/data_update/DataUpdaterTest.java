@@ -130,8 +130,6 @@ public class DataUpdaterTest extends Mockito {
     List<Recommendation> project1Recommendations =
         Arrays.asList(PROJECT_1_RECOMMENDATION);
 
-    when(mockProjectListRetriever.listResourceManagerProjects())
-        .thenReturn(new ArrayList<>(Arrays.asList(PROJECT_1, PROJECT_2, PROJECT_3)));
     List<Recommendation> project3RecommendationsManual =
         Arrays.asList(PROJECT_3_RECOMMENDATION_1);
 
@@ -174,9 +172,6 @@ public class DataUpdaterTest extends Mockito {
             Arrays.asList(), PROJECT_2.getProjectId(),
             Recommendation.RecommenderType.IAM_BINDING, mockIamBindingRetriever))
         .thenReturn(Arrays.asList());
-
-    when(mockProjectListRetriever.listResourceManagerProjects())
-        .thenReturn(new ArrayList<>(Arrays.asList(PROJECT_1, PROJECT_2, PROJECT_3)));
   }
 
   private void initializeIamFakes() {
@@ -192,9 +187,6 @@ public class DataUpdaterTest extends Mockito {
         Collections.singletonList(mock(LogEntry.class));
     List<LogEntry> project1AuditLogs =
         Collections.singletonList(mock(LogEntry.class));
-
-    when(mockProjectListRetriever.listResourceManagerProjects())
-        .thenReturn(new ArrayList<>(Arrays.asList(PROJECT_1, PROJECT_2, PROJECT_3)));
 
     when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_3.getProjectId()), anyString(),
         anyString(), anyInt())).thenReturn(project3Response);
@@ -232,7 +224,8 @@ public class DataUpdaterTest extends Mockito {
 
   @Test
   public void testAutomaticUpdateRecommendationsWith1NewProject2Old() {
-    List<Recommendation> actual = automaticDataUpdater.listUpdatedRecommendations();
+    List<Recommendation> actual = automaticDataUpdater.listUpdatedRecommendations(
+        Arrays.asList(PROJECT_1, PROJECT_2), Arrays.asList(PROJECT_3));
     List<Recommendation> expected = Arrays.asList(
         PROJECT_1_RECOMMENDATION, PROJECT_3_RECOMMENDATION_1, PROJECT_3_RECOMMENDATION_2);
 
@@ -244,7 +237,8 @@ public class DataUpdaterTest extends Mockito {
 
   @Test
   public void testManualUpdateRecommendations() {
-    List<Recommendation> actual = manualDataUpdater.listUpdatedRecommendations();
+    List<Recommendation> actual = manualDataUpdater.listUpdatedRecommendations(
+        Arrays.asList(PROJECT_1, PROJECT_2), Arrays.asList(PROJECT_3));
     List<Recommendation> expected = Arrays.asList(PROJECT_3_RECOMMENDATION_1);
 
     Assert.assertEquals("Returned lists have the same size", expected.size(), actual.size());
@@ -260,7 +254,8 @@ public class DataUpdaterTest extends Mockito {
 
     initializeIamFakes();
 
-    List<IAMBindingDatabaseEntry> actual = manualDataUpdater.listUpdatedIAMBindingData();
+    List<IAMBindingDatabaseEntry> actual = manualDataUpdater.listUpdatedIAMBindingData(
+        Arrays.asList(PROJECT_1, PROJECT_2), Arrays.asList(PROJECT_3));
     // Testing size because should always return 30 long List and creating the expected list would be too large
     int expectedSize = 30;
     Assert.assertEquals(expectedSize, actual.size());
@@ -277,7 +272,8 @@ public class DataUpdaterTest extends Mockito {
     // 31 logs for New projects, 1 log for old projects
     initializeIamFakes();
 
-    List<IAMBindingDatabaseEntry> actual = automaticDataUpdater.listUpdatedIAMBindingData();
+    List<IAMBindingDatabaseEntry> actual = automaticDataUpdater.listUpdatedIAMBindingData(
+        Arrays.asList(PROJECT_1, PROJECT_2), Arrays.asList(PROJECT_3));
     // Testing size because should always return 30 long List and creating the expected list would be too large
     int expectedSize = 33;
     Assert.assertEquals(expectedSize, actual.size());

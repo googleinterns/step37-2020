@@ -46,18 +46,28 @@ public class DataUpdater {
    * Updates the database with any new information about recommendations and IAMBinding logging.
    */
   public void updateDatabase() {
-    updateManager.updateRecommendations(listUpdatedRecommendations());
-    updateManager.updateIAMBindings(listUpdatedIAMBindingData());
+    List<ProjectIdentification> knownProjects = readManager.listProjects();
+    List<ProjectIdentification> newProjects = projectRetriever.listResourceManagerProjects();
+    ArrayList<ProjectIdentification> deprecatedProjects = new ArrayList<>(knownProjects);
+    deprecatedProjects.removeAll(newProjects); // projects that are in the database that 
+                                               // the user no longer has acces to
+    knownProjects.removeAll(deprecatedProjects); //knownProjects now a subset of newProjects
+    newProjects.removeAll(knownProjects);
+
+    updateManager.updateRecommendations(listUpdatedRecommendations(knownProjects, newProjects));
+    updateManager.updateIAMBindings(listUpdatedIAMBindingData(knownProjects, newProjects));
     updateManager.deleteYearOldData();
   }
 
   @VisibleForTesting
-  protected List<Recommendation> listUpdatedRecommendations() {
+  protected List<Recommendation> listUpdatedRecommendations(
+      List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
     throw new UnsupportedOperationException("Must be overriden.");
   } 
 
   @VisibleForTesting
-  protected List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
+  protected List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData(
+    List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
     throw new UnsupportedOperationException("Must be overriden.");
   }
 

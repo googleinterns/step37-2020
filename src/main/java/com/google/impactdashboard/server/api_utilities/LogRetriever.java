@@ -65,18 +65,6 @@ public class LogRetriever {
     return logger.listLogEntries(request);
   }
 
-  public static void main(String[] args) throws Exception {
-    LogRetriever retriever = LogRetriever.create();
-    try {
-      ListLogEntriesPagedResponse response = retriever.listAuditLogsResponse("eargaflhavlbaflgbjalkjgrbalekurbg", "", "", 1);
-    } catch (com.google.api.gax.rpc.PermissionDeniedException pde) {
-      System.out.println(pde.getMessage());
-    } catch (com.google.api.gax.rpc.NotFoundException nfe) {
-      System.out.println(nfe.getMessage());
-    }
-    int x = 0;
-  }
-
   /**
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant Recommendation logs.
    * @param projectId ID of the project that the recommendation logs will be retrieved for.

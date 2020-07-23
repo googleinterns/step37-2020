@@ -47,40 +47,16 @@ public class AutomaticDataUpdater extends DataUpdater {
   }
 
   /**
-   * Gets the new Recommendation data from the Recommender API.
-   * @return a List of Recommendations
-   */
-  @VisibleForTesting
-  @Override
-  protected List<Recommendation> listUpdatedRecommendations() {
-    List<ProjectIdentification> knownProjects = readManager.listProjects();
-    List<ProjectIdentification> newProjects = projectRetriever.listResourceManagerProjects();
-    newProjects.removeAll(knownProjects);
-    return listAllNewRecommendations(knownProjects, newProjects);
-  }
-
-  /**
-   * Lists the new IAM Binding data from the cloud logging API
-   * @return A List of IAMBindingDatabaseEntry
-   */
-  @VisibleForTesting
-  @Override
-  protected List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
-    List<ProjectIdentification> knownProjects = readManager.listProjects();
-    List<ProjectIdentification> newProjects = projectRetriever.listResourceManagerProjects();
-    newProjects.removeAll(knownProjects);
-    return newIAMBindingsData(newProjects, knownProjects);
-  }
-
-  /**
    * For {@code knownProjects}, gets any recommendations that occured in the 
    * past 24 hours. For {@code newProjects}, gets all known recommendations. 
    * @param knownProjects The projects that the database already knows about.
    * @param newProjects The projects that have no data in the database currently.
    * @return A list containing all new recommendations to be stored.
    */
-  private List<Recommendation> listAllNewRecommendations(
-    List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
+  @VisibleForTesting
+  @Override
+  protected List<Recommendation> listUpdatedRecommendations(
+      List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
     String yesterdayAtMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
       .truncatedTo(ChronoUnit.DAYS)
       .minus(1L, ChronoUnit.DAYS)
@@ -92,15 +68,18 @@ public class AutomaticDataUpdater extends DataUpdater {
       knownProjects, yesterdayAtMidnight, "");
 
     newProjectRecommendations.addAll(knownProjectRecommendations);
-    return newProjectRecommendations;
+    return newProjectRecommendations;  
   }
 
   /**
    * For new projects, gets the past 30 days of IAM Bindings; for old projects, 
    * gets the IAM Bindings for the previous day.
+   * @return A List of IAMBindingDatabaseEntry
    */
-  private List<IAMBindingDatabaseEntry> newIAMBindingsData(
-      List<ProjectIdentification> newProjects, List<ProjectIdentification> knownProjects) {
+  @VisibleForTesting
+  @Override
+  protected List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData(
+      List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
     Instant midnight30DaysAgo = Instant.ofEpochMilli(System.currentTimeMillis())
         .truncatedTo(ChronoUnit.DAYS)
         .minus(30L, ChronoUnit.DAYS);
@@ -108,7 +87,6 @@ public class AutomaticDataUpdater extends DataUpdater {
         newProjects, midnight30DaysAgo, null);
     entries.addAll(knownProjects.parallelStream().flatMap(project -> 
         getLastIamEntry(project, "").stream()).collect(Collectors.toList()));
-    return entries;
+    return entries;  
   }
-  
 }

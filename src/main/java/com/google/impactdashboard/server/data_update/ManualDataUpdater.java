@@ -47,54 +47,31 @@ public class ManualDataUpdater extends DataUpdater {
   }
 
   /**
-   * Gets the new Recommendation data from the Recommender API.
-   * @return a List of Recommendations
-   */
-  @VisibleForTesting
-  @Override
-  protected List<Recommendation> listUpdatedRecommendations() {
-    List<ProjectIdentification> knownProjects = readManager.listProjects();
-    List<ProjectIdentification> newProjects = projectRetriever.listResourceManagerProjects();
-    newProjects.removeAll(knownProjects);
-    return listAllRecommendationsExcludingCurrentDay(newProjects);
-  }
-
-  /**
-   * Lists the new IAM Binding data from the cloud logging API
-   * @return A List of IAMBindingDatabaseEntry
-   */
-  @VisibleForTesting
-  @Override
-  protected List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData() {
-    List<ProjectIdentification> knownProjects = readManager.listProjects();
-    List<ProjectIdentification> newProjects = projectRetriever.listResourceManagerProjects();
-    newProjects.removeAll(knownProjects);
-    return newIAMBindingsDataExcludingToday(newProjects);
-  }
-
-  /**
    * For all new projects, gets all recommendations that ocurred in the past 30 
    * days, excluding any recommendations that occurred after midnight, today.
    * @param newProjects The projects that have no data in the database.
    * @return A list containing all new recommendations to be stored.
    */
-  private List<Recommendation> listAllRecommendationsExcludingCurrentDay(
-    List<ProjectIdentification> newProjects) {
+  @VisibleForTesting
+  @Override
+  protected List<Recommendation> listUpdatedRecommendations(
+      List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
     String todayAtMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
       .truncatedTo(ChronoUnit.DAYS).toString();
-
     List<Recommendation> newProjectRecommendations = getRecommendationsForProjects(
       newProjects, "", todayAtMidnight);
-
-    return newProjectRecommendations;
+    return newProjectRecommendations;  
   }
 
   /**
    * For all new projects, gets the past 30 days of IAM Bindings information, 
-   * except the current day.
+   * except the current day.   
+   * @return A List of IAMBindingDatabaseEntry
    */
-  private List<IAMBindingDatabaseEntry> newIAMBindingsDataExcludingToday(
-      List<ProjectIdentification> newProjects) {
+  @VisibleForTesting
+  @Override
+  protected List<IAMBindingDatabaseEntry> listUpdatedIAMBindingData(
+      List<ProjectIdentification> knownProjects, List<ProjectIdentification> newProjects) {
     Instant midnight30DaysAgo = Instant.ofEpochMilli(System.currentTimeMillis())
         .truncatedTo(ChronoUnit.DAYS)
         .minus(30L, ChronoUnit.DAYS);
@@ -102,7 +79,6 @@ public class ManualDataUpdater extends DataUpdater {
       .truncatedTo(ChronoUnit.DAYS);
     List<IAMBindingDatabaseEntry> entries =  
         getIAMBindingsDataEntries(newProjects, midnight30DaysAgo, midnightToday);
-    return entries;
+    return entries;  
   }
-  
 }

@@ -105,10 +105,12 @@ public class DataUpdaterTest extends Mockito {
 
     manualDataUpdater = new DataUpdater(
         mockLogRetriever, mockRecommendationRetriever, fakeDataUpdateManager, 
-        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever, true);
+        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever, 
+        DataUpdater.UpdateMode.AUTOMATIC_UPDATE);
     automaticDataUpdater = new DataUpdater(
         mockLogRetriever, mockRecommendationRetriever, fakeDataUpdateManager, 
-        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever, false);
+        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever, 
+        DataUpdater.UpdateMode.MANUAL_USER_UPDATE);
 
     initializeRecommendationFakes();
   }

@@ -21,7 +21,7 @@ public class ManualUpdateServlet extends HttpServlet {
   @Override
   public void init() {
     try {
-      dataUpdater = DataUpdater.create(true);
+      dataUpdater = DataUpdater.create(DataUpdater.UpdateMode.MANUAL_USER_UPDATE);
     } catch (Exception e) {
       throw new RuntimeException("Could not create data updater: " + e.getMessage());
     }

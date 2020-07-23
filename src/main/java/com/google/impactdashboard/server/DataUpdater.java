@@ -29,26 +29,31 @@ import java.util.stream.StreamSupport;
 /** Class for updating the information in the database from the API. */
 public class DataUpdater {
 
+  public enum UpdateMode {
+    MANUAL_USER_UPDATE,
+    AUTOMATIC_UPDATE
+  }
+
   private final LogRetriever logRetriever;
   private final RecommendationRetriever recommendationRetriever;
   private final IamBindingRetriever iamRetriever;
   private final DataUpdateManager updateManager;
   private final DataReadManager readManager;
   private final ProjectListRetriever projectRetriever;
-  private final boolean manualUpdate;
+  private final UpdateMode updateMode;
 
   @VisibleForTesting
   protected DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
                       DataUpdateManager updateManager, DataReadManager readManager,
                       IamBindingRetriever iamRetriever, ProjectListRetriever projectRetriever,
-                      boolean manualUpdate) {
+                      UpdateMode updateMode) {
     this.logRetriever = logRetriever;
     this.recommendationRetriever = recommendationRetriever;
     this.updateManager = updateManager;
     this.readManager = readManager;
     this.iamRetriever = iamRetriever;
     this.projectRetriever = projectRetriever;
-    this.manualUpdate = manualUpdate;
+    this.updateMode = updateMode;
   }
 
   /**
@@ -56,11 +61,11 @@ public class DataUpdater {
    * and RecommendationRetriever.
    * @return New instance of DataUpdater
    */
-  public static DataUpdater create(boolean manualUpdate) 
+  public static DataUpdater create(UpdateMode updateMode) 
       throws IOException, GeneralSecurityException {
     return new DataUpdater(LogRetriever.create(), RecommendationRetriever.create(),
         DataUpdateManagerFactory.create(), DataReadManagerFactory.create(),
-        IamBindingRetriever.create(), ProjectListRetriever.getInstance(), manualUpdate);
+        IamBindingRetriever.create(), ProjectListRetriever.getInstance(), updateMode);
   }
 
   /**
@@ -82,7 +87,7 @@ public class DataUpdater {
     List<ProjectIdentification> newProjects = projectRetriever.listResourceManagerProjects();
     newProjects.removeAll(knownProjects);
 
-    if (manualUpdate) {
+    if (updateMode == UpdateMode.MANUAL_USER_UPDATE) {
       return listAllRecommendationsExcludingCurrentDay(newProjects);
     } else {
       return listAllNewRecommendations(knownProjects, newProjects);
@@ -157,7 +162,7 @@ public class DataUpdater {
     List<ProjectIdentification> newProjects = projectRetriever.listResourceManagerProjects();
     newProjects.removeAll(knownProjects);
 
-    if (manualUpdate) {
+    if (updateMode == UpdateMode.MANUAL_USER_UPDATE) {
       return newIAMBindingsDataExcludingToday(newProjects);
     } else {
       return newIAMBindingsData(newProjects, knownProjects);
@@ -295,10 +300,5 @@ public class DataUpdater {
     return IAMBindingDatabaseEntry.create(entry.getProjectId(), 
         entry.getProjectName(), entry.getProjectNumber(), 
         timestamp, entry.getBindingsNumber());
-  }
-
-  public static void main(String[] args) throws Exception {
-    DataUpdater updater = DataUpdater.create(false);
-    updater.updateDatabase();
   }
 }

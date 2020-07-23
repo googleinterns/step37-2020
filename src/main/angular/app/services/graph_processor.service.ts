@@ -68,7 +68,8 @@ export class GraphProcessorService {
   /** Process the given changes and adjust from the graph properties as necessary. */
   processChanges(
     changes: SimpleChanges,
-    properties: GraphProperties
+    properties: GraphProperties,
+    addCumulativeDifference: boolean
   ): Promise<void> {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
     const promises: Promise<unknown>[] = [];
@@ -83,6 +84,9 @@ export class GraphProcessorService {
               this.activeProjects.indexOf(data.projectId),
               1
             );
+            if (addCumulativeDifference) {
+              this.addCumulativeDifferences(properties, [addition]);
+            }
           }
         })
       );
@@ -93,12 +97,13 @@ export class GraphProcessorService {
         this.activeProjects.splice(index, 1);
       } else {
         this.removeFromGraph(properties, removal);
+        this.removeCumulativeDifference(properties, removal);
       }
     });
     return Promise.all(promises).then();
   }
 
-  /** Adds an extra line with the IAM Bindings as they would be with no recommendations. */
+  /** Adds an extra line with the IAM Bindings as they would be with no recommendations and refreshes the chart. */
   async addCumulativeDifferences(
     properties: GraphProperties,
     projects: Project[]
@@ -112,34 +117,31 @@ export class GraphProcessorService {
     properties.columns = temp.concat(properties.columns);
   }
 
-  /** Remove all of the cumualtive differences from the graph data. */
-  removeCumulativeDifferences(properties: GraphProperties) {
-    console.log(properties);
-    this.getCumulativeDifferenceSeriesNumbers(properties).forEach(
-      (seriesNumber, index) => {
-        console.log(seriesNumber);
-        const adjustedSeriesNumber = seriesNumber - index;
-        this.removeSeriesOptions(properties, adjustedSeriesNumber);
-        properties.columns.splice(adjustedSeriesNumber * 3 + 1, 3);
-        properties.graphData.forEach(row =>
-          row.splice(adjustedSeriesNumber * 3 + 1, 3)
-        );
-      }
-    );
+  /** Remove all of the cumualtive differences from the graph data and refreshes the chart. */
+  removeCumulativeDifferences(
+    properties: GraphProperties,
+    projects: Project[]
+  ) {
+    projects.forEach(project => {
+      this.removeCumulativeDifference(properties, project);
+    });
 
     // Force a refresh of the chart
     const temp: Columns = [];
     properties.columns = temp.concat(properties.columns);
   }
 
-  /** Get the series numbers of all the binding cumulative differences. */
-  private getCumulativeDifferenceSeriesNumbers(
-    properties: GraphProperties
-  ): number[] {
-    // If this series has a dash style, then it's a cumulative difference curve
-    return Object.entries(properties.options.series)
-      .filter(value => value[1].lineDashStyle)
-      .map(value => +value[0]);
+  /** Removes the single cumulative difference curve for the given project. */
+  private removeCumulativeDifference(
+    properties: GraphProperties,
+    project: Project
+  ) {
+    const index = properties.columns.findIndex(
+      value => value === project.projectId + '-bindings-trajectory'
+    );
+    this.removeSeriesOptions(properties, (index - 1) / 3);
+    properties.columns.splice(index, 3);
+    properties.graphData.forEach(row => row.splice(index, 3));
   }
 
   /** Adds the cumulative difference curve for the given curve. */
@@ -333,7 +335,7 @@ export class GraphProcessorService {
   }
 
   /** From a given SimpleChange, extract the projects that were added or deleted. */
-  private getAdditionsDeletions(
+  getAdditionsDeletions(
     change: SimpleChange
   ): {added: Project[]; removed: Project[]} {
     const out: {added: Project[]; removed: Project[]} = {

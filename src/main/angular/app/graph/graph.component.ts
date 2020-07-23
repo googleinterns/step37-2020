@@ -83,20 +83,25 @@ export class GraphComponent implements OnInit {
       this.shouldShowChart = true;
     }
 
-    await this.graphProcessor.processChanges(changes, this.properties);
+    await this.graphProcessor.processChanges(
+      changes,
+      this.properties,
+      this.showCumulativeDifference
+    );
     this.shouldShowChart = this.projects.length > 0;
   }
 
   toggleCumulativeDifference() {
     if (this.showCumulativeDifference) {
-      this.graphProcessor.removeCumulativeDifferences(this.properties);
+      this.graphProcessor.removeCumulativeDifferences(
+        this.properties,
+        this.projects
+      );
     } else {
       this.graphProcessor.addCumulativeDifferences(
         this.properties,
         this.projects
       );
-
-      console.log(this.properties);
     }
     this.showCumulativeDifference = !this.showCumulativeDifference;
   }

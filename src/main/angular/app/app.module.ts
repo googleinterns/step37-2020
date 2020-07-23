@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule, ErrorHandler, enableProdMode} from '@angular/core';
+import {NgModule, ErrorHandler} from '@angular/core';
 import {GoogleChartsModule} from 'angular-google-charts';
 
 import {AppRoutingModule} from './app_routing.module';
@@ -26,6 +26,8 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {GraphDataCacheService} from './services/graph_data_cache.service';
 import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 import {AdminComponent} from './admin/admin.component';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatButtonModule} from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -48,6 +50,8 @@ import {AdminComponent} from './admin/admin.component';
     MatNativeDateModule,
     MatInputModule,
     MatProgressBarModule,
+    MatDividerModule,
+    MatButtonModule,
   ],
   providers: [
     dataServiceProvider,

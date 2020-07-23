@@ -38,7 +38,7 @@ public class LogRetriever {
    * @return A response that contains all the relevant audit log entries that are stored by the logging API
    */
   public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom, String timeTo, int pageSize) {
-    String project_id = "projects/" + projectId;
+    String resourceName = "projects/" + projectId;
     String filter = "resource.type = project AND severity = NOTICE";
     if (!timeFrom.equals("")) {
       filter += " AND timestamp > \"" + timeFrom + "\"";
@@ -48,7 +48,7 @@ public class LogRetriever {
     }
 
     ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()
-        .setOrderBy("timestamp desc").addResourceNames(project_id);
+        .setOrderBy("timestamp desc").addResourceNames(resourceName);
 
     filter += " AND protoPayload.methodName:SetIamPolicy";
     ListLogEntriesRequest request = builder.setFilter(filter).setPageSize(pageSize).build();
@@ -67,7 +67,7 @@ public class LogRetriever {
    */
   public ListLogEntriesPagedResponse listRecommendationLogs(String projectId, 
     String timeFrom, String timeTo) {
-    String project_id = "projects/" + projectId;
+    String resourceName = "projects/" + projectId;
     String filter = "resource.type = recommender AND " + 
       "resource.labels.recommender_id= google.iam.policy.Recommender AND " +
       "jsonPayload.state = SUCCEEDED";
@@ -82,7 +82,7 @@ public class LogRetriever {
 
     ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder()
       .setFilter(filter).setOrderBy("timestamp desc")
-      .addResourceNames(project_id).build();
+      .addResourceNames(resourceName).build();
     
     return logger.listLogEntries(request);
   }

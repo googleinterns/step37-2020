@@ -25,6 +25,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {GraphDataCacheService} from './services/graph_data_cache.service';
 import {LocationStrategy, HashLocationStrategy} from '@angular/common';
+import {AdminComponent} from './admin/admin.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import {LocationStrategy, HashLocationStrategy} from '@angular/common';
     ErrorPageComponent,
     MainPageComponent,
     DateSelectComponent,
+    AdminComponent,
   ],
   imports: [
     BrowserModule,

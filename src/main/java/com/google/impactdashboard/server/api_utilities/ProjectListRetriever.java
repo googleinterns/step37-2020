@@ -51,7 +51,7 @@ public class ProjectListRetriever {
 
   @VisibleForTesting
   /** Returns the list of projects resulting from executing {@code request}. */
-  protected  static List<ProjectIdentification> getListOfProjects(
+  protected static List<ProjectIdentification> getListOfProjects(
     CloudResourceManager.Projects.List request) throws IOException {
     List<ProjectIdentification> projects = new ArrayList<ProjectIdentification>();
 

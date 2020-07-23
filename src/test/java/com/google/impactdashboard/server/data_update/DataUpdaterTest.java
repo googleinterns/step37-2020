@@ -258,29 +258,6 @@ public class DataUpdaterTest extends Mockito {
     // Old projects are ignored in this case so nothing should be changed
     // for them.
 
-//    LoggingClient.ListLogEntriesPagedResponse project3Response =
-//        mock(LoggingClient.ListLogEntriesPagedResponse.class, Mockito.RETURNS_DEEP_STUBS);
-//
-//    List<LogEntry> project3AuditLogs =
-//        Collections.singletonList(mock(LogEntry.class));
-//
-//    when(mockProjectListRetriever.listResourceManagerProjects())
-//        .thenReturn(new ArrayList<>(Arrays.asList(PROJECT_1, PROJECT_3)));
-//
-//    when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_3.getProjectId()), anyString(),
-//        anyString(), anyInt())).thenReturn(project3Response);
-//
-//    when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_1.getProjectId()), anyString(),
-//        anyString(), anyInt())).thenReturn()
-//
-//    when(project3Response.iterateAll()).thenReturn(project3AuditLogs);
-//
-//    when(project3Response.getPage().getResponse().getEntriesList())
-//        .thenReturn(project3AuditLogs);
-//
-//    when(mockIamBindingRetriever.listIAMBindingData(any(), any(), any(),
-//        any(), any())).thenReturn(PROJECT_3_IAM_BINDING_SINGLE_ENTRY);
-
     initializeIamFakes();
 
     List<IAMBindingDatabaseEntry> actual = manualDataUpdater.listUpdatedIAMBindingData();

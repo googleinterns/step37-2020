@@ -19,6 +19,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/** 
+ * Class that carries out data update that retrieves 30 days of data for new 
+ * projects and 1 day of data for old projects. Intended to be run at a regular 
+ * time by automated process. 
+ */
 public class AutomaticDataUpdater extends DataUpdater {
 
   @VisibleForTesting

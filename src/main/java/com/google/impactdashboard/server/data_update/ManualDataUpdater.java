@@ -19,6 +19,11 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+/** 
+ * Class that carries out data update where only new projects are updated and
+ * the current day is excluded. Intended to be performed manually by the dploying 
+ * user when new projects are added. 
+ */
 public class ManualDataUpdater extends DataUpdater {
 
   @VisibleForTesting

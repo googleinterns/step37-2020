@@ -191,7 +191,7 @@ export class GraphProcessorService {
       row.push(
         adjustedBindings,
         this.getTooltip(date, adjustedBindings, [], project),
-        undefined
+        this.getPoint(recommendations, project.color, 'square')
       );
     });
 
@@ -306,7 +306,7 @@ export class GraphProcessorService {
         data.dateToRecommendationTaken
       );
       const tooltip = this.getTooltip(date, value, recommendations, project);
-      const point = this.getPoint(recommendations, project.color);
+      const point = this.getPoint(recommendations, project.color, 'circle');
 
       if (row) {
         // Populate the existing row with information
@@ -403,12 +403,13 @@ export class GraphProcessorService {
   /** Returns the point styling associated with the given recommendation. */
   private getPoint(
     matchingRecommendations: Recommendation[],
-    color: string
+    color: string,
+    shape: string
   ): string | undefined {
     if (matchingRecommendations.length === 0) {
       return undefined;
     }
-    return `point { size: 10; shape-type: circle; fill-color: ${color}; visible: true; }`;
+    return `point { size: 10; shape-type: ${shape}; fill-color: ${color}; visible: true; }`;
   }
 
   /** Returns the recommendations which occured on the same day as the given time, which is in milliseconds since epoch. */

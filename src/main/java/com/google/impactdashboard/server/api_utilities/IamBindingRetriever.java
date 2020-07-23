@@ -2,6 +2,7 @@ package com.google.impactdashboard.server.api_utilities;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.bigquery.model.ProjectList;
 import com.google.api.services.iam.v1.Iam;
 import com.google.api.services.iam.v1.IamScopes;
 import com.google.api.services.iam.v1.model.ListRolesResponse;
@@ -10,6 +11,7 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.cloud.audit.AuditLog;
 import com.google.impactdashboard.Credentials;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
+import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.RecommendationAction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -17,10 +19,10 @@ import com.google.protobuf.Timestamp;
 import com.google.protobuf.Value;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.concurrent.atomic.AtomicReference;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -31,9 +33,11 @@ public class IamBindingRetriever {
   private final Iam iamService;
   private final List<Role> roles;
 
-  protected IamBindingRetriever(Iam iamService) throws IOException {
+  protected IamBindingRetriever(Iam iamService, 
+      ProjectListRetriever projectRetriever) throws IOException {
     this.iamService = iamService;
 
+    List<ProjectIdentification> projects = projectRetriever.listResourceManagerProjects();
     roles = new ArrayList<>();
     String pageToken = null;
     do {
@@ -46,6 +50,22 @@ public class IamBindingRetriever {
       roles.addAll(rolesResponse.getRoles());
       pageToken = rolesResponse.getNextPageToken();
     } while(pageToken != null);
+
+    for (ProjectIdentification project : projects) {
+      String projectPageToken = null;
+      do {
+        ListRolesResponse rolesResponse;
+        if(projectPageToken == null) {
+          rolesResponse = iamService.projects().roles().list("projects/" + project.getProjectId())
+              .setView("full").execute();
+        } else {
+          rolesResponse = iamService.projects().roles().list("projects/" + project.getProjectId())
+              .setView("full").setPageToken(pageToken).execute();
+        }
+        roles.addAll(rolesResponse.getRoles());
+        projectPageToken = rolesResponse.getNextPageToken();
+      } while(projectPageToken != null);
+    }
   }
 
   /**
@@ -59,8 +79,9 @@ public class IamBindingRetriever {
             .singleton(IamScopes.CLOUD_PLATFORM))))
         .setApplicationName("Recommendation Impact Dashboard")
         .build();
+    ProjectListRetriever projectListRetriever = ProjectListRetriever.getInstance();
 
-    return new IamBindingRetriever(iamService);
+    return new IamBindingRetriever(iamService, projectListRetriever);
   }
 
   /**
@@ -115,6 +136,15 @@ public class IamBindingRetriever {
    * @return Total number of IAMBindings for the given map
    */
   private int getIamBindings(Map<String, Integer> membersForRoles) {
+    List<String> unknownRoles = membersForRoles.keySet().stream()
+        .filter(role -> 
+            !roles.stream().reduce(false, (accumulator, knownRole) -> 
+                accumulator || role.equals(knownRole.getName()), Boolean::logicalOr))
+        .collect(Collectors.toList());
+    if (unknownRoles.size() > 0) {
+      throw new RuntimeException("Unknown roles in this project! " + String.join(", ",unknownRoles));
+    }
+
     return roles.stream().filter(role -> membersForRoles.containsKey(role.getName()))
         .mapToInt(role -> {
           if(role.getIncludedPermissions() != null) {

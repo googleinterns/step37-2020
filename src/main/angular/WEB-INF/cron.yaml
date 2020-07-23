@@ -1,4 +1,4 @@
 cron:
 - description: "Automatic daily database update"
-  url: /update-date
+  url: /update-data
   schedule: every day 00:00

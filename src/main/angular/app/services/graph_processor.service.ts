@@ -185,6 +185,7 @@ export class GraphProcessorService {
     for (const [key, value] of Object.entries(data.dateToNumberIAMBindings)) {
       // Convert key from string to number
       const date = this.dateUtilities.startOfDay(+key);
+      this.dateUtilities.addTimezoneOffset(date);
       // The row we're adding to is the same index as unique days
       const row = this.getRow(rows, date);
 

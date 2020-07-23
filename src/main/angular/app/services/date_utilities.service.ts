@@ -28,7 +28,7 @@ export class DateUtilitiesService {
   /** Converts the given millis since epoch to the start of the day in the local timezone. */
   startOfDay(time: number): Date {
     const date = new Date(time);
-    date.setHours(0, 0, 0, 0);
+    date.setUTCHours(0, 0, 0, 0);
     return date;
   }
 

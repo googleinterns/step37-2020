@@ -58,14 +58,16 @@ export class ProjectQueryService {
       // Don't change anything
       return;
     } else if (query.includes(this.query)) {
-      // New query will be a subset of the existing one
+      // New query will be a subset of the existing one and sort will be naturally maintained
       this.projectsCache = this.projectsCache.filter(project =>
         project.includes(query)
       );
     } else {
-      this.projectsCache = this.projects.filter(project =>
-        project.includes(query)
-      );
+      this.projectsCache = this.projects
+        .filter(project => project.includes(query))
+        .sort(
+          ProjectComparators.getComparator(this.sortDirection, this.sortBy)
+        );
     }
 
     this.query = query;

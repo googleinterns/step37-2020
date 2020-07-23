@@ -25,6 +25,6 @@ export class ProjectMetaData {
     if (this.averageIAMBindingsInPastYear === 0) {
       return '-';
     }
-    return this.averageIAMBindingsInPastYear + '';
+    return Math.floor(this.averageIAMBindingsInPastYear) + '';
   }
 }

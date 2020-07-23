@@ -55,6 +55,10 @@ export class DateUtilitiesService {
     let earliestDate: Date | undefined;
     let lastDate: Date | undefined;
 
+    if (rows.length === 0) {
+      return new DateRange(new Date(), new Date());
+    }
+
     rows.forEach(row => {
       const currentDate: Date = row[0] as Date;
       if (!earliestDate || earliestDate.getTime() > currentDate.getTime()) {

@@ -23,7 +23,12 @@ import {Project} from '../../model/project';
 import {GraphProcessorService} from '../services/graph_processor.service';
 import {GraphProperties, Columns} from '../../model/types';
 import {DataService} from '../services/data.service';
-import {WIDTH_SCALE_FACTOR, HEIGHT_SCALE_FACTOR} from '../../constants';
+import {
+  WIDTH_SCALE_FACTOR,
+  HEIGHT_SCALE_FACTOR,
+  LOADING_MESSAGE,
+  SELECT_PROJECT_MESSAGE,
+} from '../../constants';
 import {DateRange} from '../../model/date_range';
 
 /** The angular component that contains the graph and associated logic. */
@@ -41,6 +46,8 @@ export class GraphComponent implements OnInit {
 
   /** Whether to show the chart. When it's not selected, prompt the user to select a project. */
   public shouldShowChart: boolean;
+  /** The text that's shown when the chart isn't. */
+  public noChartMessage: string;
 
   constructor(
     private dataService: DataService,
@@ -48,16 +55,37 @@ export class GraphComponent implements OnInit {
   ) {
     this.shouldShowChart = false;
     this.projects = [];
+    this.noChartMessage = LOADING_MESSAGE;
   }
 
   /** Called when an input field changes. */
-  ngOnChanges(changes: SimpleChanges) {
-    this.shouldShowChart = this.projects.length > 0;
-    this.graphProcessor.processChanges(
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes.projects.isFirstChange()) {
+      // We're still retrieving the list of projects
+      this.shouldShowChart = false;
+      this.noChartMessage = LOADING_MESSAGE;
+    } else if (this.projects.length === 0) {
+      // The user hasn't selected a project
+      this.shouldShowChart = false;
+      this.noChartMessage = SELECT_PROJECT_MESSAGE;
+    } else if (
+      this.projects.length === 1 &&
+      changes.projects.previousValue.length === 0
+    ) {
+      // We're adding the first project on the graph
+      this.shouldShowChart = false;
+      this.noChartMessage = LOADING_MESSAGE;
+    } else {
+      // The data will be added to the live graph
+      this.shouldShowChart = true;
+    }
+
+    await this.graphProcessor.processChanges(
       changes,
       this.properties,
       this.dataService
     );
+    this.shouldShowChart = this.projects.length > 0;
   }
 
   ngOnInit() {

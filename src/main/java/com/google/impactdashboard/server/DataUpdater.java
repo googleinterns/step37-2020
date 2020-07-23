@@ -264,7 +264,7 @@ public class DataUpdater {
     }
 
     List<IAMBindingDatabaseEntry> sortedBindings = bindingsData.stream()
-        .sorted(IAMBindingDatabaseEntry.ORDER_BY_TIMESTAMP)
+        .sorted((a,b) -> Long.compare(a.getTimestamp(), b.getTimestamp()))
         .collect(Collectors.toCollection(ArrayList::new));
     List<IAMBindingDatabaseEntry> oneEntryPerDay = new ArrayList<IAMBindingDatabaseEntry>();
 

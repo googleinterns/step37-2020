@@ -1,4 +1,4 @@
-package com.google.impactdashboard.server;
+package com.google.impactdashboard.server.data_update;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,14 +103,12 @@ public class DataUpdaterTest extends Mockito {
     mockIamBindingRetriever = mock(IamBindingRetriever.class);
     mockProjectListRetriever = mock(ProjectListRetriever.class);
 
-    manualDataUpdater = new DataUpdater(
+    manualDataUpdater = new ManualDataUpdater(
         mockLogRetriever, mockRecommendationRetriever, fakeDataUpdateManager, 
-        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever, 
-        DataUpdater.UpdateMode.AUTOMATIC_UPDATE);
-    automaticDataUpdater = new DataUpdater(
+        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever);
+    automaticDataUpdater = new AutomaticDataUpdater(
         mockLogRetriever, mockRecommendationRetriever, fakeDataUpdateManager, 
-        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever, 
-        DataUpdater.UpdateMode.MANUAL_USER_UPDATE);
+        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever);
 
     initializeRecommendationFakes();
   }

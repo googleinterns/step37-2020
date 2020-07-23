@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.impactdashboard.server.DataUpdater;
+import com.google.impactdashboard.server.data_update.*;
 
 import java.io.IOException;
 
@@ -21,7 +21,7 @@ public class UpdateDataServlet extends HttpServlet {
   @Override
   public void init() {
     try {
-      dataUpdater = DataUpdater.create(DataUpdater.UpdateMode.AUTOMATIC_UPDATE);
+      dataUpdater = AutomaticDataUpdater.create();
     } catch (Exception e) {
       throw new RuntimeException("Could not create data updater: " + e.getMessage());
     }

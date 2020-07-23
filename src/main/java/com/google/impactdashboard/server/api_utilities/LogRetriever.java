@@ -38,24 +38,31 @@ public class LogRetriever {
    * @return A response that contains all the relevant audit log entries that are stored by the logging API
    */
   public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom, String timeTo, int pageSize) {
-    String resourceName = "projects/" + projectId;
-    String filter = "resource.type = project AND severity = NOTICE";
+    StringBuilder resourceNameStringBuilder = new StringBuilder();
+    resourceNameStringBuilder.append("projects/");
+    resourceNameStringBuilder.append(projectId);
+
+    StringBuilder filterStringBuilder = new StringBuilder();
+    filterStringBuilder.append("resource.type = project AND severity = NOTICE");
+    filterStringBuilder.append(" AND protoPayload.methodName:SetIamPolicy");
+
     if (!timeFrom.equals("")) {
-      filter += " AND timestamp > \"" + timeFrom + "\"";
+      filterStringBuilder.append(" AND timestamp > \"");
+      filterStringBuilder.append(timeFrom);
+      filterStringBuilder.append("\"");
     }
     if (!timeTo.equals("")) {
-      filter += " AND timestamp < \"" + timeTo + "\"";
+      filterStringBuilder.append(" AND timestamp < \"");
+      filterStringBuilder.append(timeTo);
+      filterStringBuilder.append("\"");
     }
 
     ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()
-        .setOrderBy("timestamp desc").addResourceNames(resourceName);
+        .setOrderBy("timestamp desc").addResourceNames(resourceNameStringBuilder.toString());
 
-    filter += " AND protoPayload.methodName:SetIamPolicy";
-    ListLogEntriesRequest request = builder.setFilter(filter).setPageSize(pageSize).build();
+    ListLogEntriesRequest request = builder.setFilter(filterStringBuilder.toString())
+        .setPageSize(pageSize).build();
     return logger.listLogEntries(request);
-
-//    return StreamSupport.stream(response.iterateAll().spliterator(), false)
-//        .collect(Collectors.toList());
   }
 
   /**
@@ -67,22 +74,30 @@ public class LogRetriever {
    */
   public ListLogEntriesPagedResponse listRecommendationLogs(String projectId, 
     String timeFrom, String timeTo) {
-    String resourceName = "projects/" + projectId;
-    String filter = "resource.type = recommender AND " + 
-      "resource.labels.recommender_id= google.iam.policy.Recommender AND " +
-      "jsonPayload.state = SUCCEEDED";
+    StringBuilder resourceNameStringBuilder = new StringBuilder();
+    resourceNameStringBuilder.append("projects/");
+    resourceNameStringBuilder.append(projectId);
+
+    StringBuilder filterStringBuilder = new StringBuilder();
+    filterStringBuilder.append("resource.type = recommender AND ");
+    filterStringBuilder.append("resource.labels.recommender_id= google.iam.policy.Recommender ");
+    filterStringBuilder.append(" AND jsonPayload.state = SUCCEEDED");
 
     if (!timeFrom.equals("")) {
-      filter += " AND timestamp >= \"" + timeFrom + "\"";
+      filterStringBuilder.append(" AND timestamp > \"");
+      filterStringBuilder.append(timeFrom);
+      filterStringBuilder.append("\"");
     }
 
     if (!timeTo.equals("")) {
-      filter += " AND timestamp < \"" + timeTo + "\"";
+      filterStringBuilder.append(" AND timestamp < \"");
+      filterStringBuilder.append(timeTo);
+      filterStringBuilder.append("\"");
     }
 
     ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder()
-      .setFilter(filter).setOrderBy("timestamp desc")
-      .addResourceNames(resourceName).build();
+      .setFilter(filterStringBuilder.toString()).setOrderBy("timestamp desc")
+      .addResourceNames(resourceNameStringBuilder.toString()).build();
     
     return logger.listLogEntries(request);
   }

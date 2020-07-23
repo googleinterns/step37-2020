@@ -275,7 +275,6 @@ public class DataUpdaterTest extends Mockito {
   public void automaticIAMUpdate1NewProject2OldProject() {
     // Testing the automatic updating for both new and old projects.
     // 31 logs for New projects, 1 log for old projects
-
     initializeIamFakes();
 
     List<IAMBindingDatabaseEntry> actual = automaticDataUpdater.listUpdatedIAMBindingData();

@@ -6,7 +6,7 @@ This web app allows users to easily visualize the long term impact of accepting 
 
 For all projects of the user's choice, the dashboard plots the number of IAM bindings present on each day for that project, displaying up to 365 days of bindings data. Dates where recommendations were accepted are marked as circles on the graph along with detailed descriptions upon hover, so that users can easily see the impact that each recommendation had on project security. The dashboard can also graph an estimation of the number of bindings that would be present on each project if no recommendations had been accepted.
 
-After cloning the repo and following the simple [deployment](/Deployment_Instructions.md) instructions, the dashboard will be initialized with 30 days of recommendations and bindings data for all desired projects, and will continue collecting data daily to store up to a 365 day window of data. The list of projects to import data from can be easily modified at any time. 
+After cloning the repo and following the simple [deployment instructions](/Deployment_Instructions.md), the dashboard will be initialized with 30 days of recommendations and bindings data for all desired projects, and will continue collecting data daily to store up to a 365 day window of data. The list of projects to import data from can be easily modified at any time. 
 
 ![Dashboard](/images/Dashboard.png)
 

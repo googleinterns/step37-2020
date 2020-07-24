@@ -133,6 +133,8 @@ describe('GraphProcessorService', () => {
           expect(actual).toEqual(expected);
         });
       });
+
+      describe('Adds cumulative differences successfully', () => {});
     });
 
     describe('Removing projects from the graph', () => {
@@ -235,6 +237,8 @@ describe('GraphProcessorService', () => {
           expect(actual).toEqual(expected);
         });
       });
+
+      describe('Removes cumulative differences successfully', () => {});
     });
 
     describe('Re-adds projects that have been removed', () => {
@@ -287,5 +291,16 @@ describe('GraphProcessorService', () => {
         expect(actual).toEqual(expected);
       });
     });
+  });
+
+  describe('addCumulativeDifferences()', () => {
+    describe('Adding cumulative differences for a single project', () => {});
+    describe('Adding cumulative differences for multiple projects', () => {});
+  });
+
+  describe('removeCumulativeDifferences()', () => {
+    describe('Removing nothing when no projects are present', () => {});
+    describe('Removing differences that are continuous columns', () => {});
+    describe('Removing differences that are non-continuous columns', () => {});
   });
 });

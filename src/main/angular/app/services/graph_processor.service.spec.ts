@@ -7,6 +7,8 @@ import {SimpleChanges, SimpleChange} from '@angular/core';
 import {Project} from '../../model/project';
 import {ProjectGraphData} from '../../model/project_graph_data';
 import {GraphDataCacheService} from './graph_data_cache.service';
+import {CUMULATIVE_BINDINGS_SUFFIX} from '../../constants';
+import {Recommendation} from '../../model/recommendation';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
@@ -134,7 +136,57 @@ describe('GraphProcessorService', () => {
         });
       });
 
-      describe('Adds cumulative differences successfully', () => {});
+      describe('Adds cumulative differences successfully', () => {
+        let project: Project;
+        let projectData: ProjectGraphData;
+        let firstRecommendation: Recommendation;
+        let dataIndex: number;
+
+        beforeAll(async () => {
+          changes = {};
+          properties = service.initProperties();
+
+          project = ((await fakeDataService.listProjects()) as Project[])[0];
+          projectData = (await fakeDataService.getProjectGraphData(
+            project.projectId
+          )) as ProjectGraphData;
+
+          firstRecommendation = Object.entries(
+            projectData.dateToRecommendationTaken
+          ).sort((a, b) => +a - +b)[0][1];
+
+          // Going from no projects to a single one
+          changes.projects = new SimpleChange([], [project], true);
+          await service.processChanges(changes, properties, true);
+          dataIndex = properties.columns.findIndex(
+            column => column === project.projectId + CUMULATIVE_BINDINGS_SUFFIX
+          );
+        });
+
+        it('Added the appropriate columns', () => {
+          const expected = project.projectId + CUMULATIVE_BINDINGS_SUFFIX;
+          const columns = properties.columns;
+
+          expect(columns).toContain(expected);
+        });
+
+        it('Left data before the first recommendation be', () => {
+          const expected = Object.entries(projectData.dateToNumberIAMBindings)
+            .filter(entry => +entry[0] <= firstRecommendation.acceptedTimestamp)
+            .map(entry => entry[1]);
+          const actual = properties.graphData
+            .filter(
+              row =>
+                row[0] instanceof Date &&
+                row[0].getTime() <= firstRecommendation.acceptedTimestamp
+            )
+            .map(row => row[dataIndex]);
+
+          expect(actual).toEqual(expected);
+        });
+
+        it('Modified data after the first recommendation', () => {});
+      });
     });
 
     describe('Removing projects from the graph', () => {

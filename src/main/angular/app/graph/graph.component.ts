@@ -30,7 +30,7 @@ import {
   SELECT_PROJECT_MESSAGE,
 } from '../../constants';
 import {DateRange} from '../../model/date_range';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 
 /** The angular component that contains the graph and associated logic. */
 @Component({

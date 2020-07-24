@@ -150,7 +150,6 @@ describe('GraphProcessorService', () => {
           projectData = (await fakeDataService.getProjectGraphData(
             project.projectId
           )) as ProjectGraphData;
-
           firstRecommendation = Object.entries(
             projectData.dateToRecommendationTaken
           ).sort((a, b) => +a - +b)[0][1];
@@ -375,11 +374,61 @@ describe('GraphProcessorService', () => {
   });
 
   describe('addCumulativeDifferences()', () => {
-    describe('Adding cumulative differences for a single project', () => {});
+    let properties: GraphProperties;
+
+    describe('Adding cumulative differences for a single project', () => {
+      let project: Project;
+      let projectData: ProjectGraphData;
+      let firstRecommendation: Recommendation;
+      let dataIndex: number;
+
+      beforeAll(async () => {
+        properties = service.initProperties();
+
+        project = ((await fakeDataService.listProjects()) as Project[])[0];
+        projectData = (await fakeDataService.getProjectGraphData(
+          project.projectId
+        )) as ProjectGraphData;
+        firstRecommendation = Object.entries(
+          projectData.dateToRecommendationTaken
+        ).sort((a, b) => +a - +b)[0][1];
+
+        await service.addCumulativeDifferences(properties, [project]);
+        dataIndex = properties.columns.findIndex(
+          value => value === project.projectId + CUMULATIVE_BINDINGS_SUFFIX
+        );
+      });
+
+      it('Added the appropriate column', () => {
+        const expected = project.projectId + CUMULATIVE_BINDINGS_SUFFIX;
+
+        expect(properties.columns).toContain(expected);
+      });
+
+      it('Left data before the first recommendation be', () => {
+        const expected = Object.entries(projectData.dateToNumberIAMBindings)
+          .filter(entry => +entry[0] <= firstRecommendation.acceptedTimestamp)
+          .map(entry => entry[1]);
+        const actual = properties.graphData
+          .filter(
+            row =>
+              row[0] instanceof Date &&
+              row[0].getTime() <= firstRecommendation.acceptedTimestamp
+          )
+          .map(row => row[dataIndex]);
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('Modified data after the first recommendation', () => {});
+    });
+
     describe('Adding cumulative differences for multiple projects', () => {});
   });
 
   describe('removeCumulativeDifferences()', () => {
+    let properties: GraphProperties;
+
     describe('Removing nothing when no projects are present', () => {});
     describe('Removing differences that are continuous columns', () => {});
     describe('Removing differences that are non-continuous columns', () => {});

@@ -4,9 +4,11 @@
 # Recommendations Impact Dashboard
 This web app allows users to easily visualize the long term impact of accepting Google Cloud Platform IAM Recommendations on their projects. 
 
-For all projects of the user's choice, the dashboard plots the number of IAM bindings present on each day for that project, displaying up to 365 days of bindings data. Dates where recommendations were accepted are marked on the graph along with detailed descriptions, so that users can easily see the impact that each recommendation had on project security. The dashboard can also graph an estimation of the numberof bindings that would be present on each project if no recommendations had been accepted.
+For all projects of the user's choice, the dashboard plots the number of IAM bindings present on each day for that project, displaying up to 365 days of bindings data. Dates where recommendations were accepted are marked as circles on the graph along with detailed descriptions upon hover, so that users can easily see the impact that each recommendation had on project security. The dashboard can also graph an estimation of the number of bindings that would be present on each project if no recommendations had been accepted.
 
 After cloning the repo and following simple configuration steps to personalize the dashboard, the dashboard will be initialized with 30 days of recommendations and bindings data for all desired projects, and will continue collecting data daily to store up to a 365 day window of data. The list of projects to import data from can be easily modified at any time. 
+
+![Dashboard](/images/Dashboard.png)
 
 ## Dev Setup
 When first cloning this repo please run:

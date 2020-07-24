@@ -350,7 +350,7 @@ export class GraphProcessorService {
   }
 
   /** From a given SimpleChange, extract the projects that were added or deleted. */
-  getAdditionsDeletions(
+  private getAdditionsDeletions(
     change: SimpleChange
   ): {added: Project[]; removed: Project[]} {
     const out: {added: Project[]; removed: Project[]} = {

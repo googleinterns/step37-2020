@@ -290,7 +290,36 @@ describe('GraphProcessorService', () => {
         });
       });
 
-      describe('Removes cumulative differences successfully', () => {});
+      describe('Removes cumulative differences successfully', () => {
+        let project: Project;
+
+        beforeAll(async () => {
+          properties = service.initProperties();
+          changes = {};
+
+          project = ((await fakeDataService.listProjects()) as Project[])[0];
+
+          // Add the project
+          changes.projects = new SimpleChange([], [project], true);
+          await service.processChanges(changes, properties, true);
+          // Remove the project
+          changes.projects = new SimpleChange([project], [], false);
+          await service.processChanges(changes, properties, true);
+        });
+
+        it('Removes the columns', () => {
+          const columns = properties.columns;
+          const seriesName = project.projectId + CUMULATIVE_BINDINGS_SUFFIX;
+
+          expect(columns).not.toContain(seriesName);
+        });
+
+        it('Removes all rows', () => {
+          const length = properties.graphData.length;
+
+          expect(length).toBe(0);
+        });
+      });
     });
 
     describe('Re-adds projects that have been removed', () => {

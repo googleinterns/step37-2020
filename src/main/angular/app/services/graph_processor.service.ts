@@ -172,29 +172,31 @@ export class GraphProcessorService {
     const data = await this.dataService.getProjectGraphData(project.projectId);
 
     let cumulativeImpact = 0;
-    Object.keys(data.dateToNumberIAMBindings).forEach(time => {
-      const date = this.dateUtilities.startOfDay(+time);
-      const recommendations = this.getRecommendationsOnSameDay(
-        +time,
-        data.dateToRecommendationTaken
-      );
+    Object.keys(data.dateToNumberIAMBindings)
+      .sort()
+      .forEach(time => {
+        const date = this.dateUtilities.startOfDay(+time);
+        const recommendations = this.getRecommendationsOnSameDay(
+          +time,
+          data.dateToRecommendationTaken
+        );
 
-      const row = this.getRow(properties.graphData, date);
-      const adjustedBindings =
-        data.dateToNumberIAMBindings[time] + cumulativeImpact;
+        const adjustedBindings =
+          data.dateToNumberIAMBindings[time] + cumulativeImpact;
 
-      // Add the cumulative impact of the recommendation
-      recommendations.forEach(
-        recommendation =>
-          (cumulativeImpact += recommendation.metadata.impactInIAMBindings)
-      );
+        // Add the cumulative impact of the recommendation
+        recommendations.forEach(
+          recommendation =>
+            (cumulativeImpact += recommendation.metadata.impactInIAMBindings)
+        );
 
-      row.push(
-        adjustedBindings,
-        this.getTooltip(date, adjustedBindings, recommendations, project),
-        this.getPoint(recommendations, project.color, 'square')
-      );
-    });
+        const row = this.getRow(properties.graphData, date);
+        row.push(
+          adjustedBindings,
+          this.getTooltip(date, adjustedBindings, recommendations, project),
+          this.getPoint(recommendations, project.color, 'square')
+        );
+      });
 
     // Now add empty data for rows that weren't touched
     properties.graphData.forEach(row => {

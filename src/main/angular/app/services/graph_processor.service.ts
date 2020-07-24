@@ -123,8 +123,6 @@ export class GraphProcessorService {
     properties: GraphProperties,
     projects: Project[]
   ) {
-    console.log(properties);
-    console.log(projects);
     projects.forEach(project => {
       this.removeCumulativeDifference(properties, project);
     });
@@ -230,8 +228,6 @@ export class GraphProcessorService {
       await this.addCumulativeDifference(properties, project);
     }
 
-    console.log(properties);
-
     // Force a refresh of the chart
     const temp: Columns = [];
     properties.columns = temp.concat(properties.columns);
@@ -263,10 +259,10 @@ export class GraphProcessorService {
     this.removeSeriesOptions(properties, seriesNumber);
 
     properties.columns.splice(seriesNumber * 3 + 1, 3);
+    properties.graphData.forEach(row => row.splice(seriesNumber * 3 + 1, 3));
     if (addCumulativeDifference) {
       this.removeCumulativeDifference(properties, project);
     }
-    properties.graphData.forEach(row => row.splice(seriesNumber * 3 + 1, 3));
     // Look for rows with empty data and remove them
     properties.graphData = properties.graphData.filter(row =>
       row.some((value, index) => value && index !== 0)

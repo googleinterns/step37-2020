@@ -7,6 +7,7 @@ import {DateUtilitiesService} from './date_utilities.service';
 import {GraphProperties, Columns, Row} from '../../model/types';
 import {DataService} from './data.service';
 import {DateRange} from '../../model/date_range';
+import {CUMULATIVE_BINDINGS_SUFFIX} from '../../constants';
 
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
@@ -138,7 +139,7 @@ export class GraphProcessorService {
     project: Project
   ) {
     const index = properties.columns.findIndex(
-      value => value === project.projectId + '-bindings-trajectory'
+      value => value === project.projectId + CUMULATIVE_BINDINGS_SUFFIX
     );
     this.removeSeriesOptions(properties, (index - 1) / 3);
     properties.columns.splice(index, 3);
@@ -157,7 +158,7 @@ export class GraphProcessorService {
     };
 
     properties.columns.push(
-      `${project.projectId}-bindings-trajectory`,
+      project.projectId + CUMULATIVE_BINDINGS_SUFFIX,
       {
         type: 'string',
         role: 'tooltip',
@@ -168,7 +169,7 @@ export class GraphProcessorService {
         role: 'style',
       }
     );
-    // No harm in doing this since the graph data has been cached
+    // No harm in doing this since the graph data has already been cached
     const data = await this.dataService.getProjectGraphData(project.projectId);
 
     let cumulativeImpact = 0;

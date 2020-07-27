@@ -2,7 +2,6 @@ package com.google.impactdashboard.server.api_utilities;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.bigquery.model.ProjectList;
 import com.google.api.services.iam.v1.Iam;
 import com.google.api.services.iam.v1.IamScopes;
 import com.google.api.services.iam.v1.model.ListRolesResponse;
@@ -19,7 +18,6 @@ import com.google.protobuf.Timestamp;
 import com.google.protobuf.Value;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.concurrent.atomic.AtomicReference;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.*;
@@ -50,22 +48,6 @@ public class IamBindingRetriever {
       roles.addAll(rolesResponse.getRoles());
       pageToken = rolesResponse.getNextPageToken();
     } while(pageToken != null);
-
-    for (ProjectIdentification project : projects) {
-      String projectPageToken = null;
-      do {
-        ListRolesResponse rolesResponse;
-        if(projectPageToken == null) {
-          rolesResponse = iamService.projects().roles().list("projects/" + project.getProjectId())
-              .setView("full").execute();
-        } else {
-          rolesResponse = iamService.projects().roles().list("projects/" + project.getProjectId())
-              .setView("full").setPageToken(pageToken).execute();
-        }
-        roles.addAll(rolesResponse.getRoles());
-        projectPageToken = rolesResponse.getNextPageToken();
-      } while(projectPageToken != null);
-    }
   }
 
   /**
@@ -111,7 +93,7 @@ public class IamBindingRetriever {
         secondsFromEpoch = entry.getKey().getSeconds() * 1000;
       }
       return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, secondsFromEpoch,
-          getIamBindings(membersForRoles));
+          getIamBindings(membersForRoles, projectId));
     }).collect(Collectors.toList());
   }
 
@@ -121,6 +103,7 @@ public class IamBindingRetriever {
    * @param bindings protoBuf map for a binding map from AuditLogs
    */
   private Map<String, Integer> getMembersForRoles(List<Value> bindings) {
+
     Map<String, Integer> membersforRoles = new HashMap<>();
     bindings.forEach(bindingValue -> {
       Map<String, Value> bindingMap = bindingValue.getStructValue().getFieldsMap();
@@ -135,10 +118,10 @@ public class IamBindingRetriever {
    * @param membersForRoles map of membersPerRole to calculate the number of total bindings.
    * @return Total number of IAMBindings for the given map
    */
-  private int getIamBindings(Map<String, Integer> membersForRoles) {
+  private int getIamBindings(Map<String, Integer> membersForRoles, String projectId) {
     List<String> unknownRoles = membersForRoles.keySet().stream()
-        .filter(role -> 
-            !roles.stream().reduce(false, (accumulator, knownRole) -> 
+        .filter(role ->
+            !roles.stream().reduce(false, (accumulator, knownRole) ->
                 accumulator || role.equals(knownRole.getName()), Boolean::logicalOr))
         .collect(Collectors.toList());
     if (unknownRoles.size() > 0) {
@@ -153,6 +136,29 @@ public class IamBindingRetriever {
             return 0;
           }
         }).sum();
+  }
+
+  /**
+   * Helper method for retrieving all the project level custom roles for a specified project.
+   * @param projectId the project id of the project to receive custom roles for.
+   * @return a list of all the custom roles available to the project specified by projectId.
+   */
+  private List<Role> getProjectCustomRoles(String projectId) throws IOException {
+      String projectPageToken = null;
+      do {
+        ListRolesResponse rolesResponse;
+        if(projectPageToken == null) {
+          rolesResponse = iamService.projects().roles().list("projects/" + projectId)
+              .setView("full").execute();
+        } else {
+          rolesResponse = iamService.projects().roles().list("projects/" + projectId)
+              .setView("full").setPageToken(projectPageToken).execute();
+        }
+        roles.addAll(rolesResponse.getRoles());
+        projectPageToken = rolesResponse.getNextPageToken();
+      } while(projectPageToken != null);
+
+      throw new UnsupportedOperationException("Not yet implmented!");
   }
 
   /**

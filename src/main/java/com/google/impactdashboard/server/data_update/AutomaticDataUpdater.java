@@ -90,10 +90,4 @@ public class AutomaticDataUpdater extends DataUpdater {
         getLastIamEntry(project, "").stream()).collect(Collectors.toList()));
     return entries;  
   }
-
-  public static void main(String[] args) throws Exception {
-    AutomaticDataUpdater auto = AutomaticDataUpdater.create();
-    List<IAMBindingDatabaseEntry> entries = auto.listUpdatedIAMBindingData(Arrays.asList(ProjectIdentification.create("carolinelui-step-2020", "carolinelui-step-2020", 123456789123L)), Arrays.asList());
-    int x = 1;
-  }
 }

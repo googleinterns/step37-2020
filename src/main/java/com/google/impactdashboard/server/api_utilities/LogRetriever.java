@@ -7,6 +7,7 @@ import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
 import com.google.impactdashboard.Credentials;
 import com.google.logging.v2.ListLogEntriesRequest;
 import java.io.IOException;
+import java.util.List;
 
 
 /** Class that handles all the retrieval of logs stored on the cloud logging API. */
@@ -101,5 +102,4 @@ public class LogRetriever {
     
     return logger.listLogEntries(request);
   }
-
 }

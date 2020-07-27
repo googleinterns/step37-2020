@@ -125,6 +125,14 @@ public class IamBindingRetriever {
    * @return Total number of IAMBindings for the given map
    */
   private int getIamBindings(Map<String, Integer> membersForRoles, String projectId) throws IOException {
+    List<String> unknownRoles = membersForRoles.keySet().stream()
+        .filter(role ->
+            !roles.stream().reduce(false, (accumulator, knownRole) ->
+                accumulator || role.equals(knownRole.getName()), Boolean::logicalOr))
+        .collect(Collectors.toList());
+
+
+
     int iamBindings = roles.stream().filter(role -> membersForRoles.containsKey(role.getName()))
         .mapToInt(role -> {
           if(role.getIncludedPermissions() != null) {

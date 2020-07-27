@@ -92,8 +92,14 @@ public class IamBindingRetriever {
       if(secondsFromEpoch == null){
         secondsFromEpoch = entry.getKey().getSeconds() * 1000;
       }
+      int iamBindings = 0;
+      try {
+        iamBindings = getIamBindings(membersForRoles, projectId);
+      } catch (IOException e) {
+        throw new RuntimeException("IAM Bindings not received.");
+      }
       return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, secondsFromEpoch,
-          getIamBindings(membersForRoles, projectId));
+          iamBindings);
     }).collect(Collectors.toList());
   }
 
@@ -118,17 +124,8 @@ public class IamBindingRetriever {
    * @param membersForRoles map of membersPerRole to calculate the number of total bindings.
    * @return Total number of IAMBindings for the given map
    */
-  private int getIamBindings(Map<String, Integer> membersForRoles, String projectId) {
-    List<String> unknownRoles = membersForRoles.keySet().stream()
-        .filter(role ->
-            !roles.stream().reduce(false, (accumulator, knownRole) ->
-                accumulator || role.equals(knownRole.getName()), Boolean::logicalOr))
-        .collect(Collectors.toList());
-    if (unknownRoles.size() > 0) {
-      throw new RuntimeException("Unknown roles in this project! " + String.join(", ",unknownRoles));
-    }
-
-    return roles.stream().filter(role -> membersForRoles.containsKey(role.getName()))
+  private int getIamBindings(Map<String, Integer> membersForRoles, String projectId) throws IOException {
+    int iamBindings = roles.stream().filter(role -> membersForRoles.containsKey(role.getName()))
         .mapToInt(role -> {
           if(role.getIncludedPermissions() != null) {
             return role.getIncludedPermissions().size() * membersForRoles.get(role.getName());
@@ -136,6 +133,17 @@ public class IamBindingRetriever {
             return 0;
           }
         }).sum();
+
+    iamBindings += getProjectCustomRoles(projectId).stream()
+        .filter(role -> membersForRoles.containsKey(role.getName())).mapToInt(role -> {
+          if(role.getIncludedPermissions() != null) {
+            return role.getIncludedPermissions().size() * membersForRoles.get(role.getName());
+          } else {
+            return 0;
+          }
+        }).sum();
+
+    return iamBindings;
   }
 
   /**
@@ -155,11 +163,39 @@ public class IamBindingRetriever {
         rolesResponse = iamService.projects().roles().list("projects/" + projectId)
             .setView("full").setPageToken(projectPageToken).execute();
       }
-      projectCustomRoles.addAll(rolesResponse.getRoles());
-      projectPageToken = rolesResponse.getNextPageToken();
+      if (rolesResponse != null) {
+        projectCustomRoles.addAll(rolesResponse.getRoles());
+        projectPageToken = rolesResponse.getNextPageToken();
+      }
     } while(projectPageToken != null);
 
-      throw new UnsupportedOperationException("Not yet implmented!");
+    return projectCustomRoles;
+  }
+
+  /**
+   * Helper method for retrieving all the organization level custom roles for a specified project.
+   * @param organizationId the organization id of the organization to receive custom roles for.
+   * @return a list of all the custom roles available to the project specified by projectId.
+   */
+  private List<Role> getOrganizationCustomRoles(String organizationId) throws IOException {
+    List<Role> organizationCustomRoles = new ArrayList<>();
+    String projectPageToken = null;
+    do {
+      ListRolesResponse rolesResponse;
+      if(projectPageToken == null) {
+        rolesResponse = iamService.organizations().roles().list("organizations/" + organizationId)
+            .setView("full").execute();
+      } else {
+        rolesResponse = iamService.projects().roles().list("organizations/" + organizationId)
+            .setView("full").setPageToken(projectPageToken).execute();
+      }
+      if (rolesResponse != null) {
+        organizationCustomRoles.addAll(rolesResponse.getRoles());
+        projectPageToken = rolesResponse.getNextPageToken();
+      }
+    } while(projectPageToken != null);
+
+    return organizationCustomRoles;
   }
 
   /**

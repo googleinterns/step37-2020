@@ -90,4 +90,10 @@ public class AutomaticDataUpdater extends DataUpdater {
         getLastIamEntry(project, "").stream()).collect(Collectors.toList()));
     return entries;  
   }
+
+  public static void main(String[] args) throws IOException, GeneralSecurityException {
+    AutomaticDataUpdater dataUpdater = AutomaticDataUpdater.create();
+
+    dataUpdater.listUpdatedIAMBindingData(Arrays.asList(), Arrays.asList(ProjectIdentification.create("concord-intern", "concord-intern", 123456787L)));
+  }
 }

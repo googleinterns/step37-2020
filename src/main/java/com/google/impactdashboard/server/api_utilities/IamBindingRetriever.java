@@ -144,19 +144,20 @@ public class IamBindingRetriever {
    * @return a list of all the custom roles available to the project specified by projectId.
    */
   private List<Role> getProjectCustomRoles(String projectId) throws IOException {
-      String projectPageToken = null;
-      do {
-        ListRolesResponse rolesResponse;
-        if(projectPageToken == null) {
-          rolesResponse = iamService.projects().roles().list("projects/" + projectId)
-              .setView("full").execute();
-        } else {
-          rolesResponse = iamService.projects().roles().list("projects/" + projectId)
-              .setView("full").setPageToken(projectPageToken).execute();
-        }
-        roles.addAll(rolesResponse.getRoles());
-        projectPageToken = rolesResponse.getNextPageToken();
-      } while(projectPageToken != null);
+    List<Role> projectCustomRoles = new ArrayList<>();
+    String projectPageToken = null;
+    do {
+      ListRolesResponse rolesResponse;
+      if(projectPageToken == null) {
+        rolesResponse = iamService.projects().roles().list("projects/" + projectId)
+            .setView("full").execute();
+      } else {
+        rolesResponse = iamService.projects().roles().list("projects/" + projectId)
+            .setView("full").setPageToken(projectPageToken).execute();
+      }
+      projectCustomRoles.addAll(rolesResponse.getRoles());
+      projectPageToken = rolesResponse.getNextPageToken();
+    } while(projectPageToken != null);
 
       throw new UnsupportedOperationException("Not yet implmented!");
   }

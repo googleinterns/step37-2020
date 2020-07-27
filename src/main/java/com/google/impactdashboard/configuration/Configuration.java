@@ -25,5 +25,5 @@ public class Configuration {
    * When set to true, DatabaseAccessor will access a test database where all 
    * the tables are empty. Takes precedence over {@code useTestDatabase}.
    */
-  public static boolean useEmptyDatabase = true;
+  public static boolean useEmptyDatabase = false;
 }

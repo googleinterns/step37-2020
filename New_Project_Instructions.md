@@ -15,7 +15,7 @@ Note that the manual update will retrieve 30 days of data for any and all new pr
 To make the dashboard stop collecting data for a project, simply remove the App Engine default service account from the deploying project:
 * Navigate to the [IAM page](https://console.cloud.google.com/iam-admin/iam?_ga=2.165735869.248724417.1594646215-1491521344.1590087040&_gac=1.48940818.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) of that project.
 * Check the box by the App Engine default service account of your deploying project.
-* Add the top of the page, clock **Remove**.
+* At the top of the page, click **Remove**.
 
 If you also want to have the project no longer show up on the Dashboard web page:
 * Go to the [Bigquery web UI](https://console.cloud.google.com/bigquery?_ga=2.253514767.74597765.1594049459-1491521344.1590087040&_gac=1.183307666.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) for your **deploying project**. 

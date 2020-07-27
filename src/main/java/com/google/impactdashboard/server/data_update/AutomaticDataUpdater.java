@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,11 +88,5 @@ public class AutomaticDataUpdater extends DataUpdater {
     entries.addAll(knownProjects.parallelStream().flatMap(project -> 
         getLastIamEntry(project, "").stream()).collect(Collectors.toList()));
     return entries;  
-  }
-
-  public static void main(String[] args) throws IOException, GeneralSecurityException {
-    AutomaticDataUpdater dataUpdater = AutomaticDataUpdater.create();
-
-    dataUpdater.listUpdatedIAMBindingData(Arrays.asList(), Arrays.asList(ProjectIdentification.create("concord-intern", "concord-intern", 123456787L)));
   }
 }

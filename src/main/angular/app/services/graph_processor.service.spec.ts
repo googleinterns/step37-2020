@@ -183,7 +183,38 @@ describe('GraphProcessorService', () => {
           expect(actual).toEqual(expected);
         });
 
-        it('Modified data after the first recommendation', () => {});
+        it('Modified data after the first recommendation', () => {
+          let cumulativeSum = firstRecommendation.metadata.impactInIAMBindings;
+          const expected = Object.entries(projectData.dateToNumberIAMBindings)
+            .filter(entry => +entry[0] > firstRecommendation.acceptedTimestamp)
+            .map(entry => {
+              const returnValue = entry[1] + cumulativeSum;
+              const recommendations = Object.values(
+                projectData.dateToRecommendationTaken
+              ).filter(recommendation =>
+                dateService.fallOnSameDay(
+                  recommendation.acceptedTimestamp,
+                  +entry[0]
+                )
+              );
+              recommendations.forEach(
+                recommendation =>
+                  (cumulativeSum += recommendation.metadata.impactInIAMBindings)
+              );
+
+              return returnValue;
+            });
+
+          const actual = properties.graphData
+            .filter(
+              row =>
+                row[0] instanceof Date &&
+                row[0].getTime() > firstRecommendation.acceptedTimestamp
+            )
+            .map(row => row[dataIndex]);
+
+          expect(actual).toEqual(expected);
+        });
       });
     });
 
@@ -431,7 +462,6 @@ describe('GraphProcessorService', () => {
           .filter(entry => +entry[0] > firstRecommendation.acceptedTimestamp)
           .map(entry => {
             const returnValue = entry[1] + cumulativeSum;
-
             const recommendations = Object.values(
               projectData.dateToRecommendationTaken
             ).filter(recommendation =>
@@ -444,6 +474,7 @@ describe('GraphProcessorService', () => {
               recommendation =>
                 (cumulativeSum += recommendation.metadata.impactInIAMBindings)
             );
+
             return returnValue;
           });
 
@@ -460,9 +491,77 @@ describe('GraphProcessorService', () => {
     });
 
     describe('Adding cumulative differences for multiple projects', () => {
-      it('Added the appropriate columns', () => {});
+      let projects: Project[];
+      let projectData: ProjectGraphData[];
+      let firstRecommendations: Recommendation[];
+      let dataIndices: number[];
 
-      it('Left data before the first recommendation for each project', () => {});
+      beforeAll(async () => {
+        properties = service.initProperties();
+        changes = {};
+
+        // Get projects 1-4
+        projects = (await fakeDataService.listProjects()).filter(
+          (project, index) => index < 4
+        );
+        projectData = await Promise.all(
+          projects.map(project =>
+            fakeDataService.getProjectGraphData(project.projectId)
+          )
+        );
+        firstRecommendations = projects.map(
+          (project, i) =>
+            Object.entries(projectData[i].dateToRecommendationTaken).sort(
+              (a, b) => +a - +b
+            )[0][1]
+        );
+
+        // Add the projects
+        changes.projects = new SimpleChange([], projects, true);
+        await service.processChanges(changes, properties, false);
+
+        await service.addCumulativeDifferences(properties, projects);
+
+        dataIndices = projects.map(project =>
+          properties.columns.findIndex(
+            value => value === project.projectId + CUMULATIVE_BINDINGS_SUFFIX
+          )
+        );
+      });
+
+      it('Added the appropriate columns', () => {
+        const expected = projects.map(
+          project => project.projectId + CUMULATIVE_BINDINGS_SUFFIX
+        );
+        const actual = properties.columns.filter(column =>
+          column.toString().endsWith(CUMULATIVE_BINDINGS_SUFFIX)
+        );
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('Left data before the first recommendation for each project', () => {
+        const expected = projectData.map((data, i) =>
+          Object.entries(data.dateToNumberIAMBindings)
+            .filter(
+              entry => +entry[0] <= firstRecommendations[i].acceptedTimestamp
+            )
+            .map(entry => entry[1])
+        );
+
+        const actual = firstRecommendations.map((recommendation, i) =>
+          properties.graphData
+            .filter(
+              row =>
+                row[0] instanceof Date &&
+                row[0].getTime() <= recommendation.acceptedTimestamp
+            )
+            .map(row => row[dataIndices[i]])
+            .filter(value => value)
+        );
+
+        expect(actual).toEqual(expected);
+      });
 
       it('Modified data after the first recommendation for each', () => {});
     });

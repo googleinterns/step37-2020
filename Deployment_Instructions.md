@@ -50,6 +50,16 @@ On your deploying project, you must create data tables to store recommendations 
 
 Navigate to `src/main/java/com/google/impactdashboard/configuration/Constants.java` in the repo, and set the value of `PROJECT_ID` equal to the project id of your deploying project. 
 
+Navigate to `/pom.xml` in the repo, and look for this block of code:
+```
+<configuration>
+  <deploy.projectId> ... </deploy.projectId>
+  <deploy.version>1</deploy.version>
+  ...
+</configuration>
+```
+Enter the id of your deploying project between `<deploy.projectId>` and `</deploy.projectId>`. 
+
 ## Deploying the application to AppEngine
 To deploy to AppEngine, follow [these](https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-appengine) step and then run:
 ```

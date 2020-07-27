@@ -609,9 +609,55 @@ describe('GraphProcessorService', () => {
 
   describe('removeCumulativeDifferences()', () => {
     let properties: GraphProperties;
+    let changes: SimpleChanges;
 
-    describe('Removing nothing when no projects are present', () => {});
-    describe('Removing differences that are continuous columns', () => {});
+    describe('Removing nothing when no projects are present', () => {
+      beforeAll(() => {
+        properties = service.initProperties();
+        service.removeCumulativeDifferences(properties, []);
+      });
+
+      it('Leaves columns untouched', () => {
+        const actual = properties.columns.length;
+
+        expect(actual).toBe(1);
+      });
+    });
+
+    describe('Removing differences that are continuous columns', () => {
+      let projects: Project[];
+
+      beforeAll(async () => {
+        properties = service.initProperties();
+        changes = {};
+
+        projects = (await fakeDataService.listProjects()).filter(
+          (project, index) => index < 2
+        );
+        // Add the projects
+        changes.projects = new SimpleChange([], projects, true);
+        await service.processChanges(changes, properties, true);
+
+        service.removeCumulativeDifferences(properties, projects);
+      });
+
+      it('Removes columns', () => {
+        const expected = [];
+        const actual = properties.columns.filter(value =>
+          value.toString().endsWith(CUMULATIVE_BINDINGS_SUFFIX)
+        );
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('Removed graph data', () => {
+        const expectedSize = properties.graphData.map(row => 7);
+        const actual = properties.graphData.map(row => row.length);
+
+        expect(actual).toEqual(expectedSize);
+      });
+    });
+
     describe('Removing differences that are non-continuous columns', () => {});
   });
 });

@@ -77,16 +77,14 @@ public class Queries {
    * Recommendations table. 
    */
   public static final String INSERT_VALUES_INTO_RECOMMENDATIONS_TABLE = 
-    "INSERT INTO `" + RECOMMENDATIONS_TABLE + "`" +
-      " VALUES "; 
+    "INSERT INTO `" + RECOMMENDATIONS_TABLE + "`"; 
 
   /** 
    * Inserts values (which will need to be concatenated to this string) into the 
    * IAM Bindings table. 
    */
   public static final String INSERT_VALUES_INTO_IAM_TABLE = 
-    "INSERT INTO `" + IAM_TABLE + "`" +
-      " VALUES ";
+    "INSERT INTO `" + IAM_TABLE + "`";
 
   /** Retrieves the most recent timestamp from the IAM Bindings Table. */
   public static final String GET_MOST_RECENT_TIMESTAMP = 

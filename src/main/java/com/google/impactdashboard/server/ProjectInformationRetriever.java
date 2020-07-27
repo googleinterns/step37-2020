@@ -58,14 +58,4 @@ public class ProjectInformationRetriever {
     return ProjectGraphData.create(projectId, numberIAMBindingsOnDate,
         recommendationsAppliedOnDate);
   }
-
-  /**
-   * Checks to see if there are new projects that were created after the database last updated
-   * @param projectIdentificationList List of project Identification that the database is storing
-   * @return whether {@code projectIdentificationList} is up to date or not.
-   */
-  private boolean checkNewProjects(List<ProjectIdentification> projectIdentificationList) {
-    throw new UnsupportedOperationException("Not Implemented");
-  }
-
 }

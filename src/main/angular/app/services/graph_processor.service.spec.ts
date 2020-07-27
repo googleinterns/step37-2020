@@ -563,7 +563,47 @@ describe('GraphProcessorService', () => {
         expect(actual).toEqual(expected);
       });
 
-      it('Modified data after the first recommendation for each', () => {});
+      it('Modified data after the first recommendation for each', () => {
+        const expected = projectData.map((data, i) => {
+          let cumulativeSum =
+            firstRecommendations[i].metadata.impactInIAMBindings;
+
+          return Object.entries(data.dateToNumberIAMBindings)
+            .filter(
+              entry => +entry[0] > firstRecommendations[i].acceptedTimestamp
+            )
+            .map(entry => {
+              const returnValue = entry[1] + cumulativeSum;
+              const recommendations = Object.values(
+                data.dateToRecommendationTaken
+              ).filter(recommendation =>
+                dateService.fallOnSameDay(
+                  recommendation.acceptedTimestamp,
+                  +entry[0]
+                )
+              );
+              recommendations.forEach(
+                recommendation =>
+                  (cumulativeSum += recommendation.metadata.impactInIAMBindings)
+              );
+
+              return returnValue;
+            });
+        });
+
+        const actual = firstRecommendations.map((recommendation, i) =>
+          properties.graphData
+            .filter(
+              row =>
+                row[0] instanceof Date &&
+                row[0].getTime() > recommendation.acceptedTimestamp
+            )
+            .map(row => row[dataIndices[i]])
+            .filter(value => value)
+        );
+
+        expect(actual).toEqual(expected);
+      });
     });
   });
 

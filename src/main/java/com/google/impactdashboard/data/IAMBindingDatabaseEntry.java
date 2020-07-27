@@ -1,5 +1,7 @@
 package com.google.impactdashboard.data;
 
+import java.util.Comparator;
+
 import com.google.auto.value.AutoValue;
 
 /** Represents a single row of the IAM Bindings table. */

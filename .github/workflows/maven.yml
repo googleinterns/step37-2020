@@ -20,5 +20,5 @@ jobs:
     - run: mvn install -DskipTests
     - name: Run Backend Tests
       run: mvn clean test
-      env: 
+      env:
         SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_Security_Key }}

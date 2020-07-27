@@ -113,10 +113,6 @@ export class GraphProcessorService {
     await Promise.all(
       projects.map(project => this.addCumulativeDifference(properties, project))
     );
-
-    // Force a refresh of the chart
-    const temp: Columns = [];
-    properties.columns = temp.concat(properties.columns);
   }
 
   /** Remove all of the cumualtive differences from the graph data and refreshes the chart. */
@@ -128,9 +124,7 @@ export class GraphProcessorService {
       this.removeCumulativeDifference(properties, project);
     });
 
-    // Force a refresh of the chart
-    const temp: Columns = [];
-    properties.columns = temp.concat(properties.columns);
+    this.forceRefresh(properties);
   }
 
   /** Removes the single cumulative difference curve for the given project. */
@@ -231,9 +225,7 @@ export class GraphProcessorService {
       await this.addCumulativeDifference(properties, project);
     }
 
-    // Force a refresh of the chart
-    const temp: Columns = [];
-    properties.columns = temp.concat(properties.columns);
+    this.forceRefresh(properties);
   }
 
   /** Remove the series from options. */
@@ -276,9 +268,7 @@ export class GraphProcessorService {
       properties.graphData
     );
 
-    // Force a refresh of the chart
-    const temp: Columns = [];
-    properties.columns = temp.concat(properties.columns);
+    this.forceRefresh(properties);
   }
 
   /** Adds the table rows for the given Project. Each row is [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...] */
@@ -462,5 +452,11 @@ export class GraphProcessorService {
       }
       return false;
     });
+  }
+
+  /** Force a refresh of google charts. */
+  private forceRefresh(properties: GraphProperties) {
+    const temp: Columns = [];
+    properties.columns = temp.concat(properties.columns);
   }
 }

@@ -65,3 +65,4 @@ To deploy to AppEngine, follow [these](https://cloud.google.com/cloud-build/docs
 ```
 npm run deploy
 ```
+The project data will be automatically imported at midnight once the project is deployed. To import the data immediately instead, on the deployed project page navigate to the **/admin** url and click the **Manual Update** button. This import could take several minutes, so please wait until the loading bar finishes before navigating back to the main page. 

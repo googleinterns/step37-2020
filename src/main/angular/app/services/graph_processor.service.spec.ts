@@ -636,7 +636,8 @@ describe('GraphProcessorService', () => {
         );
         // Add the projects
         changes.projects = new SimpleChange([], projects, true);
-        await service.processChanges(changes, properties, true);
+        await service.processChanges(changes, properties, false);
+        await service.addCumulativeDifferences(properties, projects);
 
         service.removeCumulativeDifferences(properties, projects);
       });

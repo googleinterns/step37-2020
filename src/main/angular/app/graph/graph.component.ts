@@ -93,18 +93,18 @@ export class GraphComponent implements OnInit {
   }
 
   toggleCumulativeDifference(change: MatSlideToggleChange) {
+    this.showCumulativeDifference = !this.showCumulativeDifference;
     if (this.showCumulativeDifference) {
-      this.graphProcessor.removeCumulativeDifferences(
-        this.properties,
-        this.projects
-      );
-    } else {
       this.graphProcessor.addCumulativeDifferences(
         this.properties,
         this.projects
       );
+    } else {
+      this.graphProcessor.removeCumulativeDifferences(
+        this.properties,
+        this.projects
+      );
     }
-    this.showCumulativeDifference = !this.showCumulativeDifference;
   }
 
   ngOnInit() {

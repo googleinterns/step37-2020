@@ -420,10 +420,18 @@ describe('GraphProcessorService', () => {
         expect(actual).toEqual(expected);
       });
 
-      it('Modified data after the first recommendation', () => {});
+      it('Modified data after the first recommendation', () => {
+        let expected = Object.entries(projectData.dateToNumberIAMBindings).filter(entry => +entry[0] > firstRecommendation.acceptedTimestamp)
+      });
     });
 
-    describe('Adding cumulative differences for multiple projects', () => {});
+    describe('Adding cumulative differences for multiple projects', () => {
+      it('Added the appropriate columns', () => {});
+
+      it('Left data before the first recommendation for each project', () => {});
+
+      it('Modified data after the first recommendation for each', () => {});
+    });
   });
 
   describe('removeCumulativeDifferences()', () => {

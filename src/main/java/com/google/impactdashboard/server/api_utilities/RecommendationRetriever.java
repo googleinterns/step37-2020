@@ -1,6 +1,5 @@
 package com.google.impactdashboard.server.api_utilities;
 
-
 import com.google.cloud.recommender.v1.RecommenderClient;
 import com.google.cloud.recommender.v1.RecommenderSettings;
 import com.google.cloud.recommender.v1.stub.RecommenderStubSettings;
@@ -11,14 +10,8 @@ import com.google.impactdashboard.data.recommendation.RecommendationAction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.Value;
 
-import java.time.Instant;
-
 import java.io.IOException;
-import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /** Class that calls the Recommender API to get the full information for recommendations. */
@@ -75,22 +68,22 @@ public class RecommendationRetriever {
     }
     List<RecommendationAction> actions = recommendation.getContent().getOperationGroupsList()
         .stream().map(operationGroup -> {
-          AtomicReference<String> affectedAccount = new AtomicReference<>();
-          AtomicReference<String> previousRole = new AtomicReference<>();
-          AtomicReference<String> newRole = new AtomicReference<>("");
+          Set<String> affectedAccount = new HashSet<>();
+          Set<String> previousRole = new HashSet<>();
+          Set<String> newRole = new HashSet<>();
           operationGroup.getOperationsList().forEach(operation -> {
             if(operation.getAction().equals("add")) {
-              newRole.set(operation.getPathFiltersMap().get("/iamPolicy/bindings/*/role")
+              newRole.add(operation.getPathFiltersMap().get("/iamPolicy/bindings/*/role")
                   .getStringValue());
             } else if(operation.getAction().equals("remove")) {
-              previousRole.set(operation.getPathFiltersMap().get("/iamPolicy/bindings/*/role")
+              previousRole.add(operation.getPathFiltersMap().get("/iamPolicy/bindings/*/role")
                   .getStringValue());
-              affectedAccount.set(operation.getPathFiltersMap()
+              affectedAccount.add(operation.getPathFiltersMap()
                   .get("/iamPolicy/bindings/*/members/*").getStringValue());
             }
           });
-          return RecommendationAction.create(affectedAccount.toString(), previousRole.toString(),
-              newRole.toString(), type);
+          return RecommendationAction.create(String.join(", ", affectedAccount),
+              String.join(", ", previousRole), String.join(", ", newRole), type);
         }).collect(Collectors.toList());
     return actions;
   }

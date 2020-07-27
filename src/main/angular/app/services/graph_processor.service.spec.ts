@@ -430,6 +430,8 @@ describe('GraphProcessorService', () => {
         const expected = Object.entries(projectData.dateToNumberIAMBindings)
           .filter(entry => +entry[0] > firstRecommendation.acceptedTimestamp)
           .map(entry => {
+            const returnValue = entry[1] + cumulativeSum;
+
             const recommendations = Object.values(
               projectData.dateToRecommendationTaken
             ).filter(recommendation =>
@@ -438,12 +440,10 @@ describe('GraphProcessorService', () => {
                 +entry[0]
               )
             );
-            const returnValue = entry[1] + cumulativeSum;
             recommendations.forEach(
               recommendation =>
                 (cumulativeSum += recommendation.metadata.impactInIAMBindings)
             );
-
             return returnValue;
           });
 

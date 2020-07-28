@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.google.cloud.logging.v2.LoggingClient;
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.logging.v2.LogEntry;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.impactdashboard.configuration.Configuration;
@@ -21,6 +22,7 @@ import com.google.impactdashboard.server.api_utilities.LogRetriever;
 import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 
+import com.sun.org.apache.xpath.internal.operations.Or;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,13 +38,16 @@ public class DataUpdaterTest extends Mockito {
 
   public static final List<IAMBindingDatabaseEntry> PROJECT_3_IAM_BINDING_SINGLE_ENTRY =
       Collections.singletonList(IAMBindingDatabaseEntry.create("project-id-3",
-          "project-id-3", "345678901234",0L, 1000));
+          "project-id-3", "345678901234", OrganizationIdentification.create("", ""), 0L, 1000));
+
   public static final List<IAMBindingDatabaseEntry> PROJECT_1_IAM_BINDING_SINGLE_ENTRY =
       Collections.singletonList(IAMBindingDatabaseEntry.create("project-id-1",
-          "project-id-1", "123456789123",1595131200000L, 13456));
+          "project-id-1", "123456789123", OrganizationIdentification.create("",""), 1595131200000L,
+          13456));
   public static final List<IAMBindingDatabaseEntry> PROJECT_2_IAM_BINDING_SINGLE_ENTRY =
       Collections.singletonList(IAMBindingDatabaseEntry.create("project-id-2",
-          "project-id-2", "234567890123",1595131200000L, 23454));
+          "project-id-2", "234567890123", OrganizationIdentification.create("", ""),1595131200000L,
+          23454));
 
   private LogRetriever mockLogRetriever;
   private RecommendationRetriever mockRecommendationRetriever;
@@ -65,7 +70,7 @@ public class DataUpdaterTest extends Mockito {
   private static final ProjectIdentification PROJECT_3 =
       ProjectIdentification.create("project-3", "project-id-3", 345678901234L);
   private static final Recommendation PROJECT_3_RECOMMENDATION_1 =
-      Recommendation.create("project-id-3", "test@example.com",
+      Recommendation.create("project-id-3", "", "test@example.com",
           Arrays.asList(
             RecommendationAction.create(
               "affected@example.com", "role1", "",
@@ -73,7 +78,7 @@ public class DataUpdaterTest extends Mockito {
           Recommendation.RecommenderType.IAM_BINDING, 1593072412000L,
           IAMRecommenderMetadata.create(350));
   private static final Recommendation PROJECT_3_RECOMMENDATION_2 =
-      Recommendation.create("project-id-3", "test@example.com",
+      Recommendation.create("project-id-3", "", "test@example.com",
           Arrays.asList(
             RecommendationAction.create(
               "affected@example.com", "role1", "role2",
@@ -81,7 +86,7 @@ public class DataUpdaterTest extends Mockito {
           Recommendation.RecommenderType.IAM_BINDING, 1593070012000L,
           IAMRecommenderMetadata.create(400));
   private static final Recommendation PROJECT_1_RECOMMENDATION =
-      Recommendation.create("project-id-1", "test@example.com",
+      Recommendation.create("project-id-1", "", "test@example.com",
           Arrays.asList(
             RecommendationAction.create(
               "affected@example.com", "role1", "",

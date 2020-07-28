@@ -1,5 +1,6 @@
 package com.google.impactdashboard.server.api_utilities;
 
+import autovalue.shaded.com.google$.common.annotations.$VisibleForTesting;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.iam.v1.Iam;
@@ -8,6 +9,7 @@ import com.google.api.services.iam.v1.model.ListRolesResponse;
 import com.google.api.services.iam.v1.model.Role;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.cloud.audit.AuditLog;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.Credentials;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.recommendation.RecommendationAction;
@@ -30,6 +32,7 @@ public class IamBindingRetriever {
   private final Iam iamService;
   private final List<Role> roles;
 
+  @VisibleForTesting
   protected IamBindingRetriever(Iam iamService) throws IOException {
     this.iamService = iamService;
 
@@ -140,7 +143,8 @@ public class IamBindingRetriever {
    * @param membersForRoles map of membersPerRole to calculate the number of total bindings.
    * @return Total number of IAMBindings for the given map
    */
-  private int getIamBindings(Map<String, Integer> membersForRoles, String projectId) throws IOException {
+  @VisibleForTesting
+  protected int getIamBindings(Map<String, Integer> membersForRoles, String projectId) throws IOException {
     int iamBindings = roles.stream().filter(role -> membersForRoles.containsKey(role.getName()))
         .mapToInt(role -> {
           if(role.getIncludedPermissions() != null) {

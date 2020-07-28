@@ -8,6 +8,7 @@ import {DataService} from '../data.service';
 import {ErrorMessage} from '../../../model/error_message';
 import {RecommendationAction} from '../../../model/recommendation_action';
 import {RecommenderMetadata} from '../../../model/recommender_metadata';
+import {GraphDataCacheService} from '../graph_data_cache.service';
 
 /** Contains fake data. */
 @Injectable()
@@ -24,7 +25,7 @@ export class FakeDataService implements DataService {
   /** The time to artificially wait on a request. */
   private static requestTime = 0;
 
-  constructor() {
+  constructor(private cacheService: GraphDataCacheService) {
     this.projects = {};
     const fakes = [
       FakeDataService.fakeProject1(),
@@ -56,11 +57,15 @@ export class FakeDataService implements DataService {
 
   /** Returns the data associated with the given project. */
   getProjectGraphData(id: string): Promise<ProjectGraphData> {
+    if (this.cacheService.hasEntry(id)) {
+      return new Promise(resolve => resolve(this.cacheService.getEntry(id)));
+    }
     if (this.projects[id]) {
       this.activeRequests.add(id);
       return new Promise(resolve => {
         setTimeout(() => {
           this.activeRequests.delete(id);
+          this.cacheService.addEntry(id, this.projects[id][1]);
           resolve(this.projects[id][1]);
         }, FakeDataService.requestTime);
       });
@@ -148,7 +153,7 @@ export class FakeDataService implements DataService {
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('7 Jun 2020 UTC') + 1,
+        Date.parse('17 Jun 2020 UTC') + 1,
         new RecommenderMetadata(36)
       ),
       [Date.parse('17 Jun 2020 UTC') + 2]: new Recommendation(

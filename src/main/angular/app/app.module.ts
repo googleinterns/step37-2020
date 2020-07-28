@@ -24,6 +24,7 @@ import {MatNativeDateModule} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {GraphDataCacheService} from './services/graph_data_cache.service';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import {GraphDataCacheService} from './services/graph_data_cache.service';
     MatNativeDateModule,
     MatInputModule,
     MatProgressBarModule,
+    MatSlideToggleModule,
   ],
   providers: [
     dataServiceProvider,

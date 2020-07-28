@@ -17,3 +17,7 @@
   justify-content: center;
   margin: 12px auto 0 auto;
 }
+
+mat-slide-toggle {
+  margin: 20px 16px;
+}

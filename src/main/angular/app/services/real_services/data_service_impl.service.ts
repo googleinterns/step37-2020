@@ -50,7 +50,7 @@ export class DataServiceImpl implements DataService {
   }
 
   /** Gets the project information. */
-  async listProjects(): Promise<Project[]> {
+  async listSummaries(): Promise<Project[]> {
     const url = '/list-project-summaries';
     this.activeRequests.add(url);
     const response: any = await this.http.get<any>(url).toPromise();

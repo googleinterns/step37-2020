@@ -158,7 +158,7 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Called when the component is ready to be displayed. */
   ngOnInit() {
-    this.dataService.listProjects().then(projects => {
+    this.dataService.listSummaries().then(projects => {
       if (projects instanceof Array) {
         this.projectQueryService.init(projects);
         // Assign colors based on initial ordering

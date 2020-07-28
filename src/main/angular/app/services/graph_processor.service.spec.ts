@@ -47,7 +47,7 @@ describe('GraphProcessorService', () => {
           changes = {};
           properties = service.initProperties();
 
-          project = ((await fakeDataService.listProjects()) as Project[])[0];
+          project = ((await fakeDataService.listSummaries()) as Project[])[0];
           projectData = (await fakeDataService.getProjectGraphData(
             project.projectId
           )) as ProjectGraphData;
@@ -100,7 +100,7 @@ describe('GraphProcessorService', () => {
           properties = service.initProperties();
           changes = {};
 
-          projects = (await fakeDataService.listProjects()) as Project[];
+          projects = (await fakeDataService.listSummaries()) as Project[];
           projectData = (await Promise.all(
             projects.map(project =>
               fakeDataService.getProjectGraphData(project.projectId)
@@ -145,7 +145,7 @@ describe('GraphProcessorService', () => {
           changes = {};
           properties = service.initProperties();
 
-          project = ((await fakeDataService.listProjects()) as Project[])[0];
+          project = ((await fakeDataService.listSummaries()) as Project[])[0];
           projectData = (await fakeDataService.getProjectGraphData(
             project.projectId
           )) as ProjectGraphData;
@@ -228,7 +228,7 @@ describe('GraphProcessorService', () => {
           properties = service.initProperties();
           changes = {};
 
-          allProjects = (await fakeDataService.listProjects()) as Project[];
+          allProjects = (await fakeDataService.listSummaries()) as Project[];
           // Add the projects
           changes.projects = new SimpleChange([], allProjects, true);
           await service.processChanges(changes, properties, false);
@@ -277,7 +277,7 @@ describe('GraphProcessorService', () => {
           properties = service.initProperties();
           changes = {};
 
-          allProjects = (await fakeDataService.listProjects()) as Project[];
+          allProjects = (await fakeDataService.listSummaries()) as Project[];
 
           // Add the projects
           changes.projects = new SimpleChange([], allProjects, true);
@@ -326,7 +326,7 @@ describe('GraphProcessorService', () => {
           properties = service.initProperties();
           changes = {};
 
-          project = ((await fakeDataService.listProjects()) as Project[])[0];
+          project = ((await fakeDataService.listSummaries()) as Project[])[0];
 
           // Add the project
           changes.projects = new SimpleChange([], [project], true);
@@ -360,7 +360,7 @@ describe('GraphProcessorService', () => {
         properties = service.initProperties();
         changes = {};
 
-        allProjects = (await fakeDataService.listProjects()) as Project[];
+        allProjects = (await fakeDataService.listSummaries()) as Project[];
         // Add the projects
         changes.projects = new SimpleChange([], allProjects, true);
         await service.processChanges(changes, properties, false);
@@ -417,7 +417,7 @@ describe('GraphProcessorService', () => {
         properties = service.initProperties();
         changes = {};
 
-        project = ((await fakeDataService.listProjects()) as Project[])[0];
+        project = ((await fakeDataService.listSummaries()) as Project[])[0];
         projectData = (await fakeDataService.getProjectGraphData(
           project.projectId
         )) as ProjectGraphData;
@@ -501,7 +501,7 @@ describe('GraphProcessorService', () => {
         changes = {};
 
         // Get projects 1-4
-        projects = (await fakeDataService.listProjects()).filter(
+        projects = (await fakeDataService.listSummaries()).filter(
           (project, index) => index < 4
         );
         projectData = await Promise.all(
@@ -631,7 +631,7 @@ describe('GraphProcessorService', () => {
         properties = service.initProperties();
         changes = {};
 
-        projects = (await fakeDataService.listProjects()).filter(
+        projects = (await fakeDataService.listSummaries()).filter(
           (project, index) => index < 2
         );
         // Add the projects
@@ -666,7 +666,7 @@ describe('GraphProcessorService', () => {
         properties = service.initProperties();
         changes = {};
 
-        projects = (await fakeDataService.listProjects()).filter(
+        projects = (await fakeDataService.listSummaries()).filter(
           (project, index) => index < 2
         );
 

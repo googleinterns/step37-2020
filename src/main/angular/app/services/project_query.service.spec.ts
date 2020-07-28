@@ -6,13 +6,17 @@ import {
   SortDirection,
   SortBy,
 } from '../../model/project_sort';
+import {GraphDataCacheService} from './graph_data_cache.service';
+import {DateUtilitiesService} from './date_utilities.service';
 
 describe('ProjectQueryService', () => {
   let service: ProjectQueryService;
   let projects: Project[];
 
   beforeAll(async () => {
-    projects = (await new FakeDataService().listProjects()) as Project[];
+    projects = (await new FakeDataService(
+      new GraphDataCacheService(new DateUtilitiesService())
+    ).listProjects()) as Project[];
   });
 
   describe('init()', () => {

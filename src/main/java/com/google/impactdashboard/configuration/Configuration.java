@@ -19,7 +19,7 @@ public class Configuration {
    * When set to true, DatabaseAccessor will access a small test database for 
    * testing purposes instead of the real database.  
    */
-  public static boolean useTestDatabase = true;
+  public static boolean useTestDatabase = false;
 
   /**
    * When set to true, DatabaseAccessor will access a test database where all 

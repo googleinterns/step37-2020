@@ -119,7 +119,11 @@ public class QueryConfigurationBuilderEmpty implements QueryConfigurationBuilder
    */
   public QueryJobConfiguration.Builder 
     insertValuesIAMTableConfiguration(List<IAMBindingDatabaseEntry> values) {
-    String sqlFormattedValues = values.stream()
+    String sqlFormattedValues = "";
+    if (values.size() > 0) {
+      sqlFormattedValues += " VALUES ";
+    }
+    sqlFormattedValues += values.stream()
       .map(bindingData -> String.format(
         "('%s', '%s', '%s', TIMESTAMP_ADD('1970-01-01 00:00:00 UTC', INTERVAL %s SECOND), %s)", 
         bindingData.getProjectId(), bindingData.getProjectName(), 
@@ -138,7 +142,11 @@ public class QueryConfigurationBuilderEmpty implements QueryConfigurationBuilder
    */
   public QueryJobConfiguration.Builder 
     insertValuesRecommendationsTableConfiguration(List<Recommendation> values) {
-    String sqlFormattedValues = values.stream()
+    String sqlFormattedValues = "";
+    if (values.size() > 0) {
+      sqlFormattedValues += " VALUES ";
+    }
+    sqlFormattedValues += values.stream()
       .map(recommendation -> String.format(
         "('%s', '%s', '%s', [%s], " + 
           "TIMESTAMP_ADD('1970-01-01 00:00:00 UTC', INTERVAL %s SECOND), %s)",

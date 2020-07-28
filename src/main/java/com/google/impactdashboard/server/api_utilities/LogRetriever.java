@@ -1,26 +1,12 @@
 package com.google.impactdashboard.server.api_utilities;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.audit.AuditLog;
 import com.google.cloud.logging.v2.LoggingClient;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingSettings;
 import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
-import com.google.impactdashboard.configuration.Constants;
+import com.google.impactdashboard.Credentials;
 import com.google.logging.v2.ListLogEntriesRequest;
-import com.google.logging.v2.LogEntry;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.ListValue;
-import com.google.protobuf.Value;
-
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 /** Class that handles all the retrieval of logs stored on the cloud logging API. */
@@ -35,17 +21,7 @@ public class LogRetriever {
    */
   public static LogRetriever create() throws IOException{
     LoggingServiceV2StubSettings stub = LoggingServiceV2StubSettings.newBuilder()
-        .setCredentialsProvider(() -> {
-          GoogleCredentials credentials;
-          try {
-            credentials = GoogleCredentials
-                .fromStream(new FileInputStream(Constants.PATH_TO_SERVICE_ACCOUNT_KEY));
-          } catch (IOException e) {
-            credentials = GoogleCredentials
-                .fromStream(new ByteArrayInputStream(System.getenv("SERVICE_ACCOUNT_KEY").getBytes()));
-          }
-        return credentials;
-        })
+        .setCredentialsProvider(Credentials::getCredentials)
         .build();
     return new LogRetriever(LoggingClient.create(LoggingSettings.create(stub)));
   }
@@ -56,34 +32,74 @@ public class LogRetriever {
 
   /**
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant audit logs.
-   * @return A list of all the relevant audit log entries that are stored by the logging API
+   * @param projectId ID of the project that the audit logs will be retrieved for.
+   * @param timeFrom The earliest time to retrieve logs for.
+   * @param timeTo The latest time to retrieve logs for.
+   * @return A response that contains all the relevant audit log entries that are stored by the logging API
    */
-  public Collection<LogEntry> listAuditLogs(String projectId) {
-    String project_id = "projects/" + projectId ; // needs to be retrieved from resource manager
-    // May need tweaking once tested and
-    String filter = "resource.type = project AND severity = NOTICE AND " +
-        "protoPayload.methodName:SetIamPolicy";
-    //Test of ListLogEntriesRequest will be changed once logging is tested
-    ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder().setFilter(filter)
-        .setOrderBy("timestamp desc").addResourceNames(project_id).build();
-    ListLogEntriesPagedResponse response = logger.listLogEntries(request);
-    return StreamSupport.stream(response.iterateAll().spliterator(), false)
-        .collect(Collectors.toList());
+  public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom, String timeTo, int pageSize) {
+    StringBuilder resourceNameStringBuilder = new StringBuilder();
+    resourceNameStringBuilder.append("projects/");
+    resourceNameStringBuilder.append(projectId);
+
+    StringBuilder filterStringBuilder = new StringBuilder();
+    filterStringBuilder.append("resource.type = project AND severity = NOTICE");
+    filterStringBuilder.append(" AND protoPayload.methodName:SetIamPolicy");
+
+    if (!timeFrom.equals("")) {
+      filterStringBuilder.append(" AND timestamp > \"");
+      filterStringBuilder.append(timeFrom);
+      filterStringBuilder.append("\"");
+    }
+    if (!timeTo.equals("")) {
+      filterStringBuilder.append(" AND timestamp < \"");
+      filterStringBuilder.append(timeTo);
+      filterStringBuilder.append("\"");
+    }
+
+    ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()
+        .setOrderBy("timestamp desc").addResourceNames(resourceNameStringBuilder.toString());
+
+    ListLogEntriesRequest request = builder.setFilter(filterStringBuilder.toString())
+        .setPageSize(pageSize).build();
+    return logger.listLogEntries(request);
   }
 
   /**
    * Creates a {@code ListLogEntriesRequest} and retrieves all the relevant Recommendation logs.
+   * @param projectId ID of the project that the recommendation logs will be retrieved for.
+   * @param timeFrom Earliest time to retrieve logs for
+   * @param timeTo Latest time to retrieve logs for.
    * @return A list of all the relevant recommendation log entries that are stored by the logging API.
    */
-  public Collection<LogEntry> listRecommendationLogs(String projectId) {
-    String project_id = "projects/" + projectId;
-    // May need tweaking once tested
-    String filter = "resource.type = recommender";
-    //Test of ListLogEntriesRequest will be changed once logging is tested
-    ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder().setFilter(filter)
-        .setOrderBy("timestamp desc").addResourceNames(project_id).build();
-    ListLogEntriesPagedResponse response = logger.listLogEntries(request);
-    return StreamSupport.stream(response.iterateAll().spliterator(), false)
-        .collect(Collectors.toList());
+  public ListLogEntriesPagedResponse listRecommendationLogs(String projectId, 
+    String timeFrom, String timeTo) {
+    StringBuilder resourceNameStringBuilder = new StringBuilder();
+    resourceNameStringBuilder.append("projects/");
+    resourceNameStringBuilder.append(projectId);
+
+    StringBuilder filterStringBuilder = new StringBuilder();
+    filterStringBuilder.append("resource.type = recommender AND ");
+    filterStringBuilder.append("resource.labels.recommender_id= google.iam.policy.Recommender ");
+    filterStringBuilder.append(" AND jsonPayload.state = SUCCEEDED");
+
+    if (!timeFrom.equals("")) {
+      filterStringBuilder.append(" AND timestamp > \"");
+      filterStringBuilder.append(timeFrom);
+      filterStringBuilder.append("\"");
+    }
+
+    if (!timeTo.equals("")) {
+      filterStringBuilder.append(" AND timestamp < \"");
+      filterStringBuilder.append(timeTo);
+      filterStringBuilder.append("\"");
+    }
+
+    ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder()
+      .setFilter(filterStringBuilder.toString()).setOrderBy("timestamp desc")
+      .addResourceNames(resourceNameStringBuilder.toString()).build();
+    
+    return logger.listLogEntries(request);
   }
+
 }

@@ -28,6 +28,7 @@ import {LocationStrategy, HashLocationStrategy} from '@angular/common';
 import {AdminComponent} from './admin/admin.component';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatButtonModule} from '@angular/material/button';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import {MatButtonModule} from '@angular/material/button';
     MatProgressBarModule,
     MatDividerModule,
     MatButtonModule,
+    MatSlideToggleModule,
   ],
   providers: [
     dataServiceProvider,

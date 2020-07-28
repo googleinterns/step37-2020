@@ -7,7 +7,7 @@ import {GraphDataCacheService} from './graph_data_cache.service';
 
 const dataServiceFactory = (http: HttpClient, cache: GraphDataCacheService) => {
   if (USE_TEST_DATA) {
-    return new FakeDataService();
+    return new FakeDataService(cache);
   } else {
     return new DataServiceImpl(http, cache);
   }

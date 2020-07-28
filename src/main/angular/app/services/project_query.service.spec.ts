@@ -6,13 +6,17 @@ import {
   SortDirection,
   SortBy,
 } from '../../model/project_sort';
+import {GraphDataCacheService} from './graph_data_cache.service';
+import {DateUtilitiesService} from './date_utilities.service';
 
 describe('ProjectQueryService', () => {
   let service: ProjectQueryService;
   let projects: Project[];
 
   beforeAll(async () => {
-    projects = (await new FakeDataService().listProjects()) as Project[];
+    projects = (await new FakeDataService(
+      new GraphDataCacheService(new DateUtilitiesService())
+    ).listProjects()) as Project[];
   });
 
   describe('init()', () => {
@@ -154,6 +158,7 @@ describe('ProjectQueryService', () => {
 
       expect(actual).toEqual(expected);
     });
+
     it('Filters by ID and name', () => {
       const query = 'prj';
       const expected = projects.filter(project => project.includes(query));
@@ -163,6 +168,7 @@ describe('ProjectQueryService', () => {
 
       expect(actual).toEqual(expected);
     });
+
     it('Lets users empty the filter', () => {
       let query = 'prj';
       service.changeQuery(query);
@@ -172,6 +178,24 @@ describe('ProjectQueryService', () => {
       const actual = service.getProjects();
 
       expect(actual).toEqual(projects);
+    });
+
+    it('Maintains sort when reducing the filter', () => {
+      service.changeField(SortBy.PROJECT_ID, SortDirection.ASCENDING);
+      let query = 'prj';
+      service.changeQuery(query);
+      query = '';
+      service.changeQuery(query);
+
+      const expected = projects.sort(
+        ProjectComparators.getComparator(
+          SortDirection.ASCENDING,
+          SortBy.PROJECT_ID
+        )
+      );
+      const actual = service.getProjects();
+
+      expect(actual).toEqual(expected);
     });
   });
 });

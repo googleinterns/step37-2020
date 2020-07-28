@@ -8,21 +8,24 @@ import {DataService} from '../data.service';
 import {ErrorMessage} from '../../../model/error_message';
 import {RecommendationAction} from '../../../model/recommendation_action';
 import {RecommenderMetadata} from '../../../model/recommender_metadata';
+import {GraphDataCacheService} from '../graph_data_cache.service';
 
 /** Contains fake data. */
 @Injectable()
 export class FakeDataService implements DataService {
   /** The URLs of all active requests. */
   private activeRequests: Set<string>;
-
   /** Contains the projects that are faked. */
   private projects: {[projectId: string]: [Project, ProjectGraphData]};
-  private static actions = [
-    new RecommendationAction('test@', 'owner', 'manager'),
-    new RecommendationAction('test@', 'observer', ''),
-  ];
 
-  constructor() {
+  private static actions = [
+    new RecommendationAction('test@', 'owner', 'manager', ''),
+    new RecommendationAction('test@', 'observer', '', ''),
+  ];
+  /** The time to artificially wait on a request. */
+  private static requestTime = 0;
+
+  constructor(private cacheService: GraphDataCacheService) {
     this.projects = {};
     const fakes = [
       FakeDataService.fakeProject1(),
@@ -45,18 +48,26 @@ export class FakeDataService implements DataService {
     const url = '/list-project-summaries';
     this.activeRequests.add(url);
     return new Promise(resolve => {
-      this.activeRequests.delete(url);
-      resolve(Object.values(this.projects).map(tuple => tuple[0]));
+      setTimeout(() => {
+        this.activeRequests.delete(url);
+        resolve(Object.values(this.projects).map(tuple => tuple[0]));
+      }, FakeDataService.requestTime);
     });
   }
 
   /** Returns the data associated with the given project. */
   getProjectGraphData(id: string): Promise<ProjectGraphData> {
+    if (this.cacheService.hasEntry(id)) {
+      return new Promise(resolve => resolve(this.cacheService.getEntry(id)));
+    }
     if (this.projects[id]) {
       this.activeRequests.add(id);
       return new Promise(resolve => {
-        this.activeRequests.delete(id);
-        resolve(this.projects[id][1]);
+        setTimeout(() => {
+          this.activeRequests.delete(id);
+          this.cacheService.addEntry(id, this.projects[id][1]);
+          resolve(this.projects[id][1]);
+        }, FakeDataService.requestTime);
       });
     } else {
       throw new ErrorMessage(
@@ -68,6 +79,18 @@ export class FakeDataService implements DataService {
 
   hasPendingRequest(): boolean {
     return this.activeRequests.size > 0;
+  }
+
+  /** Sends a POST to /manual-update. */
+  postManualUpdate(): Promise<void> {
+    const url = '/manual-update';
+    this.activeRequests.add(url);
+    return new Promise(resolve => {
+      setTimeout(() => {
+        this.activeRequests.delete(url);
+        resolve(undefined);
+      }, FakeDataService.requestTime);
+    });
   }
 
   /** Create a project that has an incorrect mapping, so when it's pressed a redirect is sent to the error page */
@@ -142,7 +165,7 @@ export class FakeDataService implements DataService {
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
-        Date.parse('7 Jun 2020 UTC') + 1,
+        Date.parse('17 Jun 2020 UTC') + 1,
         new RecommenderMetadata(36)
       ),
       [Date.parse('17 Jun 2020 UTC') + 2]: new Recommendation(

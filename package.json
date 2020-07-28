@@ -3,7 +3,7 @@
   "scripts": {
     "test": "ts-node node_modules/jasmine/bin/jasmine src/**/*.spec.ts",
     "build": "ng build && cp -r src/main/angular/WEB-INF src/main/webapp/WEB-INF && mvn clean package appengine:run -DskipTests",
-    "deploy": "ng build && cp -r src/main/angular/WEB-INF src/main/webapp/WEB-INF && mvn clean package appengine:deploy -DskipTests",
+    "deploy": "ng build && cp -r src/main/angular/WEB-INF src/main/webapp/WEB-INF && mvn clean package appengine:deploy -DskipTests && mvn package appengine:deployCron",
     "serve": "ng serve --open",
     "check": "gts check src/**/*.ts",
     "clean": "gts clean",
@@ -33,6 +33,7 @@
     "jasmine": "^3.5.0",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~5.0.0",
+    "jasmine-ts": "^0.3.0",
     "jasminewd2": "^2.2.0",
     "karma-jasmine": "~3.3.0",
     "karma-jasmine-html-reporter": "^1.5.0",

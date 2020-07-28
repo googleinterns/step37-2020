@@ -7,11 +7,20 @@ import {DateUtilitiesService} from './date_utilities.service';
 import {GraphProperties, Columns, Row} from '../../model/types';
 import {DataService} from './data.service';
 import {DateRange} from '../../model/date_range';
+import {CUMULATIVE_BINDINGS_SUFFIX} from '../../constants';
 
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
 export class GraphProcessorService {
-  constructor(private dateUtilities: DateUtilitiesService) {}
+  /** List of projects with active GET requests to be added to the graph. */
+  activeProjects: string[];
+
+  constructor(
+    private dateUtilities: DateUtilitiesService,
+    private dataService: DataService
+  ) {
+    this.activeProjects = [];
+  }
 
   /** Initialize the chart properties with empty data. */
   initProperties(): GraphProperties {
@@ -43,6 +52,7 @@ export class GraphProcessorService {
       tooltip: {
         isHtml: true,
       },
+      chartArea: {width: '90%', height: '90%'},
       series: {},
     };
     return {
@@ -60,30 +70,144 @@ export class GraphProcessorService {
   processChanges(
     changes: SimpleChanges,
     properties: GraphProperties,
-    dataService: DataService
+    addCumulativeDifference: boolean
   ): Promise<void> {
     const additionsDeletions = this.getAdditionsDeletions(changes.projects);
     const promises: Promise<unknown>[] = [];
 
-    additionsDeletions.added.forEach(addition =>
+    additionsDeletions.added.forEach(addition => {
+      this.activeProjects.push(addition.projectId);
       promises.push(
-        dataService
-          .getProjectGraphData(addition.projectId)
-          .then(data => this.addToGraph(properties, data, addition))
-      )
-    );
-    additionsDeletions.removed.forEach(removal =>
-      this.removeFromGraph(properties, removal)
-    );
+        this.dataService.getProjectGraphData(addition.projectId).then(data => {
+          if (this.activeProjects.includes(data.projectId)) {
+            this.addToGraph(
+              properties,
+              data,
+              addition,
+              addCumulativeDifference
+            );
+            this.activeProjects.splice(
+              this.activeProjects.indexOf(data.projectId),
+              1
+            );
+          }
+        })
+      );
+    });
+    additionsDeletions.removed.forEach(removal => {
+      const index = this.activeProjects.indexOf(removal.projectId);
+      if (index !== -1) {
+        this.activeProjects.splice(index, 1);
+      } else {
+        this.removeFromGraph(properties, removal, addCumulativeDifference);
+      }
+    });
     return Promise.all(promises).then();
   }
 
+  /** Adds an extra line with the IAM Bindings as they would be with no recommendations and refreshes the chart. */
+  async addCumulativeDifferences(
+    properties: GraphProperties,
+    projects: Project[]
+  ) {
+    await Promise.all(
+      projects.map(project => this.addCumulativeDifference(properties, project))
+    );
+  }
+
+  /** Remove all of the cumualtive differences from the graph data and refreshes the chart. */
+  removeCumulativeDifferences(
+    properties: GraphProperties,
+    projects: Project[]
+  ) {
+    projects.forEach(project => {
+      this.removeCumulativeDifference(properties, project);
+    });
+
+    this.forceRefresh(properties);
+  }
+
+  /** Removes the single cumulative difference curve for the given project. */
+  private removeCumulativeDifference(
+    properties: GraphProperties,
+    project: Project
+  ) {
+    const index = properties.columns.findIndex(
+      value => value === project.projectId + CUMULATIVE_BINDINGS_SUFFIX
+    );
+    this.removeSeriesOptions(properties, (index - 1) / 3);
+    properties.columns.splice(index, 3);
+    properties.graphData.forEach(row => row.splice(index, 3));
+  }
+
+  /** Adds the cumulative difference curve for the given curve. */
+  private async addCumulativeDifference(
+    properties: GraphProperties,
+    project: Project
+  ): Promise<void> {
+    const seriesNumber = (properties.columns.length - 1) / 3;
+    properties.options.series[seriesNumber] = {
+      color: project.color,
+      lineDashStyle: [10, 2],
+    };
+
+    properties.columns.push(
+      project.projectId + CUMULATIVE_BINDINGS_SUFFIX,
+      {
+        type: 'string',
+        role: 'tooltip',
+        p: {html: true},
+      },
+      {
+        type: 'string',
+        role: 'style',
+      }
+    );
+    // No harm in doing this since the graph data has already been cached
+    const data = await this.dataService.getProjectGraphData(project.projectId);
+
+    let cumulativeImpact = 0;
+    Object.keys(data.dateToNumberIAMBindings)
+      .sort()
+      .forEach(time => {
+        const date = this.dateUtilities.startOfDay(+time);
+        const recommendations = this.getRecommendationsOnSameDay(
+          +time,
+          data.dateToRecommendationTaken
+        );
+
+        const adjustedBindings =
+          data.dateToNumberIAMBindings[time] + cumulativeImpact;
+
+        // Add the cumulative impact of the recommendation
+        recommendations.forEach(
+          recommendation =>
+            (cumulativeImpact += recommendation.metadata.impactInIAMBindings)
+        );
+
+        const row = this.getRow(properties.graphData, date);
+        row.push(
+          adjustedBindings,
+          this.getTooltip(date, adjustedBindings, recommendations, project),
+          this.getPoint(recommendations, project.color, 'square')
+        );
+      });
+
+    // Now add empty data for rows that weren't touched
+    properties.graphData.forEach(row => {
+      if (row.length < (seriesNumber + 1) * 3 + 1) {
+        row.push(undefined, undefined, undefined);
+      }
+    });
+  }
+
   /** Adds the given project to the graph. */
-  private addToGraph(
+  private async addToGraph(
     properties: GraphProperties,
     data: ProjectGraphData,
-    project: Project
-  ): void {
+    project: Project,
+    addCumulativeDifference: boolean
+  ): Promise<void> {
     const seriesNumber: number = (properties.columns.length - 1) / 3;
     // Set the color and add the new columns
     if (properties.options.series) {
@@ -97,16 +221,18 @@ export class GraphProcessorService {
       properties.graphData
     );
 
-    // Force a refresh of the chart
-    const temp: Columns = [];
-    properties.columns = temp.concat(properties.columns);
+    if (addCumulativeDifference) {
+      await this.addCumulativeDifference(properties, project);
+    }
+
+    this.forceRefresh(properties);
   }
 
-  /** Removes the given project from the graph. */
-  private removeFromGraph(properties: GraphProperties, project: Project) {
-    const seriesNumber: number =
-      (properties.columns.indexOf(project.projectId) - 1) / 3;
-
+  /** Remove the series from options. */
+  private removeSeriesOptions(
+    properties: GraphProperties,
+    seriesNumber: number
+  ) {
     if (properties.options.series) {
       for (const [key] of Object.entries(properties.options.series)) {
         if (+key >= seriesNumber && properties.options.series) {
@@ -115,9 +241,23 @@ export class GraphProcessorService {
         }
       }
     }
+  }
+
+  /** Removes the given project from the graph. */
+  private removeFromGraph(
+    properties: GraphProperties,
+    project: Project,
+    addCumulativeDifference: boolean
+  ) {
+    const seriesNumber: number =
+      (properties.columns.indexOf(project.projectId) - 1) / 3;
+    this.removeSeriesOptions(properties, seriesNumber);
 
     properties.columns.splice(seriesNumber * 3 + 1, 3);
     properties.graphData.forEach(row => row.splice(seriesNumber * 3 + 1, 3));
+    if (addCumulativeDifference) {
+      this.removeCumulativeDifference(properties, project);
+    }
     // Look for rows with empty data and remove them
     properties.graphData = properties.graphData.filter(row =>
       row.some((value, index) => value && index !== 0)
@@ -128,9 +268,7 @@ export class GraphProcessorService {
       properties.graphData
     );
 
-    // Force a refresh of the chart
-    const temp: Columns = [];
-    properties.columns = temp.concat(properties.columns);
+    this.forceRefresh(properties);
   }
 
   /** Adds the table rows for the given Project. Each row is [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...] */
@@ -147,6 +285,7 @@ export class GraphProcessorService {
     days
       .filter(day => !this.includesDay(rows, day))
       .forEach(day => {
+        this.dateUtilities.addTimezoneOffset(day);
         const row: Row = [day];
         // Fill in columns for all existing projects with empty data
         for (let i = 0; i < seriesNumber * 3; i++) {
@@ -166,6 +305,7 @@ export class GraphProcessorService {
     for (const [key, value] of Object.entries(data.dateToNumberIAMBindings)) {
       // Convert key from string to number
       const date = this.dateUtilities.startOfDay(+key);
+      this.dateUtilities.addTimezoneOffset(date);
       // The row we're adding to is the same index as unique days
       const row = this.getRow(rows, date);
 
@@ -174,7 +314,7 @@ export class GraphProcessorService {
         data.dateToRecommendationTaken
       );
       const tooltip = this.getTooltip(date, value, recommendations, project);
-      const point = this.getPoint(recommendations, project.color);
+      const point = this.getPoint(recommendations, project.color, 'circle');
 
       if (row) {
         // Populate the existing row with information
@@ -247,9 +387,19 @@ export class GraphProcessorService {
       tooltip += `<tr class="tooltip-row"><td style="border-top: 1px solid ${project.color};">`;
 
       tooltip += `${recommendation.actor} accepted:<br/>`;
-      recommendation.actions.forEach(
-        action => (tooltip += `${action.toString()}<br/>`)
-      );
+      recommendation.actions.forEach(action => {
+        let actionText: string;
+
+        if (action.newRole.length > 0) {
+          // Role was replaced
+          actionText = `Replace ${action.previousRole} with ${action.newRole} on ${action.affectedAccount}.`;
+        } else {
+          // Role was removed
+          actionText = `Remove ${action.previousRole} from ${action.affectedAccount}.`;
+        }
+
+        tooltip += `${actionText}<br/>`;
+      });
       tooltip += `Removing ${recommendation.metadata.impactInIAMBindings} IAM Bindings`;
       tooltip += '</td></tr>';
     });
@@ -261,12 +411,13 @@ export class GraphProcessorService {
   /** Returns the point styling associated with the given recommendation. */
   private getPoint(
     matchingRecommendations: Recommendation[],
-    color: string
+    color: string,
+    shape: string
   ): string | undefined {
     if (matchingRecommendations.length === 0) {
       return undefined;
     }
-    return `point { size: 10; shape-type: circle; fill-color: ${color}; visible: true; }`;
+    return `point { size: 10; shape-type: ${shape}; fill-color: ${color}; visible: true; }`;
   }
 
   /** Returns the recommendations which occured on the same day as the given time, which is in milliseconds since epoch. */
@@ -288,7 +439,10 @@ export class GraphProcessorService {
     return (
       rows.findIndex(row => {
         if (row[0] instanceof Date) {
-          return row[0].getTime() === day.getTime();
+          return this.dateUtilities.fallOnSameDay(
+            row[0].getTime(),
+            day.getTime()
+          );
         }
         return false;
       }) !== -1
@@ -299,9 +453,18 @@ export class GraphProcessorService {
   private getRow(rows: Row[], day: Date): Row | undefined {
     return rows.find(row => {
       if (row[0] instanceof Date) {
-        return row[0].getTime() === day.getTime();
+        return this.dateUtilities.fallOnSameDay(
+          row[0].getTime(),
+          day.getTime()
+        );
       }
       return false;
     });
+  }
+
+  /** Force a refresh of google charts. */
+  private forceRefresh(properties: GraphProperties) {
+    const temp: Columns = [];
+    properties.columns = temp.concat(properties.columns);
   }
 }

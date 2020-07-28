@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ErrorMessage} from '../../model/error_message';
 import {DataShareService} from '../services/data_share.service';
+import {RedirectService} from '../services/redirect.service';
 
 /** Main component on the error page. It displays the error messages from ErrorMessageService. */
 @Component({
@@ -11,12 +12,20 @@ import {DataShareService} from '../services/data_share.service';
 export class ErrorPageComponent implements OnInit {
   errors: ErrorMessage[];
 
-  constructor(private dataShareService: DataShareService) {
+  constructor(
+    private dataShareService: DataShareService,
+    private redirectService: RedirectService
+  ) {
     this.errors = [];
   }
 
   ngOnInit() {
     this.errors = this.dataShareService.getErrors();
+
+    // If there are no errors, redirect user to main page
+    if (this.errors.length === 0) {
+      this.redirectService.redirect('main');
+    }
     console.log(this.errors);
   }
 }

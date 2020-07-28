@@ -1,0 +1,27 @@
+#container {
+  display: flex;
+}
+
+#border-container {
+  margin: 0 auto;
+  border: 1px solid #9AA0A6;
+  border-radius: 3px;
+  padding: 8px;
+  text-align: center;
+}
+
+#container h1 {
+  display: inline;
+}
+
+.option-group {
+  margin: 8px 0;
+}
+
+.option-group mat-divider {
+  margin-top: 8px;
+}
+
+p {
+  margin: 4px 0;
+}

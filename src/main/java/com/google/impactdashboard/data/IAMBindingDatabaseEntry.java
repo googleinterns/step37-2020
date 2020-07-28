@@ -1,7 +1,5 @@
 package com.google.impactdashboard.data;
 
-import java.util.Comparator;
-
 import com.google.auto.value.AutoValue;
 import com.google.impactdashboard.data.organization.OrganizationIdentification;
 

@@ -11,4 +11,6 @@ export abstract class DataService {
   abstract async getProjectGraphData(id: string): Promise<ProjectGraphData>;
   /** Returns whether there is at least one pending web request. */
   abstract hasPendingRequest(): boolean;
+  /** Sends a POST to /manual-update. */
+  abstract postManualUpdate(): Promise<void>;
 }

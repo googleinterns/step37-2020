@@ -30,6 +30,7 @@ import {
   SELECT_PROJECT_MESSAGE,
 } from '../../constants';
 import {DateRange} from '../../model/date_range';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 
 /** The angular component that contains the graph and associated logic. */
 @Component({
@@ -48,6 +49,8 @@ export class GraphComponent implements OnInit {
   public shouldShowChart: boolean;
   /** The text that's shown when the chart isn't. */
   public noChartMessage: string;
+  /** Whether to show the graph without accepted recommendations. */
+  private showCumulativeDifference: boolean;
 
   constructor(
     private dataService: DataService,
@@ -56,6 +59,7 @@ export class GraphComponent implements OnInit {
     this.shouldShowChart = false;
     this.projects = [];
     this.noChartMessage = LOADING_MESSAGE;
+    this.showCumulativeDifference = false;
   }
 
   /** Called when an input field changes. */
@@ -83,9 +87,24 @@ export class GraphComponent implements OnInit {
     await this.graphProcessor.processChanges(
       changes,
       this.properties,
-      this.dataService
+      this.showCumulativeDifference
     );
     this.shouldShowChart = this.projects.length > 0;
+  }
+
+  toggleCumulativeDifference(change: MatSlideToggleChange) {
+    this.showCumulativeDifference = !this.showCumulativeDifference;
+    if (this.showCumulativeDifference) {
+      this.graphProcessor.addCumulativeDifferences(
+        this.properties,
+        this.projects
+      );
+    } else {
+      this.graphProcessor.removeCumulativeDifferences(
+        this.properties,
+        this.projects
+      );
+    }
   }
 
   ngOnInit() {

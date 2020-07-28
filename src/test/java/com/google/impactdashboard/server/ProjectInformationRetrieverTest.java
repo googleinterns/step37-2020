@@ -6,6 +6,7 @@ import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.project.ProjectMetaData;
 import com.google.impactdashboard.data.recommendation.IAMRecommenderMetadata;
 import com.google.impactdashboard.data.recommendation.Recommendation;
+import com.google.impactdashboard.data.recommendation.RecommendationAction;
 import com.google.impactdashboard.database_manager.data_read.DataReadManager;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,8 +28,14 @@ public class ProjectInformationRetrieverTest extends Mockito {
   public static final long PROJECT_NUMBER_1 = 12345678L;
   public static final long PROJECT_NUMBER_2 = 98765432543L;
 
+  public static final String ACTOR = "test@example.com";
+
   public static final double PROJECT_AVERAGEIAMBINDINGS_1 = 162.3;
   public static final double PROJECT_AVERAGEIAMBINDINGS_2 = 2000.87;
+
+  public static final List<RecommendationAction> ACTIONS = Collections.singletonList(RecommendationAction
+      .create("test@example.com", "role/owner", "role/objectAdmin",
+          RecommendationAction.ActionType.REPLACE_ROLE));
 
   public static final String RECOMMENDATION_DESCRIPTION = "This is a recommendation";
 
@@ -95,8 +102,9 @@ public class ProjectInformationRetrieverTest extends Mockito {
     PROJECT_IAM_DATA.put(123L, 2000);
     PROJECT_IAM_DATA.put(234L, 3456);
     PROJECT_IAM_DATA.put(23645543L, 78654);
-    PROJECT_RECOMMENDATION_DATA.put(234L, Recommendation.create(PROJECT_ID_1,
-        "", Arrays.asList(), Recommendation.RecommenderType.IAM_BINDING, 234L,
+    // @TODO fix organization id here once retrieved
+    PROJECT_RECOMMENDATION_DATA.put(234L, Recommendation.create(PROJECT_ID_1, "",
+        ACTOR, ACTIONS, Recommendation.RecommenderType.IAM_BINDING, 234L,
         IAMRecommenderMetadata.create(-100)));
 
     when(readManager.getMapOfDatesToIAMBindings(PROJECT_ID_1)).thenReturn(PROJECT_IAM_DATA);

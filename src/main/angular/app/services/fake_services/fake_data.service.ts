@@ -135,6 +135,15 @@ export class FakeDataService implements DataService {
           datesToBindings[value[0]] = value[1];
         }
       });
+      Object.entries(tuple[1].dateToRecommendationTaken).forEach(value => {
+        let time = +value[0];
+        // Make sure that recommendations never occur on the same time
+        while (datesToRecommendations[time]) {
+          time++;
+          value[1].acceptedTimestamp++;
+        }
+        datesToRecommendations[time] = value[1];
+      });
     });
 
     return new OrganizationGraphData(
@@ -160,32 +169,22 @@ export class FakeDataService implements DataService {
     ];
 
     // org-2 projects
-    datesToBindings = {};
-    datesToRecommendations = {};
-    fakes
-      .filter((value, index) => index >= 3 && index < 6)
-      .forEach(tuple => {});
     identification = new OrganizationIdentification('org-2', 'Organization 2');
     this.organizations['org-2'] = [
       new Organization(identification, 2000),
-      new OrganizationGraphData(
-        identification,
-        datesToBindings,
-        datesToRecommendations
+      this.constructOrganizationGraphData(
+        fakes.filter((value, index) => index >= 3 && index < 6),
+        identification
       ),
     ];
 
     // org-3 projects
-    datesToBindings = {};
-    datesToRecommendations = {};
-    fakes.filter((value, index) => index >= 6).forEach(tuple => {});
     identification = new OrganizationIdentification('org-3', 'Organization 3');
     this.organizations['org-3'] = [
       new Organization(identification, 2500),
-      new OrganizationGraphData(
-        identification,
-        datesToBindings,
-        datesToRecommendations
+      this.constructOrganizationGraphData(
+        fakes.filter((value, index) => index >= 6),
+        identification
       ),
     ];
   }

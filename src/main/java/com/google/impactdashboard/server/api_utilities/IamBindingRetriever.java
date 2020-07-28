@@ -10,7 +10,6 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.cloud.audit.AuditLog;
 import com.google.impactdashboard.Credentials;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
-import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.RecommendationAction;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -31,11 +30,9 @@ public class IamBindingRetriever {
   private final Iam iamService;
   private final List<Role> roles;
 
-  protected IamBindingRetriever(Iam iamService, 
-      ProjectListRetriever projectRetriever) throws IOException {
+  protected IamBindingRetriever(Iam iamService) throws IOException {
     this.iamService = iamService;
 
-    List<ProjectIdentification> projects = projectRetriever.listResourceManagerProjects();
     roles = new ArrayList<>();
     String pageToken = null;
     do {
@@ -61,9 +58,8 @@ public class IamBindingRetriever {
             .singleton(IamScopes.CLOUD_PLATFORM))))
         .setApplicationName("Recommendation Impact Dashboard")
         .build();
-    ProjectListRetriever projectListRetriever = ProjectListRetriever.getInstance();
 
-    return new IamBindingRetriever(iamService, projectListRetriever);
+    return new IamBindingRetriever(iamService);
   }
 
   /**
@@ -120,8 +116,8 @@ public class IamBindingRetriever {
   }
 
   /**
-   * Returns all organization ids of organization-level roles in the map of 
-   * roles to members. 
+   * Returns all organization ids associated with organization-level roles in 
+   * the map of roles to members. 
    */
   private List<String> getUnknownOrganizationIds(Map<String, Integer> membersForRoles) {
     return membersForRoles.keySet().stream()
@@ -233,8 +229,9 @@ public class IamBindingRetriever {
 
       return organizationCustomRoles;
     } catch (IOException e) {
-      System.err.println("WARNING: Credentials cannot access org-level roles. " + 
-          "Bindings calculations will be affected.");
+      System.err.println("WARNING: Credentials cannot access org-level roles" + 
+          " for organization " + organizationId + 
+          ". Bindings calculations will be affected.");
       return Arrays.asList();
     }
   }

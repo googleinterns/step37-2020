@@ -40,13 +40,11 @@ public class IamBindingRetrieverTest extends Mockito {
   private static final int GENERIC_MEMBERS = 20;
   private static final Map<String, Integer> MEMBERS_FOR_ROLES = new HashMap<>();
 
-
-
   private Iam mockIamService;
   private IamBindingRetriever iamBindingRetriever;
 
   @Before
-  public void setup() throws IOException, GeneralSecurityException {
+  public void setup() throws IOException {
     mockIamService = mock(Iam.class, Mockito.RETURNS_DEEP_STUBS);
 
     ListRolesResponse mockGenericRoleResponse = mock(ListRolesResponse.class);
@@ -101,7 +99,7 @@ public class IamBindingRetrieverTest extends Mockito {
 
     int actual = iamBindingRetriever.getIamBindings(MEMBERS_FOR_ROLES, TEST_PROJECT_ID);
     int expected = ORGANIZATION_MEMBERS * INCLUDED_PERMISSIONS_ORG.size() +
-        GENERIC_MEMBERS * INCLUDED_PERMISSIONS_GENERIC.size();;
+        GENERIC_MEMBERS * INCLUDED_PERMISSIONS_GENERIC.size();
 
     Assert.assertEquals(expected, actual);
   }
@@ -122,7 +120,7 @@ public class IamBindingRetrieverTest extends Mockito {
     when(mockProjectRoleResponse.getRoles()).thenReturn(Collections.emptyList());
 
     int actual = iamBindingRetriever.getIamBindings(MEMBERS_FOR_ROLES, TEST_PROJECT_ID);
-    int expected = GENERIC_MEMBERS * INCLUDED_PERMISSIONS_GENERIC.size();;
+    int expected = GENERIC_MEMBERS * INCLUDED_PERMISSIONS_GENERIC.size();
 
     Assert.assertEquals(expected, actual);
   }

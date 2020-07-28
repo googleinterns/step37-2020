@@ -90,7 +90,8 @@ public class IamBindingRetriever {
       if(secondsFromEpoch == null){
         secondsFromEpoch = entry.getKey().getSeconds() * 1000;
       }
-      return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, secondsFromEpoch,
+      return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber,
+          OrganizationIdentification.create("",""), secondsFromEpoch,
           getIamBindings(membersForRoles));
     }).collect(Collectors.toList());
   }

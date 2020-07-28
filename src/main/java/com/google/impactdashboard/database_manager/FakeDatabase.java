@@ -27,7 +27,7 @@ public class FakeDatabase {
 
         {
         put(1592486705000L, 
-          Recommendation.create("project-id-1", 
+          Recommendation.create("project-id-1", "Google",
             "test1@example.com", 
             Arrays.asList(
               RecommendationAction.create(
@@ -36,7 +36,7 @@ public class FakeDatabase {
             Recommendation.RecommenderType.IAM_BINDING, 1592486705000L, 
             IAMRecommenderMetadata.create(300)));
         put(1592486585000L, 
-          Recommendation.create("project-id-1", 
+          Recommendation.create("project-id-1", "Google",
             "test2@example.com", 
             Arrays.asList(
               RecommendationAction.create(
@@ -45,7 +45,7 @@ public class FakeDatabase {
             Recommendation.RecommenderType.IAM_BINDING, 1592486585000L, 
             IAMRecommenderMetadata.create(1000))); 
         put(1591633823000L, 
-          Recommendation.create("project-id-1", 
+          Recommendation.create("project-id-1", "Google",
             "test3@example.com", 
             Arrays.asList(
               RecommendationAction.create(
@@ -57,7 +57,7 @@ public class FakeDatabase {
             Recommendation.RecommenderType.IAM_BINDING, 1591633823000L, 
             IAMRecommenderMetadata.create(1000))); 
         put(1591704613000L, 
-          Recommendation.create("project-id-2", 
+          Recommendation.create("project-id-2", "Google",
             "test4@example.com", 
             Arrays.asList(
               RecommendationAction.create(
@@ -66,7 +66,7 @@ public class FakeDatabase {
             Recommendation.RecommenderType.IAM_BINDING, 1591704613000L, 
             IAMRecommenderMetadata.create(500)));  
         put(1593072312000L, 
-          Recommendation.create("project-id-2", 
+          Recommendation.create("project-id-2", "Google",
             "test5@example.com", 
             Arrays.asList(
               RecommendationAction.create(
@@ -77,6 +77,7 @@ public class FakeDatabase {
       }
     };
 
+  //TODO: keep track of organization for each project
   /** Represents a database table that holds information about IAM Bindings. */
   private static Map<ProjectIdentification, Map<Long, Integer>> iamBindings = 
     new HashMap<ProjectIdentification, Map<Long, Integer>>() {

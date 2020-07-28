@@ -1,0 +1,23 @@
+runtime: java
+env: flex
+threadsafe: false
+
+- url: /
+  secure: always
+  static_files: webapp/index.html
+  upload: webapp/.*
+- url: /(.*\.js)
+  secure: always
+  redirect_http_response_code: 301
+  static_files: webapp/\1
+  upload: webapp/.*\.js
+- url: /(.*\.css)
+  secure: always
+  redirect_http_response_code: 301
+  static_files: webapp/\1
+  mime_type: text/css
+  upload: webapp/.*\.css
+- url: /main
+  secure: always
+  static_files: webapp/index.html
+  upload: webapp/.*

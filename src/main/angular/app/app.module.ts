@@ -24,6 +24,10 @@ import {MatNativeDateModule} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {GraphDataCacheService} from './services/graph_data_cache.service';
+import {LocationStrategy, HashLocationStrategy} from '@angular/common';
+import {AdminComponent} from './admin/admin.component';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatButtonModule} from '@angular/material/button';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @NgModule({
@@ -34,6 +38,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     ErrorPageComponent,
     MainPageComponent,
     DateSelectComponent,
+    AdminComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,6 +51,8 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     MatNativeDateModule,
     MatInputModule,
     MatProgressBarModule,
+    MatDividerModule,
+    MatButtonModule,
     MatSlideToggleModule,
   ],
   providers: [
@@ -60,6 +67,10 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     ProjectQueryService,
     DataShareService,
     GraphDataCacheService,
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy,
+    },
   ],
   bootstrap: [AppComponent],
 })

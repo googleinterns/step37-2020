@@ -10,6 +10,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.audit.AuditLog;
 import com.google.impactdashboard.configuration.Constants;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
@@ -81,7 +82,8 @@ public class IamBindingRetriever {
       Map<String, Integer> membersForRoles = getMembersForRoles(entry.getValue().getResponse()
           .getFieldsMap().get("bindings").getListValue().getValuesList());
       try {
-        return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, entry.getKey().getSeconds(),
+        return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber,
+            OrganizationIdentification.create("", ""), entry.getKey().getSeconds(),
             getIamBindings(membersForRoles));
       } catch (IOException e) {
         throw new RuntimeException("Error in getting IAM Roles");

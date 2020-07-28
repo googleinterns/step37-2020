@@ -42,3 +42,5 @@ export const SELECT_PROJECT_MESSAGE =
   'Please select a project below to generate a graph.';
 /** Informs the user that web requests are active. */
 export const LOADING_MESSAGE = 'Waiting on server, please wait.';
+/** Suffix added to a cumulative bindings dataset. */
+export const CUMULATIVE_BINDINGS_SUFFIX = '-cumulative-bindings';

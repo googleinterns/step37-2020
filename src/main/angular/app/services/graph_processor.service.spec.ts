@@ -6,12 +6,20 @@ import {FakeDataService} from './fake_services/fake_data.service';
 import {SimpleChanges, SimpleChange} from '@angular/core';
 import {Project} from '../../model/project';
 import {ProjectGraphData} from '../../model/project_graph_data';
+import {GraphDataCacheService} from './graph_data_cache.service';
+import {CUMULATIVE_BINDINGS_SUFFIX} from '../../constants';
+import {Recommendation} from '../../model/recommendation';
 
 describe('GraphProcessorService', () => {
   let service: GraphProcessorService;
+  const fakeDataService = new FakeDataService(
+    new GraphDataCacheService(new DateUtilitiesService())
+  );
+  let dateService: DateUtilitiesService;
 
   beforeAll(() => {
-    service = new GraphProcessorService(new DateUtilitiesService());
+    dateService = new DateUtilitiesService();
+    service = new GraphProcessorService(dateService, fakeDataService);
   });
 
   describe('initProperties()', () => {
@@ -26,13 +34,8 @@ describe('GraphProcessorService', () => {
   });
 
   describe('processChanges()', () => {
-    let fakeDataService: FakeDataService;
     let properties: GraphProperties;
     let changes: SimpleChanges;
-
-    beforeAll(() => {
-      fakeDataService = new FakeDataService();
-    });
 
     describe('Adding projects to graph', () => {
       describe('Adds a single project sucessfully', () => {
@@ -50,7 +53,7 @@ describe('GraphProcessorService', () => {
           )) as ProjectGraphData;
           // Going from no projects to a single one
           changes.projects = new SimpleChange([], [project], true);
-          await service.processChanges(changes, properties, fakeDataService);
+          await service.processChanges(changes, properties, false);
 
           bindingTimes = Object.keys(projectData.dateToNumberIAMBindings).map(
             key => +key
@@ -105,7 +108,7 @@ describe('GraphProcessorService', () => {
           )) as ProjectGraphData[];
           // Going from no projects to adding all of the ones above
           changes.projects = new SimpleChange([], projects, true);
-          await service.processChanges(changes, properties, fakeDataService);
+          await service.processChanges(changes, properties, false);
         });
 
         it('Sets up columns properly', () => {
@@ -131,6 +134,88 @@ describe('GraphProcessorService', () => {
           expect(actual).toEqual(expected);
         });
       });
+
+      describe('Adds cumulative differences successfully', () => {
+        let project: Project;
+        let projectData: ProjectGraphData;
+        let firstRecommendation: Recommendation;
+        let dataIndex: number;
+
+        beforeAll(async () => {
+          changes = {};
+          properties = service.initProperties();
+
+          project = ((await fakeDataService.listProjects()) as Project[])[0];
+          projectData = (await fakeDataService.getProjectGraphData(
+            project.projectId
+          )) as ProjectGraphData;
+          firstRecommendation = Object.entries(
+            projectData.dateToRecommendationTaken
+          ).sort((a, b) => +a - +b)[0][1];
+
+          // Going from no projects to a single one
+          changes.projects = new SimpleChange([], [project], true);
+          await service.processChanges(changes, properties, true);
+          dataIndex = properties.columns.findIndex(
+            column => column === project.projectId + CUMULATIVE_BINDINGS_SUFFIX
+          );
+        });
+
+        it('Added the appropriate columns', () => {
+          const expected = project.projectId + CUMULATIVE_BINDINGS_SUFFIX;
+          const columns = properties.columns;
+
+          expect(columns).toContain(expected);
+        });
+
+        it('Left data before the first recommendation be', () => {
+          const expected = Object.entries(projectData.dateToNumberIAMBindings)
+            .filter(entry => +entry[0] <= firstRecommendation.acceptedTimestamp)
+            .map(entry => entry[1]);
+          const actual = properties.graphData
+            .filter(
+              row =>
+                row[0] instanceof Date &&
+                row[0].getTime() <= firstRecommendation.acceptedTimestamp
+            )
+            .map(row => row[dataIndex]);
+
+          expect(actual).toEqual(expected);
+        });
+
+        it('Modified data after the first recommendation', () => {
+          let cumulativeSum = firstRecommendation.metadata.impactInIAMBindings;
+          const expected = Object.entries(projectData.dateToNumberIAMBindings)
+            .filter(entry => +entry[0] > firstRecommendation.acceptedTimestamp)
+            .map(entry => {
+              const returnValue = entry[1] + cumulativeSum;
+              const recommendations = Object.values(
+                projectData.dateToRecommendationTaken
+              ).filter(recommendation =>
+                dateService.fallOnSameDay(
+                  recommendation.acceptedTimestamp,
+                  +entry[0]
+                )
+              );
+              recommendations.forEach(
+                recommendation =>
+                  (cumulativeSum += recommendation.metadata.impactInIAMBindings)
+              );
+
+              return returnValue;
+            });
+
+          const actual = properties.graphData
+            .filter(
+              row =>
+                row[0] instanceof Date &&
+                row[0].getTime() > firstRecommendation.acceptedTimestamp
+            )
+            .map(row => row[dataIndex]);
+
+          expect(actual).toEqual(expected);
+        });
+      });
     });
 
     describe('Removing projects from the graph', () => {
@@ -146,7 +231,7 @@ describe('GraphProcessorService', () => {
           allProjects = (await fakeDataService.listProjects()) as Project[];
           // Add the projects
           changes.projects = new SimpleChange([], allProjects, true);
-          await service.processChanges(changes, properties, fakeDataService);
+          await service.processChanges(changes, properties, false);
 
           // Remove the first project
           projects = allProjects
@@ -158,7 +243,7 @@ describe('GraphProcessorService', () => {
             )
           )) as ProjectGraphData[];
           changes.projects = new SimpleChange(allProjects, projects, false);
-          await service.processChanges(changes, properties, fakeDataService);
+          await service.processChanges(changes, properties, false);
         });
 
         it('Removes columns correctly', () => {
@@ -196,7 +281,7 @@ describe('GraphProcessorService', () => {
 
           // Add the projects
           changes.projects = new SimpleChange([], allProjects, true);
-          await service.processChanges(changes, properties, fakeDataService);
+          await service.processChanges(changes, properties, false);
 
           // Remove all but the first two projects
           projects = allProjects
@@ -208,7 +293,7 @@ describe('GraphProcessorService', () => {
             )
           )) as ProjectGraphData[];
           changes.projects = new SimpleChange(allProjects, projects, false);
-          await service.processChanges(changes, properties, fakeDataService);
+          await service.processChanges(changes, properties, false);
         });
 
         it('Removes columns correctly', () => {
@@ -233,6 +318,37 @@ describe('GraphProcessorService', () => {
           expect(actual).toEqual(expected);
         });
       });
+
+      describe('Removes cumulative differences successfully', () => {
+        let project: Project;
+
+        beforeAll(async () => {
+          properties = service.initProperties();
+          changes = {};
+
+          project = ((await fakeDataService.listProjects()) as Project[])[0];
+
+          // Add the project
+          changes.projects = new SimpleChange([], [project], true);
+          await service.processChanges(changes, properties, true);
+          // Remove the project
+          changes.projects = new SimpleChange([project], [], false);
+          await service.processChanges(changes, properties, true);
+        });
+
+        it('Removes the columns', () => {
+          const columns = properties.columns;
+          const seriesName = project.projectId + CUMULATIVE_BINDINGS_SUFFIX;
+
+          expect(columns).not.toContain(seriesName);
+        });
+
+        it('Removes all rows', () => {
+          const length = properties.graphData.length;
+
+          expect(length).toBe(0);
+        });
+      });
     });
 
     describe('Re-adds projects that have been removed', () => {
@@ -247,16 +363,16 @@ describe('GraphProcessorService', () => {
         allProjects = (await fakeDataService.listProjects()) as Project[];
         // Add the projects
         changes.projects = new SimpleChange([], allProjects, true);
-        await service.processChanges(changes, properties, fakeDataService);
+        await service.processChanges(changes, properties, false);
 
         // Remove the first project
         projects = allProjects
           .filter((value, index) => index !== 0)
           .map(value => value);
         changes.projects = new SimpleChange(allProjects, projects, false);
-        await service.processChanges(changes, properties, fakeDataService);
+        await service.processChanges(changes, properties, false);
         changes.projects = new SimpleChange(projects, allProjects, false);
-        await service.processChanges(changes, properties, fakeDataService);
+        await service.processChanges(changes, properties, false);
 
         projectData = (await Promise.all(
           allProjects.map(project =>
@@ -283,6 +399,301 @@ describe('GraphProcessorService', () => {
           .filter(value => value !== undefined);
 
         expect(actual).toEqual(expected);
+      });
+    });
+  });
+
+  describe('addCumulativeDifferences()', () => {
+    let properties: GraphProperties;
+    let changes: SimpleChanges;
+
+    describe('Adding cumulative differences for a single project', () => {
+      let project: Project;
+      let projectData: ProjectGraphData;
+      let firstRecommendation: Recommendation;
+      let dataIndex: number;
+
+      beforeAll(async () => {
+        properties = service.initProperties();
+        changes = {};
+
+        project = ((await fakeDataService.listProjects()) as Project[])[0];
+        projectData = (await fakeDataService.getProjectGraphData(
+          project.projectId
+        )) as ProjectGraphData;
+        firstRecommendation = Object.entries(
+          projectData.dateToRecommendationTaken
+        ).sort((a, b) => +a - +b)[0][1];
+
+        // Add the project
+        changes.projects = new SimpleChange([], [project], true);
+        await service.processChanges(changes, properties, false);
+
+        await service.addCumulativeDifferences(properties, [project]);
+        dataIndex = properties.columns.findIndex(
+          value => value === project.projectId + CUMULATIVE_BINDINGS_SUFFIX
+        );
+      });
+
+      it('Added the appropriate column', () => {
+        const expected = project.projectId + CUMULATIVE_BINDINGS_SUFFIX;
+
+        expect(properties.columns).toContain(expected);
+      });
+
+      it('Left data before the first recommendation be', () => {
+        const expected = Object.entries(projectData.dateToNumberIAMBindings)
+          .filter(entry => +entry[0] <= firstRecommendation.acceptedTimestamp)
+          .map(entry => entry[1]);
+        const actual = properties.graphData
+          .filter(
+            row =>
+              row[0] instanceof Date &&
+              row[0].getTime() <= firstRecommendation.acceptedTimestamp
+          )
+          .map(row => row[dataIndex]);
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('Modified data after the first recommendation', () => {
+        let cumulativeSum = firstRecommendation.metadata.impactInIAMBindings;
+        const expected = Object.entries(projectData.dateToNumberIAMBindings)
+          .filter(entry => +entry[0] > firstRecommendation.acceptedTimestamp)
+          .map(entry => {
+            const returnValue = entry[1] + cumulativeSum;
+            const recommendations = Object.values(
+              projectData.dateToRecommendationTaken
+            ).filter(recommendation =>
+              dateService.fallOnSameDay(
+                recommendation.acceptedTimestamp,
+                +entry[0]
+              )
+            );
+            recommendations.forEach(
+              recommendation =>
+                (cumulativeSum += recommendation.metadata.impactInIAMBindings)
+            );
+
+            return returnValue;
+          });
+
+        const actual = properties.graphData
+          .filter(
+            row =>
+              row[0] instanceof Date &&
+              row[0].getTime() > firstRecommendation.acceptedTimestamp
+          )
+          .map(row => row[dataIndex]);
+
+        expect(actual).toEqual(expected);
+      });
+    });
+
+    describe('Adding cumulative differences for multiple projects', () => {
+      let projects: Project[];
+      let projectData: ProjectGraphData[];
+      let firstRecommendations: Recommendation[];
+      let dataIndices: number[];
+
+      beforeAll(async () => {
+        properties = service.initProperties();
+        changes = {};
+
+        // Get projects 1-4
+        projects = (await fakeDataService.listProjects()).filter(
+          (project, index) => index < 4
+        );
+        projectData = await Promise.all(
+          projects.map(project =>
+            fakeDataService.getProjectGraphData(project.projectId)
+          )
+        );
+        firstRecommendations = projects.map(
+          (project, i) =>
+            Object.entries(projectData[i].dateToRecommendationTaken).sort(
+              (a, b) => +a - +b
+            )[0][1]
+        );
+
+        // Add the projects
+        changes.projects = new SimpleChange([], projects, true);
+        await service.processChanges(changes, properties, false);
+
+        await service.addCumulativeDifferences(properties, projects);
+
+        dataIndices = projects.map(project =>
+          properties.columns.findIndex(
+            value => value === project.projectId + CUMULATIVE_BINDINGS_SUFFIX
+          )
+        );
+      });
+
+      it('Added the appropriate columns', () => {
+        const expected = projects.map(
+          project => project.projectId + CUMULATIVE_BINDINGS_SUFFIX
+        );
+        const actual = properties.columns.filter(column =>
+          column.toString().endsWith(CUMULATIVE_BINDINGS_SUFFIX)
+        );
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('Left data before the first recommendation for each project', () => {
+        const expected = projectData.map((data, i) =>
+          Object.entries(data.dateToNumberIAMBindings)
+            .filter(
+              entry => +entry[0] <= firstRecommendations[i].acceptedTimestamp
+            )
+            .map(entry => entry[1])
+        );
+
+        const actual = firstRecommendations.map((recommendation, i) =>
+          properties.graphData
+            .filter(
+              row =>
+                row[0] instanceof Date &&
+                row[0].getTime() <= recommendation.acceptedTimestamp
+            )
+            .map(row => row[dataIndices[i]])
+            .filter(value => value)
+        );
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('Modified data after the first recommendation for each', () => {
+        const expected = projectData.map((data, i) => {
+          let cumulativeSum =
+            firstRecommendations[i].metadata.impactInIAMBindings;
+
+          return Object.entries(data.dateToNumberIAMBindings)
+            .filter(
+              entry => +entry[0] > firstRecommendations[i].acceptedTimestamp
+            )
+            .map(entry => {
+              const returnValue = entry[1] + cumulativeSum;
+              const recommendations = Object.values(
+                data.dateToRecommendationTaken
+              ).filter(recommendation =>
+                dateService.fallOnSameDay(
+                  recommendation.acceptedTimestamp,
+                  +entry[0]
+                )
+              );
+              recommendations.forEach(
+                recommendation =>
+                  (cumulativeSum += recommendation.metadata.impactInIAMBindings)
+              );
+
+              return returnValue;
+            });
+        });
+
+        const actual = firstRecommendations.map((recommendation, i) =>
+          properties.graphData
+            .filter(
+              row =>
+                row[0] instanceof Date &&
+                row[0].getTime() > recommendation.acceptedTimestamp
+            )
+            .map(row => row[dataIndices[i]])
+            .filter(value => value)
+        );
+
+        expect(actual).toEqual(expected);
+      });
+    });
+  });
+
+  describe('removeCumulativeDifferences()', () => {
+    let properties: GraphProperties;
+    let changes: SimpleChanges;
+
+    describe('Removing nothing when no projects are present', () => {
+      beforeAll(() => {
+        properties = service.initProperties();
+        service.removeCumulativeDifferences(properties, []);
+      });
+
+      it('Leaves columns untouched', () => {
+        const actual = properties.columns.length;
+
+        expect(actual).toBe(1);
+      });
+    });
+
+    describe('Removing differences that are continuous columns', () => {
+      let projects: Project[];
+
+      beforeAll(async () => {
+        properties = service.initProperties();
+        changes = {};
+
+        projects = (await fakeDataService.listProjects()).filter(
+          (project, index) => index < 2
+        );
+        // Add the projects
+        changes.projects = new SimpleChange([], projects, true);
+        await service.processChanges(changes, properties, false);
+        await service.addCumulativeDifferences(properties, projects);
+
+        service.removeCumulativeDifferences(properties, projects);
+      });
+
+      it('Removes columns', () => {
+        const expected = [];
+        const actual = properties.columns.filter(value =>
+          value.toString().endsWith(CUMULATIVE_BINDINGS_SUFFIX)
+        );
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('Removes graph data', () => {
+        const expectedSize = properties.graphData.map(row => 7);
+        const actual = properties.graphData.map(row => row.length);
+
+        expect(actual).toEqual(expectedSize);
+      });
+    });
+
+    describe('Removing differences that are non-continuous columns', () => {
+      let projects: Project[];
+
+      beforeAll(async () => {
+        properties = service.initProperties();
+        changes = {};
+
+        projects = (await fakeDataService.listProjects()).filter(
+          (project, index) => index < 2
+        );
+
+        // Add the projects ony-by-one
+        changes.projects = new SimpleChange([], [projects[0]], true);
+        await service.processChanges(changes, properties, true);
+        changes.projects = new SimpleChange([projects[0]], projects, false);
+        await service.processChanges(changes, properties, true);
+
+        // Now remove both projets
+        service.removeCumulativeDifferences(properties, projects);
+      });
+
+      it('Removes columns', () => {
+        const expected = [];
+        const actual = properties.columns.filter(value =>
+          value.toString().endsWith(CUMULATIVE_BINDINGS_SUFFIX)
+        );
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('Removes graph data', () => {
+        const expectedSize = properties.graphData.map(row => 7);
+        const actual = properties.graphData.map(row => row.length);
+
+        expect(actual).toEqual(expectedSize);
       });
     });
   });

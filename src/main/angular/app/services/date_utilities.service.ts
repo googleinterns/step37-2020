@@ -19,16 +19,16 @@ export class DateUtilitiesService {
     date2.setTime(time2);
 
     return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
+      date1.getUTCFullYear() === date2.getUTCFullYear() &&
+      date1.getUTCMonth() === date2.getUTCMonth() &&
+      date1.getUTCDate() === date2.getUTCDate()
     );
   }
 
   /** Converts the given millis since epoch to the start of the day in the local timezone. */
   startOfDay(time: number): Date {
     const date = new Date(time);
-    date.setHours(0, 0, 0, 0);
+    date.setUTCHours(0, 0, 0, 0);
     return date;
   }
 
@@ -88,5 +88,13 @@ export class DateUtilitiesService {
       diff *= -1;
     }
     return diff / 1000 / 60 / 60;
+  }
+
+  /** Add the timezone offset back to the date. */
+  addTimezoneOffset(date: Date) {
+    // Note that offset is NOT specific to the date object, it's just the user's timezone
+    // JavaScript dates aren't very bright -- I don't make the rules ;)
+    const offset = date.getTimezoneOffset();
+    date.setTime(date.getTime() + offset * 60 * 1000);
   }
 }

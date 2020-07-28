@@ -1,6 +1,7 @@
 package com.google.impactdashboard.data;
 
 import com.google.auto.value.AutoValue;
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
 
 /** Represents a single row of the IAM Bindings table. */
 @AutoValue
@@ -9,6 +10,7 @@ public abstract class IAMBindingDatabaseEntry {
   public abstract String getProjectId();
   public abstract String getProjectName();
   public abstract String getProjectNumber();
+  public abstract OrganizationIdentification getIdentification();
   public abstract long getTimestamp();
   public abstract int getBindingsNumber();
 
@@ -18,8 +20,9 @@ public abstract class IAMBindingDatabaseEntry {
    *  at time {@code timestamp}.  
    */
   public static IAMBindingDatabaseEntry create(String projectId, String projectName, 
-    String projectNumber, long timestamp, int bindingsNumber) {
+    String projectNumber, OrganizationIdentification identification, long timestamp, 
+    int bindingsNumber) {
     return new AutoValue_IAMBindingDatabaseEntry(projectId, projectName, 
-      projectNumber, timestamp, bindingsNumber);
+      projectNumber, identification, timestamp, bindingsNumber);
   }
 }

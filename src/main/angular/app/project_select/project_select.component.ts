@@ -7,9 +7,11 @@ import {
   faFilter,
 } from '@fortawesome/free-solid-svg-icons';
 import {trigger, state, style, transition, animate} from '@angular/animations';
-import {SortDirection, SortBy} from '../../model/project_sort';
+import {SortDirection, SortBy} from '../../model/sort_methods';
 import {DataService} from '../services/data.service';
-import {ProjectQueryService} from '../services/project_query.service';
+import {QueryService} from '../services/query.service';
+import {ResourceType} from '../../model/resource_type';
+import {Resource, IAMResource} from '../../model/resource';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({
@@ -28,6 +30,8 @@ import {ProjectQueryService} from '../services/project_query.service';
 export class ProjectSelectComponent implements OnInit {
   /** All projects that are currently selected. */
   public activeProjects: Set<Project>;
+  /** The resource to display. Now it's just projects or organizations, but can be expanded. */
+  public displayType: ResourceType;
 
   // #region DOM interraction variables
   /** Whether a particular arrow is rotated or not. */
@@ -44,9 +48,12 @@ export class ProjectSelectComponent implements OnInit {
 
   // Convenience selectors
   public iamBindings = SortBy.IAM_BINDINGS;
-  public projectName = SortBy.NAME;
+  public projectName = SortBy.PROJECT_NAME;
   public projectId = SortBy.PROJECT_ID;
   public projectNumber = SortBy.PROJECT_NUMBER;
+
+  public organization = ResourceType.ORGANIZATION;
+  public project = ResourceType.PROJECT;
   // #endregion
 
   @Output()
@@ -54,14 +61,24 @@ export class ProjectSelectComponent implements OnInit {
 
   constructor(
     private dataService: DataService,
-    private projectQueryService: ProjectQueryService
+    private projectQueryService: QueryService
   ) {
     this.activeProjects = new Set();
+    this.displayType = ResourceType.PROJECT;
   }
 
   /** Checks whether to show the loading bar based on whether there is an active web request or not. */
   showLoadingBar(): boolean {
     return this.dataService.hasPendingRequest();
+  }
+
+  /** Toggles whether to display projects or organizations. */
+  toggleDisplay() {
+    if (this.displayType === ResourceType.ORGANIZATION) {
+      this.displayType = ResourceType.PROJECT;
+    } else {
+      this.displayType = ResourceType.ORGANIZATION;
+    }
   }
 
   /** Returns the color associated with the given project. */
@@ -95,7 +112,7 @@ export class ProjectSelectComponent implements OnInit {
     switch (field) {
       case SortBy.IAM_BINDINGS:
         return this.sortRotated.iamBindings;
-      case SortBy.NAME:
+      case SortBy.PROJECT_NAME:
         return this.sortRotated.projectName;
       case SortBy.PROJECT_ID:
         return this.sortRotated.projectId;
@@ -111,7 +128,7 @@ export class ProjectSelectComponent implements OnInit {
         this.sortRotated.iamBindings =
           this.sortRotated.iamBindings === 'down' ? 'up' : 'down';
         break;
-      case SortBy.NAME:
+      case SortBy.PROJECT_NAME:
         this.sortRotated.projectName =
           this.sortRotated.projectName === 'down' ? 'up' : 'down';
         break;
@@ -146,8 +163,8 @@ export class ProjectSelectComponent implements OnInit {
     }
   }
 
-  /** Returns a sorted and filtered view of the projects. */
-  getProjects(): Project[] {
+  /** Returns a sorted and filtered view of the resources. */
+  getResources(): IAMResource[] {
     return this.projectQueryService.getProjects();
   }
 

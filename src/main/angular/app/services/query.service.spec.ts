@@ -5,7 +5,7 @@ import {
   ProjectComparators,
   SortDirection,
   SortBy,
-} from '../../model/project_sort';
+} from '../../model/sort_methods';
 import {GraphDataCacheService} from './graph_data_cache.service';
 import {DateUtilitiesService} from './date_utilities.service';
 
@@ -82,7 +82,7 @@ describe('ProjectQueryService', () => {
       beforeAll(() => {
         service = new QueryService();
         service.init(projects);
-        expectedField = SortBy.NAME;
+        expectedField = SortBy.PROJECT_NAME;
         currentDirection = service.getSortDirection();
 
         service.changeField(expectedField, currentDirection);
@@ -117,7 +117,7 @@ describe('ProjectQueryService', () => {
       beforeAll(() => {
         service = new QueryService();
         service.init(projects);
-        expectedField = SortBy.NAME;
+        expectedField = SortBy.PROJECT_NAME;
         expectedDirection = SortDirection.ASCENDING;
 
         service.changeField(expectedField, expectedDirection);

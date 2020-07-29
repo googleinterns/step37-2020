@@ -16,7 +16,7 @@ import {ErrorPageComponent} from './error_page/error_page.component';
 import {MainPageComponent} from './main_page/main_page.component';
 import {ErrorService} from './services/error.service';
 import {RedirectService} from './services/redirect.service';
-import {ProjectQueryService} from './services/project_query.service';
+import {QueryService} from './services/query.service';
 import {DataShareService} from './services/data_share.service';
 import {DateSelectComponent} from './date_select/date_select.component';
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -64,7 +64,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
       provide: ErrorHandler,
       useClass: ErrorService,
     },
-    ProjectQueryService,
+    QueryService,
     DataShareService,
     GraphDataCacheService,
     {

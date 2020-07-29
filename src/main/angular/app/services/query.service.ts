@@ -4,7 +4,7 @@ import {
   SortBy,
   SortDirection,
   ProjectComparators,
-} from '../../model/project_sort';
+} from '../../model/sort_methods';
 
 /** Used to query and sort projects/organizations. */
 @Injectable()

@@ -16,10 +16,22 @@ public interface QueryConfigurationBuilder {
   public QueryJobConfiguration.Builder getProjectIdsConfiguration();
 
   /** 
+   * Retrieves query job configuration that retrieves all organization ids from 
+   * the database. 
+   */
+  public QueryJobConfiguration.Builder getOrganizationIdsConfiguration();
+
+  /** 
    * Retrieves parameterized query job configuration that retrieves the 
    * identifying information for a single project from the database.
    */
   public QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration();
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves the name
+   * of a single organization. 
+   */
+  public QueryJobConfiguration.Builder getOrganizationNameConfiguration();
 
   /** 
    * Retrieves parameterized query job configuration that retrieves the 

@@ -25,6 +25,11 @@ public class Queries {
     "SELECT DISTINCT " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN +
       " FROM `" + IAM_TABLE + "`";
 
+  /** Retrieve all organization ids from the database. */
+  public static final String GET_ORGANIZATION_IDS = 
+    "SELECT DISTINCT " + IAMBindingsSchema.IAM_ORGANIZATION_ID_COLUMN + 
+      " FROM `" + IAM_TABLE + "`";
+
   /** 
    * Retrieves the project name and project number of the project with id 
    * {@code projectId}. 
@@ -35,6 +40,17 @@ public class Queries {
       IAMBindingsSchema.PROJECT_NUMBER_COLUMN +
       " FROM `" + IAM_TABLE + "`" +
       " WHERE " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN + " = @projectId" +
+      " LIMIT 1";
+
+  /** 
+   * Retrieves the organization name of the organization with id 
+   * {@code organizationId}. 
+   */
+  public static final String GET_ORGANIZATION_IDENTIFICATION_INFORMATION = 
+    "SELECT " + 
+      IAMBindingsSchema.ORGANIZATION_NAME_COLUMN + 
+      " FROM `" + IAM_TABLE + "`" +
+      " WHERE " + IAMBindingsSchema.IAM_ORGANIZATION_ID_COLUMN + " = @organizationId" +
       " LIMIT 1";
 
   /** 

@@ -17,8 +17,14 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   private QueryJobConfiguration.Builder getProjectIdsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_PROJECT_IDS)
       .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getOrganizationIdsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_ORGANIZATION_IDS)
+      .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration =  
     QueryJobConfiguration.newBuilder(Queries.GET_PROJECT_IDENTIFICATION_INFORMATION)
+      .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getOrganizationNameConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_ORGANIZATION_IDENTIFICATION_INFORMATION)
       .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getAverageBindingsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_AVERAGE_BINDINGS)
@@ -59,11 +65,27 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   }
 
   /** 
+   * Retrieves query job configuration that retrieves all organization ids from 
+   * the database. 
+   */
+  public QueryJobConfiguration.Builder getOrganizationIdsConfiguration() {
+    return getOrganizationIdsConfiguration;
+  }
+
+  /** 
    * Retrieves parameterized query job configuration that retrieves the 
    * identifying information for a single project from the database.
    */
   public QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration() {
     return getProjectIdentificationInformationConfiguration;
+  }
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves the name
+   * of a single organization. 
+   */
+  public QueryJobConfiguration.Builder getOrganizationNameConfiguration() {
+    return getOrganizationNameConfiguration;
   }
 
   /** 

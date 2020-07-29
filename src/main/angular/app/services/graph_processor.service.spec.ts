@@ -52,7 +52,7 @@ describe('GraphProcessorService', () => {
             project.projectId
           )) as ProjectGraphData;
           // Going from no projects to a single one
-          changes.projects = new SimpleChange([], [project], true);
+          changes.resources = new SimpleChange([], [project], true);
           await service.processChanges(changes, properties, false);
 
           bindingTimes = Object.keys(projectData.dateToNumberIAMBindings).map(
@@ -107,7 +107,7 @@ describe('GraphProcessorService', () => {
             )
           )) as ProjectGraphData[];
           // Going from no projects to adding all of the ones above
-          changes.projects = new SimpleChange([], projects, true);
+          changes.resources = new SimpleChange([], projects, true);
           await service.processChanges(changes, properties, false);
         });
 
@@ -154,7 +154,7 @@ describe('GraphProcessorService', () => {
           ).sort((a, b) => +a - +b)[0][1];
 
           // Going from no projects to a single one
-          changes.projects = new SimpleChange([], [project], true);
+          changes.resources = new SimpleChange([], [project], true);
           await service.processChanges(changes, properties, true);
           dataIndex = properties.columns.findIndex(
             column => column === project.projectId + CUMULATIVE_BINDINGS_SUFFIX
@@ -230,7 +230,7 @@ describe('GraphProcessorService', () => {
 
           allProjects = (await fakeDataService.listSummaries()).projects;
           // Add the projects
-          changes.projects = new SimpleChange([], allProjects, true);
+          changes.resources = new SimpleChange([], allProjects, true);
           await service.processChanges(changes, properties, false);
 
           // Remove the first project
@@ -242,7 +242,7 @@ describe('GraphProcessorService', () => {
               fakeDataService.getProjectGraphData(project.projectId)
             )
           )) as ProjectGraphData[];
-          changes.projects = new SimpleChange(allProjects, projects, false);
+          changes.resources = new SimpleChange(allProjects, projects, false);
           await service.processChanges(changes, properties, false);
         });
 
@@ -280,7 +280,7 @@ describe('GraphProcessorService', () => {
           allProjects = (await fakeDataService.listSummaries()).projects;
 
           // Add the projects
-          changes.projects = new SimpleChange([], allProjects, true);
+          changes.resources = new SimpleChange([], allProjects, true);
           await service.processChanges(changes, properties, false);
 
           // Remove all but the first two projects
@@ -292,7 +292,7 @@ describe('GraphProcessorService', () => {
               fakeDataService.getProjectGraphData(project.projectId)
             )
           )) as ProjectGraphData[];
-          changes.projects = new SimpleChange(allProjects, projects, false);
+          changes.resources = new SimpleChange(allProjects, projects, false);
           await service.processChanges(changes, properties, false);
         });
 
@@ -329,10 +329,10 @@ describe('GraphProcessorService', () => {
           project = (await fakeDataService.listSummaries()).projects[0];
 
           // Add the project
-          changes.projects = new SimpleChange([], [project], true);
+          changes.resources = new SimpleChange([], [project], true);
           await service.processChanges(changes, properties, true);
           // Remove the project
-          changes.projects = new SimpleChange([project], [], false);
+          changes.resources = new SimpleChange([project], [], false);
           await service.processChanges(changes, properties, true);
         });
 
@@ -362,16 +362,16 @@ describe('GraphProcessorService', () => {
 
         allProjects = (await fakeDataService.listSummaries()).projects;
         // Add the projects
-        changes.projects = new SimpleChange([], allProjects, true);
+        changes.resources = new SimpleChange([], allProjects, true);
         await service.processChanges(changes, properties, false);
 
         // Remove the first project
         projects = allProjects
           .filter((value, index) => index !== 0)
           .map(value => value);
-        changes.projects = new SimpleChange(allProjects, projects, false);
+        changes.resources = new SimpleChange(allProjects, projects, false);
         await service.processChanges(changes, properties, false);
-        changes.projects = new SimpleChange(projects, allProjects, false);
+        changes.resources = new SimpleChange(projects, allProjects, false);
         await service.processChanges(changes, properties, false);
 
         projectData = (await Promise.all(
@@ -426,7 +426,7 @@ describe('GraphProcessorService', () => {
         ).sort((a, b) => +a - +b)[0][1];
 
         // Add the project
-        changes.projects = new SimpleChange([], [project], true);
+        changes.resources = new SimpleChange([], [project], true);
         await service.processChanges(changes, properties, false);
 
         await service.addCumulativeDifferences(properties, [project]);
@@ -517,7 +517,7 @@ describe('GraphProcessorService', () => {
         );
 
         // Add the projects
-        changes.projects = new SimpleChange([], projects, true);
+        changes.resources = new SimpleChange([], projects, true);
         await service.processChanges(changes, properties, false);
 
         await service.addCumulativeDifferences(properties, projects);
@@ -635,7 +635,7 @@ describe('GraphProcessorService', () => {
           (project, index) => index < 2
         );
         // Add the projects
-        changes.projects = new SimpleChange([], projects, true);
+        changes.resources = new SimpleChange([], projects, true);
         await service.processChanges(changes, properties, false);
         await service.addCumulativeDifferences(properties, projects);
 
@@ -671,9 +671,9 @@ describe('GraphProcessorService', () => {
         );
 
         // Add the projects ony-by-one
-        changes.projects = new SimpleChange([], [projects[0]], true);
+        changes.resources = new SimpleChange([], [projects[0]], true);
         await service.processChanges(changes, properties, true);
-        changes.projects = new SimpleChange([projects[0]], projects, false);
+        changes.resources = new SimpleChange([projects[0]], projects, false);
         await service.processChanges(changes, properties, true);
 
         // Now remove both projets

@@ -37,7 +37,7 @@ describe('ProjectQueryService', () => {
             SortBy.IAM_BINDINGS
           )
         );
-      const actual = service.getResources();
+      const actual = service.getProjects();
 
       expect(actual).toEqual(expected);
     });
@@ -60,7 +60,7 @@ describe('ProjectQueryService', () => {
         );
 
       service.toggleDirection();
-      const actualOrder = service.getResources();
+      const actualOrder = service.getProjects();
 
       expect(service.getSortDirection()).toBe(SortDirection.ASCENDING);
       expect(actualOrder).toEqual(expectedOrder);
@@ -69,7 +69,7 @@ describe('ProjectQueryService', () => {
     it('Toggles twice back to descending', () => {
       service.toggleDirection();
       service.toggleDirection();
-      const actualOrder = service.getResources();
+      const actualOrder = service.getProjects();
 
       expect(service.getSortDirection()).toBe(SortDirection.DESCENDING);
       expect(actualOrder).toEqual(projects);
@@ -103,7 +103,7 @@ describe('ProjectQueryService', () => {
       });
 
       it('Sorts properly', () => {
-        const actual = service.getResources();
+        const actual = service.getProjects();
         const expected = projects.sort(
           ProjectComparators.getComparator(currentDirection, expectedField)
         );
@@ -138,7 +138,7 @@ describe('ProjectQueryService', () => {
       });
 
       it('Sorts properly', () => {
-        const actual = service.getResources();
+        const actual = service.getProjects();
         const expected = projects.sort(
           ProjectComparators.getComparator(expectedDirection, expectedField)
         );
@@ -155,10 +155,10 @@ describe('ProjectQueryService', () => {
     });
 
     it("Doesn't filter with an empty query", () => {
-      const expected = service.getResources();
+      const expected = service.getProjects();
 
       service.changeQuery('');
-      const actual = service.getResources();
+      const actual = service.getProjects();
 
       expect(actual).toEqual(expected);
     });
@@ -168,7 +168,7 @@ describe('ProjectQueryService', () => {
       const expected = projects.filter(project => project.includes(query));
 
       service.changeQuery(query);
-      const actual = service.getResources();
+      const actual = service.getProjects();
 
       expect(actual).toEqual(expected);
     });
@@ -179,7 +179,7 @@ describe('ProjectQueryService', () => {
       query = '';
       service.changeQuery(query);
 
-      const actual = service.getResources();
+      const actual = service.getProjects();
 
       expect(actual).toEqual(projects);
     });
@@ -194,7 +194,7 @@ describe('ProjectQueryService', () => {
       const expected = projects.sort(
         ProjectComparators.getComparator(SortDirection.ASCENDING, SortBy.ID)
       );
-      const actual = service.getResources();
+      const actual = service.getProjects();
 
       expect(actual).toEqual(expected);
     });

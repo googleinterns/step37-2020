@@ -12,7 +12,6 @@
   border-radius: 3px;
   margin: 0 auto;
   max-width: 75%;
-  
 }
 
 #projects-table {
@@ -86,6 +85,17 @@ th div {
   margin: 3px 3px 0 3px;
   display: flex;
   background-color: #E8EAED;
+}
+
+#resource-toggle {
+  background-color: #F1F3F4;
+  border: 1px solid #666666;
+  border-radius: 3px;
+  margin: 3px 0 0 3px;
+}
+
+#resource-toggle:focus {
+  outline: none;
 }
 
 .project-color-icon {

@@ -1,8 +1,8 @@
 <div id="root">
   <div id="content">
     <mat-progress-bar *ngIf="showLoadingBar()" mode="query"></mat-progress-bar>
-    <button (click)="toggleDisplay()">Toggle Project</button>
     <div id="filter-container">
+      <button class="clickable" id="resource-toggle" (click)="toggleDisplay()">{{ displayType === project ? 'Project': 'Organization'}}</button>
       <fa-icon [icon]="filter" id="filter-icon"></fa-icon><input type="text"
         (input)="search($event.target.value)" placeholder="Search by Name or ID" id="filter-input"
         title="Search by Name or ID" />

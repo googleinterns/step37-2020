@@ -61,7 +61,11 @@ export class FakeDataService implements DataService {
     return new Promise(resolve => {
       setTimeout(() => {
         this.activeRequests.delete(url);
-        resolve(Object.values(this.projects).map(tuple => tuple[0]));
+        const projects = Object.values(this.projects).map(tuple => tuple[0]);
+        const organizations = Object.values(this.organizations).map(
+          tuple => tuple[0]
+        );
+        resolve(new DataSummaryList(projects, organizations));
       }, FakeDataService.requestTime);
     });
   }

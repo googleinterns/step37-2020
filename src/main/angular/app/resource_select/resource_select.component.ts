@@ -10,8 +10,10 @@ import {SortDirection, SortBy} from '../../model/sort_methods';
 import {DataService} from '../services/data.service';
 import {QueryService} from '../services/query.service';
 import {IAMResource, ResourceType, Resource} from '../../model/resource';
+import {Project} from '../../model/project';
+import {Organization} from '../../model/organization';
 
-/** Component which lets users select which projects to display on the graph. */
+/** Component which lets users select which projects and organizations to display on the graph. */
 @Component({
   selector: 'resource-select',
   templateUrl: './resource_select.component.html',
@@ -26,18 +28,30 @@ import {IAMResource, ResourceType, Resource} from '../../model/resource';
   ],
 })
 export class ResourceSelectComponent implements OnInit {
-  /** All resources that are currently selected. */
-  public activeResources: Set<Resource>;
+  /** All projects that are currently selected. */
+  public activeProjects: Set<Project>;
+  /** All organizations that are currently selected. */
+  public activeOrganizations: Set<Organization>;
   /** The resource to display. Now it's just projects or organizations, but can be expanded. */
   public displayType: ResourceType;
 
   // #region DOM interraction variables
   /** Whether a particular arrow is rotated or not. */
-  sortRotated: {[key: string]: 'down' | 'up'} = {
-    iamBindings: 'down',
-    name: 'down',
-    id: 'down',
-    projectNumber: 'down',
+  sortRotated: {
+    project: {[field: string]: 'down' | 'up'};
+    organization: {[field: string]: 'down' | 'up'};
+  } = {
+    project: {
+      iamBindings: 'down',
+      name: 'down',
+      id: 'down',
+      number: 'down',
+    },
+    organization: {
+      iamBindings: 'down',
+      name: 'down',
+      id: 'down',
+    },
   };
 
   arrow = faArrowDown;
@@ -56,12 +70,15 @@ export class ResourceSelectComponent implements OnInit {
 
   @Output()
   public changeSelection = new EventEmitter<Resource[]>();
+  @Output()
+  public changeResource = new EventEmitter<ResourceType>();
 
   constructor(
     private dataService: DataService,
     private queryService: QueryService
   ) {
-    this.activeResources = new Set();
+    this.activeProjects = new Set();
+    this.activeOrganizations = new Set();
     this.displayType = ResourceType.PROJECT;
   }
 
@@ -91,7 +108,12 @@ export class ResourceSelectComponent implements OnInit {
 
   /** Returns the color associated with the given resource. */
   getColor(resource: Resource): string {
-    if (this.activeResources.has(resource)) {
+    if (
+      (resource.getResourceType() === ResourceType.ORGANIZATION &&
+        this.activeOrganizations.has(resource as Organization)) ||
+      (resource.getResourceType() === ResourceType.PROJECT &&
+        this.activeProjects.has(resource as Project))
+    ) {
       return resource.color;
     }
     return PROJECT_INACTIVE_COLOR;
@@ -99,12 +121,23 @@ export class ResourceSelectComponent implements OnInit {
 
   /** Toggles the given resources presence on the graph. */
   toggleResource(resource: Resource) {
-    if (this.activeResources.has(resource)) {
-      this.activeResources.delete(resource);
-    } else {
-      this.activeResources.add(resource);
+    if (resource.getResourceType() === ResourceType.ORGANIZATION) {
+      const organization = resource as Organization;
+      if (this.activeOrganizations.has(organization)) {
+        this.activeOrganizations.delete(organization);
+      } else {
+        this.activeOrganizations.add(organization);
+      }
+      this.changeSelection.emit(Array.from(this.activeOrganizations));
+    } else if (resource.getResourceType() === ResourceType.PROJECT) {
+      const project = resource as Project;
+      if (this.activeProjects.has(project)) {
+        this.activeProjects.delete(project);
+      } else {
+        this.activeProjects.add(project);
+      }
+      this.changeSelection.emit(Array.from(this.activeProjects));
     }
-    this.changeSelection.emit(Array.from(this.activeResources));
   }
 
   /** Returns the class placed on a sorting arrow, which decides whether it's grayed out or not. */
@@ -117,35 +150,48 @@ export class ResourceSelectComponent implements OnInit {
 
   /** Returns the status (up or down) of the animation associated with the given sort field. */
   getAnimationStatus(field: SortBy): 'down' | 'up' {
+    let typeStatus: {[field: string]: 'down' | 'up'};
+    if (this.displayType === ResourceType.ORGANIZATION) {
+      typeStatus = this.sortRotated.organization;
+    } else if (this.displayType === ResourceType.PROJECT) {
+      typeStatus = this.sortRotated.project;
+    }
+
     switch (field) {
       case SortBy.IAM_BINDINGS:
-        return this.sortRotated.iamBindings;
+        return typeStatus.iamBindings;
       case SortBy.NAME:
-        return this.sortRotated.name;
+        return typeStatus.name;
       case SortBy.ID:
-        return this.sortRotated.id;
+        return typeStatus.id;
       case SortBy.PROJECT_NUMBER:
-        return this.sortRotated.projectNumber;
+        return typeStatus.number;
     }
   }
 
   /** Swap the given animation from up to down or vice versa. */
   swapAnimationProperty(field: SortBy) {
+    let typeStatus: {[field: string]: 'down' | 'up'};
+    if (this.displayType === ResourceType.ORGANIZATION) {
+      typeStatus = this.sortRotated.organization;
+    } else if (this.displayType === ResourceType.PROJECT) {
+      typeStatus = this.sortRotated.project;
+    }
+
     switch (field) {
       case SortBy.IAM_BINDINGS:
-        this.sortRotated.iamBindings =
-          this.sortRotated.iamBindings === 'down' ? 'up' : 'down';
+        typeStatus.iamBindings =
+          typeStatus.iamBindings === 'down' ? 'up' : 'down';
         break;
       case SortBy.NAME:
-        this.sortRotated.name =
-          this.sortRotated.name === 'down' ? 'up' : 'down';
+        typeStatus.name = typeStatus.name === 'down' ? 'up' : 'down';
         break;
       case SortBy.ID:
-        this.sortRotated.id = this.sortRotated.id === 'down' ? 'up' : 'down';
+        typeStatus.id = typeStatus.id === 'down' ? 'up' : 'down';
         break;
       case SortBy.PROJECT_NUMBER:
-        this.sortRotated.projectNumber =
-          this.sortRotated.projectNumber === 'down' ? 'up' : 'down';
+        typeStatus.projectNumber =
+          typeStatus.projectNumber === 'down' ? 'up' : 'down';
         break;
     }
   }
@@ -170,9 +216,14 @@ export class ResourceSelectComponent implements OnInit {
     }
   }
 
-  /** Returns a sorted and filtered view of the resources. */
-  getResources(): IAMResource[] {
-    return this.queryService.getResources() as IAMResource[];
+  /** Returns a sorted and filtered view of the projects. */
+  getProjects(): Project[] {
+    return this.queryService.getProjects();
+  }
+
+  /** Returns a sorted and filtered view of the organizations. */
+  getOrganizations(): Organization[] {
+    return this.queryService.getOrganizations();
   }
 
   /** Changes the query string. */

@@ -16,7 +16,7 @@
             <fa-icon [icon]="arrow" [ngClass]="getSortClass(name)" (click)="toggleSort(name)"
               id="name-sort" class="clickable" title="Toggle sort direction"></fa-icon>
           </div><span class="clickable" (click)="changeField(name)" title="Sort by name">
-            Name</span>
+            Project Name</span>
         </th>
         <th>
           <div [@rotateSort]="sortRotated.iamBindings">
@@ -32,18 +32,18 @@
               (click)="toggleSort(projectNumber)" id="number-sort" class="clickable"
               title="Toggle sort direction"></fa-icon>
           </div><span class="clickable" (click)="changeField(projectNumber)"
-            title="Sort by project number"> Number</span>
+            title="Sort by project number"> Project Number</span>
         </th>
         <th>
           <div [@rotateSort]="sortRotated.id">
             <fa-icon [icon]="arrow" [ngClass]="getSortClass(id)" (click)="toggleSort(id)"
               id="id-sort" class="clickable" title="Toggle sort direction"></fa-icon>
           </div><span class="clickable" (click)="changeField(id)" title="Sort by ID">
-            ID</span>
+            Project ID</span>
         </th>
       </tr>
 
-      <tr *ngFor="let resource of getResources()" (click)="toggleResource(resource)"
+      <tr *ngFor="let resource of getProjects()" (click)="toggleResource(resource)"
         class="toggle-project clickable" title="Toggle project">
         <td>
           <fa-icon [icon]="circle" [ngStyle]="{'color': getColor(resource)}"

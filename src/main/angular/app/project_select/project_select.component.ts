@@ -73,10 +73,19 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Toggles whether to display projects or organizations. */
   toggleDisplay() {
+    // Invert the display type
     if (this.displayType === ResourceType.ORGANIZATION) {
       this.displayType = ResourceType.PROJECT;
     } else {
       this.displayType = ResourceType.ORGANIZATION;
+
+      if (this.queryService.getSortField() === SortBy.PROJECT_NUMBER) {
+        // Number field isn't available on organizations, so switch to IAM
+        this.queryService.changeField(
+          SortBy.IAM_BINDINGS,
+          this.queryService.getSortDirection()
+        );
+      }
     }
     this.queryService.changeResourceType(this.displayType);
   }

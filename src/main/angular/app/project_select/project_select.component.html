@@ -11,7 +11,7 @@
     <table id="projects-table" class="center">
       <tr id="header">
         <th>
-          <div [@rotateSort]="sortRotated.projectName">
+          <div [@rotateSort]="sortRotated.name">
             <fa-icon [icon]="arrow" [ngClass]="getSortClass(name)" (click)="toggleSort(name)"
               id="name-sort" class="clickable" title="Toggle sort direction"></fa-icon>
           </div><span class="clickable" (click)="changeField(name)" title="Sort by name"> Project
@@ -34,7 +34,7 @@
             title="Sort by project number"> Project Number</span>
         </th>
         <th>
-          <div [@rotateSort]="sortRotated.projectId">
+          <div [@rotateSort]="sortRotated.id">
             <fa-icon [icon]="arrow" [ngClass]="getSortClass(id)" (click)="toggleSort(id)"
               id="id-sort" class="clickable" title="Toggle sort direction"></fa-icon>
           </div><span class="clickable" (click)="changeField(id)" title="Sort by ID">

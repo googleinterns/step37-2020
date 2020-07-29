@@ -107,6 +107,7 @@ export class QueryService {
       } else if (type === ResourceType.PROJECT) {
         this.cache = this.projects;
       }
+      this.cache.sort(getComparator(this.sortDirection, this.sortBy, type));
       const queryStore = this.query;
       this.query = '';
       this.changeQuery(queryStore);

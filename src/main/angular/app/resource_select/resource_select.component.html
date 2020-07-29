@@ -2,7 +2,8 @@
   <div id="content">
     <mat-progress-bar *ngIf="showLoadingBar()" mode="query"></mat-progress-bar>
     <div id="filter-container">
-      <button class="clickable" id="resource-toggle" (click)="toggleDisplay()">{{ displayType === project ? 'Project': 'Organization'}}</button>
+      <button class="clickable" id="resource-toggle" (click)="toggleDisplay()"
+        title="Switch between selecting projects and organizations">{{ displayType === project ? 'Project': 'Organization'}}</button>
       <fa-icon [icon]="filter" id="filter-icon"></fa-icon><input type="text"
         (input)="search($event.target.value)" placeholder="Search by Name or ID" id="filter-input"
         title="Search by Name or ID" />
@@ -14,7 +15,8 @@
           <div [@rotateSort]="sortRotated.name">
             <fa-icon [icon]="arrow" [ngClass]="getSortClass(name)" (click)="toggleSort(name)"
               id="name-sort" class="clickable" title="Toggle sort direction"></fa-icon>
-          </div><span class="clickable" (click)="changeField(name)" title="Sort by name"> Name</span>
+          </div><span class="clickable" (click)="changeField(name)" title="Sort by name">
+            Name</span>
         </th>
         <th>
           <div [@rotateSort]="sortRotated.iamBindings">

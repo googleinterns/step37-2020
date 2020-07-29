@@ -13,6 +13,7 @@ export class GraphDataCacheService {
   };
   constructor(private dateUtilities: DateUtilitiesService) {
     this.projectCache = {};
+    this.organizationCache = {};
   }
 
   /** Returns true if the time is within the last 6 hours, false otherwise. */

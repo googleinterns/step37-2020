@@ -7,6 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import com.google.impactdashboard.configuration.Configuration;
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.*;
 import com.google.impactdashboard.database_manager.data_read.*;
@@ -29,6 +30,11 @@ public class DataReadManagerTest {
   private static final String PROJECT_ID_1 = "project-id-1";
   private static final String PROJECT_ID_2 = "project-id-2";
   private static final String TEST_ORG_ID = "test-org-2";
+  private static final OrganizationIdentification ORG_1 = 
+    OrganizationIdentification.create("Org 1", "test-org-1");
+  private static final OrganizationIdentification ORG_2 = 
+    OrganizationIdentification.create("Org 2", "test-org-2");
+
   private static final Recommendation PROJECT_2_RECOMMENDATION_ON_25TH = 
     Recommendation.create("project-id-2", TEST_ORG_ID, "test5@example.com",
       Arrays.asList(
@@ -73,8 +79,24 @@ public class DataReadManagerTest {
   }
 
   @Test
+  public void testAllOrganizationsListedCorrectly() {
+    List<OrganizationIdentification> actual = dataReadManager.listOrganizations();
+    List<OrganizationIdentification> expected = Arrays.asList(ORG_1, ORG_2);
+
+    assertEquals(expected.size(), actual.size());
+    actual.removeAll(expected);
+    assertEquals(Arrays.asList(), actual);
+  }
+
+  @Test
   public void noProjectsReturnedFromEmptyTable() {
     List<ProjectIdentification> actual = dataReadManagerEmptyTables.listProjects();
+    assertEquals(Arrays.asList(), actual);
+  }
+
+  @Test
+  public void noOrganizationsReturnedFromEmptyTable() {
+    List<OrganizationIdentification> actual = dataReadManagerEmptyTables.listOrganizations();
     assertEquals(Arrays.asList(), actual);
   }
 

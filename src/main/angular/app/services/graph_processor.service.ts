@@ -8,6 +8,7 @@ import {GraphProperties, Columns, Row} from '../../model/types';
 import {DataService} from './data.service';
 import {DateRange} from '../../model/date_range';
 import {CUMULATIVE_BINDINGS_SUFFIX} from '../../constants';
+import {Resource} from '../../model/resource';
 
 /** Provides methods to convert data to the format used by Google Charts. */
 @Injectable()
@@ -72,7 +73,7 @@ export class GraphProcessorService {
     properties: GraphProperties,
     addCumulativeDifference: boolean
   ): Promise<void> {
-    const additionsDeletions = this.getAdditionsDeletions(changes.projects);
+    const additionsDeletions = this.getAdditionsDeletions(changes.resources);
     const promises: Promise<unknown>[] = [];
 
     additionsDeletions.added.forEach(addition => {
@@ -108,8 +109,10 @@ export class GraphProcessorService {
   /** Adds an extra line with the IAM Bindings as they would be with no recommendations and refreshes the chart. */
   async addCumulativeDifferences(
     properties: GraphProperties,
-    projects: Project[]
+    resources: Resource[]
   ) {
+    // TODO: Support orgs
+    const projects = resources as Project[];
     await Promise.all(
       projects.map(project => this.addCumulativeDifference(properties, project))
     );
@@ -120,8 +123,10 @@ export class GraphProcessorService {
   /** Remove all of the cumualtive differences from the graph data and refreshes the chart. */
   removeCumulativeDifferences(
     properties: GraphProperties,
-    projects: Project[]
+    resources: Resource[]
   ) {
+    // TODO: Support orgs
+    const projects = resources as Project[];
     projects.forEach(project => {
       this.removeCumulativeDifference(properties, project);
     });

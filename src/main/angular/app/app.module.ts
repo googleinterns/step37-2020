@@ -5,7 +5,7 @@ import {GoogleChartsModule} from 'angular-google-charts';
 import {AppRoutingModule} from './app_routing.module';
 import {AppComponent} from './app.component';
 import {GraphComponent} from './graph/graph.component';
-import {ProjectSelectComponent} from './project_select/project_select.component';
+import {ResourceSelectComponent} from './resource_select/resource_select.component';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';
@@ -34,7 +34,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
   declarations: [
     AppComponent,
     GraphComponent,
-    ProjectSelectComponent,
+    ResourceSelectComponent,
     ErrorPageComponent,
     MainPageComponent,
     DateSelectComponent,

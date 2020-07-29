@@ -15,15 +15,19 @@ export class GraphDataCacheService {
     this.projectCache = {};
   }
 
-  /** Checks whether there is an up-to-date project cache entry with the given key. */
-  hasProjectEntry(id: string): boolean {
-    if (
-      this.projectCache[id] &&
+  /** Returns true if the time is within the last 6 hours, false otherwise. */
+  private isValidTime(time: Date): boolean {
+    return (
       this.dateUtilities.getDifferenceHours(
-        this.projectCache[id].time,
+        time,
         this.dateUtilities.newDate()
       ) < 6
-    ) {
+    );
+  }
+
+  /** Checks whether there is an up-to-date project cache entry with the given key. */
+  hasProjectEntry(id: string): boolean {
+    if (this.projectCache[id] && this.isValidTime(this.projectCache[id].time)) {
       return true;
     }
     return false;
@@ -46,10 +50,7 @@ export class GraphDataCacheService {
   hasOrganizationEntry(id: string): boolean {
     if (
       this.organizationCache[id] &&
-      this.dateUtilities.getDifferenceHours(
-        this.organizationCache[id].time,
-        this.dateUtilities.newDate()
-      ) < 6
+      this.isValidTime(this.organizationCache[id].time)
     ) {
       return true;
     }

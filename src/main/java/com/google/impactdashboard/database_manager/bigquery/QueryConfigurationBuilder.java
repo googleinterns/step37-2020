@@ -40,6 +40,13 @@ public interface QueryConfigurationBuilder {
   public QueryJobConfiguration.Builder getAverageBindingsConfiguration();
 
   /**
+   * Retrieves parameterized query job configuration that retrieves the average
+   * number of bindings summed across all projects belonging to a single 
+   * organization. 
+   */
+  public QueryJobConfiguration.Builder getAverageOrganizationBindingsConfiguration();
+
+  /**
    * Retrieves parameterized query job configuration that retrieves all 
    * (timestamp, number of bindings) data in tetheh table for a single project. 
    */

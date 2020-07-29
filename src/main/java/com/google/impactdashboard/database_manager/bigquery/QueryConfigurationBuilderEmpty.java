@@ -38,7 +38,13 @@ public class QueryConfigurationBuilderEmpty implements QueryConfigurationBuilder
       .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getAverageBindingsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_AVERAGE_BINDINGS
-      .replace(Constants.DATABASE, Constants.TEST_DATABASE))
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.IAM_BINDINGS_TABLE, Constants.EMPTY_IAM_BINDINGS_TABLE))
+      .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getAverageOrganizationBindingsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_ORGANIZATION_AVERAGE_BINDINGS
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.IAM_BINDINGS_TABLE, Constants.EMPTY_IAM_BINDINGS_TABLE))
       .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getDatesToBindingsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_DATES_TO_BINDINGS
@@ -119,6 +125,15 @@ public class QueryConfigurationBuilderEmpty implements QueryConfigurationBuilder
    */
   public QueryJobConfiguration.Builder getAverageBindingsConfiguration() {
     return getAverageBindingsConfiguration;
+  }
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves the average
+   * number of bindings summed across all projects belonging to a single 
+   * organization. 
+   */
+  public QueryJobConfiguration.Builder getAverageOrganizationBindingsConfiguration() {
+    return getAverageOrganizationBindingsConfiguration;
   }
 
   /**

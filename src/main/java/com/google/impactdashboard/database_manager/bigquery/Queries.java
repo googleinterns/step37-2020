@@ -63,12 +63,30 @@ public class Queries {
       " GROUP BY " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN +
       " HAVING " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN + " = @projectId";
 
+  /**
+   * Retrieves the average number of bindings over all the days in the table
+   * summed over all the projects belonging to the organization with id
+   * {@code organizationId}.
+   */
+  public static final String GET_ORGANIZATION_AVERAGE_BINDINGS = 
+    "SELECT AVG(TotalBindings) FROM (" + 
+      "SELECT " + 
+        IAMBindingsSchema.TIMESTAMP_COLUMN + ", " + 
+        "SUM(" + IAMBindingsSchema.NUMBER_BINDINGS_COLUMN + ") AS TotalBindings" + 
+        " FROM " + IAM_TABLE + 
+        " GROUP BY " + 
+          IAMBindingsSchema.IAM_ORGANIZATION_ID_COLUMN + ", " + 
+          IAMBindingsSchema.TIMESTAMP_COLUMN + 
+        " HAVING " + IAMBindingsSchema.IAM_ORGANIZATION_ID_COLUMN + " = @organizationId)";
+
   /** 
    * Retrieves all (timestamp, number of bindings) data in the table for 
    * {@code projectId}. 
    */
   public static final String GET_DATES_TO_BINDINGS = 
-    "SELECT " + IAMBindingsSchema.TIMESTAMP_COLUMN + ", " + IAMBindingsSchema.NUMBER_BINDINGS_COLUMN +
+    "SELECT " + 
+      IAMBindingsSchema.TIMESTAMP_COLUMN + ", " + 
+      IAMBindingsSchema.NUMBER_BINDINGS_COLUMN +
       " FROM " + IAM_TABLE +
       " WHERE " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN + " = @projectId";
 

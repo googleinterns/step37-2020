@@ -55,13 +55,42 @@ export class DataServiceImpl implements DataService {
     throw new ErrorMessage(response.message, response.exception);
   }
 
+  /** Gets the graph data for the given organization ID */
   async getOrganizationGraphData(id: string): Promise<OrganizationGraphData> {
-    return new Promise(resolve => resolve());
+    // Return cached data, if available
+    if (this.cacheService.hasOrganizationEntry(id)) {
+      return new Promise(resolve =>
+        resolve(this.cacheService.getOrganizationEntry(id))
+      );
+    }
+
+    const url = `/get-organization-data?id=${id}`;
+    this.activeRequests.add(url);
+    const response: any = await this.http.get<any>(url).toPromise();
+
+    // eslint-disable-next-line no-prototype-builtins
+    if (response.hasOwnProperty('identification')) {
+      return new Promise(resolve => {
+        this.activeRequests.delete(url);
+        const graphData = new OrganizationGraphData(
+          new OrganizationIdentification(
+            response.identification.organizationId,
+            response.identification.organizationName
+          ),
+          response.datesToBindings,
+          response.datesToRecommendations
+        );
+        this.cacheService.addOrganizationEntry(id, graphData);
+        resolve(graphData);
+      });
+    }
+
+    throw new ErrorMessage(response.message, response.exception);
   }
 
-  /** Gets the project information. */
+  /** Gets the project and organization information. */
   async listSummaries(): Promise<DataSummaryList> {
-    const url = '/list-project-summaries';
+    const url = '/list-summaries';
     this.activeRequests.add(url);
     const response: any = await this.http.get<any>(url).toPromise();
 

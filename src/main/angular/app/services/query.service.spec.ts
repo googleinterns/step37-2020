@@ -1,4 +1,4 @@
-import {ProjectQueryService} from './project_query.service';
+import {QueryService} from './query.service';
 import {FakeDataService} from './fake_services/fake_data.service';
 import {Project} from '../../model/project';
 import {
@@ -10,7 +10,7 @@ import {GraphDataCacheService} from './graph_data_cache.service';
 import {DateUtilitiesService} from './date_utilities.service';
 
 describe('ProjectQueryService', () => {
-  let service: ProjectQueryService;
+  let service: QueryService;
   let projects: Project[];
 
   beforeAll(async () => {
@@ -23,7 +23,7 @@ describe('ProjectQueryService', () => {
 
   describe('init()', () => {
     beforeAll(() => {
-      service = new ProjectQueryService();
+      service = new QueryService();
       service.init(projects);
     });
     it('Starts sorted by IAM Bindings descending', () => {
@@ -43,7 +43,7 @@ describe('ProjectQueryService', () => {
 
   describe('toggleDirection()', () => {
     beforeEach(() => {
-      service = new ProjectQueryService();
+      service = new QueryService();
       service.init(projects);
     });
 
@@ -80,7 +80,7 @@ describe('ProjectQueryService', () => {
       let currentDirection: SortDirection;
 
       beforeAll(() => {
-        service = new ProjectQueryService();
+        service = new QueryService();
         service.init(projects);
         expectedField = SortBy.NAME;
         currentDirection = service.getSortDirection();
@@ -115,7 +115,7 @@ describe('ProjectQueryService', () => {
       let expectedDirection: SortDirection;
 
       beforeAll(() => {
-        service = new ProjectQueryService();
+        service = new QueryService();
         service.init(projects);
         expectedField = SortBy.NAME;
         expectedDirection = SortDirection.ASCENDING;
@@ -148,7 +148,7 @@ describe('ProjectQueryService', () => {
 
   describe('changeQuery()', () => {
     beforeEach(() => {
-      service = new ProjectQueryService();
+      service = new QueryService();
       service.init(projects);
     });
 

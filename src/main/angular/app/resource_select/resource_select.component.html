@@ -14,8 +14,7 @@
           <div [@rotateSort]="sortRotated.name">
             <fa-icon [icon]="arrow" [ngClass]="getSortClass(name)" (click)="toggleSort(name)"
               id="name-sort" class="clickable" title="Toggle sort direction"></fa-icon>
-          </div><span class="clickable" (click)="changeField(name)" title="Sort by name"> Project
-            Name</span>
+          </div><span class="clickable" (click)="changeField(name)" title="Sort by name"> Name</span>
         </th>
         <th>
           <div [@rotateSort]="sortRotated.iamBindings">
@@ -31,14 +30,14 @@
               (click)="toggleSort(projectNumber)" id="number-sort" class="clickable"
               title="Toggle sort direction"></fa-icon>
           </div><span class="clickable" (click)="changeField(projectNumber)"
-            title="Sort by project number"> Project Number</span>
+            title="Sort by project number"> Number</span>
         </th>
         <th>
           <div [@rotateSort]="sortRotated.id">
             <fa-icon [icon]="arrow" [ngClass]="getSortClass(id)" (click)="toggleSort(id)"
               id="id-sort" class="clickable" title="Toggle sort direction"></fa-icon>
           </div><span class="clickable" (click)="changeField(id)" title="Sort by ID">
-            Project ID</span>
+            ID</span>
         </th>
       </tr>
 

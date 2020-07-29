@@ -28,7 +28,7 @@ public class DataReadManagerTest {
     ProjectIdentification.create("project-2", "project-id-2", 234567890123L);
   private static final String PROJECT_ID_1 = "project-id-1";
   private static final String PROJECT_ID_2 = "project-id-2";
-  private static final String TEST_ORG_ID = "";
+  private static final String TEST_ORG_ID = "test-org-2";
   private static final Recommendation PROJECT_2_RECOMMENDATION_ON_25TH = 
     Recommendation.create("project-id-2", TEST_ORG_ID, "test5@example.com",
       Arrays.asList(

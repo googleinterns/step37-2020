@@ -3,10 +3,13 @@ import {IAMResource, ResourceType} from './resource';
 
 /** Represents metadata about an organization. */
 export class Organization implements IAMResource {
+  color: string;
   constructor(
     public identification: OrganizationIdentification,
     public averageBindings: number
-  ) {}
+  ) {
+    this.color = '';
+  }
 
   getAverageBindings(): number {
     return this.averageBindings;
@@ -22,5 +25,9 @@ export class Organization implements IAMResource {
 
   getResourceType(): ResourceType {
     return ResourceType.ORGANIZATION;
+  }
+
+  includes(query: string): boolean {
+    return this.getName().includes(query) || this.getId().includes(query);
   }
 }

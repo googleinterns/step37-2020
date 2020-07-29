@@ -4,32 +4,53 @@ import {
   SortBy,
   SortDirection,
   ProjectComparators,
+  OrganizationComparators,
 } from '../../model/sort_methods';
+import {Resource, ResourceType} from '../../model/resource';
+import {Organization} from '../../model/organization';
 
 /** Used to query and sort projects/organizations. */
 @Injectable()
 export class QueryService {
   private sortBy: SortBy;
   private sortDirection: SortDirection;
-
   private query: string;
+  /** The resource type to filter by. */
+  private filterResouce: ResourceType;
+  /** Cached version of the active resource, sorted and filtered. */
+  private cache: Resource[];
+
   /** All the projects accessible to the user. */
   private projects: Project[];
-  /** Cached version of the projects, sorted and filtered. */
-  private projectsCache: Project[];
+  /** All the resources accessible to the user. */
+  private organizations: Organization[];
 
   constructor() {
     this.sortBy = SortBy.IAM_BINDINGS;
     this.sortDirection = SortDirection.DESCENDING;
     this.query = '';
     this.projects = [];
-    this.projectsCache = [];
+    this.cache = [];
+    this.filterResouce = ResourceType.PROJECT;
   }
 
-  /** Initialize the query service with the given projects. */
-  init(projects: Project[]) {
+  /** Initialize the query service with the given projects and organizations. */
+  init(projects: Project[], organizations: Organization[]) {
+    projects.sort(
+      ProjectComparators.getComparator(
+        SortDirection.DESCENDING,
+        SortBy.IAM_BINDINGS
+      )
+    );
+    organizations.sort(
+      OrganizationComparators.getComparator(
+        SortDirection.DESCENDING,
+        SortBy.IAM_BINDINGS
+      )
+    );
     this.projects = projects;
-    this.projectsCache = projects;
+    this.organizations = organizations;
+    this.cache = projects;
     this.changeField(SortBy.IAM_BINDINGS, SortDirection.DESCENDING);
   }
 
@@ -40,7 +61,7 @@ export class QueryService {
         ? SortDirection.ASCENDING
         : SortDirection.DESCENDING;
 
-    this.projectsCache = this.projectsCache.reverse();
+    this.cache = this.cache.reverse();
   }
 
   /** Changes the sorting field and direction of the projects. */
@@ -49,7 +70,7 @@ export class QueryService {
     this.sortDirection = direction;
 
     // Since query hasn't changed, we can just re-sort the existing cache
-    this.projectsCache.sort(ProjectComparators.getComparator(direction, field));
+    this.cache.sort(ProjectComparators.getComparator(direction, field));
   }
 
   /** Changes the query string of the projects search. */
@@ -59,11 +80,9 @@ export class QueryService {
       return;
     } else if (query.includes(this.query)) {
       // New query will be a subset of the existing one and sort will be naturally maintained
-      this.projectsCache = this.projectsCache.filter(project =>
-        project.includes(query)
-      );
+      this.cache = this.cache.filter(project => project.includes(query));
     } else {
-      this.projectsCache = this.projects
+      this.cache = this.projects
         .filter(project => project.includes(query))
         .sort(
           ProjectComparators.getComparator(this.sortDirection, this.sortBy)
@@ -73,11 +92,37 @@ export class QueryService {
     this.query = query;
   }
 
-  /** Get the sorted and queried projects. */
-  getProjects(): Project[] {
+  /** Changes the resource being filtered by. Will maintain sort and filtering. */
+  changeResourceType(type: ResourceType) {
+    if (type !== this.filterResouce) {
+      this.filterResouce = type;
+      if (type === ResourceType.ORGANIZATION) {
+        this.cache = this.organizations;
+      } else if (type === ResourceType.PROJECT) {
+        this.cache = this.projects;
+      }
+
+      const queryStore = this.query;
+      this.query = '';
+      this.changeQuery(queryStore);
+    }
+  }
+
+  /** Assign the given colors to the resources as they're currently sorted. */
+  assignColors(colors: string[]): void {
+    this.projects.forEach(
+      (project, i) => (project.color = colors[i % colors.length])
+    );
+    this.organizations.forEach(
+      (organization, i) => (organization.color = colors[i % colors.length])
+    );
+  }
+
+  /** Get the sorted and queried resources. */
+  getResources(): Resource[] {
     // Return a clone
-    const temp: Project[] = [];
-    return temp.concat(this.projectsCache);
+    const temp: Resource[] = [];
+    return temp.concat(this.cache);
   }
 
   /** Returns the field being sorted by. */

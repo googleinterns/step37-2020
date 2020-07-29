@@ -60,7 +60,7 @@ export class ProjectSelectComponent implements OnInit {
 
   constructor(
     private dataService: DataService,
-    private projectQueryService: QueryService
+    private queryService: QueryService
   ) {
     this.activeProjects = new Set();
     this.displayType = ResourceType.PROJECT;
@@ -78,6 +78,7 @@ export class ProjectSelectComponent implements OnInit {
     } else {
       this.displayType = ResourceType.ORGANIZATION;
     }
+    this.queryService.changeResourceType(this.displayType);
   }
 
   /** Returns the color associated with the given project. */
@@ -100,7 +101,7 @@ export class ProjectSelectComponent implements OnInit {
 
   /** Returns the class placed on a sorting arrow, which decides whether it's grayed out or not. */
   getSortClass(field: SortBy) {
-    if (field === this.projectQueryService.getSortField()) {
+    if (field === this.queryService.getSortField()) {
       return 'sort-active';
     }
     return 'sort-inactive';
@@ -144,9 +145,9 @@ export class ProjectSelectComponent implements OnInit {
   /** When the user clicks the sorting arrow, changes the sort field/direction. */
   toggleSort(field: SortBy) {
     if (this.getAnimationStatus(field) === 'down') {
-      this.projectQueryService.changeField(field, SortDirection.ASCENDING);
+      this.queryService.changeField(field, SortDirection.ASCENDING);
     } else {
-      this.projectQueryService.changeField(field, SortDirection.DESCENDING);
+      this.queryService.changeField(field, SortDirection.DESCENDING);
     }
     // Animate the selected field
     this.swapAnimationProperty(field);
@@ -155,34 +156,30 @@ export class ProjectSelectComponent implements OnInit {
   /** When the user clicks the field name, just change the sort field. */
   changeField(field: SortBy) {
     if (this.getAnimationStatus(field) === 'down') {
-      this.projectQueryService.changeField(field, SortDirection.DESCENDING);
+      this.queryService.changeField(field, SortDirection.DESCENDING);
     } else {
-      this.projectQueryService.changeField(field, SortDirection.ASCENDING);
+      this.queryService.changeField(field, SortDirection.ASCENDING);
     }
   }
 
   /** Returns a sorted and filtered view of the resources. */
   getResources(): IAMResource[] {
-    return this.projectQueryService.getProjects();
+    return this.queryService.getResources() as IAMResource[];
   }
 
   /** Changes the query string. */
   search(query: string) {
-    this.projectQueryService.changeQuery(query);
+    this.queryService.changeQuery(query);
   }
 
   /** Called when the component is ready to be displayed. */
   ngOnInit() {
     this.dataService.listSummaries().then(summaryData => {
       const projects = summaryData.projects;
-      this.projectQueryService.init(projects);
+      const organizations = summaryData.organizations;
+      this.queryService.init(projects, organizations);
       // Assign colors based on initial ordering
-      this.projectQueryService
-        .getProjects()
-        .forEach(
-          (project, index) =>
-            (project.color = DEFAULT_COLORS[index % DEFAULT_COLORS.length])
-        );
+      this.queryService.assignColors(DEFAULT_COLORS);
 
       // Add the highest IAM Bindings project by default
       if (projects.length > 0) {

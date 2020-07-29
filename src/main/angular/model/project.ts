@@ -21,7 +21,6 @@ export class Project implements IAMResource {
   projectId: string;
   projectNumber: number;
   metaData: ProjectMetaData;
-  /** The color to display the given project as. */
   color: string;
 
   constructor(

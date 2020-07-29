@@ -88,6 +88,7 @@ th div {
 #filter-container {
   display: flex;
   background-color: #E8EAED;
+  padding-top: 12px;
 }
 
 .project-color-icon {

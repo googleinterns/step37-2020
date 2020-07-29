@@ -49,7 +49,7 @@ export class FakeDataService implements DataService {
       FakeDataService.fakeProject10(),
     ];
     fakes.forEach(tuple => (this.projects[tuple[0].projectId] = tuple));
-    this.setupFakeOrganizations();
+    this.setupFakeOrganizations(fakes);
 
     this.activeRequests = new Set();
   }
@@ -68,21 +68,46 @@ export class FakeDataService implements DataService {
 
   /** Returns the data associated with the given project. */
   getProjectGraphData(id: string): Promise<ProjectGraphData> {
-    if (this.cacheService.hasEntry(id)) {
-      return new Promise(resolve => resolve(this.cacheService.getEntry(id)));
+    if (this.cacheService.hasProjectEntry(id)) {
+      return new Promise(resolve =>
+        resolve(this.cacheService.getProjectEntry(id))
+      );
     }
     if (this.projects[id]) {
       this.activeRequests.add(id);
       return new Promise(resolve => {
         setTimeout(() => {
           this.activeRequests.delete(id);
-          this.cacheService.addEntry(id, this.projects[id][1]);
+          this.cacheService.addProjectEntry(id, this.projects[id][1]);
           resolve(this.projects[id][1]);
         }, FakeDataService.requestTime);
       });
     } else {
       throw new ErrorMessage(
         `Error retrieving project of ID ${id} from FakeDataService`,
+        {}
+      );
+    }
+  }
+
+  getOrganizationGraphData(id: string): Promise<OrganizationGraphData> {
+    if (this.cacheService.hasOrganizationEntry(id)) {
+      return new Promise(resolve =>
+        resolve(this.cacheService.getOrganizationEntry(id))
+      );
+    }
+    if (this.organizations[id]) {
+      this.activeRequests.add(id);
+      return new Promise(resolve => {
+        setTimeout(() => {
+          this.activeRequests.delete(id);
+          this.cacheService.addOrganizationEntry(id, this.organizations[id][1]);
+          resolve(this.organizations[id][1]);
+        }, FakeDataService.requestTime);
+      });
+    } else {
+      throw new ErrorMessage(
+        `Error retrieving organization of ID ${id} from FakeDataService`,
         {}
       );
     }

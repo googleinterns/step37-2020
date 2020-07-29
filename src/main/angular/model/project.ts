@@ -13,9 +13,10 @@
 // limitations under the License.
 
 import {ProjectMetaData} from './project_metadata';
+import {IAMResource, ResourceType} from './resource';
 
 /** Represents relevent fields for a single project. */
-export class Project {
+export class Project implements IAMResource {
   name: string;
   projectId: string;
   projectNumber: number;
@@ -39,5 +40,21 @@ export class Project {
   /** Whether the query string is included in the name or ID of the project */
   includes(query: string): boolean {
     return this.projectId.includes(query) || this.name.includes(query);
+  }
+
+  getAverageBindings(): number {
+    return this.metaData.getAverageIAMBindingsInPastYear();
+  }
+
+  getName(): string {
+    return this.name;
+  }
+
+  getId(): string {
+    return this.projectId;
+  }
+
+  getResourceType(): ResourceType {
+    return ResourceType.PROJECT;
   }
 }

@@ -183,7 +183,7 @@ export class FakeDataService implements DataService {
     );
   }
 
-  /** Set up fake organizations. Projects 1-3 are in org-1, 3-6 in org-2, 7-10 in org-3. */
+  /** Set up fake organizations. Projects 1-3 are in org-1, 4-6 in org-2, 7-10 in org-3. */
   private setupFakeOrganizations(fakes: [Project, ProjectGraphData][]): void {
     // org-1 projects
     let identification = new OrganizationIdentification(

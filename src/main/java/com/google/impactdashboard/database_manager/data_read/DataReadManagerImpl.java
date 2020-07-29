@@ -51,7 +51,17 @@ public class DataReadManagerImpl implements DataReadManager {
    * present in the IAM Bindings table. 
    */
   public List<OrganizationIdentification> listOrganizations() {
-    throw new UnsupportedOperationException("Unimplemented");
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getOrganizationIdsConfiguration().build();
+    TableResult results = database.readDatabase(queryConfiguration);
+
+    List<OrganizationIdentification> listOfOrganizations = new ArrayList<>();
+    for (FieldValueList row : results.iterateAll()) {
+      String organizationId = row.get(IAMBindingsSchema.IAM_ORGANIZATION_ID_COLUMN)
+        .getStringValue();
+      listOfOrganizations.add(getOrganizationIdentificationForOrganization(organizationId));
+    }
+    return listOfOrganizations;
   }
 
   /** 
@@ -200,6 +210,29 @@ public class DataReadManagerImpl implements DataReadManager {
       String projectName = row.get(IAMBindingsSchema.PROJECT_NAME_COLUMN).getStringValue();
       String projectNumber = row.get(IAMBindingsSchema.PROJECT_NUMBER_COLUMN).getStringValue();
       return ProjectIdentification.create(projectName, projectId, Long.parseLong(projectNumber));
+    }
+  }
+
+  /**
+   * Queries the IAM database for the name of the organization with id {@code organizationId}
+   * and returns a {@code OrganizationIdentification} object containing the information.
+   */
+  private OrganizationIdentification getOrganizationIdentificationForOrganization(
+    String organizationId) {
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getOrganizationNameConfiguration()
+      .addNamedParameter("organizationId", QueryParameterValue.string(organizationId))
+      .build();
+    TableResult results = database.readDatabase(queryConfiguration);
+    FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
+
+    if (row == null) {
+      throw new RuntimeException(
+        "Database failed to retrieve name for organization " + organizationId);
+    } else {
+      String organizationName = row.get(IAMBindingsSchema.ORGANIZATION_NAME_COLUMN)
+        .getStringValue();
+      return OrganizationIdentification.create(organizationName, organizationId);
     }
   }
 

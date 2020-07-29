@@ -166,7 +166,8 @@ export class FakeDataService implements DataService {
       });
       Object.entries(tuple[1].dateToRecommendationTaken).forEach(value => {
         let time = +value[0];
-        // Make sure that recommendations never occur on the same time
+        // Make sure that recommendations never occur on the same time.
+        // Not an elegant solution by any means, but this while loop will run a max of 10 times or so.
         while (datesToRecommendations[time]) {
           time++;
           value[1].acceptedTimestamp++;

@@ -1,7 +1,8 @@
 import {Project} from './project';
 import {Organization} from './organization';
+import {ResourceType} from './resource';
 
-/** Contains comparators for sorting projects. */
+/** Contains comparators for sorting. */
 export class ProjectComparators {
   static getComparator(order: SortDirection, field: SortBy) {
     if (order === SortDirection.ASCENDING) {
@@ -136,6 +137,18 @@ export class OrganizationComparators {
     return b.identification.organizationId.localeCompare(
       a.identification.organizationId
     );
+  }
+}
+
+export function getComparator(
+  order: SortDirection,
+  field: SortBy,
+  type: ResourceType
+) {
+  if (type === ResourceType.ORGANIZATION) {
+    return OrganizationComparators.getComparator(order, field);
+  } else if (type === ResourceType.PROJECT) {
+    return ProjectComparators.getComparator(order, field);
   }
 }
 

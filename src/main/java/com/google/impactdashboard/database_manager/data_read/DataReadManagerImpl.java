@@ -1,5 +1,6 @@
 package com.google.impactdashboard.database_manager.data_read;
 
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.*;
 import com.google.impactdashboard.configuration.*;
@@ -45,6 +46,14 @@ public class DataReadManagerImpl implements DataReadManager {
     return listOfProjects;
   }
 
+  /**
+   * Returns a list containing the identifying information of every organization
+   * present in the IAM Bindings table. 
+   */
+  public List<OrganizationIdentification> listOrganizations() {
+    throw new UnsupportedOperationException("Unimplemented");
+  }
+
   /** 
    *  Returns the average number of IAM bindings that the project with id 
    *  {@code projectId} had per day over the past 365 days (or, if there are 
@@ -65,6 +74,15 @@ public class DataReadManagerImpl implements DataReadManager {
     } else {
       return row.get("AverageBindings").getDoubleValue();
     }
+  }
+
+  /**
+   * Returns the average number of bindings summed across every project belonging to
+   * the organization with id {@code organizationId} over however many days of data
+   * are in the IAM Bindings table. 
+   */
+  public double getOrganizationAvgBindingsInPastYear(String organizationId) {
+    throw new UnsupportedOperationException("Unimplemented");
   }
 
   /**
@@ -100,6 +118,16 @@ public class DataReadManagerImpl implements DataReadManager {
     return datesToRecommendations;
   }
 
+  /**
+   * Returns a map of dates as timestamps in UTC milliseconds since the epoch
+   * to the Recommendation applied on that timestamp, where the project that the 
+   * Recommendation was applied to belongs to the organization with id 
+   * {@code organizationId}.
+   */
+  public Map<Long, Recommendation> getOrganizationDatesToRecommendations(String organizationId) {
+    throw new UnsupportedOperationException("Unimplemented");
+  }
+
   /** 
    *  Returns a map of dates (as timestamps in UTC milliseconds since the epoch) 
    *  to the number of IAM bindings that existed for the project with id {@code projectId} 
@@ -122,6 +150,16 @@ public class DataReadManagerImpl implements DataReadManager {
       datesToBindings.put(timestamp, iamBindings);
     } 
     return datesToBindings;
+  }
+
+  /**
+   * Returns a map of dates as timestamps in UTC milliseconds since the epoch
+   * to the number of IAM Bindings that existed for all projects that the dashboard 
+   * has access to that belong to the organization with id {@code organizationId},
+   * on that date.
+   */
+  public Map<Long, Integer> getOrganizationDatesToBindings(String organizationId) {
+    throw new UnsupportedOperationException("Unimplemented");
   }
 
   /**

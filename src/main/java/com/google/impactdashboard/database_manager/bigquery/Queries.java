@@ -69,7 +69,7 @@ public class Queries {
    * {@code organizationId}.
    */
   public static final String GET_ORGANIZATION_AVERAGE_BINDINGS = 
-    "SELECT AVG(TotalBindings) FROM (" + 
+    "SELECT AVG(TotalBindings) AS AverageBindings FROM (" + 
       "SELECT " + 
         IAMBindingsSchema.TIMESTAMP_COLUMN + ", " + 
         "SUM(" + IAMBindingsSchema.NUMBER_BINDINGS_COLUMN + ") AS TotalBindings" + 

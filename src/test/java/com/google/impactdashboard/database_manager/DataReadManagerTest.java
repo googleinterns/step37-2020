@@ -111,6 +111,15 @@ public class DataReadManagerTest {
   }
 
   @Test
+  public void testAverageBindingsOnOrganization1() {
+    int actual = (int) Math.round(dataReadManager
+      .getOrganizationAvgBindingsInPastYear(ORG_1.getId()));
+    int expected = 1545; // only project 1 is in this org, so should be the same as previous test
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
   public void testAverageBindingsOnProject2() {
     int actual = (int) Math.round(dataReadManager.getAverageIAMBindingsInPastYear(PROJECT_ID_2));
     int expected = 715;
@@ -119,8 +128,27 @@ public class DataReadManagerTest {
   }
 
   @Test
+  public void testAverageBindingsOnOrganization2() {
+    int actual = (int) Math.round(dataReadManager
+    .getOrganizationAvgBindingsInPastYear(ORG_2.getId()));
+    int expected = 2477;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
   public void testAverageBindingsReturnsZeroForNonexistentProject() {
-    int actual = (int) Math.round(dataReadManager.getAverageIAMBindingsInPastYear("does-not-exist"));
+    int actual = (int) Math.round(dataReadManager
+      .getAverageIAMBindingsInPastYear("does-not-exist"));
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testAverageBindingsReturnsZeroForNonexistentOrganization() {
+    int actual = (int) Math.round(dataReadManager
+      .getOrganizationAvgBindingsInPastYear("does-not-exist"));
     int expected = 0;
 
     assertEquals(expected, actual);
@@ -130,6 +158,15 @@ public class DataReadManagerTest {
   public void testAverageBindingsReturnsZeroForEmptyTable() {
     int actual = (int) Math.round(dataReadManagerEmptyTables
       .getAverageIAMBindingsInPastYear("does-not-exist"));
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testAverageOrganizationBindingsReturnsZeroForEmptyTable() {
+    int actual = (int) Math.round(dataReadManagerEmptyTables
+      .getOrganizationAvgBindingsInPastYear("does-not-exist"));
     int expected = 0;
 
     assertEquals(expected, actual);

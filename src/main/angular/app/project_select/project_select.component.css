@@ -69,7 +69,7 @@ th div {
   flex: 1;
 }
 
-#project-filter:focus {
+#filter-input:focus {
   outline: none;
 }
 

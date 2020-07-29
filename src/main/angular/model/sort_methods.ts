@@ -8,9 +8,9 @@ export class ProjectComparators {
       switch (field) {
         case SortBy.IAM_BINDINGS:
           return this.iamAscending;
-        case SortBy.PROJECT_NAME:
+        case SortBy.NAME:
           return this.nameAscending;
-        case SortBy.PROJECT_ID:
+        case SortBy.ID:
           return this.projectIdAscending;
         case SortBy.PROJECT_NUMBER:
           return this.projectNumberAscending;
@@ -19,9 +19,9 @@ export class ProjectComparators {
       switch (field) {
         case SortBy.IAM_BINDINGS:
           return this.iamDescending;
-        case SortBy.PROJECT_NAME:
+        case SortBy.NAME:
           return this.nameDescending;
-        case SortBy.PROJECT_ID:
+        case SortBy.ID:
           return this.projectIdDescending;
         case SortBy.PROJECT_NUMBER:
           return this.projectNumberDescending;
@@ -83,18 +83,18 @@ export class OrganizationComparators {
       switch (field) {
         case SortBy.IAM_BINDINGS:
           return this.iamAscending;
-        case SortBy.ORGANIZATION_NAME:
+        case SortBy.NAME:
           return this.nameAscending;
-        case SortBy.ORGANIZATION_ID:
+        case SortBy.ID:
           return this.idAscending;
       }
     } else {
       switch (field) {
         case SortBy.IAM_BINDINGS:
           return this.iamDescending;
-        case SortBy.ORGANIZATION_NAME:
+        case SortBy.NAME:
           return this.nameDescending;
-        case SortBy.ORGANIZATION_ID:
+        case SortBy.ID:
           return this.idDescending;
       }
     }
@@ -145,18 +145,14 @@ export enum SortDirection {
   DESCENDING,
 }
 
-/** The field to sort project by. */
+/** The field to sort by. */
 export enum SortBy {
-  /** The IAM Bindings for a given project. */
+  /** The IAM Bindings for a given resource. */
   IAM_BINDINGS,
-  /** The name of a given project. */
-  PROJECT_NAME,
-  /** The ID of a given project. */
-  PROJECT_ID,
+  /** The name of a given resource. */
+  NAME,
+  /** The ID of a given resource. */
+  ID,
   /** The number of a given project. */
   PROJECT_NUMBER,
-  /** The ID of a given organization. */
-  ORGANIZATION_ID,
-  /** The name of a given organization. */
-  ORGANIZATION_NAME,
 }

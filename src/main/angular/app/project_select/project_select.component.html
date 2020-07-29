@@ -12,11 +12,11 @@
       <tr id="header">
         <th>
           <div [@rotateSort]="sortRotated.projectName">
-            <fa-icon [icon]="arrow" [ngClass]="getSortClass(projectName)"
-              (click)="toggleSort(projectName)" id="name-sort" class="clickable"
+            <fa-icon [icon]="arrow" [ngClass]="getSortClass(name)"
+              (click)="toggleSort(name)" id="name-sort" class="clickable"
               title="Toggle sort direction"></fa-icon>
-          </div><span class="clickable" (click)="changeField(projectName)"
-            title="Sort by project name"> Project Name</span>
+          </div><span class="clickable" (click)="changeField(name)"
+            title="Sort by name"> Project Name</span>
         </th>
         <th>
           <div [@rotateSort]="sortRotated.iamBindings">
@@ -36,10 +36,10 @@
         </th>
         <th>
           <div [@rotateSort]="sortRotated.projectId">
-            <fa-icon [icon]="arrow" [ngClass]="getSortClass(projectId)"
-              (click)="toggleSort(projectId)" id="id-sort" class="clickable"
+            <fa-icon [icon]="arrow" [ngClass]="getSortClass(id)"
+              (click)="toggleSort(id)" id="id-sort" class="clickable"
               title="Toggle sort direction"></fa-icon>
-          </div><span class="clickable" (click)="changeField(projectId)" title="Sort by project ID">
+          </div><span class="clickable" (click)="changeField(id)" title="Sort by ID">
             Project ID</span>
         </th>
       </tr>

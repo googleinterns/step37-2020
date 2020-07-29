@@ -10,8 +10,7 @@ import {trigger, state, style, transition, animate} from '@angular/animations';
 import {SortDirection, SortBy} from '../../model/sort_methods';
 import {DataService} from '../services/data.service';
 import {QueryService} from '../services/query.service';
-import {ResourceType} from '../../model/resource_type';
-import {Resource, IAMResource} from '../../model/resource';
+import {IAMResource, ResourceType} from '../../model/resource';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({
@@ -37,8 +36,8 @@ export class ProjectSelectComponent implements OnInit {
   /** Whether a particular arrow is rotated or not. */
   sortRotated: {[key: string]: 'down' | 'up'} = {
     iamBindings: 'down',
-    projectName: 'down',
-    projectId: 'down',
+    name: 'down',
+    id: 'down',
     projectNumber: 'down',
   };
 
@@ -48,8 +47,8 @@ export class ProjectSelectComponent implements OnInit {
 
   // Convenience selectors
   public iamBindings = SortBy.IAM_BINDINGS;
-  public projectName = SortBy.PROJECT_NAME;
-  public projectId = SortBy.PROJECT_ID;
+  public name = SortBy.NAME;
+  public id = SortBy.ID;
   public projectNumber = SortBy.PROJECT_NUMBER;
 
   public organization = ResourceType.ORGANIZATION;
@@ -112,10 +111,10 @@ export class ProjectSelectComponent implements OnInit {
     switch (field) {
       case SortBy.IAM_BINDINGS:
         return this.sortRotated.iamBindings;
-      case SortBy.PROJECT_NAME:
-        return this.sortRotated.projectName;
-      case SortBy.PROJECT_ID:
-        return this.sortRotated.projectId;
+      case SortBy.NAME:
+        return this.sortRotated.name;
+      case SortBy.ID:
+        return this.sortRotated.id;
       case SortBy.PROJECT_NUMBER:
         return this.sortRotated.projectNumber;
     }
@@ -128,13 +127,12 @@ export class ProjectSelectComponent implements OnInit {
         this.sortRotated.iamBindings =
           this.sortRotated.iamBindings === 'down' ? 'up' : 'down';
         break;
-      case SortBy.PROJECT_NAME:
-        this.sortRotated.projectName =
-          this.sortRotated.projectName === 'down' ? 'up' : 'down';
+      case SortBy.NAME:
+        this.sortRotated.name =
+          this.sortRotated.name === 'down' ? 'up' : 'down';
         break;
-      case SortBy.PROJECT_ID:
-        this.sortRotated.projectId =
-          this.sortRotated.projectId === 'down' ? 'up' : 'down';
+      case SortBy.ID:
+        this.sortRotated.id = this.sortRotated.id === 'down' ? 'up' : 'down';
         break;
       case SortBy.PROJECT_NUMBER:
         this.sortRotated.projectNumber =

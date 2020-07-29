@@ -1,5 +1,5 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
-import {Project} from '../../model/project';
+import {Project as Resource} from '../../model/project';
 import {DEFAULT_COLORS, PROJECT_INACTIVE_COLOR} from '../../constants';
 import {
   faArrowDown,
@@ -10,7 +10,7 @@ import {trigger, state, style, transition, animate} from '@angular/animations';
 import {SortDirection, SortBy} from '../../model/sort_methods';
 import {DataService} from '../services/data.service';
 import {QueryService} from '../services/query.service';
-import {IAMResource, ResourceType} from '../../model/resource';
+import {IAMResource, ResourceType, Resource} from '../../model/resource';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({
@@ -27,8 +27,8 @@ import {IAMResource, ResourceType} from '../../model/resource';
   ],
 })
 export class ProjectSelectComponent implements OnInit {
-  /** All projects that are currently selected. */
-  public activeProjects: Set<Project>;
+  /** All resources that are currently selected. */
+  public activeResources: Set<Resource>;
   /** The resource to display. Now it's just projects or organizations, but can be expanded. */
   public displayType: ResourceType;
 
@@ -56,13 +56,13 @@ export class ProjectSelectComponent implements OnInit {
   // #endregion
 
   @Output()
-  public changeProjects = new EventEmitter<Project[]>();
+  public changeSelection = new EventEmitter<Resource[]>();
 
   constructor(
     private dataService: DataService,
     private queryService: QueryService
   ) {
-    this.activeProjects = new Set();
+    this.activeResources = new Set();
     this.displayType = ResourceType.PROJECT;
   }
 
@@ -90,22 +90,22 @@ export class ProjectSelectComponent implements OnInit {
     this.queryService.changeResourceType(this.displayType);
   }
 
-  /** Returns the color associated with the given project. */
-  getColor(project: Project): string {
-    if (this.activeProjects.has(project)) {
-      return project.color;
+  /** Returns the color associated with the given resource. */
+  getColor(resource: Resource): string {
+    if (this.activeResources.has(resource)) {
+      return resource.color;
     }
     return PROJECT_INACTIVE_COLOR;
   }
 
-  /** Toggles the given projects presence on the graph. */
-  toggleProject(project: Project) {
-    if (this.activeProjects.has(project)) {
-      this.activeProjects.delete(project);
+  /** Toggles the given resources presence on the graph. */
+  toggleResource(resource: Resource) {
+    if (this.activeResources.has(resource)) {
+      this.activeResources.delete(resource);
     } else {
-      this.activeProjects.add(project);
+      this.activeResources.add(resource);
     }
-    this.changeProjects.emit(Array.from(this.activeProjects));
+    this.changeSelection.emit(Array.from(this.activeResources));
   }
 
   /** Returns the class placed on a sorting arrow, which decides whether it's grayed out or not. */
@@ -192,7 +192,7 @@ export class ProjectSelectComponent implements OnInit {
 
       // Add the highest IAM Bindings project by default
       if (projects.length > 0) {
-        this.toggleProject(projects[0]);
+        this.toggleResource(projects[0]);
       }
     });
   }

@@ -6,9 +6,9 @@ import {
   ProjectComparators,
 } from '../../model/project_sort';
 
-/** Used to query and sort projects. */
+/** Used to query and sort projects/organizations. */
 @Injectable()
-export class ProjectQueryService {
+export class QueryService {
   private sortBy: SortBy;
   private sortDirection: SortDirection;
 

@@ -12,14 +12,14 @@
     <table id="projects-table" class="center">
       <tr id="header">
         <th>
-          <div [@rotateSort]="sortRotated.name">
+          <div [@rotateSort]="sortRotated.project.name">
             <fa-icon [icon]="arrow" [ngClass]="getSortClass(name)" (click)="toggleSort(name)"
               id="name-sort" class="clickable" title="Toggle sort direction"></fa-icon>
           </div><span class="clickable" (click)="changeField(name)" title="Sort by name">
             Project Name</span>
         </th>
         <th>
-          <div [@rotateSort]="sortRotated.iamBindings">
+          <div [@rotateSort]="sortRotated.project.iamBindings">
             <fa-icon [icon]="arrow" [ngClass]="getSortClass(iamBindings)"
               (click)="toggleSort(iamBindings)" id="iam-sort" class="clickable"
               title="Toggle sort direction"></fa-icon>
@@ -27,7 +27,7 @@
             title="Sort by average IAM bindings"> Avg Bindings</span>
         </th>
         <th *ngIf="displayType === project">
-          <div [@rotateSort]="sortRotated.projectNumber">
+          <div [@rotateSort]="sortRotated.project.number">
             <fa-icon [icon]="arrow" [ngClass]="getSortClass(projectNumber)"
               (click)="toggleSort(projectNumber)" id="number-sort" class="clickable"
               title="Toggle sort direction"></fa-icon>
@@ -35,7 +35,7 @@
             title="Sort by project number"> Project Number</span>
         </th>
         <th>
-          <div [@rotateSort]="sortRotated.id">
+          <div [@rotateSort]="sortRotated.project.id">
             <fa-icon [icon]="arrow" [ngClass]="getSortClass(id)" (click)="toggleSort(id)"
               id="id-sort" class="clickable" title="Toggle sort direction"></fa-icon>
           </div><span class="clickable" (click)="changeField(id)" title="Sort by ID">

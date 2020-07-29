@@ -9,7 +9,7 @@ import {trigger, state, style, transition, animate} from '@angular/animations';
 import {SortDirection, SortBy} from '../../model/sort_methods';
 import {DataService} from '../services/data.service';
 import {QueryService} from '../services/query.service';
-import {IAMResource, ResourceType, Resource} from '../../model/resource';
+import {ResourceType, Resource} from '../../model/resource';
 import {Project} from '../../model/project';
 import {Organization} from '../../model/organization';
 
@@ -190,8 +190,7 @@ export class ResourceSelectComponent implements OnInit {
         typeStatus.id = typeStatus.id === 'down' ? 'up' : 'down';
         break;
       case SortBy.PROJECT_NUMBER:
-        typeStatus.projectNumber =
-          typeStatus.projectNumber === 'down' ? 'up' : 'down';
+        typeStatus.number = typeStatus.number === 'down' ? 'up' : 'down';
         break;
     }
   }

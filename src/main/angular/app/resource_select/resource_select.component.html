@@ -42,7 +42,7 @@
         </th>
       </tr>
 
-      <tr *ngFor="let resource of getResources()" (click)="toggleProject(resource)"
+      <tr *ngFor="let resource of getResources()" (click)="toggleResource(resource)"
         class="toggle-project clickable" title="Toggle project">
         <td>
           <fa-icon [icon]="circle" [ngStyle]="{'color': getColor(resource)}"

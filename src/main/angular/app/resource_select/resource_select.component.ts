@@ -1,5 +1,4 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
-import {Project as Resource} from '../../model/project';
 import {DEFAULT_COLORS, PROJECT_INACTIVE_COLOR} from '../../constants';
 import {
   faArrowDown,
@@ -14,9 +13,9 @@ import {IAMResource, ResourceType, Resource} from '../../model/resource';
 
 /** Component which lets users select which projects to display on the graph. */
 @Component({
-  selector: 'project-select',
-  templateUrl: './project_select.component.html',
-  styleUrls: ['./project_select.component.css'],
+  selector: 'resource-select',
+  templateUrl: './resource_select.component.html',
+  styleUrls: ['./resource_select.component.css'],
   animations: [
     trigger('rotateSort', [
       state('down', style({transform: 'rotate(0)'})),
@@ -26,7 +25,7 @@ import {IAMResource, ResourceType, Resource} from '../../model/resource';
     ]),
   ],
 })
-export class ProjectSelectComponent implements OnInit {
+export class ResourceSelectComponent implements OnInit {
   /** All resources that are currently selected. */
   public activeResources: Set<Resource>;
   /** The resource to display. Now it's just projects or organizations, but can be expanded. */

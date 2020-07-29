@@ -92,8 +92,18 @@ public class DataReadManagerImpl implements DataReadManager {
    * are in the IAM Bindings table. 
    */
   public double getOrganizationAvgBindingsInPastYear(String organizationId) {
-    throw new UnsupportedOperationException("Unimplemented");
-  }
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getAverageOrganizationBindingsConfiguration()
+      .addNamedParameter("organizationId", QueryParameterValue.string(organizationId))
+      .build();
+    TableResult results = database.readDatabase(queryConfiguration);
+    FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
+
+    if (row == null || row.get("AverageBindings").isNull()) {
+      return 0.0;
+    } else {
+      return row.get("AverageBindings").getDoubleValue();
+    }  }
 
   /**
    *  Returns a map of dates (as timestamps in UTC milliseconds since the epoch) 

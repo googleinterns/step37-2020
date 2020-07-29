@@ -14,9 +14,11 @@ describe('ProjectQueryService', () => {
   let projects: Project[];
 
   beforeAll(async () => {
-    projects = (await new FakeDataService(
-      new GraphDataCacheService(new DateUtilitiesService())
-    ).listProjects()) as Project[];
+    projects = (
+      await new FakeDataService(
+        new GraphDataCacheService(new DateUtilitiesService())
+      ).listSummaries()
+    ).projects;
   });
 
   describe('init()', () => {

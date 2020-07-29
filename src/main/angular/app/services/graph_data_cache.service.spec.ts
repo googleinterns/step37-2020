@@ -131,7 +131,7 @@ describe('GraphDataCacheService', () => {
     });
   });
 
-  describe('getProjectEntry()', () => {
+  describe('getOrganizationEntry()', () => {
     it('Returns undefined for an empty entry', () => {
       const value = service.getOrganizationEntry(id);
 
@@ -163,7 +163,7 @@ describe('GraphDataCacheService', () => {
     });
   });
 
-  describe('addProjectEntry()', () => {
+  describe('addOrganizationEntry()', () => {
     it('Adds a new entry successfully', () => {
       service.addOrganizationEntry(id, organizationData);
       const result = service.getOrganizationEntry(id);

@@ -29,6 +29,7 @@ import {AdminComponent} from './admin/admin.component';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatTabsModule} from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     MatDividerModule,
     MatButtonModule,
     MatSlideToggleModule,
+    MatTabsModule,
   ],
   providers: [
     dataServiceProvider,

@@ -5,6 +5,7 @@ import {
   SortDirection,
   ProjectComparators,
   OrganizationComparators,
+  getComparator,
 } from '../../model/sort_methods';
 import {Resource, ResourceType} from '../../model/resource';
 import {Organization} from '../../model/organization';
@@ -70,7 +71,7 @@ export class QueryService {
     this.sortDirection = direction;
 
     // Since query hasn't changed, we can just re-sort the existing cache
-    this.cache.sort(ProjectComparators.getComparator(direction, field));
+    this.cache.sort(getComparator(direction, field, this.filterResouce));
   }
 
   /** Changes the query string of the projects search. */
@@ -82,10 +83,15 @@ export class QueryService {
       // New query will be a subset of the existing one and sort will be naturally maintained
       this.cache = this.cache.filter(project => project.includes(query));
     } else {
-      this.cache = this.projects
+      if (this.filterResouce === ResourceType.ORGANIZATION) {
+        this.cache = this.organizations;
+      } else if (this.filterResouce === ResourceType.PROJECT) {
+        this.cache = this.projects;
+      }
+      this.cache = this.cache
         .filter(project => project.includes(query))
         .sort(
-          ProjectComparators.getComparator(this.sortDirection, this.sortBy)
+          getComparator(this.sortDirection, this.sortBy, this.filterResouce)
         );
     }
 
@@ -101,7 +107,6 @@ export class QueryService {
       } else if (type === ResourceType.PROJECT) {
         this.cache = this.projects;
       }
-
       const queryStore = this.query;
       this.query = '';
       this.changeQuery(queryStore);

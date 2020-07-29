@@ -15,6 +15,10 @@
   max-width: 75%;
 }
 
+::ng-deep.mat-tab-label {
+  height: 36px !important;
+}
+
 #resource-table {
   border-collapse: collapse;
   text-align: left;

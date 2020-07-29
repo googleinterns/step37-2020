@@ -1,10 +1,10 @@
 @import '~@angular/material/theming';
 @include mat-core();
 
-$grey: (
+$colors: (
   50: #E8EAED,
   100: #F1F3F4,
-  200: #666666,
+  200: #174EA6,
   300: #F1F3F4,
   400: #F1F3F4,
   500: #F1F3F4,
@@ -34,8 +34,9 @@ $grey: (
   )
 );
 
-$app-primary: mat-palette($grey, 50);
-$app-accent:  mat-palette($grey, 100);
+$app-primary: mat-palette($colors, 50);
+$app-accent:  mat-palette($colors, 100);
+$app-warn: mat-palette($colors, 200);
 
-$app-theme: mat-light-theme($app-primary, $app-accent);
+$app-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
 @include angular-material-theme($app-theme);

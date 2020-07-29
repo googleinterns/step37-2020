@@ -1,14 +1,15 @@
 <div id="root">
   <div id="content">
     <mat-progress-bar *ngIf="showLoadingBar()" mode="query"></mat-progress-bar>
-    <div id="filter-container">
-      <fa-icon [icon]="filter" id="filter-icon"></fa-icon><input type="text"
-        (input)="search($event.target.value)" placeholder="Search by Name or ID" id="filter-input"
-        title="Search by Name or ID" />
-    </div>
 
-    <mat-tab-group dynamicHeight (selectedTabChange)="toggleDisplay()">
+
+    <mat-tab-group dynamicHeight (selectedTabChange)="toggleDisplay()" backgroundColor="primary">
       <mat-tab label="Projects">
+        <div id="filter-container">
+          <fa-icon [icon]="filter" id="filter-icon"></fa-icon><input type="text"
+            (input)="search($event.target.value)" placeholder="Search by Name or ID"
+            id="filter-input" title="Search by Name or ID" />
+        </div>
         <table id="resource-table" class="center">
           <tr id="header">
             <th>
@@ -57,6 +58,11 @@
       </mat-tab>
 
       <mat-tab label="Organizations">
+        <div id="filter-container">
+          <fa-icon [icon]="filter" id="filter-icon"></fa-icon><input type="text"
+            (input)="search($event.target.value)" placeholder="Search by Name or ID"
+            id="filter-input" title="Search by Name or ID" />
+        </div>
         <table id="resource-table" class="center">
           <tr id="header">
             <th>

@@ -18,5 +18,6 @@
 
   <modules>
     <module>recommendationimpactdashboard</module>
+    <module>resourcemanagerservice</module>
   </modules>
 </project>

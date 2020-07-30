@@ -2,8 +2,8 @@
   "name": "recommendations-impact-dashboard",
   "scripts": {
     "test": "ts-node node_modules/jasmine/bin/jasmine src/**/*.spec.ts",
-    "build": "ng build && cp -r src/main/angular/WEB-INF src/main/webapp/WEB-INF && mvn clean package appengine:run -DskipTests",
-    "deploy": "ng build && cp -r src/main/angular/WEB-INF src/main/webapp/WEB-INF && mvn clean package appengine:deploy -DskipTests && mvn package appengine:deployCron",
+    "build": "ng build && cp -r recommendationimpactdashboard/src/main/angular/WEB-INF recommendationimpactdashboard/src/main/webapp/WEB-INF && mvn clean package appengine:run -DskipTests",
+    "deploy": "ng build && cp -r recommendationimpactdashboard/src/main/angular/WEB-INF recommendationimpactdashboard/src/main/webapp/WEB-INF && mvn clean package appengine:deploy -DskipTests && mvn package appengine:deployCron",
     "serve": "ng serve --open",
     "check": "gts check src/**/*.ts",
     "clean": "gts clean",

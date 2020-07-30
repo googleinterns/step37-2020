@@ -6,23 +6,22 @@
     "frontend": {
       "projectType": "application",
       "schematics": {},
-      "root": "src/main/angular",
-      "sourceRoot": "src/main/angular",
+      "root": "recommendationimpactdashboard/src/main/angular",
+      "sourceRoot": "recommendationimpactdashboard/src/main/angular",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "src/main/webapp",
-            "index": "src/main/angular/index.html",
-            "main": "src/main/angular/main.ts",
-            "polyfills": "src/main/angular/polyfills.ts",
+            "outputPath": "recommendationimpactdashboard/src/main/webapp",
+            "index": "recommendationimpactdashboard/src/main/angular/index.html",
+            "main": "recommendationimpactdashboard/src/main/angular/main.ts",
+            "polyfills": "recommendationimpactdashboard/src/main/angular/polyfills.ts",
             "tsConfig": "tsconfig.json",
             "aot": true,
             "assets": [],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/main/angular/styles.css"
+              "recommendationimpactdashboard/src/main/angular/styles.css"
             ],
             "scripts": []
           },
@@ -30,8 +29,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "src/main/angular/environments/environment.ts",
-                  "with": "src/main/angular/environments/environment.prod.ts"
+                  "replace": "recommendationimpactdashboard/src/main/angular/environments/environment.ts",
+                  "with": "recommendationimpactdashboard/src/main/angular/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -72,13 +71,11 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "karmaConfig": "./karma.conf.js",
-            "polyfills": "src/main/angular/polyfills.ts",
+            "polyfills": "recommendationimpactdashboard/src/main/angular/polyfills.ts",
             "tsConfig": "./tsconfig.spec.json",
             "scripts": [],
-            "main": "src/main/angular/main.ts",
-            "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
-            ]
+            "main": "recommendationimpactdashboard/src/main/angular/main.ts",
+            "styles": []
           }
         },
         "lint": {

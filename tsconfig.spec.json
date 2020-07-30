@@ -10,9 +10,9 @@
     "composite": true
   },
   "files": [
-    "src/main/angular/test.ts",
-    "src/main/angular/polyfills.ts",
-    "src/main/angular/main.ts"
+    "recommendationimpactdashboard/src/main/angular/test.ts",
+    "recommendationimpactdashboard/src/main/angular/polyfills.ts",
+    "recommendationimpactdashboard/src/main/angular/main.ts"
   ],
   "include": [
     "src/**/*.spec.ts",

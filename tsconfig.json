@@ -6,9 +6,9 @@
 */
 {
   "files": [
-    "./src/main/angular/main.ts",
-    "./src/main/angular/polyfills.ts",
-    "./src/main/angular/test.ts"
+    "./recommendationimpactdashboard/src/main/angular/main.ts",
+    "./recommendationimpactdashboard/src/main/angular/polyfills.ts",
+    "./recommendationimpactdashboard/src/main/angular/test.ts"
   ],
   "references": [
     {

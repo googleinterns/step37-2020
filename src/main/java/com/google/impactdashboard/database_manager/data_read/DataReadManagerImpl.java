@@ -145,7 +145,31 @@ public class DataReadManagerImpl implements DataReadManager {
    * {@code organizationId}.
    */
   public Map<Long, Recommendation> getOrganizationDatesToRecommendations(String organizationId) {
-    throw new UnsupportedOperationException("Unimplemented");
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getOrganizationDatesToRecommendationsConfiguration()
+      .addNamedParameter("organizationId", QueryParameterValue.string(organizationId))
+      .build();
+    TableResult results = database.readDatabase(queryConfiguration);
+
+    HashMap<Long, Recommendation> datesToRecommendations = new HashMap<Long, Recommendation>();
+    for (FieldValueList row : results.iterateAll()) {
+      String projectId = row.get(RecommendationsSchema.RECOMMENDATIONS_PROJECT_ID_COLUMN)
+        .getStringValue();
+      long acceptedTimestamp = row.get(RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN)
+        .getTimestampValue() / 1000;
+      String actor = row.get(RecommendationsSchema.ACTOR_COLUMN).getStringValue();
+      int iamImpact = (int) row.get(RecommendationsSchema.IAM_IMPACT_COLUMN).getLongValue();
+
+      FieldList structSchema = results.getSchema().getFields()
+        .get(RecommendationsSchema.ACTIONS_COLUMN).getSubFields();
+      List<RecommendationAction> actions = structActionsToRecommendationActions(
+        row.get(RecommendationsSchema.ACTIONS_COLUMN).getRepeatedValue(), structSchema);
+
+        datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
+        projectId, organizationId, actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
+        acceptedTimestamp, IAMRecommenderMetadata.create(iamImpact)));
+    } 
+    return datesToRecommendations;  
   }
 
   /** 

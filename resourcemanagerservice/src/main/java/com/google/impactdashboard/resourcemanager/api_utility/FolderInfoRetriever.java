@@ -55,8 +55,13 @@ public class FolderInfoRetriever {
         .build();
   }
 
-  public Folder getFolder(String FolderId) {
-    throw new UnsupportedOperationException("Not yet implemented");
+  public Folder getFolder(String folderId) throws IOException {
+    return cloudResourceManagerService.folders().get("folders/" + folderId).execute();
   }
 
+
+  public static void main(String[] args) throws IOException {
+    FolderInfoRetriever retriever = create();
+    Folder folder = retriever.getFolder("261046259366");
+  }
 }

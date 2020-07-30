@@ -90,4 +90,10 @@ public class AutomaticDataUpdater extends DataUpdater {
         getLastIamEntry(project, "").stream()).collect(Collectors.toList()));
     return entries;  
   }
+
+  public static void main(String[] args) throws IOException, GeneralSecurityException {
+    AutomaticDataUpdater updater = AutomaticDataUpdater.create();
+
+    updater.updateDatabase();
+  }
 }

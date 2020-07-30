@@ -25,7 +25,7 @@ public class DataReadManagerFake implements DataReadManager {
    * present in the IAM Bindings table. 
    */
   public List<OrganizationIdentification> listOrganizations() {
-    throw new UnsupportedOperationException("Unimplemented");
+    return FakeDatabase.listOrganizations();
   }
 
   /** 
@@ -45,7 +45,7 @@ public class DataReadManagerFake implements DataReadManager {
    * are in the IAM Bindings table. 
    */
   public double getOrganizationAvgBindingsInPastYear(String organizationId) {
-    throw new UnsupportedOperationException("Unimplemented");
+    return FakeDatabase.getAvgBindingsForOrganization(organizationId);
   }
 
   /**
@@ -64,7 +64,7 @@ public class DataReadManagerFake implements DataReadManager {
    * {@code organizationId}.
    */
   public Map<Long, Recommendation> getOrganizationDatesToRecommendations(String organizationId) {
-    throw new UnsupportedOperationException("Unimplemented");
+    return FakeDatabase.getDatesToRecommendationsForOrganization(organizationId);
   }
 
   /** 
@@ -84,7 +84,7 @@ public class DataReadManagerFake implements DataReadManager {
    * on that date.
    */
   public Map<Long, Integer> getOrganizationDatesToBindings(String organizationId) {
-    throw new UnsupportedOperationException("Unimplemented");
+    return FakeDatabase.getDatesToBindingsForOrganization(organizationId);
   }
 
  /**

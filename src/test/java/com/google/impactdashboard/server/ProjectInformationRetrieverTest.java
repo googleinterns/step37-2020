@@ -102,7 +102,8 @@ public class ProjectInformationRetrieverTest extends Mockito {
     PROJECT_IAM_DATA.put(123L, 2000);
     PROJECT_IAM_DATA.put(234L, 3456);
     PROJECT_IAM_DATA.put(23645543L, 78654);
-    PROJECT_RECOMMENDATION_DATA.put(234L, Recommendation.create(PROJECT_ID_1,
+    // @TODO fix organization id here once retrieved
+    PROJECT_RECOMMENDATION_DATA.put(234L, Recommendation.create(PROJECT_ID_1, "",
         ACTOR, ACTIONS, Recommendation.RecommenderType.IAM_BINDING, 234L,
         IAMRecommenderMetadata.create(-100)));
 

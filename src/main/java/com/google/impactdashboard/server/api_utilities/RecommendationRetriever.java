@@ -47,7 +47,8 @@ public class RecommendationRetriever {
       com.google.cloud.recommender.v1.Recommendation recommendation = recommender
           .getRecommendation(recommendationDataMap.get("recommendationName").getStringValue());
       List<RecommendationAction> actions = getRecommendationActions(recommendation);
-      return Recommendation.create(projectId, recommendationDataMap.get("actor").getStringValue(),
+      // @TODO fix organization id here once retrieved
+      return Recommendation.create(projectId, "", recommendationDataMap.get("actor").getStringValue(),
           actions, type, recommendationLog.getTimestamp().getSeconds() * 1000,
           IAMRecommenderMetadata.create(iamRetriever.getActionImpact(actions)));
     }).collect(Collectors.toList());

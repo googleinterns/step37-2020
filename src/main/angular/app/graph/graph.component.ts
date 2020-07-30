@@ -21,7 +21,6 @@ import {
 } from '@angular/core';
 import {GraphProcessorService} from '../services/graph_processor.service';
 import {GraphProperties, Columns} from '../../model/types';
-import {DataService} from '../services/data.service';
 import {
   WIDTH_SCALE_FACTOR,
   HEIGHT_SCALE_FACTOR,

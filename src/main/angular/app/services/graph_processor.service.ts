@@ -1,5 +1,4 @@
 import {Injectable, SimpleChanges} from '@angular/core';
-import {ProjectGraphData} from '../../model/project_graph_data';
 import {Recommendation} from '../../model/recommendation';
 import {Project} from '../../model/project';
 import {SimpleChange} from '@angular/core';
@@ -8,7 +7,7 @@ import {GraphProperties, Columns, Row} from '../../model/types';
 import {DataService} from './data.service';
 import {DateRange} from '../../model/date_range';
 import {CUMULATIVE_BINDINGS_SUFFIX} from '../../constants';
-import {Resource, ResourceType, IAMResource} from '../../model/resource';
+import {Resource, ResourceType} from '../../model/resource';
 import {
   ResourceGraphData,
   IAMResourceGraphData,

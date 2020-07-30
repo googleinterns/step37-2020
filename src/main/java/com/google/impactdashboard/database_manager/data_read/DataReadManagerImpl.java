@@ -172,14 +172,28 @@ public class DataReadManagerImpl implements DataReadManager {
     return datesToBindings;
   }
 
-  /**
-   * Returns a map of dates as timestamps in UTC milliseconds since the epoch
-   * to the number of IAM Bindings that existed for all projects that the dashboard 
-   * has access to that belong to the organization with id {@code organizationId},
-   * on that date.
+  /** 
+   *  Returns a map of dates (as timestamps in UTC milliseconds since the epoch) 
+   *  to the number of IAM bindings that existed on that date, summed across all projects
+   *  belonging to the organization with id {@code organizationId}. 
    */
+  @Override
   public Map<Long, Integer> getOrganizationDatesToBindings(String organizationId) {
-    throw new UnsupportedOperationException("Unimplemented");
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getOrganizationDatesToBindingsConfiguration()
+      .addNamedParameter("organizationId", QueryParameterValue.string(organizationId))
+      .build();
+    TableResult results = database.readDatabase(queryConfiguration);
+
+    HashMap<Long, Integer> datesToBindings = new HashMap<Long, Integer>();
+    for (FieldValueList row : results.iterateAll()) {
+      long timestamp = row.get(IAMBindingsSchema.TIMESTAMP_COLUMN)
+        .getTimestampValue() / 1000;
+      int iamBindings = (int) row.get("TotalBindings").getLongValue();
+
+      datesToBindings.put(timestamp, iamBindings);
+    } 
+    return datesToBindings;
   }
 
   /**

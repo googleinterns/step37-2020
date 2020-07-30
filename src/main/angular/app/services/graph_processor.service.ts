@@ -113,6 +113,8 @@ export class GraphProcessorService {
     await Promise.all(
       projects.map(project => this.addCumulativeDifference(properties, project))
     );
+
+    this.forceRefresh(properties);
   }
 
   /** Remove all of the cumualtive differences from the graph data and refreshes the chart. */

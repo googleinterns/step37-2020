@@ -91,8 +91,9 @@ public class DataReadManagerImpl implements DataReadManager {
       List<RecommendationAction> actions = structActionsToRecommendationActions(
         row.get(RecommendationsSchema.ACTIONS_COLUMN).getRepeatedValue(), structSchema);
 
+      //TODO: once database schema has changed, retrieve real org ID
       datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
-        projectId, actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
+        projectId, "", actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
         acceptedTimestamp, IAMRecommenderMetadata.create(iamImpact)));
     } 
     return datesToRecommendations;

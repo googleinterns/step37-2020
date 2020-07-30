@@ -13,6 +13,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.Credentials;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.recommendation.RecommendationAction;
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
@@ -91,13 +92,16 @@ public class IamBindingRetriever {
       if(secondsFromEpoch == null){
         secondsFromEpoch = entry.getKey().getSeconds() * 1000;
       }
+      
       int iamBindings = 0;
       try {
         iamBindings = getIamBindings(membersForRoles, projectId);
       } catch (IOException e) {
         throw new RuntimeException("IAM Bindings not received.");
       }
-      return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, secondsFromEpoch,
+      // @TODO fix organization id here once retrieved
+      return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber,
+          OrganizationIdentification.create("",""), secondsFromEpoch,
           iamBindings);
     }).collect(Collectors.toList());
   }

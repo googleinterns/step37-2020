@@ -84,7 +84,7 @@ export class GraphProcessorService {
       if (index !== -1) {
         this.activeRequests.splice(index, 1);
       } else {
-        this.removeFromGraph(properties, removal, addCumulativeDifference);
+        this.removeFromGraph(properties, removal);
       }
     });
 
@@ -101,12 +101,7 @@ export class GraphProcessorService {
       promises.push(
         graphData.then(data => {
           if (this.activeRequests.includes(data.getId())) {
-            this.addToGraph(
-              properties,
-              data,
-              addition,
-              addCumulativeDifference
-            );
+            this.addToGraph(properties, data, addition);
             this.activeRequests.splice(
               this.activeRequests.indexOf(data.getId()),
               1
@@ -116,9 +111,19 @@ export class GraphProcessorService {
       );
     });
 
-    return Promise.all(promises).then(() => {
+    return Promise.all(promises).then(async () => {
+      if (addCumulativeDifference) {
+        this.removeCumulativeDifferences(
+          properties,
+          additionsDeletions.removed
+        );
+        await this.addCumulativeDifferences(
+          properties,
+          additionsDeletions.added
+        );
+      }
+
       this.forceRefresh(properties);
-      console.log(properties);
     });
   }
 
@@ -228,7 +233,6 @@ export class GraphProcessorService {
         includedDays
       )
       .forEach(day => {
-        console.log(day);
         const row = this.getRow(properties.graphData, day);
         row.push(undefined, undefined, undefined);
       });
@@ -238,8 +242,7 @@ export class GraphProcessorService {
   private async addToGraph(
     properties: GraphProperties,
     data: ResourceGraphData,
-    resource: Resource,
-    addCumulativeDifference: boolean
+    resource: Resource
   ): Promise<void> {
     const seriesNumber: number = (properties.columns.length - 1) / 3;
     // Set the color and add the new columns
@@ -262,10 +265,6 @@ export class GraphProcessorService {
     properties.dateRange = this.dateUtilities.getDateRange(
       properties.graphData
     );
-
-    if (addCumulativeDifference) {
-      await this.addCumulativeDifference(properties, resource);
-    }
   }
 
   /** Remove the series from options. */
@@ -284,20 +283,13 @@ export class GraphProcessorService {
   }
 
   /** Removes the given project from the graph. */
-  private removeFromGraph(
-    properties: GraphProperties,
-    resource: Resource,
-    addCumulativeDifference: boolean
-  ) {
+  private removeFromGraph(properties: GraphProperties, resource: Resource) {
     const seriesNumber: number =
       (properties.columns.indexOf(resource.getId()) - 1) / 3;
     this.removeSeriesOptions(properties, seriesNumber);
 
     properties.columns.splice(seriesNumber * 3 + 1, 3);
     properties.graphData.forEach(row => row.splice(seriesNumber * 3 + 1, 3));
-    if (addCumulativeDifference) {
-      this.removeCumulativeDifference(properties, resource);
-    }
     // Look for rows with empty data and remove them
     properties.graphData = properties.graphData.filter(row =>
       row.some((value, index) => value && index !== 0)
@@ -367,7 +359,6 @@ export class GraphProcessorService {
         days
       )
       .forEach(day => {
-        console.log(day);
         const row = this.getRow(rows, day);
         row.push(undefined, undefined, undefined);
       });

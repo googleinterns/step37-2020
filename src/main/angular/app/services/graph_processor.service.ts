@@ -123,10 +123,10 @@ export class GraphProcessorService {
     properties: GraphProperties,
     resources: Resource[]
   ) {
-    // TODO: Support orgs
-    const projects = resources as Project[];
     await Promise.all(
-      projects.map(project => this.addCumulativeDifference(properties, project))
+      resources.map(resource =>
+        this.addCumulativeDifference(properties, resource)
+      )
     );
 
     this.forceRefresh(properties);
@@ -137,10 +137,8 @@ export class GraphProcessorService {
     properties: GraphProperties,
     resources: Resource[]
   ) {
-    // TODO: Support orgs
-    const projects = resources as Project[];
-    projects.forEach(project => {
-      this.removeCumulativeDifference(properties, project);
+    resources.forEach(resource => {
+      this.removeCumulativeDifference(properties, resource);
     });
 
     this.forceRefresh(properties);
@@ -183,20 +181,25 @@ export class GraphProcessorService {
       }
     );
     // No harm in doing this since the graph data has already been cached
-    const data = await this.dataService.getProjectGraphData(resource.getId());
+    let data: IAMResourceGraphData;
+    if (resource.getResourceType() === ResourceType.ORGANIZATION) {
+      data = await this.dataService.getOrganizationGraphData(resource.getId());
+    } else if (resource.getResourceType() === ResourceType.PROJECT) {
+      data = await this.dataService.getProjectGraphData(resource.getId());
+    }
 
     let cumulativeImpact = 0;
-    Object.keys(data.dateToNumberIAMBindings)
+    Object.keys(data.getDateToBindings())
       .sort()
       .forEach(time => {
         const date = this.dateUtilities.startOfDay(+time);
         const recommendations = this.getRecommendationsOnSameDay(
           +time,
-          data.dateToRecommendationTaken
+          data.getDateToRecommendation()
         );
 
         const adjustedBindings =
-          data.dateToNumberIAMBindings[time] + cumulativeImpact;
+          data.getDateToBindings()[time] + cumulativeImpact;
 
         // Add the cumulative impact of the recommendation
         recommendations.forEach(

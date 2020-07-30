@@ -8,6 +8,7 @@ import java.util.List;
 public abstract class Recommendation {
 
   public abstract String getProjectId();
+  public abstract String getOrganizationId();
   public abstract String getActor();
   public abstract List<RecommendationAction> getActions();
   public abstract RecommenderType getRecommender();
@@ -24,10 +25,10 @@ public abstract class Recommendation {
    * and accepted by the user at time {@code timestamp}, with description 
    * {@code description} and additional metadata {@code metadata}.
    */
-  public static Recommendation create(String projectId, String actor, 
+  public static Recommendation create(String projectId, String organizationId, String actor, 
     List<RecommendationAction> actions, RecommenderType recommender, 
     long acceptedTimestamp, RecommenderMetadata metadata)  {
-    return new AutoValue_Recommendation(projectId, actor, actions, recommender, 
+    return new AutoValue_Recommendation(projectId, organizationId, actor, actions, recommender, 
       acceptedTimestamp, metadata);
   }
 }

@@ -101,5 +101,4 @@ public class LogRetriever {
     
     return logger.listLogEntries(request);
   }
-
 }

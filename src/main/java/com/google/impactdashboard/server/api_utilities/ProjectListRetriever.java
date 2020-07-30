@@ -53,16 +53,21 @@ public class ProjectListRetriever {
   /** Returns the list of projects resulting from executing {@code request}. */
   protected static List<ProjectIdentification> getListOfProjects(
     CloudResourceManager.Projects.List request) throws IOException {
-    List<ProjectIdentification> projects = new ArrayList<ProjectIdentification>();
+    List<ProjectIdentification> projects = new ArrayList<>();
 
     ListProjectsResponse response;
     do {
       response = request.execute();
       if (response.getProjects() != null) {
-        response.getProjects().stream().forEach(project -> 
+        response.getProjects().stream().forEach(project -> {
+          String projectName = project.getName();
+            if(projectName == null) {
+              projectName = project.getProjectId();
+            }
           projects.add(
             ProjectIdentification.create(
-              project.getName(), project.getProjectId(), project.getProjectNumber())));
+              projectName, project.getProjectId(), project.getProjectNumber()));
+          });
       }
       request.setPageToken(response.getNextPageToken());
     } while (response.getNextPageToken() != null);
@@ -91,6 +96,8 @@ public class ProjectListRetriever {
       Credentials.getCredentials()
         .createScoped(Arrays.asList("https://www.googleapis.com/auth/cloud-platform")));
 
-    return new CloudResourceManager.Builder(httpTransport, jsonFactory, credentials).build();
+    return new CloudResourceManager.Builder(httpTransport, jsonFactory, credentials)
+      .setApplicationName("Recommendations Impact Dashboard")
+      .build();
   }
 }

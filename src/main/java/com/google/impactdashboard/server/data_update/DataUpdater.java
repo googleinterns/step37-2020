@@ -4,6 +4,7 @@ import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingClient;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.impactdashboard.database_manager.data_read.DataReadManager;
@@ -185,8 +186,9 @@ public class DataUpdater {
   /** Returns a copy of {@code entry} with timestamp {@code timestamp}. */
   private IAMBindingDatabaseEntry copyWithNewTimestamp(IAMBindingDatabaseEntry entry, 
       long timestamp) {
+    // @TODO fix organization id here once retrieved
     return IAMBindingDatabaseEntry.create(entry.getProjectId(), 
-        entry.getProjectName(), entry.getProjectNumber(), 
-        timestamp, entry.getBindingsNumber());
+        entry.getProjectName(), entry.getProjectNumber(),
+        OrganizationIdentification.create("", ""), timestamp, entry.getBindingsNumber());
   }
 }

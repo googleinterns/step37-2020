@@ -7,7 +7,7 @@ import {
   OrganizationComparators,
   getComparator,
 } from '../../model/sort_methods';
-import {Resource, ResourceType} from '../../model/resource';
+import {ResourceType} from '../../model/resource';
 import {Organization} from '../../model/organization';
 import {QueryData} from '../../model/types';
 

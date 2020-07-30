@@ -652,7 +652,7 @@ describe('GraphProcessorService', () => {
       });
 
       it('Removes graph data', () => {
-        const expectedSize = properties.graphData.map(row => 7);
+        const expectedSize = properties.graphData.map(() => 7);
         const actual = properties.graphData.map(row => row.length);
 
         expect(actual).toEqual(expectedSize);
@@ -690,7 +690,7 @@ describe('GraphProcessorService', () => {
       });
 
       it('Removes graph data', () => {
-        const expectedSize = properties.graphData.map(row => 7);
+        const expectedSize = properties.graphData.map(() => 7);
         const actual = properties.graphData.map(row => row.length);
 
         expect(actual).toEqual(expectedSize);

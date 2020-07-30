@@ -29,7 +29,6 @@ import {
   SELECT_PROJECT_MESSAGE,
 } from '../../constants';
 import {DateRange} from '../../model/date_range';
-import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {Resource} from '../../model/resource';
 
 /** The angular component that contains the graph and associated logic. */
@@ -92,7 +91,7 @@ export class GraphComponent implements OnInit {
     this.shouldShowChart = this.resources.length > 0;
   }
 
-  toggleCumulativeDifference(change: MatSlideToggleChange) {
+  toggleCumulativeDifference() {
     this.showCumulativeDifference = !this.showCumulativeDifference;
     if (this.showCumulativeDifference) {
       this.graphProcessor.addCumulativeDifferences(

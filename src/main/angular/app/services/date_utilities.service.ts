@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {ProjectGraphData} from '../../model/project_graph_data';
 import {Row} from '../../model/types';
 import {DateRange} from '../../model/date_range';
+import {IAMResourceGraphData} from '../../model/resource_graph_data';
 
 /** Contains some basic utility methods for date wrangling. */
 @Injectable()
@@ -33,10 +33,10 @@ export class DateUtilitiesService {
   }
 
   /** Extract all the unique days from the given mappings and returns them sorted. */
-  uniqueDays(graphData: ProjectGraphData[]): Date[] {
+  uniqueDays(graphData: IAMResourceGraphData[]): Date[] {
     const days: Set<number> = new Set();
     graphData.forEach(data => {
-      Object.keys(data.dateToNumberIAMBindings)
+      Object.keys(data.getDateToBindings())
         .map(time => this.startOfDay(+time))
         .forEach(date => days.add(date.getTime()));
     });

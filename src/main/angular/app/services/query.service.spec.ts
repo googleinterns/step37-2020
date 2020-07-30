@@ -177,7 +177,7 @@ describe('ProjectQueryService', () => {
     });
 
     describe('Keeps fields separate for different resources', () => {
-      beforeAll(() => {
+      beforeEach(() => {
         service = new QueryService();
         service.init(projects, organizations);
 

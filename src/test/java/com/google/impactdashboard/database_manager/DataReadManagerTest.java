@@ -53,6 +53,14 @@ public class DataReadManagerTest {
           RecommendationAction.ActionType.REPLACE_ROLE)),  
       Recommendation.RecommenderType.IAM_BINDING, 1591704613000L, 
       IAMRecommenderMetadata.create(500)); 
+  private static final Recommendation PROJECT_3_RECOMMENDATION_ON_28TH = 
+    Recommendation.create("project-id-3", ORG_2_ID, "test@example.com",
+      Arrays.asList(
+        RecommendationAction.create(
+          "affected@example.com", "roles/owner", "",
+          RecommendationAction.ActionType.REMOVE_ROLE)),  
+      Recommendation.RecommenderType.IAM_BINDING, 1593302712000L, 
+      IAMRecommenderMetadata.create(500)); 
 
   @BeforeClass
   public static void setTestingConfiguration() throws IOException {
@@ -205,6 +213,22 @@ public class DataReadManagerTest {
   }
 
   @Test
+  public void testCorrectNumberOfDatesToRecommendationsReturnedForOrg2() {
+    int actual = dataReadManager.getOrganizationDatesToRecommendations(ORG_2_ID).size();
+    int expected = 3;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testCorrectNumberOfDatesToRecommendationsReturnedForOrg1() {
+    int actual = dataReadManager.getOrganizationDatesToRecommendations(ORG_1.getId()).size();
+    int expected = 3;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
   public void testRandomDatesToBindingsForProject2() {
     Map<Long, Integer> datesToBindings = dataReadManager.getMapOfDatesToIAMBindings(PROJECT_ID_2);
 
@@ -245,8 +269,40 @@ public class DataReadManagerTest {
   }
 
   @Test
+  public void testContentsOfDatesToRecommendationsForOrg2() {
+    Map<Long, Recommendation> datesToRecommendations = 
+      dataReadManager.getOrganizationDatesToRecommendations(ORG_2_ID);  
+
+    assertTrue("Timestamp of recommendation on 25th is retrieved from the database.", 
+      datesToRecommendations.containsKey(
+        PROJECT_2_RECOMMENDATION_ON_25TH.getAcceptedTimestamp()));
+    assertEquals(PROJECT_2_RECOMMENDATION_ON_25TH, 
+      datesToRecommendations.get(PROJECT_2_RECOMMENDATION_ON_25TH.getAcceptedTimestamp()));
+
+    assertTrue("Timestamp of recommendation on 9th is retrieved from the database.", 
+      datesToRecommendations.containsKey(
+        PROJECT_2_RECOMMENDATION_ON_9TH.getAcceptedTimestamp()));
+    assertEquals(PROJECT_2_RECOMMENDATION_ON_9TH, 
+      datesToRecommendations.get(PROJECT_2_RECOMMENDATION_ON_9TH.getAcceptedTimestamp()));
+
+    assertTrue("Timestamp of recommendation on 28th is retrieved from the database.", 
+      datesToRecommendations.containsKey(
+        PROJECT_3_RECOMMENDATION_ON_28TH.getAcceptedTimestamp()));
+    assertEquals(PROJECT_3_RECOMMENDATION_ON_28TH, 
+      datesToRecommendations.get(PROJECT_3_RECOMMENDATION_ON_28TH.getAcceptedTimestamp()));
+  }
+
+  @Test
   public void testNoRecommendationsReturnedForNonexistentProject() {
     int actual = dataReadManager.getMapOfDatesToRecommendationTaken("does-not-exist").size();
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testNoRecommendationsReturnedForNonexistentOrg() {
+    int actual = dataReadManager.getOrganizationDatesToRecommendations("does-not-exist").size();
     int expected = 0;
 
     assertEquals(expected, actual);
@@ -256,6 +312,15 @@ public class DataReadManagerTest {
   public void testNoRecommendationsReturnedForEmptyTable() {
     int actual = dataReadManagerEmptyTables
       .getMapOfDatesToRecommendationTaken("does-not-exist").size();
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testNoOrganizationRecommendationsReturnedForEmptyTable() {
+    int actual = dataReadManagerEmptyTables
+      .getOrganizationDatesToRecommendations("does-not-exist").size();
     int expected = 0;
 
     assertEquals(expected, actual);

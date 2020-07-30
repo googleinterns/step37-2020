@@ -121,7 +121,7 @@ public class Queries {
    */
   public static final String GET_ORGANIZATION_DATES_TO_RECOMMENDATIONS = 
     "SELECT " + 
-      RecommendationsSchema.RECOMMENDATIONS_ORGANIZATION_ID_COLUMN + ", " +
+      RecommendationsSchema.RECOMMENDATIONS_PROJECT_ID_COLUMN + ", " +
       RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN + ", " +
       RecommendationsSchema.ACTOR_COLUMN + ", " +
       RecommendationsSchema.ACTIONS_COLUMN + ", " +

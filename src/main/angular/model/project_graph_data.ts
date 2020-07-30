@@ -13,9 +13,12 @@
 // limitations under the License.
 
 import {Recommendation} from './recommendation';
+import {IAMResourceGraphData} from './resource_graph_data';
+import {ResourceType} from './resource';
+import {RecommenderType} from './recommender_type';
 
 /** Represents the data being put on a graph for a particular project. */
-export class ProjectGraphData {
+export class ProjectGraphData implements IAMResourceGraphData {
   projectId: string;
   dateToNumberIAMBindings: {[key: number]: number};
   dateToRecommendationTaken: {[key: number]: Recommendation};
@@ -28,5 +31,25 @@ export class ProjectGraphData {
     this.projectId = projectId;
     this.dateToNumberIAMBindings = dateToNumberIAMBindings;
     this.dateToRecommendationTaken = dateToRecommendationTaken;
+  }
+
+  getDateToBindings(): {[key: number]: number} {
+    return this.dateToNumberIAMBindings;
+  }
+
+  getId(): string {
+    return this.projectId;
+  }
+
+  getDateToRecommendation(): {[key: number]: Recommendation} {
+    return this.dateToRecommendationTaken;
+  }
+
+  getResourceType(): ResourceType {
+    return ResourceType.PROJECT;
+  }
+
+  getRecommenderType(): RecommenderType {
+    return RecommenderType.IAM_BINDING;
   }
 }

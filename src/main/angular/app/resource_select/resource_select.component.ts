@@ -90,8 +90,10 @@ export class ResourceSelectComponent implements OnInit {
     // Invert the display type
     if (this.displayType === ResourceType.ORGANIZATION) {
       this.displayType = ResourceType.PROJECT;
-    } else {
+      this.changeSelection.emit(Array.from(this.activeProjects));
+    } else if (this.displayType === ResourceType.PROJECT) {
       this.displayType = ResourceType.ORGANIZATION;
+      this.changeSelection.emit(Array.from(this.activeOrganizations));
 
       if (this.queryService.getSortField() === SortBy.PROJECT_NUMBER) {
         // Number field isn't available on organizations, so switch to IAM

@@ -1,0 +1,6 @@
+runtime: java
+env: flex
+
+handlers:
+  url: /.*
+  secure: always

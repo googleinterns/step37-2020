@@ -81,6 +81,12 @@ public class DataUpdateManagerTest {
   }
 
   @Test
+  public void testAddingNoEntriesRunsWithoutError() {
+    dataUpdateManager.updateRecommendations(Arrays.asList());
+    dataUpdateManager.updateIAMBindings(Arrays.asList());
+  }
+
+  @Test
   public void testARecommendationsAddedToDatabase() {
     dataUpdateManager.updateRecommendations(Arrays.asList(
       PROJECT_1_RECOMMENDATION_ON_20190628, PROJECT_1_RECOMMENDATION_ON_20190625));

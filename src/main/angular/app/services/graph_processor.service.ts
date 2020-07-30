@@ -79,6 +79,15 @@ export class GraphProcessorService {
     const additionsDeletions = this.getAdditionsDeletions(changes.resources);
     const promises: Promise<unknown>[] = [];
 
+    additionsDeletions.removed.forEach(removal => {
+      const index = this.activeRequests.indexOf(removal.getId());
+      if (index !== -1) {
+        this.activeRequests.splice(index, 1);
+      } else {
+        this.removeFromGraph(properties, removal, addCumulativeDifference);
+      }
+    });
+
     additionsDeletions.added.forEach(addition => {
       this.activeRequests.push(addition.getId());
       let graphData: Promise<ResourceGraphData>;
@@ -106,15 +115,11 @@ export class GraphProcessorService {
         })
       );
     });
-    additionsDeletions.removed.forEach(removal => {
-      const index = this.activeRequests.indexOf(removal.getId());
-      if (index !== -1) {
-        this.activeRequests.splice(index, 1);
-      } else {
-        this.removeFromGraph(properties, removal, addCumulativeDifference);
-      }
+
+    return Promise.all(promises).then(() => {
+      this.forceRefresh(properties);
+      console.log(properties);
     });
-    return Promise.all(promises).then();
   }
 
   /** Adds an extra line with the IAM Bindings as they would be with no recommendations and refreshes the chart. */
@@ -253,10 +258,7 @@ export class GraphProcessorService {
 
     if (addCumulativeDifference) {
       await this.addCumulativeDifference(properties, resource);
-      console.log(properties);
     }
-
-    this.forceRefresh(properties);
   }
 
   /** Remove the series from options. */
@@ -298,8 +300,6 @@ export class GraphProcessorService {
     properties.dateRange = this.dateUtilities.getDateRange(
       properties.graphData
     );
-
-    this.forceRefresh(properties);
   }
 
   /** Adds the table rows for the given Project. Each row is [time, data1, data1-tooltip, data1-style, data2, data2-tooltip, ...] */

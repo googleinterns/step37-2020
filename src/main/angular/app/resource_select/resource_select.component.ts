@@ -70,8 +70,6 @@ export class ResourceSelectComponent implements OnInit {
 
   @Output()
   public changeSelection = new EventEmitter<Resource[]>();
-  @Output()
-  public changeResource = new EventEmitter<ResourceType>();
 
   constructor(
     private dataService: DataService,

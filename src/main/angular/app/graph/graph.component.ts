@@ -51,10 +51,7 @@ export class GraphComponent implements OnInit {
   /** Whether to show the graph without accepted recommendations. */
   private showCumulativeDifference: boolean;
 
-  constructor(
-    private dataService: DataService,
-    private graphProcessor: GraphProcessorService
-  ) {
+  constructor(private graphProcessor: GraphProcessorService) {
     this.shouldShowChart = false;
     this.resources = [];
     this.noChartMessage = LOADING_MESSAGE;

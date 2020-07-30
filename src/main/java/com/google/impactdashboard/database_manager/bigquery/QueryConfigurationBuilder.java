@@ -48,9 +48,17 @@ public interface QueryConfigurationBuilder {
 
   /**
    * Retrieves parameterized query job configuration that retrieves all 
-   * (timestamp, number of bindings) data in tetheh table for a single project. 
+   * (timestamp, number of bindings) data in the table for a single project. 
    */
   public QueryJobConfiguration.Builder getDatesToBindingsConfiguration();
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves all 
+   * (timestamp, total bindings) data in the IAM table such that 'total bindings'
+   * is the sum of bindings across all projects belonging to a particular
+   * organization on 'timestamp'.
+   */
+  public QueryJobConfiguration.Builder getOrganizationDatesToBindingsConfiguration();
 
   /**
    * Retrieves parameterized query job configuration that retrieves all 

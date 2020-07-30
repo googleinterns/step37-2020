@@ -35,6 +35,9 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   private QueryJobConfiguration.Builder getDatesToBindingsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_DATES_TO_BINDINGS)
       .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getOrganizationDatesToBindingsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_ORGANIZATION_DATES_TO_BINDINGS)
+      .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_DATES_TO_IAM_RECOMMENDATIONS)
       .setUseLegacySql(false);
@@ -114,6 +117,16 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
    */
   public QueryJobConfiguration.Builder getDatesToBindingsConfiguration() {
     return getDatesToBindingsConfiguration;
+  }
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves all 
+   * (timestamp, total bindings) data in the IAM table such that 'total bindings'
+   * is the sum of bindings across all projects belonging to a particular
+   * organization on 'timestamp'.
+   */
+  public QueryJobConfiguration.Builder getOrganizationDatesToBindingsConfiguration() {
+    return getOrganizationDatesToBindingsConfiguration;
   }
 
   /**

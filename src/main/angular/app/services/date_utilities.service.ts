@@ -53,7 +53,10 @@ export class DateUtilitiesService {
   /** Returns the days in range that are not in included. */
   excludedDays(range: Date[], included: Date[]): Date[] {
     return range.filter(
-      day1 => !included.some(day2 => this.fallOnSameDay(day1, day2))
+      day1 =>
+        !included.some(day2 =>
+          this.fallOnSameDay(day1.getTime(), day2.getTime())
+        )
     );
   }
 

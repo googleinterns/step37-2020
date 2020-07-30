@@ -50,6 +50,13 @@ export class DateUtilitiesService {
     return out;
   }
 
+  /** Returns the days in range that are not in included. */
+  excludedDays(range: Date[], included: Date[]): Date[] {
+    return range.filter(
+      day1 => !included.some(day2 => this.fallOnSameDay(day1, day2))
+    );
+  }
+
   /** Returns the date range present in the given rows. */
   getDateRange(rows: Row[]): DateRange {
     let earliestDate: Date | undefined;

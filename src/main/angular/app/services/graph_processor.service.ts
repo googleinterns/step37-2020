@@ -193,10 +193,12 @@ export class GraphProcessorService {
     }
 
     let cumulativeImpact = 0;
+    const includedDays = [];
     Object.keys(data.getDateToBindings())
       .sort()
       .forEach(time => {
         const date = this.dateUtilities.startOfDay(+time);
+        includedDays.push(date);
         const recommendations = this.getRecommendationsOnSameDay(
           +time,
           data.getDateToRecommendation()
@@ -220,11 +222,16 @@ export class GraphProcessorService {
       });
 
     // Now add empty data for rows that weren't touched
-    properties.graphData.forEach(row => {
-      if (row.length < (seriesNumber + 1) * 3 + 1) {
+    this.dateUtilities
+      .excludedDays(
+        properties.graphData.map(row => row[0] as Date),
+        includedDays
+      )
+      .forEach(day => {
+        console.log(day);
+        const row = this.getRow(properties.graphData, day);
         row.push(undefined, undefined, undefined);
-      }
-    });
+      });
   }
 
   /** Adds the given project to the graph. */
@@ -354,12 +361,16 @@ export class GraphProcessorService {
     }
 
     // Now add empty data for rows that weren't touched
-    rows.forEach(row => {
-      if (row.length < (seriesNumber + 1) * 3 + 1) {
+    this.dateUtilities
+      .excludedDays(
+        rows.map(row => row[0] as Date),
+        days
+      )
+      .forEach(day => {
+        console.log(day);
+        const row = this.getRow(rows, day);
         row.push(undefined, undefined, undefined);
-      }
-    });
-
+      });
     return rows;
   }
 

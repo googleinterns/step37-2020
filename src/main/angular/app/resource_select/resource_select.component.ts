@@ -239,9 +239,12 @@ export class ResourceSelectComponent implements OnInit {
       // Assign colors based on initial ordering
       this.queryService.assignColors(DEFAULT_COLORS);
 
-      // Add the highest IAM Bindings project by default
+      // Add the highest IAM Bindings project and organization by default
       if (projects.length > 0) {
         this.toggleResource(projects[0]);
+      }
+      if (organizations.length > 0) {
+        this.toggleResource(organizations[0]);
       }
     });
   }

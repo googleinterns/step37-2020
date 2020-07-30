@@ -123,6 +123,10 @@ export class GraphProcessorService {
         );
       }
 
+      // Modify the date range as appropriate
+      properties.dateRange = this.dateUtilities.getDateRange(
+        properties.graphData
+      );
       this.forceRefresh(properties);
     });
   }
@@ -149,6 +153,11 @@ export class GraphProcessorService {
     resources.forEach(resource => {
       this.removeCumulativeDifference(properties, resource);
     });
+
+    // Look for rows with empty data and remove them
+    properties.graphData = properties.graphData.filter(row =>
+      row.some((value, index) => value && index !== 0)
+    );
 
     this.forceRefresh(properties);
   }
@@ -260,11 +269,6 @@ export class GraphProcessorService {
         seriesNumber
       );
     }
-
-    // Modify the date range as appropriate
-    properties.dateRange = this.dateUtilities.getDateRange(
-      properties.graphData
-    );
   }
 
   /** Remove the series from options. */
@@ -293,11 +297,6 @@ export class GraphProcessorService {
     // Look for rows with empty data and remove them
     properties.graphData = properties.graphData.filter(row =>
       row.some((value, index) => value && index !== 0)
-    );
-
-    // Modify the date range as appropriate
-    properties.dateRange = this.dateUtilities.getDateRange(
-      properties.graphData
     );
   }
 

@@ -181,6 +181,22 @@ public class DataReadManagerTest {
   }
 
   @Test
+  public void testCorrectNumberOfDatesToBindingsReturnedForOrg2() {
+    int actual = dataReadManager.getOrganizationDatesToBindings(ORG_2_ID).size();
+    int expected = 30;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testCorrectNumberOfDatesToBindingsReturnedForOrg1() {
+    int actual = dataReadManager.getOrganizationDatesToBindings(ORG_1.getId()).size();
+    int expected = 30;
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
   public void testCorrectNumberOfDatesToRecommendationsReturnedOnProject1() {
     int actual = dataReadManager.getMapOfDatesToRecommendationTaken(PROJECT_ID_1).size();
     int expected = 3;
@@ -197,6 +213,17 @@ public class DataReadManagerTest {
 
     assertTrue(datesToBindings.containsKey(1593086400000L));
     assertEquals((Integer) 1000, datesToBindings.get(1593086400000L));
+  }
+
+  @Test
+  public void testRandomDatesToBindingsForOrg2() {
+    Map<Long, Integer> datesToBindings = dataReadManager.getOrganizationDatesToBindings(ORG_2_ID);
+
+    assertTrue(datesToBindings.containsKey(1591963200000L));
+    assertEquals((Integer) 2100, datesToBindings.get(1591963200000L));
+
+    assertTrue(datesToBindings.containsKey(1593086400000L));
+    assertEquals((Integer) 3000, datesToBindings.get(1593086400000L));
   }
 
   @Test
@@ -249,6 +276,22 @@ public class DataReadManagerTest {
 
     assertEquals(expected, actual);
   } 
+
+  @Test
+  public void testNoBindingsReturnedForNonexistentOrg() {
+    int actual = dataReadManager.getOrganizationDatesToBindings("does-not-exist").size();
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  } 
+
+  @Test
+  public void testNoOrganizationBindingsReturnedForEmptyTable() {
+    int actual = dataReadManagerEmptyTables.getOrganizationDatesToBindings("does-not-exist").size();
+    int expected = 0;
+
+    assertEquals(expected, actual);
+  }
 
   @Test
   public void testCorrectMaxTimestamp() {

@@ -61,6 +61,11 @@ public class QueryConfigurationBuilderEmpty implements QueryConfigurationBuilder
       .replace(Constants.DATABASE, Constants.TEST_DATABASE)
       .replace(Constants.RECOMMENDATIONS_TABLE, Constants.EMPTY_RECOMMENDATIONS_TABLE))
       .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getOrganizationDatesToRecommendationsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_ORGANIZATION_DATES_TO_RECOMMENDATIONS
+      .replace(Constants.DATABASE, Constants.TEST_DATABASE)
+      .replace(Constants.RECOMMENDATIONS_TABLE, Constants.EMPTY_RECOMMENDATIONS_TABLE))
+      .setUseLegacySql(false);
   private String insertValuesIAMTableConfiguration = 
     Queries.INSERT_VALUES_INTO_IAM_TABLE
       .replace(Constants.DATABASE, Constants.TEST_DATABASE)
@@ -166,6 +171,15 @@ public class QueryConfigurationBuilderEmpty implements QueryConfigurationBuilder
    */
   public QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration() {
     return getDatesToIAMRecommendationsConfiguration;
+  }
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves all 
+   * (timestamp, recommendation) data in the table where the project that
+   * the recommendation was accepted on belongs to a particular organization.
+   */
+  public QueryJobConfiguration.Builder getOrganizationDatesToRecommendationsConfiguration() {
+    return getOrganizationDatesToRecommendationsConfiguration;
   }
 
   /**

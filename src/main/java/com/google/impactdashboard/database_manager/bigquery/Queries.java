@@ -115,6 +115,24 @@ public class Queries {
         " = '" + Recommendation.RecommenderType.IAM_BINDING + "'";
 
   /** 
+   * Retrieves all (timestamp, recommendation) data in the table where the id
+   * of the organization of the project the recommendation was accepted on is 
+   * {@code organizationId}. 
+   */
+  public static final String GET_ORGANIZATION_DATES_TO_RECOMMENDATIONS = 
+    "SELECT " + 
+      RecommendationsSchema.RECOMMENDATIONS_ORGANIZATION_ID_COLUMN + ", " +
+      RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN + ", " +
+      RecommendationsSchema.ACTOR_COLUMN + ", " +
+      RecommendationsSchema.ACTIONS_COLUMN + ", " +
+      RecommendationsSchema.IAM_IMPACT_COLUMN +
+      " FROM " + RECOMMENDATIONS_TABLE +
+      " WHERE " + 
+        RecommendationsSchema.RECOMMENDATIONS_ORGANIZATION_ID_COLUMN + " = @organizationId" +
+      " AND " + RecommendationsSchema.RECOMMENDER_COLUMN + 
+        " = '" + Recommendation.RecommenderType.IAM_BINDING + "'";
+
+  /** 
    * Inserts values (which will need to be concatenated to this string) into the 
    * Recommendations table. 
    */

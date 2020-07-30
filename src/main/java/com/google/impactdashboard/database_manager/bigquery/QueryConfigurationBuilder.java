@@ -68,17 +68,26 @@ public interface QueryConfigurationBuilder {
   public QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration();
 
   /**
+   * Retrieves parameterized query job configuration that retrieves all 
+   * (timestamp, recommendation) data in the table where the project that
+   * the recommendation was accepted on belongs to a particular organization.
+   */
+  public QueryJobConfiguration.Builder getOrganizationDatesToRecommendationsConfiguration();
+
+  /**
    * Retrieves query job configuration that inserts {@code values} into the 
    * IAM Bindings table.
    */
   public QueryJobConfiguration.Builder 
     insertValuesIAMTableConfiguration(List<IAMBindingDatabaseEntry> values);
+
   /**
    * Retrieves query job configuration that inserts {@code values} into the 
    * Recommendations table. 
    */
   public QueryJobConfiguration.Builder 
     insertValuesRecommendationsTableConfiguration(List<Recommendation> values);  
+    
   /** 
    * Retrieves query job configuration that deletes 365-day-old data from the 
    * IAM bindings table.

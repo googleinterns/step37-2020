@@ -253,6 +253,7 @@ export class GraphProcessorService {
 
     if (addCumulativeDifference) {
       await this.addCumulativeDifference(properties, resource);
+      console.log(properties);
     }
 
     this.forceRefresh(properties);
@@ -417,6 +418,10 @@ export class GraphProcessorService {
 
     matchingRecommendations.forEach(recommendation => {
       tooltip += `<tr class="tooltip-row"><td style="border-top: 1px solid ${resource.color};">`;
+
+      if (resource.getResourceType() === ResourceType.ORGANIZATION) {
+        tooltip += `${recommendation.projectId}:<br/>`;
+      }
 
       tooltip += `${recommendation.actor} accepted:<br/>`;
       recommendation.actions.forEach(action => {

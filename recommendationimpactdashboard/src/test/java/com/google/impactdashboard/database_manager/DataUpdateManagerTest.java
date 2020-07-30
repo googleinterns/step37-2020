@@ -13,8 +13,10 @@ import com.google.impactdashboard.configuration.Configuration;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.*;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.impactdashboard.database_manager.data_read.*;
 import com.google.impactdashboard.database_manager.data_update.*;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.io.IOException;
@@ -30,9 +32,13 @@ public class DataUpdateManagerTest {
     ProjectIdentification.create("project-2", "project-id-2", 234567890123L);
   private static final String PROJECT_ID_1 = "project-id-1";
   private static final String PROJECT_ID_2 = "project-id-2";
+  private static final String TEST_ORG_ID = "";
+  private static final OrganizationIdentification TEST_ORG_IDENTIFICATION = 
+    OrganizationIdentification.create("My Org", TEST_ORG_ID);
+
   private static final Recommendation PROJECT_1_RECOMMENDATION_ON_20190628 = 
     Recommendation.create(
-      PROJECT_ID_1, "test@example.com",
+      PROJECT_ID_1, TEST_ORG_ID, "test@example.com",
       Arrays.asList(
         RecommendationAction.create(
           "affected@example.com", "roles/owner", "roles/viewer",
@@ -44,7 +50,7 @@ public class DataUpdateManagerTest {
       IAMRecommenderMetadata.create(100));
   private static final Recommendation PROJECT_1_RECOMMENDATION_ON_20190625 = 
     Recommendation.create(
-      PROJECT_ID_1, "test@example.com",
+      PROJECT_ID_1, TEST_ORG_ID, "test@example.com",
       Arrays.asList(
           RecommendationAction.create(
             "affected@example.com", "roles/owner", "",
@@ -54,11 +60,13 @@ public class DataUpdateManagerTest {
   private static final IAMBindingDatabaseEntry PROJECT_2_BINDINGS_DATA_ON_20190523 = 
     IAMBindingDatabaseEntry.create(
       PROJECT_ID_2, PROJECT_2_IDENTIFICATION.getName(), 
-      PROJECT_2_IDENTIFICATION.getProjectNumber()+"", 1558612800000L, 2000);
+      PROJECT_2_IDENTIFICATION.getProjectNumber()+"", TEST_ORG_IDENTIFICATION, 
+      1558612800000L, 2000);
   private static final IAMBindingDatabaseEntry PROJECT_2_BINDINGS_DATA_ON_20190620 = 
     IAMBindingDatabaseEntry.create(
       PROJECT_ID_2, PROJECT_2_IDENTIFICATION.getName(), 
-      PROJECT_2_IDENTIFICATION.getProjectNumber()+"", 1561032000000L, 1000);
+      PROJECT_2_IDENTIFICATION.getProjectNumber()+"", TEST_ORG_IDENTIFICATION, 
+      1561032000000L, 1000);
 
   @BeforeClass
   public static void setTestingConfiguration() throws IOException {

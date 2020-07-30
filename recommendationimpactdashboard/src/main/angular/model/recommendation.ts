@@ -20,6 +20,7 @@ import {RecommendationAction} from './recommendation_action';
 export class Recommendation {
   constructor(
     public projectId: string,
+    public organizationId: string,
     public actor: string,
     public actions: RecommendationAction[],
     public recommender: RecommenderType,

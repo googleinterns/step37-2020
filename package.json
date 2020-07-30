@@ -5,7 +5,7 @@
     "build": "ng build && cp -r recommendationimpactdashboard/src/main/angular/WEB-INF recommendationimpactdashboard/src/main/webapp/WEB-INF && mvn clean package appengine:run -DskipTests",
     "deploy": "ng build && cp -r recommendationimpactdashboard/src/main/angular/WEB-INF recommendationimpactdashboard/src/main/webapp/WEB-INF && mvn clean package appengine:deploy -DskipTests && mvn package appengine:deployCron",
     "serve": "ng serve --open",
-    "check": "gts check recommendationimpactdashboard//src/**/*.ts",
+    "check": "gts check recommendationimpactdashboard/src/**/*.ts",
     "clean": "gts clean",
     "compile": "tsc",
     "fix": "gts fix **/*.ts",

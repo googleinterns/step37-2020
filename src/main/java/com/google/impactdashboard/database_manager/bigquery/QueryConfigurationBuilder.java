@@ -27,7 +27,7 @@ public class QueryConfigurationBuilder {
   private QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration;
   private QueryJobConfiguration.Builder getMostRecentTimestampConfiguration;
 
-  private QueryConfigurationBuilder(
+  protected QueryConfigurationBuilder(
     QueryJobConfiguration.Builder getProjectIdsConfiguration, 
     QueryJobConfiguration.Builder getOrganizationIdsConfiguration, 
     QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration, 

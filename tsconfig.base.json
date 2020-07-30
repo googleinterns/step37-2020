@@ -10,7 +10,7 @@
     ]
   },
   "include": [
-    "src/**/*.ts",
-    "test/**/*.ts",
+    "recommendationimpactdashboard/src/**/*.ts",
+    "recommendationimpactdashboard/test/**/*.ts",
   ],
 }

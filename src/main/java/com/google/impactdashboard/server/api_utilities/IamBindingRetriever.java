@@ -104,7 +104,6 @@ public class IamBindingRetriever {
       }
       String organizationId = resourceRetriever.getOrganizationId(projectId);
       String organizationName = resourceRetriever.getOrganizationName(organizationId);
-      // @TODO fix organization id here once retrieved
       return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber,
           OrganizationIdentification.create(organizationName,organizationId), secondsFromEpoch,
           iamBindings);
@@ -207,7 +206,7 @@ public class IamBindingRetriever {
         rolesResponse = iamService.projects().roles().list("projects/" + projectId)
             .setView("full").setPageToken(projectPageToken).execute();
       }
-      if (rolesResponse != null) {
+      if (rolesResponse != null && !rolesResponse.isEmpty()) {
         projectCustomRoles.addAll(rolesResponse.getRoles());
         projectPageToken = rolesResponse.getNextPageToken();
       }
@@ -234,7 +233,7 @@ public class IamBindingRetriever {
           rolesResponse = iamService.projects().roles().list("organizations/" + organizationId)
               .setView("full").setPageToken(projectPageToken).execute();
         }
-        if (rolesResponse != null) {
+        if (rolesResponse != null && !rolesResponse.isEmpty()) {
           organizationCustomRoles.addAll(rolesResponse.getRoles());
           projectPageToken = rolesResponse.getNextPageToken();
         }

@@ -14,6 +14,8 @@ import com.google.impactdashboard.server.api_utilities.LogRetriever;
 import com.google.impactdashboard.server.api_utilities.ResourceRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.logging.v2.LogEntry;
+
+import java.lang.reflect.Array;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -80,13 +82,17 @@ public class DataUpdater {
     List<ProjectIdentification> projects, String timeFrom, String timeTo) {
     return projects.parallelStream()
       .map(project -> {
-        ListLogEntriesPagedResponse response = logRetriever.listRecommendationLogs(
-          project.getProjectId(), timeFrom, timeTo);
-        List<LogEntry> entries = StreamSupport.stream(response.iterateAll().spliterator(), false)
-          .collect(Collectors.toList());
-        return recommendationRetriever.listRecommendations(
-          entries, project.getProjectId(), 
-          Recommendation.RecommenderType.IAM_BINDING, iamRetriever);
+        try {
+          ListLogEntriesPagedResponse response = logRetriever.listRecommendationLogs(
+              project.getProjectId(), timeFrom, timeTo);
+          List<LogEntry> entries = StreamSupport.stream(response.iterateAll().spliterator(), false)
+              .collect(Collectors.toList());
+          return recommendationRetriever.listRecommendations(
+              entries, project.getProjectId(),
+              Recommendation.RecommenderType.IAM_BINDING, iamRetriever);
+        } catch (Exception e) {
+          return new ArrayList<Recommendation>();
+        }
       }).flatMap(List::stream).collect(Collectors.toList());
   }
 
@@ -94,26 +100,30 @@ public class DataUpdater {
   protected List<IAMBindingDatabaseEntry> getIAMBindingsDataEntries(
       List<ProjectIdentification> projects, Instant timeFrom, Instant timeTo) {
     return projects.parallelStream().flatMap(project -> {
-      List<IAMBindingDatabaseEntry> iamBindingDatabaseEntries = new ArrayList<>();
+      try {
+        List<IAMBindingDatabaseEntry> iamBindingDatabaseEntries = new ArrayList<>();
 
-      LoggingClient.ListLogEntriesPagedResponse response = logRetriever
-          .listAuditLogsResponse(project.getProjectId(), timeFrom.toString(), 
-              timeTo == null ? "" : timeTo.toString(), 50);
-      List<LogEntry> iamBindingsLogs = StreamSupport
-          .stream(response.iterateAll().spliterator(), false).collect(Collectors.toList());
+        LoggingClient.ListLogEntriesPagedResponse response = logRetriever
+            .listAuditLogsResponse(project.getProjectId(), timeFrom.toString(),
+                timeTo == null ? "" : timeTo.toString(), 50);
+        List<LogEntry> iamBindingsLogs = StreamSupport
+            .stream(response.iterateAll().spliterator(), false).collect(Collectors.toList());
 
-      iamBindingDatabaseEntries.addAll(iamRetriever.listIAMBindingData(iamBindingsLogs,
-          project.getProjectId(), project.getName(), 
-          String.valueOf(project.getProjectNumber()),
-          null));
-      iamBindingDatabaseEntries.addAll(getLastIamEntry(project, timeFrom.toString()));
+        iamBindingDatabaseEntries.addAll(iamRetriever.listIAMBindingData(iamBindingsLogs,
+            project.getProjectId(), project.getName(),
+            String.valueOf(project.getProjectNumber()),
+            null));
+        iamBindingDatabaseEntries.addAll(getLastIamEntry(project, timeFrom.toString()));
 
-      return createListWithOneEntryPerDay(iamBindingDatabaseEntries, timeFrom, 
-          timeTo == null ? 
-              Instant.ofEpochMilli(System.currentTimeMillis())
-                  .truncatedTo(ChronoUnit.DAYS).plus(1L, ChronoUnit.DAYS) : 
-              timeTo)
-          .stream();
+        return createListWithOneEntryPerDay(iamBindingDatabaseEntries, timeFrom,
+            timeTo == null ?
+                Instant.ofEpochMilli(System.currentTimeMillis())
+                    .truncatedTo(ChronoUnit.DAYS).plus(1L, ChronoUnit.DAYS) :
+                timeTo)
+            .stream();
+      } catch (Exception e) {
+        return new ArrayList<IAMBindingDatabaseEntry>().stream();
+      }
     }).collect(Collectors.toList());
   }
 
@@ -127,18 +137,22 @@ public class DataUpdater {
    */
   protected List<IAMBindingDatabaseEntry> getLastIamEntry(
       ProjectIdentification project, String timeTo) {
-    long todayMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
-        .truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+    try {
+      long todayMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
+          .truncatedTo(ChronoUnit.DAYS).toEpochMilli();
 
-    LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
-        project.getProjectId(), "", timeTo, 1);
-    List<LogEntry> entry = response.getPage().getResponse().getEntriesList();
+      LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
+          project.getProjectId(), "", timeTo, 1);
+      List<LogEntry> entry = response.getPage().getResponse().getEntriesList();
 
-    List<IAMBindingDatabaseEntry> lastEntry =  iamRetriever
-        .listIAMBindingData(entry, project.getProjectId(), project.getName(),
-            String.valueOf(project.getProjectNumber()), 
-            timeTo.equals("") ? todayMidnight : null);
-    return lastEntry;
+      List<IAMBindingDatabaseEntry> lastEntry = iamRetriever
+          .listIAMBindingData(entry, project.getProjectId(), project.getName(),
+              String.valueOf(project.getProjectNumber()),
+              timeTo.equals("") ? todayMidnight : null);
+      return lastEntry;
+    } catch (Exception e) {
+      return new ArrayList<>();
+    }
   }
 
   /**
@@ -186,9 +200,8 @@ public class DataUpdater {
   /** Returns a copy of {@code entry} with timestamp {@code timestamp}. */
   private IAMBindingDatabaseEntry copyWithNewTimestamp(IAMBindingDatabaseEntry entry, 
       long timestamp) {
-    // @TODO fix organization id here once retrieved
     return IAMBindingDatabaseEntry.create(entry.getProjectId(), 
         entry.getProjectName(), entry.getProjectNumber(),
-        OrganizationIdentification.create("", ""), timestamp, entry.getBindingsNumber());
+        entry.getIdentification(), timestamp, entry.getBindingsNumber());
   }
 }

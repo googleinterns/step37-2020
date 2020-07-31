@@ -61,7 +61,8 @@ public class DataSummaryRetriever {
   private List<Organization> listOrganizationInformation() {
     List<OrganizationIdentification> organizationIdentificationList = readManager.listOrganizations();
     return organizationIdentificationList.stream().map(organizationIdentification -> Organization
-        .create(organizationIdentification, readManager.getOrganizationAvgBindingsInPastYear())
+        .create(organizationIdentification, readManager
+            .getOrganizationAvgBindingsInPastYear(organizationIdentification.getId()))
     ).collect(Collectors.toList());
   }
 }

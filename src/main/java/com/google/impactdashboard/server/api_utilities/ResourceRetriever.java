@@ -88,7 +88,7 @@ public class ResourceRetriever {
       throw new RuntimeException("Failed to get ancestors: " + io.getMessage());
     }
     if(ancestors == null) {
-      return "";
+      return "N/A";
     }
     return ancestors.get(ancestors.size()-1).getResourceId().getId();
   }

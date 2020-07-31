@@ -113,30 +113,22 @@ export class OrganizationComparators {
 
   /** Comparator for sorting organizations in descending order alphabetically by name. */
   private static nameDescending(a: Organization, b: Organization): number {
-    return a.identification.organizationName.localeCompare(
-      b.identification.organizationName
-    );
+    return a.identification.name.localeCompare(b.identification.name);
   }
 
   /** Comparator for sorting organizations in ascending order alphabetically by name. */
   private static nameAscending(a: Organization, b: Organization): number {
-    return b.identification.organizationName.localeCompare(
-      a.identification.organizationName
-    );
+    return b.identification.name.localeCompare(a.identification.name);
   }
 
   /** Comparator for sorting organizations in descending order alphabetically by id. */
   private static idDescending(a: Organization, b: Organization): number {
-    return a.identification.organizationId.localeCompare(
-      b.identification.organizationId
-    );
+    return a.identification.id.localeCompare(b.identification.id);
   }
 
   /** Comparator for sorting organizations in ascending order alphabetically by id. */
   private static idAscending(a: Organization, b: Organization): number {
-    return b.identification.organizationId.localeCompare(
-      a.identification.organizationId
-    );
+    return b.identification.id.localeCompare(a.identification.id);
   }
 }
 

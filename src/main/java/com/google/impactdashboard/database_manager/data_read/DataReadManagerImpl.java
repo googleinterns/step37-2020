@@ -103,7 +103,8 @@ public class DataReadManagerImpl implements DataReadManager {
       return 0.0;
     } else {
       return row.get("AverageBindings").getDoubleValue();
-    }  }
+    }  
+  }
 
   /**
    *  Returns a map of dates (as timestamps in UTC milliseconds since the epoch) 
@@ -165,7 +166,7 @@ public class DataReadManagerImpl implements DataReadManager {
       List<RecommendationAction> actions = structActionsToRecommendationActions(
         row.get(RecommendationsSchema.ACTIONS_COLUMN).getRepeatedValue(), structSchema);
 
-        datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
+      datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
         projectId, organizationId, actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
         acceptedTimestamp, IAMRecommenderMetadata.create(iamImpact)));
     } 

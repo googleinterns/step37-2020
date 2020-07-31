@@ -1,10 +1,15 @@
 package com.google.impactdashboard.server.api_utilities;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.bigquery.model.ProjectList;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
+import com.google.api.services.cloudresourcemanager.model.Ancestor;
+import com.google.api.services.cloudresourcemanager.model.GetAncestryRequest;
+import com.google.api.services.cloudresourcemanager.model.GetAncestryResponse;
 import com.google.api.services.cloudresourcemanager.model.ListProjectsResponse;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -76,6 +81,17 @@ public class ProjectListRetriever {
   }
 
   /**
+   * Returns the ancestor hierarchy for the specified project.
+   * @param projectId the project to get the ancestors for
+   */
+  private List<Ancestor> getProjectAncestry(String projectId) throws IOException {
+    CloudResourceManager.Projects.GetAncestry ancestry = cloudResourceManagerService.
+        projects().getAncestry(projectId, new GetAncestryRequest());
+    GetAncestryResponse response = ancestry.execute();
+    return response.getAncestor();
+  }
+
+  /**
    * Returns a CloudResourceManager with the proper credentials to retrieve the 
    * list of projects that the dashboard has access to.
    */
@@ -99,5 +115,10 @@ public class ProjectListRetriever {
     return new CloudResourceManager.Builder(httpTransport, jsonFactory, credentials)
       .setApplicationName("Recommendations Impact Dashboard")
       .build();
+  }
+
+  public static void main(String[] args) throws IOException {
+    ProjectListRetriever retriever = ProjectListRetriever.getInstance();
+    retriever.getProjectAncestry("ionis-step-2020");
   }
 }

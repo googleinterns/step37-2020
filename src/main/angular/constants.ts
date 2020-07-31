@@ -39,7 +39,7 @@ export const ERROR_PAGE_URL = 'error';
 
 /** Informs the user to select a project. Displayed when none are shown. */
 export const SELECT_PROJECT_MESSAGE =
-  'Please select a project below to generate a graph.';
+  'Please select a resource below to generate a graph.';
 /** Informs the user that web requests are active. */
 export const LOADING_MESSAGE = 'Waiting on server, please wait.';
 /** Suffix added to a cumulative bindings dataset. */

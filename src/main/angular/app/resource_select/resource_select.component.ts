@@ -70,8 +70,6 @@ export class ResourceSelectComponent implements OnInit {
 
   @Output()
   public changeSelection = new EventEmitter<Resource[]>();
-  @Output()
-  public changeResource = new EventEmitter<ResourceType>();
 
   constructor(
     private dataService: DataService,
@@ -92,8 +90,10 @@ export class ResourceSelectComponent implements OnInit {
     // Invert the display type
     if (this.displayType === ResourceType.ORGANIZATION) {
       this.displayType = ResourceType.PROJECT;
-    } else {
+      this.changeSelection.emit(Array.from(this.activeProjects));
+    } else if (this.displayType === ResourceType.PROJECT) {
       this.displayType = ResourceType.ORGANIZATION;
+      this.changeSelection.emit(Array.from(this.activeOrganizations));
 
       if (this.queryService.getSortField() === SortBy.PROJECT_NUMBER) {
         // Number field isn't available on organizations, so switch to IAM
@@ -239,7 +239,10 @@ export class ResourceSelectComponent implements OnInit {
       // Assign colors based on initial ordering
       this.queryService.assignColors(DEFAULT_COLORS);
 
-      // Add the highest IAM Bindings project by default
+      // Add the highest IAM Bindings project and organization by default
+      if (organizations.length > 0) {
+        this.toggleResource(organizations[0]);
+      }
       if (projects.length > 0) {
         this.toggleResource(projects[0]);
       }

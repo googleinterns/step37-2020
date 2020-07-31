@@ -21,7 +21,6 @@ import {
 } from '@angular/core';
 import {GraphProcessorService} from '../services/graph_processor.service';
 import {GraphProperties, Columns} from '../../model/types';
-import {DataService} from '../services/data.service';
 import {
   WIDTH_SCALE_FACTOR,
   HEIGHT_SCALE_FACTOR,
@@ -51,10 +50,7 @@ export class GraphComponent implements OnInit {
   /** Whether to show the graph without accepted recommendations. */
   private showCumulativeDifference: boolean;
 
-  constructor(
-    private dataService: DataService,
-    private graphProcessor: GraphProcessorService
-  ) {
+  constructor(private graphProcessor: GraphProcessorService) {
     this.shouldShowChart = false;
     this.resources = [];
     this.noChartMessage = LOADING_MESSAGE;

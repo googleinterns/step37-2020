@@ -133,6 +133,40 @@ describe('DateUtilitiesService', () => {
     });
   });
 
+  describe('excludedDays()', () => {
+    // June 1 - 5
+    let earlyJune: Date[];
+    // June 6 - 10
+    let midJune: Date[];
+    // June 4 - 8
+    let midEarlyJune: Date[];
+
+    beforeAll(() => {
+      earlyJune = [1, 2, 3, 4, 5].map(i => new Date(2020, 5, i));
+      midJune = [6, 7, 8, 9, 10].map(i => new Date(2020, 5, i));
+      midEarlyJune = [4, 5, 6, 7, 8].map(i => new Date(2020, 5, i));
+    });
+
+    it('Returns empty array for complete overlap', () => {
+      const actual = service.excludedDays(earlyJune, earlyJune);
+
+      expect(actual).toEqual([]);
+    });
+
+    it('Returns the initial range when no overlap', () => {
+      const actual = service.excludedDays(earlyJune, midJune);
+
+      expect(actual).toEqual(earlyJune);
+    });
+
+    it('Returns the correct overlap', () => {
+      const actual = service.excludedDays(midEarlyJune, earlyJune);
+      const expected = midEarlyJune.filter((value, index) => index > 1);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe('getDateRange()', () => {
     let year: number;
     let month: number;

@@ -12,7 +12,6 @@ public class Queries {
    */
   private static final String IAM_TABLE = Constants.PROJECT_ID + "." + 
     Constants.DATABASE + "." + Constants.IAM_BINDINGS_TABLE;
-  
 
   /** 
    * Based on system Configuration flags, set to the value of the recommendations 
@@ -63,6 +62,7 @@ public class Queries {
    */
   public static final String GET_DATES_TO_IAM_RECOMMENDATIONS = 
     "SELECT " + 
+      RecommendationsSchema.RECOMMENDATIONS_ORGANIZATION_ID_COLUMN + ", " +
       RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN + ", " +
       RecommendationsSchema.ACTOR_COLUMN + ", " +
       RecommendationsSchema.ACTIONS_COLUMN + ", " +

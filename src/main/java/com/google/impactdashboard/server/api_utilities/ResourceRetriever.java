@@ -115,7 +115,7 @@ public class ResourceRetriever {
     } catch (IOException io) {
       throw new RuntimeException("Could not find any organization with id:" + organizationId);
     }
-    return organization != null ? organization.getDisplayName(): "";
+    return organization != null ? organization.getDisplayName(): organizationId;
   }
 
   /**

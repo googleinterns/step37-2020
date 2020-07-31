@@ -17,7 +17,7 @@ export class OrganizationGraphData implements IAMResourceGraphData {
   }
 
   getId(): string {
-    return this.identification.organizationId;
+    return this.identification.id;
   }
 
   getDateToRecommendation(): {[key: number]: Recommendation} {

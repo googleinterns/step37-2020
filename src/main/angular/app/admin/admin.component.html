@@ -1,12 +1,14 @@
 <div id="container">
   <div id="border-container">
     <h1>Admin page</h1>
-    <mat-progress-bar *ngIf="showLoadingBar()" mode="query"></mat-progress-bar>
+    <mat-progress-bar *ngIf="showLoadingBar()" mode="query" color="warn"></mat-progress-bar>
 
     <div class="option-group">
       <mat-divider></mat-divider>
-      <p>Initiate a manual update of the database. Please note that this will take a couple minutes to complete.</p>
-      <button id="manual-update-button" mat-flat-button color="primary" (click)="manualUpdate()" [disabled]="enableUpdateData()">Manual Update</button>
+      <p>Initiate a manual update of the database. Please note that this will take a couple minutes
+        to complete.</p>
+      <button id="manual-update-button" mat-flat-button color="primary" (click)="manualUpdate()"
+        [disabled]="enableUpdateData()">Manual Update</button>
     </div>
   </div>
 </div>

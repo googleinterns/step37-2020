@@ -16,11 +16,11 @@ export class Organization implements IAMResource {
   }
 
   getName(): string {
-    return this.identification.organizationName;
+    return this.identification.name;
   }
 
   getId(): string {
-    return this.identification.organizationId;
+    return this.identification.id;
   }
 
   getResourceType(): ResourceType {

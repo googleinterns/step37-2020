@@ -13,6 +13,7 @@ import com.google.impactdashboard.database_manager.data_read.DataReadManagerFact
 import java.util.List;
 import java.util.stream.Collectors;
 
+/** Retrieves the all the summary information for projects and organizations. */
 public class DataSummaryRetriever {
   private final DataReadManager readManager;
 

@@ -1,4 +1,3 @@
-import {OrganizationIdentification} from './organization_identification';
 import {Recommendation} from './recommendation';
 import {IAMResourceGraphData} from './resource_graph_data';
 import {ResourceType} from './resource';
@@ -7,7 +6,7 @@ import {RecommenderType} from './recommender_type';
 /** Represents graph data for an organization. */
 export class OrganizationGraphData implements IAMResourceGraphData {
   constructor(
-    public identification: OrganizationIdentification,
+    public organizationId: string,
     public datesToBindings: {[time: number]: number},
     public datesToRecommendations: {[time: number]: Recommendation}
   ) {}
@@ -17,7 +16,7 @@ export class OrganizationGraphData implements IAMResourceGraphData {
   }
 
   getId(): string {
-    return this.identification.organizationId;
+    return this.organizationId;
   }
 
   getDateToRecommendation(): {[key: number]: Recommendation} {

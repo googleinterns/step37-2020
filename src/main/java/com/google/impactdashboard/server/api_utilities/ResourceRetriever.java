@@ -5,17 +5,15 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
-import com.google.api.services.cloudresourcemanager.model.Ancestor;
-import com.google.api.services.cloudresourcemanager.model.GetAncestryRequest;
-import com.google.api.services.cloudresourcemanager.model.GetAncestryResponse;
-import com.google.api.services.cloudresourcemanager.model.ListProjectsResponse;
+import com.google.api.services.cloudresourcemanager.model.*;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
+import java.util.*;
+
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.impactdashboard.Credentials;
-import java.util.List;
-import java.util.ArrayList;
+
 import  com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.common.annotations.VisibleForTesting;
 
@@ -107,6 +105,46 @@ public class ResourceRetriever {
   }
 
   /**
+   * Returns the name of the organization that has the id specified.
+   * @param organizationId The id of the organization the name is retrieved for.
+   */
+  public String getOrganizationName(String organizationId) {
+    Organization organization;
+    try {
+      organization = searchOrganizationIds(organizationId);
+    } catch (IOException io) {
+      throw new RuntimeException("Could not find any organization with id:" + organizationId);
+    }
+    return organization != null ? organization.getDisplayName(): "";
+  }
+
+  /**
+   * Searches through all the organizations to find the org that matches the id specified.
+   * @param organizationId The id of the organization that is being searched for.
+   * @return The organization that has the id specified, null if it does not exist.
+   */
+  private Organization searchOrganizationIds(String organizationId) throws IOException {
+    SearchOrganizationsRequest request = new SearchOrganizationsRequest();
+    CloudResourceManager.Organizations.Search search = cloudResourceManagerService.organizations()
+        .search(request);
+
+    SearchOrganizationsResponse response;
+    do {
+      response = search.execute();
+      if(response.getOrganizations() != null) {
+         Optional<Organization> optionalOrganization = response.getOrganizations().stream()
+             .filter(organization -> Objects.equals(organization.getName(),
+                 "organizations/" + organizationId)).findFirst();
+         if (optionalOrganization.isPresent()) {
+           return optionalOrganization.get();
+         }
+      }
+      request.setPageToken(response.getNextPageToken());
+    } while(response.getNextPageToken() != null);
+    return null;
+  }
+
+  /**
    * Returns a CloudResourceManager with the proper credentials to retrieve the 
    * list of projects that the dashboard has access to.
    */
@@ -132,8 +170,8 @@ public class ResourceRetriever {
       .build();
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     ResourceRetriever retriever = ResourceRetriever.getInstance();
-    retriever.getOrganizationId("ionis-step-2020");
+    String name = retriever.getOrganizationName("766157370734");
   }
 }

@@ -125,9 +125,11 @@ public class QueryConfigurationBuilderEmpty implements QueryConfigurationBuilder
     }
     sqlFormattedValues += values.stream()
       .map(bindingData -> String.format(
-        "('%s', '%s', '%s', TIMESTAMP_ADD('1970-01-01 00:00:00 UTC', INTERVAL %s SECOND), %s)", 
+        "('%s', '%s', '%s', '%s', '%s', " + 
+        "TIMESTAMP_ADD('1970-01-01 00:00:00 UTC', INTERVAL %s SECOND), %s)", 
         bindingData.getProjectId(), bindingData.getProjectName(), 
-        bindingData.getProjectNumber(), bindingData.getTimestamp() / 1000, 
+        bindingData.getProjectNumber(), bindingData.getIdentification().getId(),
+        bindingData.getIdentification().getName(), bindingData.getTimestamp() / 1000, 
         bindingData.getBindingsNumber()))
       .collect(Collectors.joining(", "));
 
@@ -148,10 +150,11 @@ public class QueryConfigurationBuilderEmpty implements QueryConfigurationBuilder
     }
     sqlFormattedValues += values.stream()
       .map(recommendation -> String.format(
-        "('%s', '%s', '%s', [%s], " + 
+        "('%s', '%s', '%s', '%s', [%s], " + 
           "TIMESTAMP_ADD('1970-01-01 00:00:00 UTC', INTERVAL %s SECOND), %s)",
-        recommendation.getProjectId(), recommendation.getRecommender(), 
-        recommendation.getActor(), getFormattedActionsList(recommendation.getActions()), 
+        recommendation.getProjectId(), recommendation.getOrganizationId(),
+        recommendation.getRecommender(), recommendation.getActor(), 
+        getFormattedActionsList(recommendation.getActions()), 
         recommendation.getAcceptedTimestamp() / 1000, 
         ((IAMRecommenderMetadata) recommendation.getMetadata()).getImpactInIAMBindings()))
       .collect(Collectors.joining(", "));

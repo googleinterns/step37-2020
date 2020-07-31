@@ -81,6 +81,8 @@ public class DataReadManagerImpl implements DataReadManager {
 
     HashMap<Long, Recommendation> datesToRecommendations = new HashMap<Long, Recommendation>();
     for (FieldValueList row : results.iterateAll()) {
+      String organizationId = row.get(RecommendationsSchema.RECOMMENDATIONS_ORGANIZATION_ID_COLUMN)
+        .getStringValue();
       long acceptedTimestamp = row.get(RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN)
         .getTimestampValue() / 1000;
       String actor = row.get(RecommendationsSchema.ACTOR_COLUMN).getStringValue();
@@ -91,9 +93,8 @@ public class DataReadManagerImpl implements DataReadManager {
       List<RecommendationAction> actions = structActionsToRecommendationActions(
         row.get(RecommendationsSchema.ACTIONS_COLUMN).getRepeatedValue(), structSchema);
 
-      //TODO: once database schema has changed, retrieve real org ID
-      datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
-        projectId, "", actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
+        datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
+        projectId, organizationId, actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
         acceptedTimestamp, IAMRecommenderMetadata.create(iamImpact)));
     } 
     return datesToRecommendations;

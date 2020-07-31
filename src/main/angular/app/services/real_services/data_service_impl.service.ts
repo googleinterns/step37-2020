@@ -69,14 +69,11 @@ export class DataServiceImpl implements DataService {
     const response: any = await this.http.get<any>(url).toPromise();
 
     // eslint-disable-next-line no-prototype-builtins
-    if (response.hasOwnProperty('identification')) {
+    if (response.hasOwnProperty('organizationId')) {
       return new Promise(resolve => {
         this.activeRequests.delete(url);
         const graphData = new OrganizationGraphData(
-          new OrganizationIdentification(
-            response.identification.organizationId,
-            response.identification.organizationName
-          ),
+          response.organizationId,
           response.datesToBindings,
           response.datesToRecommendations
         );

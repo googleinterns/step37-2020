@@ -1,0 +1,106 @@
+<div id="root">
+  <div id="content">
+    <mat-progress-bar *ngIf="showLoadingBar()" mode="query"></mat-progress-bar>
+
+
+    <mat-tab-group dynamicHeight (selectedTabChange)="toggleDisplay()" backgroundColor="primary">
+      <mat-tab label="Projects">
+        <div id="filter-container">
+          <fa-icon [icon]="filter" id="filter-icon"></fa-icon><input type="text"
+            (input)="search($event.target.value)" placeholder="Search by Name or ID"
+            id="filter-input" title="Search by Name or ID" />
+        </div>
+        <table id="resource-table" class="center">
+          <tr id="header">
+            <th>
+              <div [@rotateSort]="sortRotated.project.name">
+                <fa-icon [icon]="arrow" [ngClass]="getSortClass(name)" (click)="toggleSort(name)"
+                  id="name-sort" class="clickable" title="Toggle sort direction"></fa-icon>
+              </div><span class="clickable" (click)="changeField(name)" title="Sort by name">
+                Project Name</span>
+            </th>
+            <th>
+              <div [@rotateSort]="sortRotated.project.iamBindings">
+                <fa-icon [icon]="arrow" [ngClass]="getSortClass(iamBindings)"
+                  (click)="toggleSort(iamBindings)" id="iam-sort" class="clickable"
+                  title="Toggle sort direction"></fa-icon>
+              </div><span class="clickable" (click)="changeField(iamBindings)"
+                title="Sort by average IAM bindings"> Avg Bindings</span>
+            </th>
+            <th>
+              <div [@rotateSort]="sortRotated.project.number">
+                <fa-icon [icon]="arrow" [ngClass]="getSortClass(projectNumber)"
+                  (click)="toggleSort(projectNumber)" id="number-sort" class="clickable"
+                  title="Toggle sort direction"></fa-icon>
+              </div><span class="clickable" (click)="changeField(projectNumber)"
+                title="Sort by project number"> Project Number</span>
+            </th>
+            <th>
+              <div [@rotateSort]="sortRotated.project.id">
+                <fa-icon [icon]="arrow" [ngClass]="getSortClass(id)" (click)="toggleSort(id)"
+                  id="id-sort" class="clickable" title="Toggle sort direction"></fa-icon>
+              </div><span class="clickable" (click)="changeField(id)" title="Sort by ID">
+                Project ID</span>
+            </th>
+          </tr>
+
+          <tr *ngFor="let project of getProjects()" (click)="toggleResource(project)"
+            class="toggle-project clickable" title="Toggle project">
+            <td>
+              <fa-icon [icon]="circle" [ngStyle]="{'color': getColor(project)}"
+                class="project-color-icon"></fa-icon>{{ project.getName() }}
+            </td>
+            <td>{{ project.getAverageBindings() }}</td>
+            <td>{{ project.projectNumber }}</td>
+            <td>{{ project.getId() }}</td>
+          </tr>
+        </table>
+      </mat-tab>
+
+      <mat-tab label="Organizations">
+        <div id="filter-container">
+          <fa-icon [icon]="filter" id="filter-icon"></fa-icon><input type="text"
+            (input)="search($event.target.value)" placeholder="Search by Name or ID"
+            id="filter-input" title="Search by Name or ID" />
+        </div>
+        <table id="resource-table" class="center">
+          <tr id="header">
+            <th>
+              <div [@rotateSort]="sortRotated.organization.name">
+                <fa-icon [icon]="arrow" [ngClass]="getSortClass(name)" (click)="toggleSort(name)"
+                  id="name-sort" class="clickable" title="Toggle sort direction"></fa-icon>
+              </div><span class="clickable" (click)="changeField(name)" title="Sort by name">
+                Organization Name</span>
+            </th>
+            <th>
+              <div [@rotateSort]="sortRotated.organization.iamBindings">
+                <fa-icon [icon]="arrow" [ngClass]="getSortClass(iamBindings)"
+                  (click)="toggleSort(iamBindings)" id="iam-sort" class="clickable"
+                  title="Toggle sort direction"></fa-icon>
+              </div><span class="clickable" (click)="changeField(iamBindings)"
+                title="Sort by average IAM bindings"> Avg Bindings</span>
+            </th>
+            <th>
+              <div [@rotateSort]="sortRotated.organization.id">
+                <fa-icon [icon]="arrow" [ngClass]="getSortClass(id)" (click)="toggleSort(id)"
+                  id="id-sort" class="clickable" title="Toggle sort direction"></fa-icon>
+              </div><span class="clickable" (click)="changeField(id)" title="Sort by ID">
+                Organization ID</span>
+            </th>
+          </tr>
+
+          <tr *ngFor="let organization of getOrganizations()" (click)="toggleResource(organization)"
+            class="toggle-project clickable" title="Toggle project">
+            <td>
+              <fa-icon [icon]="circle" [ngStyle]="{'color': getColor(organization)}"
+                class="project-color-icon"></fa-icon>{{ organization.getName() }}
+            </td>
+            <td>{{ organization.getAverageBindings() }}</td>
+            <td>{{ organization.getId() }}</td>
+          </tr>
+        </table>
+      </mat-tab>
+    </mat-tab-group>
+
+  </div>
+</div>

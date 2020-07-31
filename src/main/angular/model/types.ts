@@ -1,4 +1,6 @@
 import {DateRange} from './date_range';
+import {SortDirection, SortBy} from './sort_methods';
+import {Resource} from './resource';
 
 /** Contains various types used by the application. */
 
@@ -26,3 +28,11 @@ export type Columns = (
   | string
   | {type: 'string'; role: 'tooltip' | 'style'; p?: {html: boolean}}
 )[];
+
+/** Contains the information needed for a query. */
+export type QueryData = {
+  sortBy: SortBy;
+  sortDirection: SortDirection;
+  query: string;
+  cache: Resource[];
+};

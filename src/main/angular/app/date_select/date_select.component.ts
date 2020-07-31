@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  SimpleChanges,
-  Output,
-  EventEmitter,
-} from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import {DateUtilitiesService} from '../services/date_utilities.service';
 import {DateRange} from '../../model/date_range';
 
@@ -41,7 +34,7 @@ export class DateSelectComponent implements OnInit {
   ngOnInit(): void {}
 
   /** Called when an input field changes. */
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     this.currentMin = this.possibleRange.getStart();
     // A timeout is necessary, as there is a delay before the range on the mat-date-range-input tag is updated,
     // so if the new DateRange is broader than the old one,

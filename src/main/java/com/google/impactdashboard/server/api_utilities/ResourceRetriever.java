@@ -1,11 +1,9 @@
 package com.google.impactdashboard.server.api_utilities;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.bigquery.model.ProjectList;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.api.services.cloudresourcemanager.model.Ancestor;
 import com.google.api.services.cloudresourcemanager.model.GetAncestryRequest;
@@ -25,19 +23,19 @@ import com.google.common.annotations.VisibleForTesting;
  * A class for using the Cloud Resource Manager API to retrieve the projects 
  * that the credentials in use have resourcemanager.projects.get permission for. 
  */
-public class ProjectListRetriever {
+public class ResourceRetriever {
 
   private CloudResourceManager cloudResourceManagerService = null;
-  private static ProjectListRetriever INSTANCE = null;
+  private static ResourceRetriever INSTANCE = null;
 
-  public static ProjectListRetriever getInstance() {
+  public static ResourceRetriever getInstance() {
     if (INSTANCE == null) {
-      INSTANCE = new ProjectListRetriever(createCloudResourceManagerService());
+      INSTANCE = new ResourceRetriever(createCloudResourceManagerService());
     }
     return INSTANCE;
   }
 
-  protected ProjectListRetriever(CloudResourceManager cloudResourceManagerService) {
+  protected ResourceRetriever(CloudResourceManager cloudResourceManagerService) {
     this.cloudResourceManagerService = cloudResourceManagerService;
   }
 
@@ -84,8 +82,16 @@ public class ProjectListRetriever {
    * Returns the top level ancestor to a project which is the organization the project belongs under.
    * @param projectId the project the organization id is being retrieved for.
    */
-  public String getOrganizationId(String projectId) throws IOException {
-    List<Ancestor> ancestors = getProjectAncestry(projectId);
+  public String getOrganizationId(String projectId){
+    List<Ancestor> ancestors;
+    try {
+       ancestors = getProjectAncestry(projectId);
+    } catch (IOException io) {
+      throw new RuntimeException("Failed to get ancestors: " + io.getMessage());
+    }
+    if(ancestors == null) {
+      return "";
+    }
     return ancestors.get(ancestors.size()-1).getResourceId().getId();
   }
 
@@ -127,7 +133,7 @@ public class ProjectListRetriever {
   }
 
   public static void main(String[] args) throws IOException {
-    ProjectListRetriever retriever = ProjectListRetriever.getInstance();
+    ResourceRetriever retriever = ResourceRetriever.getInstance();
     retriever.getOrganizationId("ionis-step-2020");
   }
 }

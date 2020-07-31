@@ -11,7 +11,7 @@ import com.google.impactdashboard.database_manager.data_read.DataReadManager;
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManager;
 import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
-import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
+import com.google.impactdashboard.server.api_utilities.ResourceRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.logging.v2.LogEntry;
 import java.time.Instant;
@@ -29,12 +29,12 @@ public class DataUpdater {
   protected final IamBindingRetriever iamRetriever;
   protected final DataUpdateManager updateManager;
   protected final DataReadManager readManager;
-  protected final ProjectListRetriever projectRetriever;
+  protected final ResourceRetriever projectRetriever;
 
   @VisibleForTesting
   protected DataUpdater(LogRetriever logRetriever, RecommendationRetriever recommendationRetriever,
                       DataUpdateManager updateManager, DataReadManager readManager,
-                      IamBindingRetriever iamRetriever, ProjectListRetriever projectRetriever) {
+                      IamBindingRetriever iamRetriever, ResourceRetriever projectRetriever) {
     this.logRetriever = logRetriever;
     this.recommendationRetriever = recommendationRetriever;
     this.updateManager = updateManager;

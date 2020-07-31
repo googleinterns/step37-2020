@@ -10,13 +10,12 @@ import com.google.impactdashboard.database_manager.data_update.DataUpdateManager
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManagerFactory;
 import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
-import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
+import com.google.impactdashboard.server.api_utilities.ResourceRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,7 @@ public class AutomaticDataUpdater extends DataUpdater {
   protected AutomaticDataUpdater(LogRetriever logRetriever, 
       RecommendationRetriever recommendationRetriever,
       DataUpdateManager updateManager, DataReadManager readManager,
-      IamBindingRetriever iamRetriever, ProjectListRetriever projectRetriever) {
+      IamBindingRetriever iamRetriever, ResourceRetriever projectRetriever) {
     super(logRetriever, recommendationRetriever, updateManager, readManager, 
         iamRetriever, projectRetriever);
   }
@@ -44,7 +43,7 @@ public class AutomaticDataUpdater extends DataUpdater {
       throws IOException, GeneralSecurityException {
     return new AutomaticDataUpdater(LogRetriever.create(), RecommendationRetriever.create(),
         DataUpdateManagerFactory.create(), DataReadManagerFactory.create(),
-        IamBindingRetriever.create(), ProjectListRetriever.getInstance());
+        IamBindingRetriever.create(), ResourceRetriever.getInstance());
   }
 
   /**

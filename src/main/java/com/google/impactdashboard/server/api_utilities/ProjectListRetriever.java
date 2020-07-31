@@ -81,6 +81,15 @@ public class ProjectListRetriever {
   }
 
   /**
+   * Returns the top level ancestor to a project which is the organization the project belongs under.
+   * @param projectId the project the organization id is being retrieved for.
+   */
+  public String getOrganizationId(String projectId) throws IOException {
+    List<Ancestor> ancestors = getProjectAncestry(projectId);
+    return ancestors.get(ancestors.size()-1).getResourceId().getId();
+  }
+
+  /**
    * Returns the ancestor hierarchy for the specified project.
    * @param projectId the project to get the ancestors for
    */
@@ -119,6 +128,6 @@ public class ProjectListRetriever {
 
   public static void main(String[] args) throws IOException {
     ProjectListRetriever retriever = ProjectListRetriever.getInstance();
-    retriever.getProjectAncestry("ionis-step-2020");
+    retriever.getOrganizationId("ionis-step-2020");
   }
 }

@@ -34,7 +34,8 @@ public class ProjectInformationRetriever {
    * Project.
    * @return List of Projects from database
    */
-  public List<Project> listProjectInformation() {
+  @Deprecated
+  protected List<Project> listProjectInformation() {
     List<ProjectIdentification> projectIdentificationList = readManager.listProjects();
     return projectIdentificationList.stream().map(projectIdentification -> {
       ProjectMetaData projectMetadata = ProjectMetaData.create(readManager.

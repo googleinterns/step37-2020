@@ -1,7 +1,9 @@
 package com.google.impactdashboard.servlets;
 
 import com.google.gson.Gson;
+import com.google.impactdashboard.data.DataSummaryList;
 import com.google.impactdashboard.data.project.Project;
+import com.google.impactdashboard.server.DataSummaryRetriever;
 import com.google.impactdashboard.server.ProjectInformationRetriever;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,17 +15,17 @@ import java.util.List;
 /**
  * Servlet for retrieving the list of projects that the user has exported IAM data for.
  */
-@WebServlet("/list-project-summaries")
-public class ListProjectSummariesServlet extends HttpServlet {
+@WebServlet("/list-summaries")
+public class ListSummariesServlet extends HttpServlet {
 
-  private ProjectInformationRetriever projectInformationRetriever;
+  private DataSummaryRetriever dataSummaryRetriever;
 
   /**
    * Handles the creation of the server classes the first time the servlet is run.
    */
   @Override
   public void init() {
-      projectInformationRetriever = ProjectInformationRetriever.create();
+      dataSummaryRetriever = DataSummaryRetriever.create();
   }
 
   /**
@@ -32,10 +34,10 @@ public class ListProjectSummariesServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    List<Project> projectList = projectInformationRetriever.listProjectInformation();
+    DataSummaryList dataSummaryList = dataSummaryRetriever.getDataSummary();
 
     Gson gson = new Gson();
-    String json = gson.toJson(projectList);
+    String json = gson.toJson(dataSummaryList);
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }

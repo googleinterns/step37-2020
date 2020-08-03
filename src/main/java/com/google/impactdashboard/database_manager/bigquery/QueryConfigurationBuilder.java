@@ -11,21 +11,21 @@ import java.util.stream.Collectors;
  */
 public class QueryConfigurationBuilder {
 
-  private QueryJobConfiguration.Builder getProjectIdsConfiguration;
-  private QueryJobConfiguration.Builder getOrganizationIdsConfiguration;
-  private QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration;
-  private QueryJobConfiguration.Builder getOrganizationNameConfiguration;
-  private QueryJobConfiguration.Builder getAverageBindingsConfiguration;
-  private QueryJobConfiguration.Builder getAverageOrganizationBindingsConfiguration;
-  private QueryJobConfiguration.Builder getDatesToBindingsConfiguration;
-  private QueryJobConfiguration.Builder getOrganizationDatesToBindingsConfiguration;
-  private QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration;
-  private QueryJobConfiguration.Builder getOrganizationDatesToRecommendationsConfiguration;
-  private String insertValuesIAMTableConfiguration;
-  private String insertValuesRecommendationsTableConfiguration;
-  private QueryJobConfiguration.Builder deleteOldDataIAMTableConfiguration;
-  private QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration;
-  private QueryJobConfiguration.Builder getMostRecentTimestampConfiguration;
+  private final QueryJobConfiguration.Builder getProjectIdsConfiguration;
+  private final QueryJobConfiguration.Builder getOrganizationIdsConfiguration;
+  private final QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration;
+  private final QueryJobConfiguration.Builder getOrganizationNameConfiguration;
+  private final QueryJobConfiguration.Builder getAverageBindingsConfiguration;
+  private final QueryJobConfiguration.Builder getAverageOrganizationBindingsConfiguration;
+  private final QueryJobConfiguration.Builder getDatesToBindingsConfiguration;
+  private final QueryJobConfiguration.Builder getOrganizationDatesToBindingsConfiguration;
+  private final QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration;
+  private final QueryJobConfiguration.Builder getOrganizationDatesToRecommendationsConfiguration;
+  private final String insertValuesIAMTableConfiguration;
+  private final String insertValuesRecommendationsTableConfiguration;
+  private final QueryJobConfiguration.Builder deleteOldDataIAMTableConfiguration;
+  private final QueryJobConfiguration.Builder deleteOldDataRecommendationsTableConfiguration;
+  private final QueryJobConfiguration.Builder getMostRecentTimestampConfiguration;
 
   protected QueryConfigurationBuilder(
     QueryJobConfiguration.Builder getProjectIdsConfiguration, 

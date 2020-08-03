@@ -116,7 +116,7 @@ public class QueryConfigurationBuilder {
 
   /**
    * Retrieves parameterized query job configuration that retrieves all 
-   * (timestamp, number of bindings) data in tetheh table for a single project. 
+   * (timestamp, number of bindings) data in the table for a single project. 
    */
   public QueryJobConfiguration.Builder getDatesToBindingsConfiguration() {
     return getDatesToBindingsConfiguration;

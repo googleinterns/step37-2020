@@ -16,6 +16,7 @@ import com.google.impactdashboard.Credentials;
 
 import  com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.longrunning.GetOperationRequest;
 
 /** 
  * A class for using the Cloud Resource Manager API to retrieve the projects 
@@ -124,24 +125,9 @@ public class ResourceRetriever {
    * @return The organization that has the id specified, null if it does not exist.
    */
   private Organization searchOrganizationIds(String organizationId) throws IOException {
-    SearchOrganizationsRequest request = new SearchOrganizationsRequest();
-    CloudResourceManager.Organizations.Search search = cloudResourceManagerService.organizations()
-        .search(request);
-
-    SearchOrganizationsResponse response;
-    do {
-      response = search.execute();
-      if(response.getOrganizations() != null) {
-         Optional<Organization> optionalOrganization = response.getOrganizations().stream()
-             .filter(organization -> Objects.equals(organization.getName(),
-                 "organizations/" + organizationId)).findFirst();
-         if (optionalOrganization.isPresent()) {
-           return optionalOrganization.get();
-         }
-      }
-      request.setPageToken(response.getNextPageToken());
-    } while(response.getNextPageToken() != null);
-    return null;
+    CloudResourceManager.Organizations.Get orgGet = cloudResourceManagerService.organizations()
+        .get(organizationId);
+    return orgGet.execute();
   }
 
   /**

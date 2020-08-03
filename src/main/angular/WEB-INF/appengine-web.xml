@@ -7,4 +7,8 @@
     <!-- prevent unwanted caching when accessing via the web preview server -->
     <include path="/**" expiration="0s" />
   </static-files>
+  <instance-class>B1</instance-class>
+  <manual-scaling>
+    <instances>1</instances>
+  </manual-scaling>
 </appengine-web-app>

@@ -1,41 +1,56 @@
-import {ProjectQueryService} from './project_query.service';
+import {QueryService} from './query.service';
 import {FakeDataService} from './fake_services/fake_data.service';
 import {Project} from '../../model/project';
 import {
   ProjectComparators,
   SortDirection,
   SortBy,
-} from '../../model/project_sort';
+  OrganizationComparators,
+} from '../../model/sort_methods';
 import {GraphDataCacheService} from './graph_data_cache.service';
 import {DateUtilitiesService} from './date_utilities.service';
+import {Organization} from '../../model/organization';
+import {ResourceType} from '../../model/resource';
 
 describe('ProjectQueryService', () => {
-  let service: ProjectQueryService;
+  let service: QueryService;
   let projects: Project[];
+  let organizations: Organization[];
 
   beforeAll(async () => {
-    projects = (
-      await new FakeDataService(
-        new GraphDataCacheService(new DateUtilitiesService())
-      ).listSummaries()
-    ).projects;
+    const summaries = await new FakeDataService(
+      new GraphDataCacheService(new DateUtilitiesService())
+    ).listSummaries();
+    projects = summaries.projects;
+    organizations = summaries.organizations;
   });
 
   describe('init()', () => {
     beforeAll(() => {
-      service = new ProjectQueryService();
-      service.init(projects);
+      service = new QueryService();
+      service.init(projects, organizations);
+      service.changeResourceType(ResourceType.PROJECT);
     });
     it('Starts sorted by IAM Bindings descending', () => {
-      const expected = projects
-        .map(p => p)
-        .sort(
-          ProjectComparators.getComparator(
-            SortDirection.DESCENDING,
-            SortBy.IAM_BINDINGS
-          )
-        );
-      const actual = service.getProjects();
+      const expected = [
+        projects
+          .map(p => p)
+          .sort(
+            ProjectComparators.getComparator(
+              SortDirection.DESCENDING,
+              SortBy.IAM_BINDINGS
+            )
+          ),
+        organizations
+          .map(o => o)
+          .sort(
+            OrganizationComparators.getComparator(
+              SortDirection.DESCENDING,
+              SortBy.IAM_BINDINGS
+            )
+          ),
+      ];
+      const actual = [service.getProjects(), service.getOrganizations()];
 
       expect(actual).toEqual(expected);
     });
@@ -43,8 +58,8 @@ describe('ProjectQueryService', () => {
 
   describe('toggleDirection()', () => {
     beforeEach(() => {
-      service = new ProjectQueryService();
-      service.init(projects);
+      service = new QueryService();
+      service.init(projects, organizations);
     });
 
     it('Toggles to ascending order', () => {
@@ -72,6 +87,21 @@ describe('ProjectQueryService', () => {
       expect(service.getSortDirection()).toBe(SortDirection.DESCENDING);
       expect(actualOrder).toEqual(projects);
     });
+
+    it('Toggles differently for different resources', () => {
+      const expected = [SortDirection.ASCENDING, SortDirection.ASCENDING];
+
+      // To start, it's filtering by Project
+      service.toggleDirection();
+      service.changeResourceType(ResourceType.ORGANIZATION);
+      service.toggleDirection();
+
+      const actual = [service.getSortDirection()];
+      service.changeResourceType(ResourceType.PROJECT);
+      actual.push(service.getSortDirection());
+
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe('changeField()', () => {
@@ -80,8 +110,8 @@ describe('ProjectQueryService', () => {
       let currentDirection: SortDirection;
 
       beforeAll(() => {
-        service = new ProjectQueryService();
-        service.init(projects);
+        service = new QueryService();
+        service.init(projects, organizations);
         expectedField = SortBy.NAME;
         currentDirection = service.getSortDirection();
 
@@ -115,8 +145,9 @@ describe('ProjectQueryService', () => {
       let expectedDirection: SortDirection;
 
       beforeAll(() => {
-        service = new ProjectQueryService();
-        service.init(projects);
+        service = new QueryService();
+        service.init(projects, organizations);
+        service.changeResourceType(ResourceType.PROJECT);
         expectedField = SortBy.NAME;
         expectedDirection = SortDirection.ASCENDING;
 
@@ -144,12 +175,38 @@ describe('ProjectQueryService', () => {
         expect(actual).toEqual(expected);
       });
     });
+
+    describe('Keeps fields separate for different resources', () => {
+      beforeEach(() => {
+        service = new QueryService();
+        service.init(projects, organizations);
+
+        service.changeResourceType(ResourceType.ORGANIZATION);
+        service.changeField(SortBy.NAME, SortDirection.ASCENDING);
+      });
+
+      it('Changes field for organization', () => {
+        const expected = [SortBy.NAME, SortDirection.ASCENDING];
+        const actual = [service.getSortField(), service.getSortDirection()];
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('Leaves field for project', () => {
+        const expected = [SortBy.IAM_BINDINGS, SortDirection.DESCENDING];
+        service.changeResourceType(ResourceType.PROJECT);
+        const actual = [service.getSortField(), service.getSortDirection()];
+
+        expect(actual).toEqual(expected);
+      });
+    });
   });
 
   describe('changeQuery()', () => {
     beforeEach(() => {
-      service = new ProjectQueryService();
-      service.init(projects);
+      service = new QueryService();
+      service.init(projects, organizations);
+      service.changeResourceType(ResourceType.PROJECT);
     });
 
     it("Doesn't filter with an empty query", () => {
@@ -183,19 +240,37 @@ describe('ProjectQueryService', () => {
     });
 
     it('Maintains sort when reducing the filter', () => {
-      service.changeField(SortBy.PROJECT_ID, SortDirection.ASCENDING);
+      service.changeField(SortBy.ID, SortDirection.ASCENDING);
       let query = 'prj';
       service.changeQuery(query);
       query = '';
       service.changeQuery(query);
 
       const expected = projects.sort(
-        ProjectComparators.getComparator(
-          SortDirection.ASCENDING,
-          SortBy.PROJECT_ID
-        )
+        ProjectComparators.getComparator(SortDirection.ASCENDING, SortBy.ID)
       );
       const actual = service.getProjects();
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('Keeps query string separate for different resources', () => {
+      const projectQuery = 'prj';
+      service.changeQuery(projectQuery);
+      service.changeResourceType(ResourceType.ORGANIZATION);
+      const organizationQuery = 'org';
+      service.changeQuery(organizationQuery);
+
+      const expected = [
+        projects.filter(project => project.includes(projectQuery)),
+        organizations.filter(organization =>
+          organization.includes(organizationQuery)
+        ),
+      ];
+      service.changeResourceType(ResourceType.PROJECT);
+      const actual: [Project[], Organization[]] = [service.getProjects(), []];
+      service.changeResourceType(ResourceType.ORGANIZATION);
+      actual[1] = service.getOrganizations();
 
       expect(actual).toEqual(expected);
     });

@@ -10,13 +10,16 @@
 #content {
   border: 1px solid #9AA0A6;
   border-radius: 3px;
+  padding: 3px 3px 0 3px;
   margin: 0 auto;
   max-width: 75%;
-  
 }
 
-#projects-table {
-  padding: 0 3px;
+::ng-deep.mat-tab-label {
+  height: 36px !important;
+}
+
+#resource-table {
   border-collapse: collapse;
   text-align: left;
   display: inline-block;
@@ -57,11 +60,11 @@ th div {
   color: lightgrey !important;
 }
 
-#projects-table td {
+#resource-table td {
   padding: 5px 8px;
 }
 
-#project-filter {
+#filter-input {
   border: none;
   border-bottom: 1px solid #666666;
   background-color: #E8EAED;
@@ -69,7 +72,7 @@ th div {
   flex: 1;
 }
 
-#project-filter:focus {
+#filter-input:focus {
   outline: none;
 }
 
@@ -83,9 +86,9 @@ th div {
 }
 
 #filter-container {
-  margin: 3px 3px 0 3px;
   display: flex;
   background-color: #E8EAED;
+  padding-top: 12px;
 }
 
 .project-color-icon {

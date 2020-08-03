@@ -32,13 +32,13 @@ public class DataUpdateManagerTest {
     ProjectIdentification.create("project-2", "project-id-2", 234567890123L);
   private static final String PROJECT_ID_1 = "project-id-1";
   private static final String PROJECT_ID_2 = "project-id-2";
-  private static final String TEST_ORG_ID = "";
-  private static final OrganizationIdentification TEST_ORG_IDENTIFICATION = 
-    OrganizationIdentification.create("My Org", TEST_ORG_ID);
+  private static final String ORG_1_ID = "test-org-1";
+  private static final OrganizationIdentification ORG_2_IDENTIFICATION = 
+    OrganizationIdentification.create("Org 2", "test-org-2");
 
   private static final Recommendation PROJECT_1_RECOMMENDATION_ON_20190628 = 
     Recommendation.create(
-      PROJECT_ID_1, TEST_ORG_ID, "test@example.com",
+      PROJECT_ID_1, ORG_1_ID, "test@example.com",
       Arrays.asList(
         RecommendationAction.create(
           "affected@example.com", "roles/owner", "roles/viewer",
@@ -50,7 +50,7 @@ public class DataUpdateManagerTest {
       IAMRecommenderMetadata.create(100));
   private static final Recommendation PROJECT_1_RECOMMENDATION_ON_20190625 = 
     Recommendation.create(
-      PROJECT_ID_1, TEST_ORG_ID, "test@example.com",
+      PROJECT_ID_1, ORG_1_ID, "test@example.com",
       Arrays.asList(
           RecommendationAction.create(
             "affected@example.com", "roles/owner", "",
@@ -60,12 +60,12 @@ public class DataUpdateManagerTest {
   private static final IAMBindingDatabaseEntry PROJECT_2_BINDINGS_DATA_ON_20190523 = 
     IAMBindingDatabaseEntry.create(
       PROJECT_ID_2, PROJECT_2_IDENTIFICATION.getName(), 
-      PROJECT_2_IDENTIFICATION.getProjectNumber()+"", TEST_ORG_IDENTIFICATION, 
+      PROJECT_2_IDENTIFICATION.getProjectNumber()+"", ORG_2_IDENTIFICATION, 
       1558612800000L, 2000);
   private static final IAMBindingDatabaseEntry PROJECT_2_BINDINGS_DATA_ON_20190620 = 
     IAMBindingDatabaseEntry.create(
       PROJECT_ID_2, PROJECT_2_IDENTIFICATION.getName(), 
-      PROJECT_2_IDENTIFICATION.getProjectNumber()+"", TEST_ORG_IDENTIFICATION, 
+      PROJECT_2_IDENTIFICATION.getProjectNumber()+"", ORG_2_IDENTIFICATION, 
       1561032000000L, 1000);
 
   @BeforeClass
@@ -78,6 +78,12 @@ public class DataUpdateManagerTest {
   @AfterClass
   public static void undoTestingConfiguration() {
     Configuration.useTestDatabase = false;
+  }
+
+  @Test
+  public void testAddingNoEntriesRunsWithoutError() {
+    dataUpdateManager.updateRecommendations(Arrays.asList());
+    dataUpdateManager.updateIAMBindings(Arrays.asList());
   }
 
   @Test

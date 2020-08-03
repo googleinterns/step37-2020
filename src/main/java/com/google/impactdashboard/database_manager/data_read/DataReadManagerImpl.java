@@ -1,5 +1,6 @@
 package com.google.impactdashboard.database_manager.data_read;
 
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.*;
 import com.google.impactdashboard.configuration.*;
@@ -38,11 +39,29 @@ public class DataReadManagerImpl implements DataReadManager {
     TableResult results = database.readDatabase(queryConfiguration);
 
     List<ProjectIdentification> listOfProjects = new ArrayList<ProjectIdentification>();
-    for (FieldValueList row : results.iterateAll()) {
+    results.iterateAll().forEach( row -> {
       String projectId = row.get(IAMBindingsSchema.IAM_PROJECT_ID_COLUMN).getStringValue();
       listOfProjects.add(getProjectIdentificationForProject(projectId));
-    }
+    });
     return listOfProjects;
+  }
+
+  /**
+   * Returns a list containing the identifying information of every organization
+   * present in the IAM Bindings table. 
+   */
+  public List<OrganizationIdentification> listOrganizations() {
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getOrganizationIdsConfiguration().build();
+    TableResult results = database.readDatabase(queryConfiguration);
+
+    List<OrganizationIdentification> listOfOrganizations = new ArrayList<>();
+    results.iterateAll().forEach(row -> {
+      String organizationId = row.get(IAMBindingsSchema.IAM_ORGANIZATION_ID_COLUMN)
+        .getStringValue();
+      listOfOrganizations.add(getOrganizationIdentificationForOrganization(organizationId));
+    });
+    return listOfOrganizations;
   }
 
   /** 
@@ -57,14 +76,35 @@ public class DataReadManagerImpl implements DataReadManager {
       .getAverageBindingsConfiguration()
       .addNamedParameter("projectId", QueryParameterValue.string(projectId))
       .build();
+    return getAverageBindings(queryConfiguration);
+  }
+
+  /**
+   * Returns the average number of bindings summed across every project belonging to
+   * the organization with id {@code organizationId} over however many days of data
+   * are in the IAM Bindings table. 
+   */
+  public double getOrganizationAvgBindingsInPastYear(String organizationId) {
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getAverageOrganizationBindingsConfiguration()
+      .addNamedParameter("organizationId", QueryParameterValue.string(organizationId))
+      .build();
+    return getAverageBindings(queryConfiguration);
+
+  }
+
+  /**
+   * Returns the number contained in the 'AverageBindings' field that 
+   * {@code queryConfiguration} returns, or 0.0 if that field doesn't exist.
+   * Query must contain only one row. 
+   */
+  private double getAverageBindings(QueryJobConfiguration queryConfiguration) {
     TableResult results = database.readDatabase(queryConfiguration);
     FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
 
-    if (row == null || row.get("AverageBindings").isNull()) {
-      return 0.0;
-    } else {
-      return row.get("AverageBindings").getDoubleValue();
-    }
+    return (row == null || row.get("AverageBindings").isNull()) ? 
+      0.0 : 
+      row.get("AverageBindings").getDoubleValue();
   }
 
   /**
@@ -77,10 +117,37 @@ public class DataReadManagerImpl implements DataReadManager {
       .getDatesToIAMRecommendationsConfiguration()
       .addNamedParameter("projectId", QueryParameterValue.string(projectId))
       .build();
+    return getDatesToRecommendations(queryConfiguration);
+  }
+
+  /**
+   * Returns a map of dates as timestamps in UTC milliseconds since the epoch
+   * to the Recommendation applied on that timestamp, where the project that the 
+   * Recommendation was applied to belongs to the organization with id 
+   * {@code organizationId}.
+   */
+  public Map<Long, Recommendation> getOrganizationDatesToRecommendations(String organizationId) {
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getOrganizationDatesToRecommendationsConfiguration()
+      .addNamedParameter("organizationId", QueryParameterValue.string(organizationId))
+      .build();
+    return getDatesToRecommendations(queryConfiguration);
+  }
+
+  /**
+   * Retuns a mapping of timestamps to recommendations for all recommendations
+   * returned by {@code queryConfiguration}.
+   */
+  private Map<Long, Recommendation> getDatesToRecommendations(
+    QueryJobConfiguration queryConfiguration) {
     TableResult results = database.readDatabase(queryConfiguration);
 
     HashMap<Long, Recommendation> datesToRecommendations = new HashMap<Long, Recommendation>();
-    for (FieldValueList row : results.iterateAll()) {
+    results.iterateAll().forEach(row -> {
+      String projectId = row.get(RecommendationsSchema.RECOMMENDATIONS_PROJECT_ID_COLUMN)
+        .getStringValue();
+      String organizationId = row.get(RecommendationsSchema.RECOMMENDATIONS_ORGANIZATION_ID_COLUMN)
+        .getStringValue();
       long acceptedTimestamp = row.get(RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN)
         .getTimestampValue() / 1000;
       String actor = row.get(RecommendationsSchema.ACTOR_COLUMN).getStringValue();
@@ -91,12 +158,11 @@ public class DataReadManagerImpl implements DataReadManager {
       List<RecommendationAction> actions = structActionsToRecommendationActions(
         row.get(RecommendationsSchema.ACTIONS_COLUMN).getRepeatedValue(), structSchema);
 
-      //TODO: once database schema has changed, retrieve real org ID
       datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
-        projectId, "", actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
+        projectId, organizationId, actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
         acceptedTimestamp, IAMRecommenderMetadata.create(iamImpact)));
-    } 
-    return datesToRecommendations;
+    });
+    return datesToRecommendations;  
   }
 
   /** 
@@ -110,16 +176,38 @@ public class DataReadManagerImpl implements DataReadManager {
       .getDatesToBindingsConfiguration()
       .addNamedParameter("projectId", QueryParameterValue.string(projectId))
       .build();
-    TableResult results = database.readDatabase(queryConfiguration);
+    return getDatesToBindings(queryConfiguration, IAMBindingsSchema.NUMBER_BINDINGS_COLUMN);
+  }
 
+  /** 
+   *  Returns a map of dates (as timestamps in UTC milliseconds since the epoch) 
+   *  to the number of IAM bindings that existed on that date, summed across all projects
+   *  belonging to the organization with id {@code organizationId}. 
+   */
+  @Override
+  public Map<Long, Integer> getOrganizationDatesToBindings(String organizationId) {
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getOrganizationDatesToBindingsConfiguration()
+      .addNamedParameter("organizationId", QueryParameterValue.string(organizationId))
+      .build();
+    return getDatesToBindings(queryConfiguration, "TotalBindings");
+  }
+
+  /**
+   * Returns a mapping of timestamps to number of bindings for all entries returned
+   * by {@code queryConfiguration}, where the number of bindings is retrieved from
+   * the column labelled with {@code bindingsColumn}.
+   */
+  private Map<Long, Integer> getDatesToBindings(QueryJobConfiguration queryConfiguration, 
+    String bindingsColumn) {
+    TableResult results = database.readDatabase(queryConfiguration);
     HashMap<Long, Integer> datesToBindings = new HashMap<Long, Integer>();
-    for (FieldValueList row : results.iterateAll()) {
+    results.iterateAll().forEach(row -> {
       long timestamp = row.get(IAMBindingsSchema.TIMESTAMP_COLUMN)
         .getTimestampValue() / 1000;
-      int iamBindings = (int) row.get(IAMBindingsSchema.NUMBER_BINDINGS_COLUMN).getLongValue();
-
+      int iamBindings = (int) row.get(bindingsColumn).getLongValue();
       datesToBindings.put(timestamp, iamBindings);
-    } 
+    });
     return datesToBindings;
   }
 
@@ -161,6 +249,29 @@ public class DataReadManagerImpl implements DataReadManager {
       String projectName = row.get(IAMBindingsSchema.PROJECT_NAME_COLUMN).getStringValue();
       String projectNumber = row.get(IAMBindingsSchema.PROJECT_NUMBER_COLUMN).getStringValue();
       return ProjectIdentification.create(projectName, projectId, Long.parseLong(projectNumber));
+    }
+  }
+
+  /**
+   * Queries the IAM database for the name of the organization with id {@code organizationId}
+   * and returns a {@code OrganizationIdentification} object containing the information.
+   */
+  private OrganizationIdentification getOrganizationIdentificationForOrganization(
+    String organizationId) {
+    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+      .getOrganizationNameConfiguration()
+      .addNamedParameter("organizationId", QueryParameterValue.string(organizationId))
+      .build();
+    TableResult results = database.readDatabase(queryConfiguration);
+    FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
+
+    if (row == null) {
+      throw new RuntimeException(
+        "Database failed to retrieve name for organization " + organizationId);
+    } else {
+      String organizationName = row.get(IAMBindingsSchema.ORGANIZATION_NAME_COLUMN)
+        .getStringValue();
+      return OrganizationIdentification.create(organizationName, organizationId);
     }
   }
 

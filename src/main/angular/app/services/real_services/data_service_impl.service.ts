@@ -74,8 +74,8 @@ export class DataServiceImpl implements DataService {
         this.activeRequests.delete(url);
         const graphData = new OrganizationGraphData(
           new OrganizationIdentification(
-            response.identification.organizationId,
-            response.identification.organizationName
+            response.identification.id,
+            response.identification.name
           ),
           response.datesToBindings,
           response.datesToRecommendations
@@ -115,8 +115,8 @@ export class DataServiceImpl implements DataService {
         organization =>
           new Organization(
             new OrganizationIdentification(
-              organization.identification.organizationId,
-              organization.identification.organizationName
+              organization.identification.id,
+              organization.identification.name
             ),
             organization.averageBindings
           )

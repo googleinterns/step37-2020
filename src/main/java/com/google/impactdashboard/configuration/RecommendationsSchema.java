@@ -5,6 +5,9 @@ public class RecommendationsSchema {
   /** The name of the column holding the project id. */
   public static final String RECOMMENDATIONS_PROJECT_ID_COLUMN = "ProjectId";
 
+  /** The name of the column holding the organization id. */
+  public static final String RECOMMENDATIONS_ORGANIZATION_ID_COLUMN = "OrganizationId";
+
   /** The name of the column holding the recommender type. */
   public static final String RECOMMENDER_COLUMN = "Recommender";
 

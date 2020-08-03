@@ -32,7 +32,7 @@ public class UpdateDataServlet extends HttpServlet {
    * about IAM bindings and Recommendations.
    */
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     dataUpdater.updateDatabase();
   }
 }

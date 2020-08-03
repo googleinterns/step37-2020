@@ -23,6 +23,13 @@ Next, In order to allow the Impact Dashboard to access the projects for which yo
 * In the **New members** box, paste the member name of the App Engine default service account of your **deploying project** (it should look something like deploying-project-id@appspot.gserviceaccount.com).
 * Select the role **Project > Viewer**
 
+Finally, In order to allow the Impact Dashboard to access Organization names for the organizations your projects reside in, for each organization of interest:
+* Navigate to the [IAM page](https://console.cloud.google.com/iam-admin/iam?_ga=2.165735869.248724417.1594646215-1491521344.1590087040&_gac=1.48940818.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) of that organization.
+* Click **Add** at the top of the page
+* In the **New members** box, paste the member name of the App Engine default service account of your **deploying project** (it should look something like deploying-project-id@appspot.gserviceaccount.com).
+* Select the role **Resource Manager > Organization Viewer**
+
+
 ## Database Setup
 On your deploying project, you must create data tables to store recommendations and bindings data:
 * Go to the [Bigquery web UI](https://console.cloud.google.com/bigquery?_ga=2.253514767.74597765.1594049459-1491521344.1590087040&_gac=1.183307666.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) for your **deploying project**. 

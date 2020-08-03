@@ -32,9 +32,11 @@ public class DataUpdateManagerImpl implements DataUpdateManager {
    */
   @Override
   public void updateRecommendations(List<Recommendation> recommendations) {
-    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
-      .insertValuesRecommendationsTableConfiguration(recommendations).build();
-    database.updateDatabase(queryConfiguration);
+    if (!recommendations.isEmpty()) {
+      QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+        .insertValuesRecommendationsTableConfiguration(recommendations).build();
+      database.updateDatabase(queryConfiguration);
+    }
   }
 
   /** 
@@ -43,9 +45,11 @@ public class DataUpdateManagerImpl implements DataUpdateManager {
    */
   @Override
   public void updateIAMBindings(List<IAMBindingDatabaseEntry> iamBindingsData) {
-    QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
-      .insertValuesIAMTableConfiguration(iamBindingsData).build();
-    database.updateDatabase(queryConfiguration);
+    if (!iamBindingsData.isEmpty()) {
+      QueryJobConfiguration queryConfiguration = queryConfigurationBuilder
+        .insertValuesIAMTableConfiguration(iamBindingsData).build();
+      database.updateDatabase(queryConfiguration);
+    }
   }
 
   /**

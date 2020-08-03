@@ -99,11 +99,9 @@ public class DataReadManagerImpl implements DataReadManager {
     TableResult results = database.readDatabase(queryConfiguration);
     FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
 
-    if (row == null || row.get("AverageBindings").isNull()) {
-      return 0.0;
-    } else {
-      return row.get("AverageBindings").getDoubleValue();
-    }  
+    return (row == null || row.get("AverageBindings").isNull()) ? 
+      0.0 : 
+      row.get("AverageBindings").getDoubleValue();
   }
 
   /**

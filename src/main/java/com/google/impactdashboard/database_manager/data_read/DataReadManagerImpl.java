@@ -39,10 +39,10 @@ public class DataReadManagerImpl implements DataReadManager {
     TableResult results = database.readDatabase(queryConfiguration);
 
     List<ProjectIdentification> listOfProjects = new ArrayList<ProjectIdentification>();
-    for (FieldValueList row : results.iterateAll()) {
+    results.iterateAll().forEach( row -> {
       String projectId = row.get(IAMBindingsSchema.IAM_PROJECT_ID_COLUMN).getStringValue();
       listOfProjects.add(getProjectIdentificationForProject(projectId));
-    }
+    });
     return listOfProjects;
   }
 
@@ -56,11 +56,11 @@ public class DataReadManagerImpl implements DataReadManager {
     TableResult results = database.readDatabase(queryConfiguration);
 
     List<OrganizationIdentification> listOfOrganizations = new ArrayList<>();
-    for (FieldValueList row : results.iterateAll()) {
+    results.iterateAll().forEach(row -> {
       String organizationId = row.get(IAMBindingsSchema.IAM_ORGANIZATION_ID_COLUMN)
         .getStringValue();
       listOfOrganizations.add(getOrganizationIdentificationForOrganization(organizationId));
-    }
+    });
     return listOfOrganizations;
   }
 
@@ -76,14 +76,7 @@ public class DataReadManagerImpl implements DataReadManager {
       .getAverageBindingsConfiguration()
       .addNamedParameter("projectId", QueryParameterValue.string(projectId))
       .build();
-    TableResult results = database.readDatabase(queryConfiguration);
-    FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
-
-    if (row == null || row.get("AverageBindings").isNull()) {
-      return 0.0;
-    } else {
-      return row.get("AverageBindings").getDoubleValue();
-    }
+    return getAverageBindings(queryConfiguration);
   }
 
   /**
@@ -96,14 +89,23 @@ public class DataReadManagerImpl implements DataReadManager {
       .getAverageOrganizationBindingsConfiguration()
       .addNamedParameter("organizationId", QueryParameterValue.string(organizationId))
       .build();
+    return getAverageBindings(queryConfiguration);
+
+  }
+
+  /**
+   * Returns the number contained in the 'AverageBindings' field that 
+   * {@code queryConfiguration} returns, or 0.0 if that field doesn't exist.
+   * Query must contain only one row. 
+   */
+  private double getAverageBindings(QueryJobConfiguration queryConfiguration) {
     TableResult results = database.readDatabase(queryConfiguration);
     FieldValueList row = Iterables.getOnlyElement(results.iterateAll(), null);
 
-    if (row == null || row.get("AverageBindings").isNull()) {
-      return 0.0;
-    } else {
-      return row.get("AverageBindings").getDoubleValue();
-    }  }
+    return (row == null || row.get("AverageBindings").isNull()) ? 
+      0.0 : 
+      row.get("AverageBindings").getDoubleValue();
+  }
 
   /**
    *  Returns a map of dates (as timestamps in UTC milliseconds since the epoch) 
@@ -115,27 +117,7 @@ public class DataReadManagerImpl implements DataReadManager {
       .getDatesToIAMRecommendationsConfiguration()
       .addNamedParameter("projectId", QueryParameterValue.string(projectId))
       .build();
-    TableResult results = database.readDatabase(queryConfiguration);
-
-    HashMap<Long, Recommendation> datesToRecommendations = new HashMap<Long, Recommendation>();
-    for (FieldValueList row : results.iterateAll()) {
-      String organizationId = row.get(RecommendationsSchema.RECOMMENDATIONS_ORGANIZATION_ID_COLUMN)
-        .getStringValue();
-      long acceptedTimestamp = row.get(RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN)
-        .getTimestampValue() / 1000;
-      String actor = row.get(RecommendationsSchema.ACTOR_COLUMN).getStringValue();
-      int iamImpact = (int) row.get(RecommendationsSchema.IAM_IMPACT_COLUMN).getLongValue();
-
-      FieldList structSchema = results.getSchema().getFields()
-        .get(RecommendationsSchema.ACTIONS_COLUMN).getSubFields();
-      List<RecommendationAction> actions = structActionsToRecommendationActions(
-        row.get(RecommendationsSchema.ACTIONS_COLUMN).getRepeatedValue(), structSchema);
-
-        datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
-        projectId, organizationId, actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
-        acceptedTimestamp, IAMRecommenderMetadata.create(iamImpact)));
-    } 
-    return datesToRecommendations;
+    return getDatesToRecommendations(queryConfiguration);
   }
 
   /**
@@ -149,11 +131,22 @@ public class DataReadManagerImpl implements DataReadManager {
       .getOrganizationDatesToRecommendationsConfiguration()
       .addNamedParameter("organizationId", QueryParameterValue.string(organizationId))
       .build();
+    return getDatesToRecommendations(queryConfiguration);
+  }
+
+  /**
+   * Retuns a mapping of timestamps to recommendations for all recommendations
+   * returned by {@code queryConfiguration}.
+   */
+  private Map<Long, Recommendation> getDatesToRecommendations(
+    QueryJobConfiguration queryConfiguration) {
     TableResult results = database.readDatabase(queryConfiguration);
 
     HashMap<Long, Recommendation> datesToRecommendations = new HashMap<Long, Recommendation>();
-    for (FieldValueList row : results.iterateAll()) {
+    results.iterateAll().forEach(row -> {
       String projectId = row.get(RecommendationsSchema.RECOMMENDATIONS_PROJECT_ID_COLUMN)
+        .getStringValue();
+      String organizationId = row.get(RecommendationsSchema.RECOMMENDATIONS_ORGANIZATION_ID_COLUMN)
         .getStringValue();
       long acceptedTimestamp = row.get(RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN)
         .getTimestampValue() / 1000;
@@ -165,10 +158,10 @@ public class DataReadManagerImpl implements DataReadManager {
       List<RecommendationAction> actions = structActionsToRecommendationActions(
         row.get(RecommendationsSchema.ACTIONS_COLUMN).getRepeatedValue(), structSchema);
 
-        datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
+      datesToRecommendations.put(acceptedTimestamp, Recommendation.create(
         projectId, organizationId, actor, actions, Recommendation.RecommenderType.IAM_BINDING, 
         acceptedTimestamp, IAMRecommenderMetadata.create(iamImpact)));
-    } 
+    });
     return datesToRecommendations;  
   }
 
@@ -183,17 +176,7 @@ public class DataReadManagerImpl implements DataReadManager {
       .getDatesToBindingsConfiguration()
       .addNamedParameter("projectId", QueryParameterValue.string(projectId))
       .build();
-    TableResult results = database.readDatabase(queryConfiguration);
-
-    HashMap<Long, Integer> datesToBindings = new HashMap<Long, Integer>();
-    for (FieldValueList row : results.iterateAll()) {
-      long timestamp = row.get(IAMBindingsSchema.TIMESTAMP_COLUMN)
-        .getTimestampValue() / 1000;
-      int iamBindings = (int) row.get(IAMBindingsSchema.NUMBER_BINDINGS_COLUMN).getLongValue();
-
-      datesToBindings.put(timestamp, iamBindings);
-    } 
-    return datesToBindings;
+    return getDatesToBindings(queryConfiguration, IAMBindingsSchema.NUMBER_BINDINGS_COLUMN);
   }
 
   /** 
@@ -207,16 +190,24 @@ public class DataReadManagerImpl implements DataReadManager {
       .getOrganizationDatesToBindingsConfiguration()
       .addNamedParameter("organizationId", QueryParameterValue.string(organizationId))
       .build();
-    TableResult results = database.readDatabase(queryConfiguration);
+    return getDatesToBindings(queryConfiguration, "TotalBindings");
+  }
 
+  /**
+   * Returns a mapping of timestamps to number of bindings for all entries returned
+   * by {@code queryConfiguration}, where the number of bindings is retrieved from
+   * the column labelled with {@code bindingsColumn}.
+   */
+  private Map<Long, Integer> getDatesToBindings(QueryJobConfiguration queryConfiguration, 
+    String bindingsColumn) {
+    TableResult results = database.readDatabase(queryConfiguration);
     HashMap<Long, Integer> datesToBindings = new HashMap<Long, Integer>();
-    for (FieldValueList row : results.iterateAll()) {
+    results.iterateAll().forEach(row -> {
       long timestamp = row.get(IAMBindingsSchema.TIMESTAMP_COLUMN)
         .getTimestampValue() / 1000;
-      int iamBindings = (int) row.get("TotalBindings").getLongValue();
-
+      int iamBindings = (int) row.get(bindingsColumn).getLongValue();
       datesToBindings.put(timestamp, iamBindings);
-    } 
+    });
     return datesToBindings;
   }
 

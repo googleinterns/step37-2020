@@ -112,8 +112,8 @@ export class DataServiceImpl implements DataService {
         organization =>
           new Organization(
             new OrganizationIdentification(
-              organization.identification.organizationId,
-              organization.identification.organizationName
+              organization.identification.id,
+              organization.identification.name
             ),
             organization.averageBindings
           )

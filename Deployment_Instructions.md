@@ -28,19 +28,20 @@ On your deploying project, you must create data tables to store recommendations 
 * Go to the [Bigquery web UI](https://console.cloud.google.com/bigquery?_ga=2.253514767.74597765.1594049459-1491521344.1590087040&_gac=1.183307666.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) for your **deploying project**. 
 
 * Click **Create dataset**.
-  * For **Dataset ID**, enter `Recommendations_Impact_Dashboard`.
+  * For **Dataset ID**, enter a name of your choice for the database.
+  * Navigate to `/src/main/java/com/google/impactdashboard/configuration/Constants.java` in the repo and set the constant `DATABASE` to the name of your database. 
   * For **Data location**, choose **United States (US)**.
   * Leave all other settings in place and click **Create dataset**.
 
 * Click **Create table**.
-  * Under **Destination**, make sure **Project name** is the name of your project, and **Dataset name** is set to `Recommendations_Impact_Dashboard`.
+  * Under **Destination**, make sure **Project name** is the name of your project, and **Dataset name** is set to the name you chose.
   * Set **Table name** to `IAM_Bindings`.
   * Select **Edit as text** under **Schema**
   * Navigate to `table_schemas` in the project repo and copy and paste the contents of `IAM_Bindings_Schema.json` into the **Edit as text** text box. 
   * Leave all other default settings and select **Create table**.
   
 * Click **Create table**
-  * Under **Destination**, make sure **Project name** is the name of your project, and **Dataset name** is set to `Recommendations_Impact_Dashboard`.
+  * Under **Destination**, make sure **Project name** is the name of your project, and **Dataset name** is set to the name you chose.
   * Set **Table name** to `Recommendations`.
   * Select **Edit as text** under **Schema**
   * Navigate to `table_schemas` in the project repo and copy and paste the contents of `Recommendations_Schema.json` into the **Edit as text** text box. 

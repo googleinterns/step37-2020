@@ -25,6 +25,11 @@ public class Queries {
     "SELECT DISTINCT " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN +
       " FROM `" + IAM_TABLE + "`";
 
+  /** Retrieve all organization ids from the database. */
+  public static final String GET_ORGANIZATION_IDS = 
+    "SELECT DISTINCT " + IAMBindingsSchema.IAM_ORGANIZATION_ID_COLUMN + 
+      " FROM `" + IAM_TABLE + "`";
+
   /** 
    * Retrieves the project name and project number of the project with id 
    * {@code projectId}. 
@@ -35,6 +40,17 @@ public class Queries {
       IAMBindingsSchema.PROJECT_NUMBER_COLUMN +
       " FROM `" + IAM_TABLE + "`" +
       " WHERE " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN + " = @projectId" +
+      " LIMIT 1";
+
+  /** 
+   * Retrieves the organization name of the organization with id 
+   * {@code organizationId}. 
+   */
+  public static final String GET_ORGANIZATION_IDENTIFICATION_INFORMATION = 
+    "SELECT " + 
+      IAMBindingsSchema.ORGANIZATION_NAME_COLUMN + 
+      " FROM `" + IAM_TABLE + "`" +
+      " WHERE " + IAMBindingsSchema.IAM_ORGANIZATION_ID_COLUMN + " = @organizationId" +
       " LIMIT 1";
 
   /** 
@@ -52,9 +68,35 @@ public class Queries {
    * {@code projectId}. 
    */
   public static final String GET_DATES_TO_BINDINGS = 
-    "SELECT " + IAMBindingsSchema.TIMESTAMP_COLUMN + ", " + IAMBindingsSchema.NUMBER_BINDINGS_COLUMN +
+    "SELECT " + 
+      IAMBindingsSchema.TIMESTAMP_COLUMN + ", " + 
+      IAMBindingsSchema.NUMBER_BINDINGS_COLUMN +
       " FROM " + IAM_TABLE +
       " WHERE " + IAMBindingsSchema.IAM_PROJECT_ID_COLUMN + " = @projectId";
+
+  /**
+   * Retrieves all (timestamp, total bindings) data in the IAM Bindings table, 
+   * where 'total bindings' represents the sum of bindings across all projects
+   * belonging to {@code organizationId} on 'timestamp'. 
+   */
+  public static final String GET_ORGANIZATION_DATES_TO_BINDINGS = 
+    " SELECT " + 
+      IAMBindingsSchema.TIMESTAMP_COLUMN + ", " + 
+      " SUM(" + IAMBindingsSchema.NUMBER_BINDINGS_COLUMN + ") AS TotalBindings" + 
+      " FROM " + IAM_TABLE + 
+      " GROUP BY " + 
+        IAMBindingsSchema.IAM_ORGANIZATION_ID_COLUMN + ", " + 
+        IAMBindingsSchema.TIMESTAMP_COLUMN + 
+      " HAVING " + IAMBindingsSchema.IAM_ORGANIZATION_ID_COLUMN + " = @organizationId";
+
+  /**
+   * Retrieves the average number of bindings over all the days in the table
+   * summed over all the projects belonging to the organization with id
+   * {@code organizationId}.
+   */
+  public static final String GET_ORGANIZATION_AVERAGE_BINDINGS = 
+    "SELECT AVG(TotalBindings) AS AverageBindings" + 
+      " FROM (" + GET_ORGANIZATION_DATES_TO_BINDINGS + ")";
 
   /** 
    * Retrieves all (timestamp, recommendation) data in the table for 
@@ -63,12 +105,32 @@ public class Queries {
   public static final String GET_DATES_TO_IAM_RECOMMENDATIONS = 
     "SELECT " + 
       RecommendationsSchema.RECOMMENDATIONS_ORGANIZATION_ID_COLUMN + ", " +
+      RecommendationsSchema.RECOMMENDATIONS_PROJECT_ID_COLUMN + ", " +
       RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN + ", " +
       RecommendationsSchema.ACTOR_COLUMN + ", " +
       RecommendationsSchema.ACTIONS_COLUMN + ", " +
       RecommendationsSchema.IAM_IMPACT_COLUMN +
       " FROM " + RECOMMENDATIONS_TABLE +
       " WHERE " + RecommendationsSchema.RECOMMENDATIONS_PROJECT_ID_COLUMN + " = @projectId" +
+      " AND " + RecommendationsSchema.RECOMMENDER_COLUMN + 
+        " = '" + Recommendation.RecommenderType.IAM_BINDING + "'";
+
+  /** 
+   * Retrieves all (timestamp, recommendation) data in the table where the id
+   * of the organization of the project the recommendation was accepted on is 
+   * {@code organizationId}. 
+   */
+  public static final String GET_ORGANIZATION_DATES_TO_RECOMMENDATIONS = 
+    "SELECT " + 
+      RecommendationsSchema.RECOMMENDATIONS_PROJECT_ID_COLUMN + ", " +
+      RecommendationsSchema.RECOMMENDATIONS_ORGANIZATION_ID_COLUMN + ", " +
+      RecommendationsSchema.ACCEPTED_TIMESTAMP_COLUMN + ", " +
+      RecommendationsSchema.ACTOR_COLUMN + ", " +
+      RecommendationsSchema.ACTIONS_COLUMN + ", " +
+      RecommendationsSchema.IAM_IMPACT_COLUMN +
+      " FROM " + RECOMMENDATIONS_TABLE +
+      " WHERE " + 
+        RecommendationsSchema.RECOMMENDATIONS_ORGANIZATION_ID_COLUMN + " = @organizationId" +
       " AND " + RecommendationsSchema.RECOMMENDER_COLUMN + 
         " = '" + Recommendation.RecommenderType.IAM_BINDING + "'";
 

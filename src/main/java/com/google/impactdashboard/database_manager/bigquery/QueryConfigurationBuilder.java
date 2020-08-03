@@ -16,10 +16,22 @@ public interface QueryConfigurationBuilder {
   public QueryJobConfiguration.Builder getProjectIdsConfiguration();
 
   /** 
+   * Retrieves query job configuration that retrieves all organization ids from 
+   * the database. 
+   */
+  public QueryJobConfiguration.Builder getOrganizationIdsConfiguration();
+
+  /** 
    * Retrieves parameterized query job configuration that retrieves the 
    * identifying information for a single project from the database.
    */
   public QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration();
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves the name
+   * of a single organization. 
+   */
+  public QueryJobConfiguration.Builder getOrganizationNameConfiguration();
 
   /** 
    * Retrieves parameterized query job configuration that retrieves the 
@@ -28,10 +40,25 @@ public interface QueryConfigurationBuilder {
   public QueryJobConfiguration.Builder getAverageBindingsConfiguration();
 
   /**
+   * Retrieves parameterized query job configuration that retrieves the average
+   * number of bindings summed across all projects belonging to a single 
+   * organization. 
+   */
+  public QueryJobConfiguration.Builder getAverageOrganizationBindingsConfiguration();
+
+  /**
    * Retrieves parameterized query job configuration that retrieves all 
-   * (timestamp, number of bindings) data in tetheh table for a single project. 
+   * (timestamp, number of bindings) data in the table for a single project. 
    */
   public QueryJobConfiguration.Builder getDatesToBindingsConfiguration();
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves all 
+   * (timestamp, total bindings) data in the IAM table such that 'total bindings'
+   * is the sum of bindings across all projects belonging to a particular
+   * organization on 'timestamp'.
+   */
+  public QueryJobConfiguration.Builder getOrganizationDatesToBindingsConfiguration();
 
   /**
    * Retrieves parameterized query job configuration that retrieves all 
@@ -41,17 +68,26 @@ public interface QueryConfigurationBuilder {
   public QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration();
 
   /**
+   * Retrieves parameterized query job configuration that retrieves all 
+   * (timestamp, recommendation) data in the table where the project that
+   * the recommendation was accepted on belongs to a particular organization.
+   */
+  public QueryJobConfiguration.Builder getOrganizationDatesToRecommendationsConfiguration();
+
+  /**
    * Retrieves query job configuration that inserts {@code values} into the 
    * IAM Bindings table.
    */
   public QueryJobConfiguration.Builder 
     insertValuesIAMTableConfiguration(List<IAMBindingDatabaseEntry> values);
+
   /**
    * Retrieves query job configuration that inserts {@code values} into the 
    * Recommendations table. 
    */
   public QueryJobConfiguration.Builder 
     insertValuesRecommendationsTableConfiguration(List<Recommendation> values);  
+    
   /** 
    * Retrieves query job configuration that deletes 365-day-old data from the 
    * IAM bindings table.

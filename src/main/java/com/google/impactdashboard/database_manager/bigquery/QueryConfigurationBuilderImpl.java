@@ -17,17 +17,32 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   private QueryJobConfiguration.Builder getProjectIdsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_PROJECT_IDS)
       .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getOrganizationIdsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_ORGANIZATION_IDS)
+      .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration =  
     QueryJobConfiguration.newBuilder(Queries.GET_PROJECT_IDENTIFICATION_INFORMATION)
+      .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getOrganizationNameConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_ORGANIZATION_IDENTIFICATION_INFORMATION)
       .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getAverageBindingsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_AVERAGE_BINDINGS)
       .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getAverageOrganizationBindingsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_ORGANIZATION_AVERAGE_BINDINGS)
+      .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getDatesToBindingsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_DATES_TO_BINDINGS)
       .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getOrganizationDatesToBindingsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_ORGANIZATION_DATES_TO_BINDINGS)
+      .setUseLegacySql(false);
   private QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration = 
     QueryJobConfiguration.newBuilder(Queries.GET_DATES_TO_IAM_RECOMMENDATIONS)
+      .setUseLegacySql(false);
+  private QueryJobConfiguration.Builder getOrganizationDatesToRecommendationsConfiguration = 
+    QueryJobConfiguration.newBuilder(Queries.GET_ORGANIZATION_DATES_TO_RECOMMENDATIONS)
       .setUseLegacySql(false);
   private String insertValuesIAMTableConfiguration = 
     Queries.INSERT_VALUES_INTO_IAM_TABLE;
@@ -59,11 +74,27 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
   }
 
   /** 
+   * Retrieves query job configuration that retrieves all organization ids from 
+   * the database. 
+   */
+  public QueryJobConfiguration.Builder getOrganizationIdsConfiguration() {
+    return getOrganizationIdsConfiguration;
+  }
+
+  /** 
    * Retrieves parameterized query job configuration that retrieves the 
    * identifying information for a single project from the database.
    */
   public QueryJobConfiguration.Builder getProjectIdentificationInformationConfiguration() {
     return getProjectIdentificationInformationConfiguration;
+  }
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves the name
+   * of a single organization. 
+   */
+  public QueryJobConfiguration.Builder getOrganizationNameConfiguration() {
+    return getOrganizationNameConfiguration;
   }
 
   /** 
@@ -72,6 +103,15 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
    */
   public QueryJobConfiguration.Builder getAverageBindingsConfiguration() {
     return getAverageBindingsConfiguration;
+  }
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves the average
+   * number of bindings summed across all projects belonging to a single 
+   * organization. 
+   */
+  public QueryJobConfiguration.Builder getAverageOrganizationBindingsConfiguration() {
+    return getAverageOrganizationBindingsConfiguration;
   }
 
   /**
@@ -84,11 +124,30 @@ public class QueryConfigurationBuilderImpl implements QueryConfigurationBuilder 
 
   /**
    * Retrieves parameterized query job configuration that retrieves all 
+   * (timestamp, total bindings) data in the IAM table such that 'total bindings'
+   * is the sum of bindings across all projects belonging to a particular
+   * organization on 'timestamp'.
+   */
+  public QueryJobConfiguration.Builder getOrganizationDatesToBindingsConfiguration() {
+    return getOrganizationDatesToBindingsConfiguration;
+  }
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves all 
    * (timestamp, recomendation) data in the table for a single project, from the 
    * IAM Bindings Recommender.
    */
   public QueryJobConfiguration.Builder getDatesToIAMRecommendationsConfiguration() {
     return getDatesToIAMRecommendationsConfiguration;
+  }
+
+  /**
+   * Retrieves parameterized query job configuration that retrieves all 
+   * (timestamp, recommendation) data in the table where the project that
+   * the recommendation was accepted on belongs to a particular organization.
+   */
+  public QueryJobConfiguration.Builder getOrganizationDatesToRecommendationsConfiguration() {
+    return getOrganizationDatesToRecommendationsConfiguration;
   }
 
   /**

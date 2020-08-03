@@ -4,6 +4,7 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.api.services.cloudresourcemanager.model.*;
 
@@ -16,7 +17,6 @@ import com.google.impactdashboard.Credentials;
 
 import  com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.longrunning.GetOperationRequest;
 
 /** 
  * A class for using the Cloud Resource Manager API to retrieve the projects 
@@ -114,7 +114,8 @@ public class ResourceRetriever {
     try {
       organization = searchOrganizationIds(organizationId);
     } catch (IOException io) {
-      throw new RuntimeException("Could not find any organization with id:" + organizationId);
+      organization = null;
+//      throw new RuntimeException("Could not find any organization with id:" + organizationId);
     }
     return organization != null ? organization.getDisplayName(): organizationId;
   }
@@ -154,10 +155,5 @@ public class ResourceRetriever {
     return new CloudResourceManager.Builder(httpTransport, jsonFactory, credentials)
       .setApplicationName("Recommendations Impact Dashboard")
       .build();
-  }
-
-  public static void main(String[] args) {
-    ResourceRetriever retriever = ResourceRetriever.getInstance();
-    String name = retriever.getOrganizationName("766157370734");
   }
 }

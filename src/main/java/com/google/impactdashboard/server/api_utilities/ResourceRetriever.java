@@ -126,7 +126,7 @@ public class ResourceRetriever {
    */
   private Organization searchOrganizationIds(String organizationId) throws IOException {
     CloudResourceManager.Organizations.Get orgGet = cloudResourceManagerService.organizations()
-        .get(organizationId);
+        .get("organizations/" + organizationId);
     return orgGet.execute();
   }
 

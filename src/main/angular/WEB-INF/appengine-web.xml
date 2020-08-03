@@ -8,7 +8,8 @@
     <include path="/**" expiration="0s" />
   </static-files>
   <instance-class>B1</instance-class>
-  <manual-scaling>
-    <instances>1</instances>
-  </manual-scaling>
+  <basic-scaling>
+    <max-instances>15</max-instances>
+    <idle-timeout>30m</idle-timeout>
+  </basic-scaling>
 </appengine-web-app>

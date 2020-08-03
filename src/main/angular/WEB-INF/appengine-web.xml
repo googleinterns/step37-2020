@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-  <threadsafe>false</threadsafe>
+  <threadsafe>true</threadsafe>
   <sessions-enabled>true</sessions-enabled>
   <runtime>java8</runtime>
   <static-files>
@@ -10,6 +10,5 @@
   <instance-class>B1</instance-class>
   <basic-scaling>
     <max-instances>15</max-instances>
-    <idle-timeout>30m</idle-timeout>
   </basic-scaling>
 </appengine-web-app>

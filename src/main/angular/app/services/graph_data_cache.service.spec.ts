@@ -2,7 +2,6 @@ import {GraphDataCacheService} from './graph_data_cache.service';
 import {DateUtilitiesService} from './date_utilities.service';
 import {ProjectGraphData} from '../../model/project_graph_data';
 import {OrganizationGraphData} from '../../model/organization_graph_data';
-import {OrganizationIdentification} from '../../model/organization_identification';
 
 describe('GraphDataCacheService', () => {
   let service: GraphDataCacheService;
@@ -14,11 +13,7 @@ describe('GraphDataCacheService', () => {
   beforeAll(() => {
     id = 'id-1';
     projectData = new ProjectGraphData(id, {}, {});
-    organizationData = new OrganizationGraphData(
-      new OrganizationIdentification('', ''),
-      {},
-      {}
-    );
+    organizationData = new OrganizationGraphData('', {}, {});
   });
 
   beforeEach(() => {

@@ -151,7 +151,7 @@ export class FakeDataService implements DataService {
   /** Constructs the organization graph data with the given projects. */
   private constructOrganizationGraphData(
     fakes: [Project, ProjectGraphData][],
-    identification: OrganizationIdentification
+    id: string
   ): OrganizationGraphData {
     const datesToBindings: {[time: number]: number} = {};
     const datesToRecommendations: {[time: number]: Recommendation} = {};
@@ -177,7 +177,7 @@ export class FakeDataService implements DataService {
     });
 
     return new OrganizationGraphData(
-      identification,
+      id,
       datesToBindings,
       datesToRecommendations
     );
@@ -194,7 +194,7 @@ export class FakeDataService implements DataService {
       new Organization(identification, 3000),
       this.constructOrganizationGraphData(
         fakes.filter((value, index) => index < 3),
-        identification
+        identification.id
       ),
     ];
 
@@ -204,7 +204,7 @@ export class FakeDataService implements DataService {
       new Organization(identification, 2000),
       this.constructOrganizationGraphData(
         fakes.filter((value, index) => index >= 3 && index < 6),
-        identification
+        identification.id
       ),
     ];
 
@@ -214,7 +214,7 @@ export class FakeDataService implements DataService {
       new Organization(identification, 2500),
       this.constructOrganizationGraphData(
         fakes.filter((value, index) => index >= 6),
-        identification
+        identification.id
       ),
     ];
   }

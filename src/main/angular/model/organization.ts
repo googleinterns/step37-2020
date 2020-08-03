@@ -12,7 +12,7 @@ export class Organization implements IAMResource {
   }
 
   getAverageBindings(): number {
-    return this.averageBindings;
+    return Math.round(this.averageBindings);
   }
 
   getName(): string {

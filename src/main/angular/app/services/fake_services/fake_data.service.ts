@@ -194,7 +194,7 @@ export class FakeDataService implements DataService {
       new Organization(identification, 3000),
       this.constructOrganizationGraphData(
         fakes.filter((value, index) => index < 3),
-        identification.organizationId
+        identification.id
       ),
     ];
 
@@ -204,7 +204,7 @@ export class FakeDataService implements DataService {
       new Organization(identification, 2000),
       this.constructOrganizationGraphData(
         fakes.filter((value, index) => index >= 3 && index < 6),
-        identification.organizationId
+        identification.id
       ),
     ];
 
@@ -214,7 +214,7 @@ export class FakeDataService implements DataService {
       new Organization(identification, 2500),
       this.constructOrganizationGraphData(
         fakes.filter((value, index) => index >= 6),
-        identification.organizationId
+        identification.id
       ),
     ];
   }

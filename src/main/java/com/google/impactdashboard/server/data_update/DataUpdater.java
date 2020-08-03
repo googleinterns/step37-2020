@@ -1,5 +1,6 @@
 package com.google.impactdashboard.server.data_update;
 
+import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingClient;
 import com.google.common.annotations.VisibleForTesting;
@@ -90,7 +91,7 @@ public class DataUpdater {
           return recommendationRetriever.listRecommendations(
               entries, project.getProjectId(),
               Recommendation.RecommenderType.IAM_BINDING, iamRetriever);
-        } catch (Exception e) {
+        } catch (PermissionDeniedException e) {
           return new ArrayList<Recommendation>();
         }
       }).flatMap(List::stream).collect(Collectors.toList());
@@ -121,7 +122,7 @@ public class DataUpdater {
                     .truncatedTo(ChronoUnit.DAYS).plus(1L, ChronoUnit.DAYS) :
                 timeTo)
             .stream();
-      } catch (Exception e) {
+      } catch (PermissionDeniedException e) {
         return new ArrayList<IAMBindingDatabaseEntry>().stream();
       }
     }).collect(Collectors.toList());

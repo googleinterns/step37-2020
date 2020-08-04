@@ -8,15 +8,18 @@
 }
 
 #content {
-  border: 1px solid #9AA0A6;
-  border-radius: 3px;
-  padding: 3px 3px 0 3px;
   margin: 0 auto;
   max-width: 75%;
 }
 
 ::ng-deep.mat-tab-label {
   height: 36px !important;
+}
+
+#table-container {
+  border: 1px solid #9AA0A6;
+  border-radius: 3px;
+  padding: 3px 3px 0 3px;
 }
 
 #resource-table {
@@ -37,9 +40,13 @@
 
 #organization-error-message {
   color: #f51d1d;
-  padding-top: 12px;
   margin: 0 auto;
-  max-width: 75%;
+  display: flex;
+}
+
+#organization-error-message p {
+  flex-grow: 1;
+  width: 0;
 }
 
 .toggle-project {

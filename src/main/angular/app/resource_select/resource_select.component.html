@@ -3,7 +3,7 @@
     <mat-progress-bar *ngIf="showLoadingBar()" mode="query" color="warn"></mat-progress-bar>
 
     <div id="table-with-message">
-      <mat-tab-group dynamicHeight (selectedTabChange)="toggleDisplay()" backgroundColor="primary">
+      <mat-tab-group id="table-container" dynamicHeight (selectedTabChange)="toggleDisplay()" backgroundColor="primary">
         <mat-tab label="Projects">
           <div id="filter-container">
             <fa-icon [icon]="filter" id="filter-icon"></fa-icon><input type="text"
@@ -89,8 +89,9 @@
               </th>
             </tr>
 
-            <tr *ngFor="let organization of getOrganizations()" (click)="toggleResource(organization)"
-              class="toggle-project clickable" title="Toggle project">
+            <tr *ngFor="let organization of getOrganizations()"
+              (click)="toggleResource(organization)" class="toggle-project clickable"
+              title="Toggle project">
               <td>
                 <fa-icon [icon]="circle" [ngStyle]="{'color': getColor(organization)}"
                   class="project-color-icon"></fa-icon>{{ organization.getName() }}
@@ -101,7 +102,11 @@
           </table>
         </mat-tab>
       </mat-tab-group>
-      <div *ngIf="containsOrgWithNoAccess" id="organization-error-message">*Dashboard failed to retrieve organization name and custom roles for one or more organizations. This can impact the IAM bindings numbers for certain projects.</div>
+      <div *ngIf="containsOrgWithNoAccess" id="organization-error-message">
+        <p>
+          *Dashboard failed to retrieve organization name and custom roles for one or more
+          organizations. This can impact the IAM bindings numbers for certain projects.</p>
+      </div>
     </div>
   </div>
 </div>

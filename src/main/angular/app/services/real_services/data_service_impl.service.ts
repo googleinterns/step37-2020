@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ProjectGraphData} from '../../../model/project_graph_data';
 import {Project} from '../../../model/project';
-import {DataService} from '../data.service';
+import {DataService, RequestType} from '../data.service';
 import {ErrorMessage} from '../../../model/error_message';
 import {ProjectMetaData} from '../../../model/project_metadata';
 import {GraphDataCacheService} from '../graph_data_cache.service';
@@ -16,13 +16,18 @@ import {OrganizationGraphData} from '../../../model/organization_graph_data';
 @Injectable()
 export class DataServiceImpl implements DataService {
   /** The URLs of all active requests. */
-  private activeRequests: Set<string>;
+  private activeRequests: {[type in RequestType]: Set<string>};
 
   constructor(
     private http: HttpClient,
     private cacheService: GraphDataCacheService
   ) {
-    this.activeRequests = new Set();
+    this.activeRequests = {
+      0: new Set(),
+      1: new Set(),
+      2: new Set(),
+      3: new Set(),
+    };
   }
 
   /** Gets the graph data for the given project ID. */
@@ -35,13 +40,13 @@ export class DataServiceImpl implements DataService {
     }
 
     const url = `/get-project-data?id=${id}`;
-    this.activeRequests.add(url);
+    this.activeRequests[RequestType.GET_PROJECT_DATA].add(url);
     const response: any = await this.http.get<any>(url).toPromise();
 
     // eslint-disable-next-line no-prototype-builtins
     if (response.hasOwnProperty('projectId')) {
       return new Promise(resolve => {
-        this.activeRequests.delete(url);
+        this.activeRequests[RequestType.GET_PROJECT_DATA].delete(url);
         const graphData = new ProjectGraphData(
           response.projectId,
           response.dateToNumberIAMBindings,
@@ -65,13 +70,13 @@ export class DataServiceImpl implements DataService {
     }
 
     const url = `/get-organization-data?id=${id}`;
-    this.activeRequests.add(url);
+    this.activeRequests[RequestType.GET_ORGANIZATION_DATA].add(url);
     const response: any = await this.http.get<any>(url).toPromise();
 
     // eslint-disable-next-line no-prototype-builtins
     if (response.hasOwnProperty('organizationId')) {
       return new Promise(resolve => {
-        this.activeRequests.delete(url);
+        this.activeRequests[RequestType.GET_ORGANIZATION_DATA].delete(url);
         const graphData = new OrganizationGraphData(
           response.organizationId,
           response.datesToBindings,
@@ -88,7 +93,7 @@ export class DataServiceImpl implements DataService {
   /** Gets the project and organization information. */
   async listSummaries(): Promise<DataSummaryList> {
     const url = '/list-summaries';
-    this.activeRequests.add(url);
+    this.activeRequests[RequestType.LIST_SUMMARIES].add(url);
     const response: any = await this.http.get<any>(url).toPromise();
 
     // eslint-disable-next-line no-prototype-builtins
@@ -118,25 +123,25 @@ export class DataServiceImpl implements DataService {
             organization.averageBindings
           )
       );
-      this.activeRequests.delete(url);
+      this.activeRequests[RequestType.LIST_SUMMARIES].delete(url);
       resolve(new DataSummaryList(projects, organizations));
     });
   }
 
   /** Whether there is at least one pending web request. */
-  hasPendingRequest(): boolean {
-    return this.activeRequests.size > 0;
+  hasPendingRequest(type: RequestType): boolean {
+    return this.activeRequests[type].size > 0;
   }
 
   /** Sends a POST to /manual-update. */
   postManualUpdate(): Promise<void> {
     const url = '/manual-update';
-    this.activeRequests.add(url);
+    this.activeRequests[RequestType.POST_MANUAL_UPDATE].add(url);
     return this.http
       .post(url, {})
       .toPromise()
       .then(() => {
-        this.activeRequests.delete(url);
+        this.activeRequests[RequestType.POST_MANUAL_UPDATE].delete(url);
         return undefined;
       });
   }

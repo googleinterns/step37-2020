@@ -42,7 +42,7 @@ export class Project implements IAMResource {
   }
 
   getAverageBindings(): number {
-    return this.metaData.getAverageIAMBindingsInPastYear();
+    return Math.round(this.metaData.getAverageIAMBindingsInPastYear());
   }
 
   getName(): string {

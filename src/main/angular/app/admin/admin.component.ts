@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DataService} from '../services/data.service';
+import {DataService, RequestType} from '../services/data.service';
 
 /** Component page for the administration component. */
 @Component({
@@ -27,7 +27,7 @@ export class AdminComponent implements OnInit {
 
   /** Whether to show the loading bar or not, depending on if there is an active request. */
   showLoadingBar(): boolean {
-    return this.dataService.hasPendingRequest();
+    return this.dataService.hasPendingRequest(RequestType.POST_MANUAL_UPDATE);
   }
 
   /** Whether the update data button should be enabled. */

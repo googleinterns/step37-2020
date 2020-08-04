@@ -7,7 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {trigger, state, style, transition, animate} from '@angular/animations';
 import {SortDirection, SortBy} from '../../model/sort_methods';
-import {DataService} from '../services/data.service';
+import {DataService, RequestType} from '../services/data.service';
 import {QueryService} from '../services/query.service';
 import {ResourceType, Resource} from '../../model/resource';
 import {Project} from '../../model/project';
@@ -82,7 +82,11 @@ export class ResourceSelectComponent implements OnInit {
 
   /** Checks whether to show the loading bar based on whether there is an active web request or not. */
   showLoadingBar(): boolean {
-    return this.dataService.hasPendingRequest();
+    return (
+      this.dataService.hasPendingRequest(RequestType.LIST_SUMMARIES) ||
+      this.dataService.hasPendingRequest(RequestType.GET_PROJECT_DATA) ||
+      this.dataService.hasPendingRequest(RequestType.GET_ORGANIZATION_DATA)
+    );
   }
 
   /** Toggles whether to display projects or organizations. */

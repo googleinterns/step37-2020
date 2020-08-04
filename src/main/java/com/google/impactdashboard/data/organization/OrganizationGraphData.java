@@ -10,6 +10,7 @@ public abstract class OrganizationGraphData {
 
   public abstract String getOrganizationId();
   public abstract Map<Long, Integer> datesToBindings();
+  public abstract Map<Long, Recommendation> datesToRecommendations();
 
   /** 
    * Create an {@code OrganizationGraphData} object for organization with identifying

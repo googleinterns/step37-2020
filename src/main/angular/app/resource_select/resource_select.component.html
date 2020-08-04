@@ -94,7 +94,8 @@
               title="Toggle project">
               <td>
                 <fa-icon [icon]="circle" [ngStyle]="{'color': getColor(organization)}"
-                  class="project-color-icon"></fa-icon>{{ organization.getName() }}
+                  class="project-color-icon"></fa-icon>{{ organization.containsAsterisk() ? organization.getName().slice(0,-1) : organization.getName() }}
+                <span *ngIf="organization.containsAsterisk()" class="red-asterisk">*</span>
               </td>
               <td>{{ organization.getAverageBindings() }}</td>
               <td>{{ organization.getId() }}</td>

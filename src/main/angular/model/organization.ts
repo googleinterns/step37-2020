@@ -6,7 +6,7 @@ export class Organization implements IAMResource {
   color: string;
   constructor(
     public identification: OrganizationIdentification,
-    public averageBindings: number,
+    public averageBindings: number
   ) {
     this.color = '';
   }
@@ -20,7 +20,7 @@ export class Organization implements IAMResource {
   }
 
   containsAsterisk(): boolean {
-    return this.includes("*");
+    return this.includes('*');
   }
 
   getId(): string {

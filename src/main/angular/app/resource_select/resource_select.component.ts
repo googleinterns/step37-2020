@@ -34,8 +34,8 @@ export class ResourceSelectComponent implements OnInit {
   public activeOrganizations: Set<Organization>;
   /** The resource to display. Now it's just projects or organizations, but can be expanded. */
   public displayType: ResourceType;
-  /** 
-   * Whether there is an org for which the server failed to retrieve a name, 
+  /**
+   * Whether there is an org for which the server failed to retrieve a name,
    * indicating that the dashboard does not have viewer permissions for this org.
    */
   public containsOrgWithNoAccess: boolean;

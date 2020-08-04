@@ -118,8 +118,10 @@ export class DataServiceImpl implements DataService {
             organization.averageBindings
           )
       );
+      const hasAsterisk: boolean = organizations.some(
+        organization => organization.containsAsterisk());
       this.activeRequests.delete(url);
-      resolve(new DataSummaryList(projects, organizations, false));
+      resolve(new DataSummaryList(projects, organizations, hasAsterisk));
     });
   }
 

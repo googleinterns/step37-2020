@@ -119,7 +119,7 @@ export class DataServiceImpl implements DataService {
           )
       );
       this.activeRequests.delete(url);
-      resolve(new DataSummaryList(projects, organizations));
+      resolve(new DataSummaryList(projects, organizations, false));
     });
   }
 

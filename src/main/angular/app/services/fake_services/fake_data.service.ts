@@ -65,7 +65,7 @@ export class FakeDataService implements DataService {
         const organizations = Object.values(this.organizations).map(
           tuple => tuple[0]
         );
-        resolve(new DataSummaryList(projects, organizations));
+        resolve(new DataSummaryList(projects, organizations, false));
       }, FakeDataService.requestTime);
     });
   }

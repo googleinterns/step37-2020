@@ -35,6 +35,13 @@
   padding: 3px;
 }
 
+#organization-error-message {
+  color: #f51d1d;
+  padding-top: 12px;
+  margin: 0 auto;
+  max-width: 75%;
+}
+
 .toggle-project {
   border-top: 1px solid #9AA0A6;
 }

@@ -32,9 +32,10 @@ public class IamBindingRetriever {
 
   private final Iam iamService;
   private final List<Role> roles;
+  private final ResourceRetriever resourceRetriever;
 
   @VisibleForTesting
-  protected IamBindingRetriever(Iam iamService) throws IOException {
+  protected IamBindingRetriever(Iam iamService, ResourceRetriever resourceRetriever) throws IOException {
     this.iamService = iamService;
 
     roles = new ArrayList<>();
@@ -49,6 +50,8 @@ public class IamBindingRetriever {
       roles.addAll(rolesResponse.getRoles());
       pageToken = rolesResponse.getNextPageToken();
     } while(pageToken != null);
+
+    this.resourceRetriever = resourceRetriever;
   }
 
   /**
@@ -63,7 +66,7 @@ public class IamBindingRetriever {
         .setApplicationName("Recommendation Impact Dashboard")
         .build();
 
-    return new IamBindingRetriever(iamService);
+    return new IamBindingRetriever(iamService, ResourceRetriever.getInstance());
   }
 
   /**
@@ -99,9 +102,10 @@ public class IamBindingRetriever {
       } catch (IOException e) {
         throw new RuntimeException("IAM Bindings not received.");
       }
-      // @TODO fix organization id here once retrieved
+      String organizationId = resourceRetriever.getOrganizationId(projectId);
+      String organizationName = resourceRetriever.getOrganizationName(organizationId);
       return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber,
-          OrganizationIdentification.create("",""), secondsFromEpoch,
+          OrganizationIdentification.create(organizationName,organizationId), secondsFromEpoch,
           iamBindings);
     }).collect(Collectors.toList());
   }
@@ -202,7 +206,7 @@ public class IamBindingRetriever {
         rolesResponse = iamService.projects().roles().list("projects/" + projectId)
             .setView("full").setPageToken(projectPageToken).execute();
       }
-      if (rolesResponse != null) {
+      if (rolesResponse != null && !rolesResponse.isEmpty()) {
         projectCustomRoles.addAll(rolesResponse.getRoles());
         projectPageToken = rolesResponse.getNextPageToken();
       }
@@ -229,7 +233,7 @@ public class IamBindingRetriever {
           rolesResponse = iamService.projects().roles().list("organizations/" + organizationId)
               .setView("full").setPageToken(projectPageToken).execute();
         }
-        if (rolesResponse != null) {
+        if (rolesResponse != null && !rolesResponse.isEmpty()) {
           organizationCustomRoles.addAll(rolesResponse.getRoles());
           projectPageToken = rolesResponse.getNextPageToken();
         }

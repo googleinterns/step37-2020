@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.*;
 
 @RunWith(JUnit4.class)
-public class ProjectListRetrieverTest extends Mockito {
+public class ResourceRetrieverTest extends Mockito {
 
   private CloudResourceManager.Projects.List mockRequest;
   private ListProjectsResponse mockResponse;
@@ -45,7 +45,7 @@ public class ProjectListRetrieverTest extends Mockito {
     when(mockResponse.getProjects()).thenReturn(Arrays.asList(project1, project2));
     when(mockResponse.getNextPageToken()).thenReturn(null);
 
-    List<ProjectIdentification> actual = ProjectListRetriever.getListOfProjects(mockRequest);
+    List<ProjectIdentification> actual = ResourceRetriever.getListOfProjects(mockRequest);
     List<ProjectIdentification> expected = Arrays.asList(PROJECT_1_ID, PROJECT_2_ID);
 
     Assert.assertEquals(expected.size(), actual.size());
@@ -59,7 +59,7 @@ public class ProjectListRetrieverTest extends Mockito {
     when(mockResponse.getProjects()).thenReturn(null);
     when(mockResponse.getNextPageToken()).thenReturn(null);
 
-    List<ProjectIdentification> actual = ProjectListRetriever.getListOfProjects(mockRequest);
+    List<ProjectIdentification> actual = ResourceRetriever.getListOfProjects(mockRequest);
 
     Assert.assertEquals(Arrays.asList(), actual);
   }

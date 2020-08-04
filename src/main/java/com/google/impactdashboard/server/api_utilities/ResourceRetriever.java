@@ -4,15 +4,17 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
-import com.google.api.services.cloudresourcemanager.model.ListProjectsResponse;
+import com.google.api.services.cloudresourcemanager.model.*;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
+import java.util.*;
+
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.impactdashboard.Credentials;
-import java.util.List;
-import java.util.ArrayList;
+
 import  com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.common.annotations.VisibleForTesting;
 
@@ -20,19 +22,19 @@ import com.google.common.annotations.VisibleForTesting;
  * A class for using the Cloud Resource Manager API to retrieve the projects 
  * that the credentials in use have resourcemanager.projects.get permission for. 
  */
-public class ProjectListRetriever {
+public class ResourceRetriever {
 
   private CloudResourceManager cloudResourceManagerService = null;
-  private static ProjectListRetriever INSTANCE = null;
+  private static ResourceRetriever INSTANCE = null;
 
-  public static ProjectListRetriever getInstance() {
+  public static ResourceRetriever getInstance() {
     if (INSTANCE == null) {
-      INSTANCE = new ProjectListRetriever(createCloudResourceManagerService());
+      INSTANCE = new ResourceRetriever(createCloudResourceManagerService());
     }
     return INSTANCE;
   }
 
-  protected ProjectListRetriever(CloudResourceManager cloudResourceManagerService) {
+  protected ResourceRetriever(CloudResourceManager cloudResourceManagerService) {
     this.cloudResourceManagerService = cloudResourceManagerService;
   }
 
@@ -73,6 +75,60 @@ public class ProjectListRetriever {
     } while (response.getNextPageToken() != null);
 
     return projects;
+  }
+
+  /**
+   * Returns the top level ancestor to a project which is the organization the project belongs under.
+   * @param projectId the project the organization id is being retrieved for.
+   */
+  public String getOrganizationId(String projectId){
+    List<Ancestor> ancestors;
+    try {
+       ancestors = getProjectAncestry(projectId);
+    } catch (IOException io) {
+      throw new RuntimeException("Failed to get ancestors: " + io.getMessage());
+    }
+    if(ancestors == null) {
+      return "N/A";
+    }
+    return ancestors.get(ancestors.size()-1).getResourceId().getId();
+  }
+
+  /**
+   * Returns the ancestor hierarchy for the specified project.
+   * @param projectId the project to get the ancestors for
+   */
+  private List<Ancestor> getProjectAncestry(String projectId) throws IOException {
+    CloudResourceManager.Projects.GetAncestry ancestry = cloudResourceManagerService.
+        projects().getAncestry(projectId, new GetAncestryRequest());
+    GetAncestryResponse response = ancestry.execute();
+    return response.getAncestor();
+  }
+
+  /**
+   * Returns the name of the organization that has the id specified.
+   * @param organizationId The id of the organization the name is retrieved for.
+   */
+  public String getOrganizationName(String organizationId) {
+    Organization organization;
+    try {
+      organization = searchOrganizationIds(organizationId);
+    } catch (IOException io) {
+      organization = null;
+//      throw new RuntimeException("Could not find any organization with id:" + organizationId);
+    }
+    return organization != null ? organization.getDisplayName(): organizationId;
+  }
+
+  /**
+   * Searches through all the organizations to find the org that matches the id specified.
+   * @param organizationId The id of the organization that is being searched for.
+   * @return The organization that has the id specified, null if it does not exist.
+   */
+  private Organization searchOrganizationIds(String organizationId) throws IOException {
+    CloudResourceManager.Organizations.Get orgGet = cloudResourceManagerService.organizations()
+        .get("organizations/" + organizationId);
+    return orgGet.execute();
   }
 
   /**

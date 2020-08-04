@@ -1,6 +1,5 @@
 package com.google.impactdashboard.server.data_update;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.google.cloud.logging.v2.LoggingClient;
@@ -19,10 +18,9 @@ import com.google.impactdashboard.database_manager.data_update.DataUpdateManager
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManagerFactory;
 import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
-import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
+import com.google.impactdashboard.server.api_utilities.ResourceRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +53,7 @@ public class DataUpdaterTest extends Mockito {
   private DataUpdateManager fakeDataUpdateManager;
   private DataReadManager fakeDataReadManager;
   private IamBindingRetriever mockIamBindingRetriever;
-  private ProjectListRetriever mockProjectListRetriever;
+  private ResourceRetriever mockResourceRetriever;
   private DataUpdater manualDataUpdater;
   private DataUpdater automaticDataUpdater;
 
@@ -110,14 +108,14 @@ public class DataUpdaterTest extends Mockito {
     mockLogRetriever = mock(LogRetriever.class);
     mockRecommendationRetriever = mock(RecommendationRetriever.class);
     mockIamBindingRetriever = mock(IamBindingRetriever.class);
-    mockProjectListRetriever = mock(ProjectListRetriever.class);
+    mockResourceRetriever = mock(ResourceRetriever.class);
 
     manualDataUpdater = new ManualDataUpdater(
         mockLogRetriever, mockRecommendationRetriever, fakeDataUpdateManager, 
-        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever);
+        fakeDataReadManager, mockIamBindingRetriever, mockResourceRetriever);
     automaticDataUpdater = new AutomaticDataUpdater(
         mockLogRetriever, mockRecommendationRetriever, fakeDataUpdateManager, 
-        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever);
+        fakeDataReadManager, mockIamBindingRetriever, mockResourceRetriever);
 
     initializeRecommendationFakes();
   }

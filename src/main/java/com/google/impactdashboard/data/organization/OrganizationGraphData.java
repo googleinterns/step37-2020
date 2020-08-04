@@ -8,9 +8,9 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class OrganizationGraphData {
 
-  public abstract OrganizationIdentification getOrganizationIdentification();
-  public abstract Map<Long, Integer> getDatesToBindings();
-  public abstract Map<Long, Recommendation> getDatesToRecommendations();
+  public abstract String getOrganizationId();
+  public abstract Map<Long, Integer> datesToBindings();
+  public abstract Map<Long, Recommendation> datesToRecommendations();
 
   /** 
    * Create an {@code OrganizationGraphData} object for organization with identifying
@@ -21,10 +21,10 @@ public abstract class OrganizationGraphData {
    * since the epoch mapped to a {@code Recommendation} object representing 
    * the IAM Bindings recommendation that was applied on that date.
    */
-  public static OrganizationGraphData create(OrganizationIdentification organizationIdentification, 
+  public static OrganizationGraphData create(String organizationId,
     Map<Long, Integer> datesToBindings, 
     Map<Long, Recommendation> datesToRecommendations) {
-    return new AutoValue_OrganizationGraphData(organizationIdentification, datesToBindings, datesToRecommendations);
+    return new AutoValue_OrganizationGraphData(organizationId, datesToBindings, datesToRecommendations);
   }
 
 }

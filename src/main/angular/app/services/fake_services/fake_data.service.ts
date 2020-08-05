@@ -4,7 +4,7 @@ import {RecommenderType} from '../../../model/recommender_type';
 import {ProjectGraphData} from '../../../model/project_graph_data';
 import {Project} from '../../../model/project';
 import {ProjectMetaData} from '../../../model/project_metadata';
-import {DataService} from '../data.service';
+import {DataService, RequestType} from '../data.service';
 import {ErrorMessage} from '../../../model/error_message';
 import {RecommendationAction} from '../../../model/recommendation_action';
 import {RecommenderMetadata} from '../../../model/recommender_metadata';
@@ -18,7 +18,7 @@ import {OrganizationIdentification} from '../../../model/organization_identifica
 @Injectable()
 export class FakeDataService implements DataService {
   /** The URLs of all active requests. */
-  private activeRequests: Set<string>;
+  private activeRequests: {[type in RequestType]: Set<string>};
   /** Contains the projects that are faked. */
   private projects: {[projectId: string]: [Project, ProjectGraphData]};
   /** Contains the faked organizations. */
@@ -51,16 +51,21 @@ export class FakeDataService implements DataService {
     fakes.forEach(tuple => (this.projects[tuple[0].projectId] = tuple));
     this.setupFakeOrganizations(fakes);
 
-    this.activeRequests = new Set();
+    this.activeRequests = {
+      [RequestType.LIST_SUMMARIES]: new Set(),
+      [RequestType.GET_PROJECT_DATA]: new Set(),
+      [RequestType.GET_ORGANIZATION_DATA]: new Set(),
+      [RequestType.POST_MANUAL_UPDATE]: new Set(),
+    };
   }
 
   /** Returns all the fake projects. */
   listSummaries(): Promise<DataSummaryList> {
     const url = '/list-summaries';
-    this.activeRequests.add(url);
+    this.activeRequests[RequestType.LIST_SUMMARIES].add(url);
     return new Promise(resolve => {
       setTimeout(() => {
-        this.activeRequests.delete(url);
+        this.activeRequests[RequestType.LIST_SUMMARIES].delete(url);
         const projects = Object.values(this.projects).map(tuple => tuple[0]);
         const organizations = Object.values(this.organizations).map(
           tuple => tuple[0]
@@ -78,10 +83,10 @@ export class FakeDataService implements DataService {
       );
     }
     if (this.projects[id]) {
-      this.activeRequests.add(id);
+      this.activeRequests[RequestType.GET_PROJECT_DATA].add(id);
       return new Promise(resolve => {
         setTimeout(() => {
-          this.activeRequests.delete(id);
+          this.activeRequests[RequestType.GET_PROJECT_DATA].delete(id);
           this.cacheService.addProjectEntry(id, this.projects[id][1]);
           resolve(this.projects[id][1]);
         }, FakeDataService.requestTime);
@@ -101,10 +106,10 @@ export class FakeDataService implements DataService {
       );
     }
     if (this.organizations[id]) {
-      this.activeRequests.add(id);
+      this.activeRequests[RequestType.GET_ORGANIZATION_DATA].add(id);
       return new Promise(resolve => {
         setTimeout(() => {
-          this.activeRequests.delete(id);
+          this.activeRequests[RequestType.GET_ORGANIZATION_DATA].delete(id);
           this.cacheService.addOrganizationEntry(id, this.organizations[id][1]);
           resolve(this.organizations[id][1]);
         }, FakeDataService.requestTime);
@@ -117,17 +122,17 @@ export class FakeDataService implements DataService {
     }
   }
 
-  hasPendingRequest(): boolean {
-    return this.activeRequests.size > 0;
+  hasPendingRequest(type: RequestType): boolean {
+    return this.activeRequests[type].size > 0;
   }
 
   /** Sends a POST to /manual-update. */
   postManualUpdate(): Promise<void> {
     const url = '/manual-update';
-    this.activeRequests.add(url);
+    this.activeRequests[RequestType.POST_MANUAL_UPDATE].add(url);
     return new Promise(resolve => {
       setTimeout(() => {
-        this.activeRequests.delete(url);
+        this.activeRequests[RequestType.POST_MANUAL_UPDATE].delete(url);
         resolve(undefined);
       }, FakeDataService.requestTime);
     });

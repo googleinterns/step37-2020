@@ -14,8 +14,16 @@ export abstract class DataService {
   abstract async getOrganizationGraphData(
     id: string
   ): Promise<OrganizationGraphData>;
-  /** Returns whether there is at least one pending web request. */
-  abstract hasPendingRequest(): boolean;
+  /** Returns whether there is at least one pending web request of the given type. */
+  abstract hasPendingRequest(type: RequestType): boolean;
   /** Sends a POST to /manual-update. */
   abstract postManualUpdate(): Promise<void>;
+}
+
+/** The possible types of request supported by the data service */
+export enum RequestType {
+  LIST_SUMMARIES,
+  GET_PROJECT_DATA,
+  GET_ORGANIZATION_DATA,
+  POST_MANUAL_UPDATE,
 }

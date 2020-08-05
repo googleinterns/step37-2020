@@ -8,7 +8,7 @@ For all projects of the user's choice, the dashboard plots the number of IAM bin
 
 After cloning the repo and following the simple [deployment instructions](/Deployment_Instructions.md), the dashboard will be initialized with 30 days of recommendations and bindings data for all desired projects, and will continue collecting data daily to store up to a 365 day window of data. The list of projects to import data from can be easily modified at any time by following [these instructions](/New_Project_Instructions.md). 
 
-![Dashboard](/images/Dashboard.png)
+![Dashboard](/images/Dashboard_With_Org_Tab.png)
 
 ## Licensing
 A special thanks to the authors of these libraries:

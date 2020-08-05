@@ -4,6 +4,7 @@ import com.google.cloud.logging.v2.LoggingClient;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingSettings;
 import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
+import com.google.common.base.Strings;
 import com.google.impactdashboard.Credentials;
 import com.google.logging.v2.ListLogEntriesRequest;
 import java.io.IOException;
@@ -62,7 +63,7 @@ public class LogRetriever {
     ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()
         .setOrderBy("timestamp desc").addResourceNames(resourceNameStringBuilder.toString());
 
-    if(!pageToken.equals("")) {
+    if(!Strings.isNullOrEmpty(pageToken)) {
       builder.setPageToken(pageToken);
     }
 

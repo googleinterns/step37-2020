@@ -4,6 +4,7 @@ import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingClient;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.Recommendation;
@@ -147,7 +148,7 @@ public class DataUpdater {
             project.getProjectId(), "", timeTo, 1, pageToken);
         entry = response.getPage().getResponse().getEntriesList();
         pageToken = response.getNextPageToken();
-      } while (entry.isEmpty() && !pageToken.equals(""));
+      } while (entry.isEmpty() && !Strings.isNullOrEmpty(pageToken));
 
       List<IAMBindingDatabaseEntry> lastEntry = iamRetriever
           .listIAMBindingData(entry, project.getProjectId(), project.getName(),

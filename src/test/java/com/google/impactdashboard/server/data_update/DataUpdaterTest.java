@@ -196,13 +196,13 @@ public class DataUpdaterTest extends Mockito {
         Collections.singletonList(mock(LogEntry.class));
 
     when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_3.getProjectId()), anyString(),
-        anyString(), anyInt())).thenReturn(project3Response);
+        anyString(), anyInt(), anyString())).thenReturn(project3Response);
 
     when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_2.getProjectId()), anyString(),
-        anyString(), anyInt())).thenReturn(project2Response);
+        anyString(), anyInt(), anyString())).thenReturn(project2Response);
 
     when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_1.getProjectId()), anyString(),
-        anyString(), anyInt())).thenReturn(project1Response);
+        anyString(), anyInt(), anyString())).thenReturn(project1Response);
 
     when(project3Response.iterateAll()).thenReturn(project3AuditLogs);
 

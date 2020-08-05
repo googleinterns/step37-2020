@@ -23,10 +23,10 @@ export class DataServiceImpl implements DataService {
     private cacheService: GraphDataCacheService
   ) {
     this.activeRequests = {
-      0: new Set(),
-      1: new Set(),
-      2: new Set(),
-      3: new Set(),
+      [RequestType.LIST_SUMMARIES]: new Set(),
+      [RequestType.GET_PROJECT_DATA]: new Set(),
+      [RequestType.GET_ORGANIZATION_DATA]: new Set(),
+      [RequestType.POST_MANUAL_UPDATE]: new Set(),
     };
   }
 

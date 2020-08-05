@@ -5,7 +5,6 @@ import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingClient;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
-import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.impactdashboard.database_manager.data_read.DataReadManager;
@@ -16,7 +15,6 @@ import com.google.impactdashboard.server.api_utilities.ResourceRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.logging.v2.LogEntry;
 
-import java.lang.reflect.Array;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -149,7 +147,7 @@ public class DataUpdater {
             project.getProjectId(), "", timeTo, 1, pageToken);
         entry = response.getPage().getResponse().getEntriesList();
         pageToken = response.getNextPageToken();
-      } while (entry.isEmpty() && pageToken != null);
+      } while (entry.isEmpty() && !pageToken.equals(""));
 
       List<IAMBindingDatabaseEntry> lastEntry = iamRetriever
           .listIAMBindingData(entry, project.getProjectId(), project.getName(),
@@ -159,11 +157,6 @@ public class DataUpdater {
     } catch (Exception e) {
       return new ArrayList<>();
     }
-  }
-
-  public static void main(String[] args) throws Exception {
-    AutomaticDataUpdater auto = AutomaticDataUpdater.create();
-    auto.getLastIamEntry(ProjectIdentification.create("davidgaskins-eg-codelab", "davidgaskins-eg-codelab", 0L), "");
   }
 
   /**

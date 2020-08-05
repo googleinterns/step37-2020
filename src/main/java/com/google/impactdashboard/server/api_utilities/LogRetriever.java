@@ -62,7 +62,7 @@ public class LogRetriever {
     ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()
         .setOrderBy("timestamp desc").addResourceNames(resourceNameStringBuilder.toString());
 
-    if(pageToken != null && !pageToken.equals("")) {
+    if(!pageToken.equals("")) {
       builder.setPageToken(pageToken);
     }
 

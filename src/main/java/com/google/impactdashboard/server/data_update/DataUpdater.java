@@ -4,8 +4,8 @@ import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingClient;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
-import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.recommendation.Recommendation;
 import com.google.impactdashboard.database_manager.data_read.DataReadManager;
@@ -16,7 +16,6 @@ import com.google.impactdashboard.server.api_utilities.ResourceRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 import com.google.logging.v2.LogEntry;
 
-import java.lang.reflect.Array;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -106,7 +105,7 @@ public class DataUpdater {
 
         LoggingClient.ListLogEntriesPagedResponse response = logRetriever
             .listAuditLogsResponse(project.getProjectId(), timeFrom.toString(),
-                timeTo == null ? "" : timeTo.toString(), 50);
+                timeTo == null ? "" : timeTo.toString(), 50, "");
         List<LogEntry> iamBindingsLogs = StreamSupport
             .stream(response.iterateAll().spliterator(), false).collect(Collectors.toList());
 
@@ -142,9 +141,14 @@ public class DataUpdater {
       long todayMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
           .truncatedTo(ChronoUnit.DAYS).toEpochMilli();
 
-      LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
-          project.getProjectId(), "", timeTo, 1);
-      List<LogEntry> entry = response.getPage().getResponse().getEntriesList();
+      String pageToken = "";
+      List<LogEntry> entry = new ArrayList<>();;
+      do {
+        LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
+            project.getProjectId(), "", timeTo, 1, pageToken);
+        entry = response.getPage().getResponse().getEntriesList();
+        pageToken = response.getNextPageToken();
+      } while (entry.isEmpty() && !Strings.isNullOrEmpty(pageToken));
 
       List<IAMBindingDatabaseEntry> lastEntry = iamRetriever
           .listIAMBindingData(entry, project.getProjectId(), project.getName(),

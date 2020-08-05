@@ -5,6 +5,7 @@ import {Organization} from './organization';
 export class DataSummaryList {
   constructor(
     public projects: Project[],
-    public organizations: Organization[]
+    public organizations: Organization[],
+    public containsAsterisk: boolean
   ) {}
 }

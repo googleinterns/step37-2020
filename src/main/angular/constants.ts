@@ -1,6 +1,6 @@
 /** Contains several constants in use throughout the application. */
 /** Whether to use test data or not. */
-export const USE_TEST_DATA = true;
+export const USE_TEST_DATA = false;
 
 // See https://standards.google/guidelines/brand-standards/color/palette/#brand-colors
 export const GOOGLE_BLUE = '#174ea6';

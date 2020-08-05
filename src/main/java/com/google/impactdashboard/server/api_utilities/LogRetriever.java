@@ -4,6 +4,7 @@ import com.google.cloud.logging.v2.LoggingClient;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.cloud.logging.v2.LoggingSettings;
 import com.google.cloud.logging.v2.stub.LoggingServiceV2StubSettings;
+import com.google.common.base.Strings;
 import com.google.impactdashboard.Credentials;
 import com.google.logging.v2.ListLogEntriesRequest;
 import java.io.IOException;
@@ -37,7 +38,9 @@ public class LogRetriever {
    * @param timeTo The latest time to retrieve logs for.
    * @return A response that contains all the relevant audit log entries that are stored by the logging API
    */
-  public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom, String timeTo, int pageSize) {
+  public ListLogEntriesPagedResponse listAuditLogsResponse(String projectId, String timeFrom,
+                                                           String timeTo, int pageSize,
+                                                           String pageToken) {
     StringBuilder resourceNameStringBuilder = new StringBuilder();
     resourceNameStringBuilder.append("projects/");
     resourceNameStringBuilder.append(projectId);
@@ -59,6 +62,10 @@ public class LogRetriever {
 
     ListLogEntriesRequest.Builder builder = ListLogEntriesRequest.newBuilder()
         .setOrderBy("timestamp desc").addResourceNames(resourceNameStringBuilder.toString());
+
+    if(!Strings.isNullOrEmpty(pageToken)) {
+      builder.setPageToken(pageToken);
+    }
 
     ListLogEntriesRequest request = builder.setFilter(filterStringBuilder.toString())
         .setPageSize(pageSize).build();
@@ -98,7 +105,7 @@ public class LogRetriever {
     ListLogEntriesRequest request = ListLogEntriesRequest.newBuilder()
       .setFilter(filterStringBuilder.toString()).setOrderBy("timestamp desc")
       .addResourceNames(resourceNameStringBuilder.toString()).build();
-    
+
     return logger.listLogEntries(request);
   }
 }

@@ -70,7 +70,7 @@ export class FakeDataService implements DataService {
         const organizations = Object.values(this.organizations).map(
           tuple => tuple[0]
         );
-        resolve(new DataSummaryList(projects, organizations));
+        resolve(new DataSummaryList(projects, organizations, true));
       }, FakeDataService.requestTime);
     });
   }
@@ -204,7 +204,7 @@ export class FakeDataService implements DataService {
     ];
 
     // org-2 projects
-    identification = new OrganizationIdentification('org-2', 'Organization 2');
+    identification = new OrganizationIdentification('org-2', 'Organization 2*');
     this.organizations['org-2'] = [
       new Organization(identification, 2000),
       this.constructOrganizationGraphData(

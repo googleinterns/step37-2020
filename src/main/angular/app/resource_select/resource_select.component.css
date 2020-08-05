@@ -8,15 +8,18 @@
 }
 
 #content {
-  border: 1px solid #9AA0A6;
-  border-radius: 3px;
-  padding: 3px 3px 0 3px;
   margin: 0 auto;
   max-width: 75%;
 }
 
 ::ng-deep.mat-tab-label {
   height: 36px !important;
+}
+
+#table-container {
+  border: 1px solid #9AA0A6;
+  border-radius: 3px;
+  padding: 3px 3px 0 3px;
 }
 
 #resource-table {
@@ -33,6 +36,21 @@
   font-weight: normal;
   font-size: 18px;
   padding: 3px;
+}
+
+#organization-error-message {
+  color: #f51d1d;
+  margin: 0 auto;
+  display: flex;
+}
+
+#organization-error-message p {
+  flex-grow: 1;
+  width: 0;
+}
+
+.red-asterisk {
+  color: #f51d1d;
 }
 
 .toggle-project {

@@ -4,7 +4,6 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.gax.rpc.PermissionDeniedException;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.api.services.cloudresourcemanager.model.*;
 
@@ -117,7 +116,7 @@ public class ResourceRetriever {
       organization = null;
 //      throw new RuntimeException("Could not find any organization with id:" + organizationId);
     }
-    return organization != null ? organization.getDisplayName(): organizationId;
+    return organization != null ? organization.getDisplayName(): organizationId + "*";
   }
 
   /**

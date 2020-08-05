@@ -124,7 +124,10 @@ export class DataServiceImpl implements DataService {
           )
       );
       this.activeRequests[RequestType.LIST_SUMMARIES].delete(url);
-      resolve(new DataSummaryList(projects, organizations));
+      const hasAsterisk: boolean = organizations.some(organization =>
+        organization.containsAsterisk()
+      );
+      resolve(new DataSummaryList(projects, organizations, hasAsterisk));
     });
   }
 

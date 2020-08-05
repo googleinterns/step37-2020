@@ -106,7 +106,7 @@ public class DataUpdater {
 
         LoggingClient.ListLogEntriesPagedResponse response = logRetriever
             .listAuditLogsResponse(project.getProjectId(), timeFrom.toString(),
-                timeTo == null ? "" : timeTo.toString(), 50);
+                timeTo == null ? "" : timeTo.toString(), 50, "");
         List<LogEntry> iamBindingsLogs = StreamSupport
             .stream(response.iterateAll().spliterator(), false).collect(Collectors.toList());
 
@@ -142,9 +142,14 @@ public class DataUpdater {
       long todayMidnight = Instant.ofEpochMilli(System.currentTimeMillis())
           .truncatedTo(ChronoUnit.DAYS).toEpochMilli();
 
-      LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
-          project.getProjectId(), "", timeTo, 1);
-      List<LogEntry> entry = response.getPage().getResponse().getEntriesList();
+      String pageToken = "";
+      List<LogEntry> entry = new ArrayList<>();;
+      do {
+        LoggingClient.ListLogEntriesPagedResponse response = logRetriever.listAuditLogsResponse(
+            project.getProjectId(), "", timeTo, 1, pageToken);
+        entry = response.getPage().getResponse().getEntriesList();
+        pageToken = response.getNextPageToken();
+      } while (entry.isEmpty() && pageToken != null);
 
       List<IAMBindingDatabaseEntry> lastEntry = iamRetriever
           .listIAMBindingData(entry, project.getProjectId(), project.getName(),
@@ -154,6 +159,11 @@ public class DataUpdater {
     } catch (Exception e) {
       return new ArrayList<>();
     }
+  }
+
+  public static void main(String[] args) throws Exception {
+    AutomaticDataUpdater auto = AutomaticDataUpdater.create();
+    auto.getLastIamEntry(ProjectIdentification.create("davidgaskins-eg-codelab", "davidgaskins-eg-codelab", 0L), "");
   }
 
   /**

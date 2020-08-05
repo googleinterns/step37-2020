@@ -8,7 +8,7 @@ public class Constants {
 
   /** The path to the service account key. */
   public static final String PATH_TO_SERVICE_ACCOUNT_KEY = 
-    "/usr/local/google/home/ionis/Downloads/key.json";
+    "/usr/local/google/home/carolinelui/Downloads/key.json";
 
   /** The name of the table holding recommendations data. */
   public static final String RECOMMENDATIONS_TABLE = "Recommendations";

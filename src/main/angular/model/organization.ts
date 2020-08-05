@@ -19,6 +19,10 @@ export class Organization implements IAMResource {
     return this.identification.name;
   }
 
+  containsAsterisk(): boolean {
+    return this.includes('*');
+  }
+
   getId(): string {
     return this.identification.id;
   }

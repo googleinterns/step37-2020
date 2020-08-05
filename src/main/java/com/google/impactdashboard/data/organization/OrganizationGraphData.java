@@ -9,8 +9,8 @@ import com.google.auto.value.AutoValue;
 public abstract class OrganizationGraphData {
 
   public abstract String getOrganizationId();
-  public abstract Map<Long, Integer> datesToBindings();
-  public abstract Map<Long, Recommendation> datesToRecommendations();
+  public abstract Map<Long, Integer> getDatesToBindings();
+  public abstract Map<Long, Recommendation> getDatesToRecommendations();
 
   /** 
    * Create an {@code OrganizationGraphData} object for organization with identifying

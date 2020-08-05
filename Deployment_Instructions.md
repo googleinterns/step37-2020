@@ -17,18 +17,26 @@ First, choose a project on which to deploy the Recommendations Impact Dashboard.
 ## Service Account Setup
 First, navigate to the [IAM page](https://console.cloud.google.com/iam-admin/iam?_ga=2.165735869.248724417.1594646215-1491521344.1590087040&_gac=1.48940818.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) and ensure that your **deploying project** is selected at the top left. Identify the service account with the name **App Engine default service account**, and add the role **Bigquery Admin** to the service account. 
 
+### Project Level Permissions
 Next, In order to allow the Impact Dashboard to access the projects for which you want to view data, for each project of interest (with the exception of the deploying project): 
 * Navigate to the [IAM page](https://console.cloud.google.com/iam-admin/iam?_ga=2.165735869.248724417.1594646215-1491521344.1590087040&_gac=1.48940818.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) of that project.
 * Click **Add** at the top of the page
 * In the **New members** box, paste the member name of the App Engine default service account of your **deploying project** (it should look something like deploying-project-id@appspot.gserviceaccount.com).
 * Select the role **Project > Viewer**
 
-Finally, In order to allow the Impact Dashboard to access Organization names for the organizations your projects reside in, for each organization of interest:
+### Organization Level Permissions
+If you would like to view data for every project belonging to an organization, you do not have to individually grant viewer permissions on every project; instead you can simply grant the Viewer role at the organization level, and the dashboard will automatically collect data on every project belonging to that organization:
 * Navigate to the [IAM page](https://console.cloud.google.com/iam-admin/iam?_ga=2.165735869.248724417.1594646215-1491521344.1590087040&_gac=1.48940818.1592573304.EAIaIQobChMIyefY7P2N6gIVhgiICR3E6Ab4EAAYASAAEgJZ0fD_BwE) of that organization.
 * Click **Add** at the top of the page
 * In the **New members** box, paste the member name of the App Engine default service account of your **deploying project** (it should look something like deploying-project-id@appspot.gserviceaccount.com).
 * Select the role **Resource Manager > Organization Viewer**
 
+**NOTE**: If you do not want to view every project in an organization, you still need to grant some permissions at the organization-level for every parent organization of a project of interest, in order to enable including organization-level custom roles in the daily IAM Bindings calculations as well as displaying the name of the organization. The necessary permissions are as follows:
+```
+iam.roles.get
+iam.roles.list
+resourcemanager.organizations.get
+```
 
 ## Database Setup
 On your deploying project, you must create data tables to store recommendations and bindings data:

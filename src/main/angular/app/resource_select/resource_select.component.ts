@@ -34,6 +34,11 @@ export class ResourceSelectComponent implements OnInit {
   public activeOrganizations: Set<Organization>;
   /** The resource to display. Now it's just projects or organizations, but can be expanded. */
   public displayType: ResourceType;
+  /**
+   * Whether there is an org for which the server failed to retrieve a name,
+   * indicating that the dashboard does not have viewer permissions for this org.
+   */
+  public containsOrgWithNoAccess: boolean;
 
   // #region DOM interraction variables
   /** Whether a particular arrow is rotated or not. */
@@ -235,6 +240,7 @@ export class ResourceSelectComponent implements OnInit {
     this.dataService.listSummaries().then(summaryData => {
       const projects = summaryData.projects;
       const organizations = summaryData.organizations;
+      this.containsOrgWithNoAccess = summaryData.containsAsterisk;
       this.queryService.init(projects, organizations);
       // Assign colors based on initial ordering
       this.queryService.assignColors(DEFAULT_COLORS);

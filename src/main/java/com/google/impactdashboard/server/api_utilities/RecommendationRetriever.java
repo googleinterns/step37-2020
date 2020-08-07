@@ -18,9 +18,11 @@ import java.util.stream.Collectors;
 public class RecommendationRetriever {
 
   private RecommenderClient recommender;
+  private ResourceRetriever resourceRetriever;
 
-  private RecommendationRetriever(RecommenderClient recommender) {
+  private RecommendationRetriever(RecommenderClient recommender, ResourceRetriever resourceRetriever) {
     this.recommender = recommender;
+    this.resourceRetriever = resourceRetriever;
   }
 
   /**
@@ -31,7 +33,8 @@ public class RecommendationRetriever {
   public static RecommendationRetriever create() throws IOException {
     RecommenderStubSettings stub = RecommenderStubSettings.newBuilder()
         .setCredentialsProvider(Credentials::getCredentials).build();
-    return new RecommendationRetriever(RecommenderClient.create(RecommenderSettings.create(stub)));
+    return new RecommendationRetriever(RecommenderClient.create(RecommenderSettings.create(stub)),
+        ResourceRetriever.getInstance());
   }
 
   /**
@@ -47,7 +50,7 @@ public class RecommendationRetriever {
       com.google.cloud.recommender.v1.Recommendation recommendation = recommender
           .getRecommendation(recommendationDataMap.get("recommendationName").getStringValue());
       List<RecommendationAction> actions = getRecommendationActions(recommendation);
-      return Recommendation.create(projectId, recommendationDataMap.get("actor").getStringValue(),
+      return Recommendation.create(projectId, resourceRetriever.getOrganizationId(projectId), recommendationDataMap.get("actor").getStringValue(),
           actions, type, recommendationLog.getTimestamp().getSeconds() * 1000,
           IAMRecommenderMetadata.create(iamRetriever.getActionImpact(actions)));
     }).collect(Collectors.toList());

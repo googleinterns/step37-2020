@@ -1,6 +1,6 @@
 /** Contains several constants in use throughout the application. */
 /** Whether to use test data or not. */
-export const USE_TEST_DATA = true;
+export const USE_TEST_DATA = false;
 
 // See https://standards.google/guidelines/brand-standards/color/palette/#brand-colors
 export const GOOGLE_BLUE = '#174ea6';
@@ -39,7 +39,7 @@ export const ERROR_PAGE_URL = 'error';
 
 /** Informs the user to select a project. Displayed when none are shown. */
 export const SELECT_PROJECT_MESSAGE =
-  'Please select a project below to generate a graph.';
+  'Please select a resource below to generate a graph.';
 /** Informs the user that web requests are active. */
 export const LOADING_MESSAGE = 'Waiting on server, please wait.';
 /** Suffix added to a cumulative bindings dataset. */

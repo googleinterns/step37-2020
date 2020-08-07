@@ -4,19 +4,27 @@ import {RecommenderType} from '../../../model/recommender_type';
 import {ProjectGraphData} from '../../../model/project_graph_data';
 import {Project} from '../../../model/project';
 import {ProjectMetaData} from '../../../model/project_metadata';
-import {DataService} from '../data.service';
+import {DataService, RequestType} from '../data.service';
 import {ErrorMessage} from '../../../model/error_message';
 import {RecommendationAction} from '../../../model/recommendation_action';
 import {RecommenderMetadata} from '../../../model/recommender_metadata';
 import {GraphDataCacheService} from '../graph_data_cache.service';
+import {DataSummaryList} from '../../../model/data_summary_list';
+import {Organization} from '../../../model/organization';
+import {OrganizationGraphData} from '../../../model/organization_graph_data';
+import {OrganizationIdentification} from '../../../model/organization_identification';
 
 /** Contains fake data. */
 @Injectable()
 export class FakeDataService implements DataService {
   /** The URLs of all active requests. */
-  private activeRequests: Set<string>;
+  private activeRequests: {[type in RequestType]: Set<string>};
   /** Contains the projects that are faked. */
   private projects: {[projectId: string]: [Project, ProjectGraphData]};
+  /** Contains the faked organizations. */
+  public organizations: {
+    [organizationId: string]: [Organization, OrganizationGraphData];
+  };
 
   private static actions = [
     new RecommendationAction('test@', 'owner', 'manager', ''),
@@ -27,6 +35,7 @@ export class FakeDataService implements DataService {
 
   constructor(private cacheService: GraphDataCacheService) {
     this.projects = {};
+    this.organizations = {};
     const fakes = [
       FakeDataService.fakeProject1(),
       FakeDataService.fakeProject2(),
@@ -40,32 +49,45 @@ export class FakeDataService implements DataService {
       FakeDataService.fakeProject10(),
     ];
     fakes.forEach(tuple => (this.projects[tuple[0].projectId] = tuple));
-    this.activeRequests = new Set();
+    this.setupFakeOrganizations(fakes);
+
+    this.activeRequests = {
+      [RequestType.LIST_SUMMARIES]: new Set(),
+      [RequestType.GET_PROJECT_DATA]: new Set(),
+      [RequestType.GET_ORGANIZATION_DATA]: new Set(),
+      [RequestType.POST_MANUAL_UPDATE]: new Set(),
+    };
   }
 
   /** Returns all the fake projects. */
-  listProjects(): Promise<Project[]> {
-    const url = '/list-project-summaries';
-    this.activeRequests.add(url);
+  listSummaries(): Promise<DataSummaryList> {
+    const url = '/list-summaries';
+    this.activeRequests[RequestType.LIST_SUMMARIES].add(url);
     return new Promise(resolve => {
       setTimeout(() => {
-        this.activeRequests.delete(url);
-        resolve(Object.values(this.projects).map(tuple => tuple[0]));
+        this.activeRequests[RequestType.LIST_SUMMARIES].delete(url);
+        const projects = Object.values(this.projects).map(tuple => tuple[0]);
+        const organizations = Object.values(this.organizations).map(
+          tuple => tuple[0]
+        );
+        resolve(new DataSummaryList(projects, organizations, true));
       }, FakeDataService.requestTime);
     });
   }
 
   /** Returns the data associated with the given project. */
   getProjectGraphData(id: string): Promise<ProjectGraphData> {
-    if (this.cacheService.hasEntry(id)) {
-      return new Promise(resolve => resolve(this.cacheService.getEntry(id)));
+    if (this.cacheService.hasProjectEntry(id)) {
+      return new Promise(resolve =>
+        resolve(this.cacheService.getProjectEntry(id))
+      );
     }
     if (this.projects[id]) {
-      this.activeRequests.add(id);
+      this.activeRequests[RequestType.GET_PROJECT_DATA].add(id);
       return new Promise(resolve => {
         setTimeout(() => {
-          this.activeRequests.delete(id);
-          this.cacheService.addEntry(id, this.projects[id][1]);
+          this.activeRequests[RequestType.GET_PROJECT_DATA].delete(id);
+          this.cacheService.addProjectEntry(id, this.projects[id][1]);
           resolve(this.projects[id][1]);
         }, FakeDataService.requestTime);
       });
@@ -77,17 +99,40 @@ export class FakeDataService implements DataService {
     }
   }
 
-  hasPendingRequest(): boolean {
-    return this.activeRequests.size > 0;
+  getOrganizationGraphData(id: string): Promise<OrganizationGraphData> {
+    if (this.cacheService.hasOrganizationEntry(id)) {
+      return new Promise(resolve =>
+        resolve(this.cacheService.getOrganizationEntry(id))
+      );
+    }
+    if (this.organizations[id]) {
+      this.activeRequests[RequestType.GET_ORGANIZATION_DATA].add(id);
+      return new Promise(resolve => {
+        setTimeout(() => {
+          this.activeRequests[RequestType.GET_ORGANIZATION_DATA].delete(id);
+          this.cacheService.addOrganizationEntry(id, this.organizations[id][1]);
+          resolve(this.organizations[id][1]);
+        }, FakeDataService.requestTime);
+      });
+    } else {
+      throw new ErrorMessage(
+        `Error retrieving organization of ID ${id} from FakeDataService`,
+        {}
+      );
+    }
+  }
+
+  hasPendingRequest(type: RequestType): boolean {
+    return this.activeRequests[type].size > 0;
   }
 
   /** Sends a POST to /manual-update. */
   postManualUpdate(): Promise<void> {
     const url = '/manual-update';
-    this.activeRequests.add(url);
+    this.activeRequests[RequestType.POST_MANUAL_UPDATE].add(url);
     return new Promise(resolve => {
       setTimeout(() => {
-        this.activeRequests.delete(url);
+        this.activeRequests[RequestType.POST_MANUAL_UPDATE].delete(url);
         resolve(undefined);
       }, FakeDataService.requestTime);
     });
@@ -108,9 +153,81 @@ export class FakeDataService implements DataService {
     this.projects.prj5 = [project, graphData];
   }
 
+  /** Constructs the organization graph data with the given projects. */
+  private constructOrganizationGraphData(
+    fakes: [Project, ProjectGraphData][],
+    id: string
+  ): OrganizationGraphData {
+    const datesToBindings: {[time: number]: number} = {};
+    const datesToRecommendations: {[time: number]: Recommendation} = {};
+
+    fakes.forEach(tuple => {
+      Object.entries(tuple[1].dateToNumberIAMBindings).forEach(value => {
+        if (datesToBindings[value[0]]) {
+          datesToBindings[value[0]] += value[1];
+        } else {
+          datesToBindings[value[0]] = value[1];
+        }
+      });
+      Object.entries(tuple[1].dateToRecommendationTaken).forEach(value => {
+        let time = +value[0];
+        // Make sure that recommendations never occur on the same time.
+        // Not an elegant solution by any means, but this while loop will run a max of 10 times or so.
+        while (datesToRecommendations[time]) {
+          time++;
+          value[1].acceptedTimestamp++;
+        }
+        datesToRecommendations[time] = value[1];
+      });
+    });
+
+    return new OrganizationGraphData(
+      id,
+      datesToBindings,
+      datesToRecommendations
+    );
+  }
+
+  /** Set up fake organizations. Projects 1-3 are in org-1, 4-6 in org-2, 7-10 in org-3. */
+  private setupFakeOrganizations(fakes: [Project, ProjectGraphData][]): void {
+    // org-1 projects
+    let identification = new OrganizationIdentification(
+      'org-1',
+      'Organization 1'
+    );
+    this.organizations['org-1'] = [
+      new Organization(identification, 3000),
+      this.constructOrganizationGraphData(
+        fakes.filter((value, index) => index < 3),
+        identification.id
+      ),
+    ];
+
+    // org-2 projects
+    identification = new OrganizationIdentification('org-2', 'Organization 2*');
+    this.organizations['org-2'] = [
+      new Organization(identification, 2000),
+      this.constructOrganizationGraphData(
+        fakes.filter((value, index) => index >= 3 && index < 6),
+        identification.id
+      ),
+    ];
+
+    // org-3 projects
+    identification = new OrganizationIdentification('org-3', 'Organization 3');
+    this.organizations['org-3'] = [
+      new Organization(identification, 2500),
+      this.constructOrganizationGraphData(
+        fakes.filter((value, index) => index >= 6),
+        identification.id
+      ),
+    ];
+  }
+
   /** Generate fake data for project 1. */
   private static fakeProject1(): [Project, ProjectGraphData] {
     const projectId = 'project-1';
+    const organizationId = 'org-1';
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Jun 2020 UTC')]: 131,
@@ -137,6 +254,7 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('5 Jun 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -145,7 +263,9 @@ export class FakeDataService implements DataService {
       ),
       [Date.parse('9 Jun 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
+
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
         Date.parse('9 Jun 2020 UTC'),
@@ -153,6 +273,7 @@ export class FakeDataService implements DataService {
       ),
       [Date.parse('17 Jun 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -162,6 +283,7 @@ export class FakeDataService implements DataService {
       // Simulate multiple recommendations on one day
       [Date.parse('17 Jun 2020 UTC') + 1]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -170,6 +292,7 @@ export class FakeDataService implements DataService {
       ),
       [Date.parse('17 Jun 2020 UTC') + 2]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -178,6 +301,7 @@ export class FakeDataService implements DataService {
       ),
       [Date.parse('17 Jun 2020 UTC') + 3]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -194,6 +318,7 @@ export class FakeDataService implements DataService {
   /** Generate fake data for project 2. */
   private static fakeProject2(): [Project, ProjectGraphData] {
     const projectId = 'project-2';
+    const organizationId = 'org-1';
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Jun 2020 UTC')]: 28,
@@ -220,6 +345,7 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('1 Jun 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -228,6 +354,7 @@ export class FakeDataService implements DataService {
       ),
       [Date.parse('9 Jun 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -236,6 +363,7 @@ export class FakeDataService implements DataService {
       ),
       [Date.parse('20 Jun 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -245,6 +373,7 @@ export class FakeDataService implements DataService {
       // Simulate two recommendations on one day
       [Date.parse('20 Jun 2020 UTC') + 1]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -262,6 +391,7 @@ export class FakeDataService implements DataService {
   /** Generate fake data for project 3. */
   private static fakeProject3(): [Project, ProjectGraphData] {
     const projectId = 'test-long-project-id-project-3';
+    const organizationId = 'org-1';
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('6 Jun 2020 UTC')]: 125,
@@ -288,6 +418,7 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('7 Jun 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -296,6 +427,7 @@ export class FakeDataService implements DataService {
       ),
       [Date.parse('9 Jun 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -304,6 +436,7 @@ export class FakeDataService implements DataService {
       ),
       [Date.parse('22 Jun 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -313,6 +446,7 @@ export class FakeDataService implements DataService {
       // Simulate two recommendations on one day
       [Date.parse('22 Jun 2020 UTC') + 1]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -335,6 +469,7 @@ export class FakeDataService implements DataService {
   /** Generate fake data for project 4. */
   private static fakeProject4(): [Project, ProjectGraphData] {
     const projectId = 'quite-the-long-project-4';
+    const organizationId = 'org-2';
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Jul 2020 UTC')]: 14,
@@ -361,6 +496,7 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('1 Jul 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -369,6 +505,7 @@ export class FakeDataService implements DataService {
       ),
       [Date.parse('9 Jul 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -377,6 +514,7 @@ export class FakeDataService implements DataService {
       ),
       [Date.parse('20 Jul 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -386,6 +524,7 @@ export class FakeDataService implements DataService {
       // Simulate two recommendations on one day
       [Date.parse('20 Jul 2020 UTC') + 1]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -408,6 +547,7 @@ export class FakeDataService implements DataService {
   /** Generate fake data for project 5 */
   private static fakeProject5(): [Project, ProjectGraphData] {
     const projectId = 'project-5-to-filter';
+    const organizationId = 'org-2';
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Jul 2020 UTC')]: 183,
@@ -444,6 +584,7 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('9 Jul 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -466,6 +607,7 @@ export class FakeDataService implements DataService {
   /** Generate fake data for project 6 */
   private static fakeProject6(): [Project, ProjectGraphData] {
     const projectId = 'project-6-for-concord-intern';
+    const organizationId = 'org-2';
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Jul 2020 UTC')]: 138,
@@ -502,6 +644,7 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('9 Jul 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -524,6 +667,7 @@ export class FakeDataService implements DataService {
   /** Generate fake data for project 7 */
   private static fakeProject7(): [Project, ProjectGraphData] {
     const projectId = 'project-7-here-at-google';
+    const organizationId = 'org-3';
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Aug 2020 UTC')]: 235,
@@ -560,6 +704,7 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('9 Aug 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -582,6 +727,7 @@ export class FakeDataService implements DataService {
   /** Generate fake data for project 8 */
   private static fakeProject8(): [Project, ProjectGraphData] {
     const projectId = 'project-8-here-at-google';
+    const organizationId = 'org-3';
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('15 Aug 2020 UTC')]: 241,
@@ -604,6 +750,7 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('17 Aug 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -626,6 +773,7 @@ export class FakeDataService implements DataService {
   /** Generate fake data for project 9 */
   private static fakeProject9(): [Project, ProjectGraphData] {
     const projectId = 'prj-9';
+    const organizationId = 'org-3';
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('10 Aug 2020 UTC')]: 93,
@@ -640,6 +788,7 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('17 Aug 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,
@@ -657,6 +806,7 @@ export class FakeDataService implements DataService {
   /** Generate fake data for project 10 */
   private static fakeProject10(): [Project, ProjectGraphData] {
     const projectId = 'prj---10';
+    const organizationId = 'org-3';
     // Fake data for showing the graph
     const iamBindings: {[key: number]: number} = {
       [Date.parse('1 Aug 2020 UTC')]: 42,
@@ -693,6 +843,7 @@ export class FakeDataService implements DataService {
     const recommendations: {[key: number]: Recommendation} = {
       [Date.parse('9 Aug 2020 UTC')]: new Recommendation(
         projectId,
+        organizationId,
         'user@',
         FakeDataService.actions,
         RecommenderType.IAM_BINDING,

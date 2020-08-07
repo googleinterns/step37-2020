@@ -42,17 +42,19 @@ public class IamBindingRetrieverTest extends Mockito {
 
   private Iam mockIamService;
   private IamBindingRetriever iamBindingRetriever;
+  private ResourceRetriever mockResourceRetriever;
 
   @Before
   public void setup() throws IOException {
     mockIamService = mock(Iam.class, Mockito.RETURNS_DEEP_STUBS);
+    mockResourceRetriever = mock(ResourceRetriever.class);
 
     ListRolesResponse mockGenericRoleResponse = mock(ListRolesResponse.class);
     when(mockIamService.roles().list().setView(eq("full")).execute()).thenReturn(mockGenericRoleResponse);
     when(mockGenericRoleResponse.getRoles()).thenReturn(Collections.singletonList(GENERIC_ROLE));
 
     MEMBERS_FOR_ROLES.put(GENERIC_ROLE_NAME, GENERIC_MEMBERS);
-    iamBindingRetriever = new IamBindingRetriever(mockIamService);
+    iamBindingRetriever = new IamBindingRetriever(mockIamService, mockResourceRetriever);
   }
 
   @Test

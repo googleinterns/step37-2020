@@ -1,9 +1,9 @@
 package com.google.impactdashboard.server.data_update;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.google.cloud.logging.v2.LoggingClient;
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.logging.v2.LogEntry;
 import com.google.cloud.logging.v2.LoggingClient.ListLogEntriesPagedResponse;
 import com.google.impactdashboard.configuration.Configuration;
@@ -18,7 +18,7 @@ import com.google.impactdashboard.database_manager.data_update.DataUpdateManager
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManagerFactory;
 import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
-import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
+import com.google.impactdashboard.server.api_utilities.ResourceRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 
 import org.junit.Assert;
@@ -33,23 +33,27 @@ import java.util.List;
 
 @RunWith(JUnit4.class)
 public class DataUpdaterTest extends Mockito {
-
+  // @TODO fix organization id here once retrieved
   public static final List<IAMBindingDatabaseEntry> PROJECT_3_IAM_BINDING_SINGLE_ENTRY =
       Collections.singletonList(IAMBindingDatabaseEntry.create("project-id-3",
-          "project-id-3", "345678901234",0L, 1000));
+          "project-id-3", "345678901234", OrganizationIdentification.create("", ""), 0L, 1000));
+  // @TODO fix organization id here once retrieved
   public static final List<IAMBindingDatabaseEntry> PROJECT_1_IAM_BINDING_SINGLE_ENTRY =
       Collections.singletonList(IAMBindingDatabaseEntry.create("project-id-1",
-          "project-id-1", "123456789123",1595131200000L, 13456));
+          "project-id-1", "123456789123", OrganizationIdentification.create("",""), 1595131200000L,
+          13456));
+  // @TODO fix organization id here once retrieved
   public static final List<IAMBindingDatabaseEntry> PROJECT_2_IAM_BINDING_SINGLE_ENTRY =
       Collections.singletonList(IAMBindingDatabaseEntry.create("project-id-2",
-          "project-id-2", "234567890123",1595131200000L, 23454));
+          "project-id-2", "234567890123", OrganizationIdentification.create("", ""),1595131200000L,
+          23454));
 
   private LogRetriever mockLogRetriever;
   private RecommendationRetriever mockRecommendationRetriever;
   private DataUpdateManager fakeDataUpdateManager;
   private DataReadManager fakeDataReadManager;
   private IamBindingRetriever mockIamBindingRetriever;
-  private ProjectListRetriever mockProjectListRetriever;
+  private ResourceRetriever mockResourceRetriever;
   private DataUpdater manualDataUpdater;
   private DataUpdater automaticDataUpdater;
 
@@ -65,7 +69,8 @@ public class DataUpdaterTest extends Mockito {
   private static final ProjectIdentification PROJECT_3 =
       ProjectIdentification.create("project-3", "project-id-3", 345678901234L);
   private static final Recommendation PROJECT_3_RECOMMENDATION_1 =
-      Recommendation.create("project-id-3", "test@example.com",
+      // @TODO fix organization id here once retrieved
+      Recommendation.create("project-id-3", "", "test@example.com",
           Arrays.asList(
             RecommendationAction.create(
               "affected@example.com", "role1", "",
@@ -73,7 +78,8 @@ public class DataUpdaterTest extends Mockito {
           Recommendation.RecommenderType.IAM_BINDING, 1593072412000L,
           IAMRecommenderMetadata.create(350));
   private static final Recommendation PROJECT_3_RECOMMENDATION_2 =
-      Recommendation.create("project-id-3", "test@example.com",
+      // @TODO fix organization id here once retrieved
+      Recommendation.create("project-id-3", "", "test@example.com",
           Arrays.asList(
             RecommendationAction.create(
               "affected@example.com", "role1", "role2",
@@ -81,7 +87,8 @@ public class DataUpdaterTest extends Mockito {
           Recommendation.RecommenderType.IAM_BINDING, 1593070012000L,
           IAMRecommenderMetadata.create(400));
   private static final Recommendation PROJECT_1_RECOMMENDATION =
-      Recommendation.create("project-id-1", "test@example.com",
+      // @TODO fix organization id here once retrieved
+      Recommendation.create("project-id-1", "", "test@example.com",
           Arrays.asList(
             RecommendationAction.create(
               "affected@example.com", "role1", "",
@@ -101,14 +108,14 @@ public class DataUpdaterTest extends Mockito {
     mockLogRetriever = mock(LogRetriever.class);
     mockRecommendationRetriever = mock(RecommendationRetriever.class);
     mockIamBindingRetriever = mock(IamBindingRetriever.class);
-    mockProjectListRetriever = mock(ProjectListRetriever.class);
+    mockResourceRetriever = mock(ResourceRetriever.class);
 
     manualDataUpdater = new ManualDataUpdater(
         mockLogRetriever, mockRecommendationRetriever, fakeDataUpdateManager, 
-        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever);
+        fakeDataReadManager, mockIamBindingRetriever, mockResourceRetriever);
     automaticDataUpdater = new AutomaticDataUpdater(
         mockLogRetriever, mockRecommendationRetriever, fakeDataUpdateManager, 
-        fakeDataReadManager, mockIamBindingRetriever, mockProjectListRetriever);
+        fakeDataReadManager, mockIamBindingRetriever, mockResourceRetriever);
 
     initializeRecommendationFakes();
   }
@@ -189,13 +196,13 @@ public class DataUpdaterTest extends Mockito {
         Collections.singletonList(mock(LogEntry.class));
 
     when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_3.getProjectId()), anyString(),
-        anyString(), anyInt())).thenReturn(project3Response);
+        anyString(), anyInt(), anyString())).thenReturn(project3Response);
 
     when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_2.getProjectId()), anyString(),
-        anyString(), anyInt())).thenReturn(project2Response);
+        anyString(), anyInt(), anyString())).thenReturn(project2Response);
 
     when(mockLogRetriever.listAuditLogsResponse(eq(PROJECT_1.getProjectId()), anyString(),
-        anyString(), anyInt())).thenReturn(project1Response);
+        anyString(), anyInt(), anyString())).thenReturn(project1Response);
 
     when(project3Response.iterateAll()).thenReturn(project3AuditLogs);
 

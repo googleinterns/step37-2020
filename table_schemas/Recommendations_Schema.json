@@ -6,6 +6,11 @@
   },
   {
     "mode": "REQUIRED",
+    "name": "OrganizationId",
+    "type": "STRING"
+  },
+  {
+    "mode": "REQUIRED",
     "name": "Recommender",
     "type": "STRING"
   },

@@ -2,7 +2,9 @@ package com.google.impactdashboard.database_manager;
 
 import java.lang.Math;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.stream.Collectors;
 import com.google.impactdashboard.data.recommendation.*;
 import com.google.impactdashboard.data.project.ProjectIdentification;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 /** A class that maintains a fake database for testing purposes. */
@@ -27,7 +31,7 @@ public class FakeDatabase {
 
         {
         put(1592486705000L, 
-          Recommendation.create("project-id-1", 
+          Recommendation.create("project-id-1", "org-1-id",
             "test1@example.com", 
             Arrays.asList(
               RecommendationAction.create(
@@ -36,7 +40,7 @@ public class FakeDatabase {
             Recommendation.RecommenderType.IAM_BINDING, 1592486705000L, 
             IAMRecommenderMetadata.create(300)));
         put(1592486585000L, 
-          Recommendation.create("project-id-1", 
+          Recommendation.create("project-id-1", "org-1-id",
             "test2@example.com", 
             Arrays.asList(
               RecommendationAction.create(
@@ -45,7 +49,7 @@ public class FakeDatabase {
             Recommendation.RecommenderType.IAM_BINDING, 1592486585000L, 
             IAMRecommenderMetadata.create(1000))); 
         put(1591633823000L, 
-          Recommendation.create("project-id-1", 
+          Recommendation.create("project-id-1", "org-1-id",
             "test3@example.com", 
             Arrays.asList(
               RecommendationAction.create(
@@ -57,7 +61,7 @@ public class FakeDatabase {
             Recommendation.RecommenderType.IAM_BINDING, 1591633823000L, 
             IAMRecommenderMetadata.create(1000))); 
         put(1591704613000L, 
-          Recommendation.create("project-id-2", 
+          Recommendation.create("project-id-2", "org-1-id",
             "test4@example.com", 
             Arrays.asList(
               RecommendationAction.create(
@@ -66,7 +70,7 @@ public class FakeDatabase {
             Recommendation.RecommenderType.IAM_BINDING, 1591704613000L, 
             IAMRecommenderMetadata.create(500)));  
         put(1593072312000L, 
-          Recommendation.create("project-id-2", 
+          Recommendation.create("project-id-2", "org-1-id",
             "test5@example.com", 
             Arrays.asList(
               RecommendationAction.create(
@@ -76,6 +80,33 @@ public class FakeDatabase {
             IAMRecommenderMetadata.create(350)));    
       }
     };
+
+  /** 
+   * Mapping of project ids to the identification information of the organization 
+   * they belong to. 
+   */
+  private static Map<String, OrganizationIdentification> projectsToOrganizations = 
+    new HashMap<String, OrganizationIdentification>() {
+        private static final long serialVersionUID = 1L;
+      {
+        put("project-id-1", OrganizationIdentification.create("Org 1", "org-1-id"));
+        put("project-id-2", OrganizationIdentification.create("Org 1", "org-1-id"));
+      }
+  };
+
+  /** 
+   * Mapping of project ids to the identification information of the project.
+   */
+  private static Map<String, ProjectIdentification> projectsToIdentification = 
+    new HashMap<String, ProjectIdentification>() {
+        private static final long serialVersionUID = 1L;
+      {
+        put("project-id-1", 
+          ProjectIdentification.create("project-1", "project-id-1", 123456789123L));
+        put("project-id-2", 
+          ProjectIdentification.create("project-2", "project-id-2", 234567890123L));
+      }
+  };
 
   /** Represents a database table that holds information about IAM Bindings. */
   private static Map<ProjectIdentification, Map<Long, Integer>> iamBindings = 
@@ -123,10 +154,22 @@ public class FakeDatabase {
     return projects;
   }
 
+  /**
+   * Returns the identifying information of the organizations that appear in the 
+   * fake database. 
+   */
+  public static List<OrganizationIdentification> listOrganizations() {
+    Set<OrganizationIdentification> organizations = new HashSet<>();
+    projectsToOrganizations.entrySet().stream()
+      .forEach(entry -> organizations.add(entry.getValue()));
+    return organizations.stream().collect(Collectors.toList()); 
+  }
+
   /** 
    * Retrieves the bindings data associated with {@code projectId} in the bindings 
    * table. 
-   * @param projectId The id of the project taht the data is for.*/
+   * @param projectId The id of the project that the data is for.
+   */
   public static Map<Long, Integer> getDatesToBindingsForProject(String projectId) {
     AtomicReference<Map<Long, Integer>> dailyBindings = 
       new AtomicReference<Map<Long, Integer>>();
@@ -137,6 +180,29 @@ public class FakeDatabase {
       }
     });
     return dailyBindings.get();
+  }
+
+  /**
+   * Retrieves the bindings data associated with {@organizationId} in the
+   * fake database.
+   * @param organizationId the id of the organization that the data is for.
+   */
+  public static Map<Long, Integer> getDatesToBindingsForOrganization(String organizationId) {
+    Map<Long, Integer> totalBindings = new HashMap<Long, Integer>();
+    projectsToOrganizations.entrySet().stream().forEach(entry -> {
+      if (entry.getValue().getId().equals(organizationId)) {
+        iamBindings.get(projectsToIdentification.get(entry.getKey())).entrySet().stream()
+          .forEach(bindingEntry -> {
+            Long timestamp = bindingEntry.getKey();
+            if (totalBindings.containsKey(timestamp)) {
+              totalBindings.put(timestamp, totalBindings.get(timestamp) + bindingEntry.getValue());
+            } else {
+              totalBindings.put(timestamp, bindingEntry.getValue());
+            }
+          });
+      }
+    });
+    return totalBindings;
   }
 
   /** 
@@ -159,6 +225,27 @@ public class FakeDatabase {
     return averageBindings.get() / dailyBindings.size();
   }
 
+  /** 
+   * Returns the average bindings recorded in the bindings table for a given 
+   * organization, summed over all the projects belonging to that organization, 
+   * or 0 if this project does not appear in the bindings table. 
+   * @param organizationId The id of the organization the data is for.
+   */
+  public static double getAvgBindingsForOrganization(String organizationId) {
+    Map<Long, Integer> totalBindings = getDatesToBindingsForOrganization(organizationId);
+
+    if (totalBindings.size() == 0) {
+      return 0;
+    }
+
+    AtomicReference<Double> averageBindings = new AtomicReference<Double>();
+    averageBindings.set(0.0);
+    totalBindings.forEach((date, bindings) -> {
+      averageBindings.set(averageBindings.get() + bindings);
+    });
+    return averageBindings.get() / totalBindings.size();
+  }
+
   /** Returns the newest timestamp in the IAM table, or -1 if there is no data. */
   public static long getMaxTimestamp() {
     return iamBindings.entrySet().stream()
@@ -179,7 +266,20 @@ public class FakeDatabase {
     String projectId) {
     return recommendations.entrySet().stream()
       .filter(mapElement -> 
-      ((Recommendation) mapElement.getValue()).getProjectId().equals(projectId))
+        mapElement.getValue().getProjectId().equals(projectId))
+      .collect(Collectors.toMap(
+        mapElement -> mapElement.getKey(), mapElement -> mapElement.getValue()));
+  }
+
+  /** 
+   * Returns a map of entries in the recommendations table associated with 
+   * {@code organizationId}. 
+   */
+  public static Map<Long, Recommendation> getDatesToRecommendationsForOrganization(
+    String organizationId) {
+    return recommendations.entrySet().stream()
+      .filter(mapElement -> 
+        mapElement.getValue().getOrganizationId().equals(organizationId))
       .collect(Collectors.toMap(
         mapElement -> mapElement.getKey(), mapElement -> mapElement.getValue()));
   }
@@ -206,6 +306,14 @@ public class FakeDatabase {
       ProjectIdentification project = ProjectIdentification.create(
         dayOfData.getProjectId(), dayOfData.getProjectName(), 
         Long.parseLong(dayOfData.getProjectNumber()));
+
+      if (!projectsToIdentification.containsKey(dayOfData.getProjectId())) {
+        projectsToIdentification.put(dayOfData.getProjectId(), project);
+      }
+
+      if (!projectsToOrganizations.containsKey(dayOfData.getProjectId())) {
+        projectsToOrganizations.put(dayOfData.getProjectId(), dayOfData.getIdentification());
+      }
 
       if (iamBindings.containsKey(project)) {
         iamBindings.get(project).put(

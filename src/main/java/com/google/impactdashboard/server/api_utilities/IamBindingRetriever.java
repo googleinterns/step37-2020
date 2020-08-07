@@ -13,6 +13,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.impactdashboard.Credentials;
 import com.google.impactdashboard.data.IAMBindingDatabaseEntry;
 import com.google.impactdashboard.data.recommendation.RecommendationAction;
+import com.google.impactdashboard.data.organization.OrganizationIdentification;
 import com.google.logging.v2.LogEntry;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
@@ -31,9 +32,10 @@ public class IamBindingRetriever {
 
   private final Iam iamService;
   private final List<Role> roles;
+  private final ResourceRetriever resourceRetriever;
 
   @VisibleForTesting
-  protected IamBindingRetriever(Iam iamService) throws IOException {
+  protected IamBindingRetriever(Iam iamService, ResourceRetriever resourceRetriever) throws IOException {
     this.iamService = iamService;
 
     roles = new ArrayList<>();
@@ -48,6 +50,8 @@ public class IamBindingRetriever {
       roles.addAll(rolesResponse.getRoles());
       pageToken = rolesResponse.getNextPageToken();
     } while(pageToken != null);
+
+    this.resourceRetriever = resourceRetriever;
   }
 
   /**
@@ -62,7 +66,7 @@ public class IamBindingRetriever {
         .setApplicationName("Recommendation Impact Dashboard")
         .build();
 
-    return new IamBindingRetriever(iamService);
+    return new IamBindingRetriever(iamService, ResourceRetriever.getInstance());
   }
 
   /**
@@ -91,13 +95,17 @@ public class IamBindingRetriever {
       if(secondsFromEpoch == null){
         secondsFromEpoch = entry.getKey().getSeconds() * 1000;
       }
+      
       int iamBindings = 0;
       try {
         iamBindings = getIamBindings(membersForRoles, projectId);
       } catch (IOException e) {
         throw new RuntimeException("IAM Bindings not received.");
       }
-      return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber, secondsFromEpoch,
+      String organizationId = resourceRetriever.getOrganizationId(projectId);
+      String organizationName = resourceRetriever.getOrganizationName(organizationId);
+      return IAMBindingDatabaseEntry.create(projectId, projectName, projectNumber,
+          OrganizationIdentification.create(organizationName,organizationId), secondsFromEpoch,
           iamBindings);
     }).collect(Collectors.toList());
   }
@@ -198,7 +206,7 @@ public class IamBindingRetriever {
         rolesResponse = iamService.projects().roles().list("projects/" + projectId)
             .setView("full").setPageToken(projectPageToken).execute();
       }
-      if (rolesResponse != null) {
+      if (rolesResponse != null && !rolesResponse.isEmpty()) {
         projectCustomRoles.addAll(rolesResponse.getRoles());
         projectPageToken = rolesResponse.getNextPageToken();
       }
@@ -225,7 +233,7 @@ public class IamBindingRetriever {
           rolesResponse = iamService.projects().roles().list("organizations/" + organizationId)
               .setView("full").setPageToken(projectPageToken).execute();
         }
-        if (rolesResponse != null) {
+        if (rolesResponse != null && !rolesResponse.isEmpty()) {
           organizationCustomRoles.addAll(rolesResponse.getRoles());
           projectPageToken = rolesResponse.getNextPageToken();
         }

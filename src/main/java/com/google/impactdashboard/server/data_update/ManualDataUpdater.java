@@ -10,7 +10,7 @@ import com.google.impactdashboard.database_manager.data_update.DataUpdateManager
 import com.google.impactdashboard.database_manager.data_update.DataUpdateManagerFactory;
 import com.google.impactdashboard.server.api_utilities.IamBindingRetriever;
 import com.google.impactdashboard.server.api_utilities.LogRetriever;
-import com.google.impactdashboard.server.api_utilities.ProjectListRetriever;
+import com.google.impactdashboard.server.api_utilities.ResourceRetriever;
 import com.google.impactdashboard.server.api_utilities.RecommendationRetriever;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class ManualDataUpdater extends DataUpdater {
   protected ManualDataUpdater(LogRetriever logRetriever, 
       RecommendationRetriever recommendationRetriever,
       DataUpdateManager updateManager, DataReadManager readManager,
-      IamBindingRetriever iamRetriever, ProjectListRetriever projectRetriever) {
+      IamBindingRetriever iamRetriever, ResourceRetriever projectRetriever) {
     super(logRetriever, recommendationRetriever, updateManager, readManager, 
         iamRetriever, projectRetriever);
   }
@@ -43,7 +43,7 @@ public class ManualDataUpdater extends DataUpdater {
       throws IOException, GeneralSecurityException {
     return new ManualDataUpdater(LogRetriever.create(), RecommendationRetriever.create(),
         DataUpdateManagerFactory.create(), DataReadManagerFactory.create(),
-        IamBindingRetriever.create(), ProjectListRetriever.getInstance());
+        IamBindingRetriever.create(), ResourceRetriever.getInstance());
   }
 
   /**
